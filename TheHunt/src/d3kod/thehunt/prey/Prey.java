@@ -16,218 +16,87 @@ import d3kod.thehunt.prey.planner.Planner;
 import d3kod.thehunt.prey.sensor.Sensor;
 
 public class Prey {
+	
 	private static final String TAG = "Prey";
-	private static final float MAX_SPEED = 0.1f;
-	private static final int MAX_SPIN_SPEED = 10;
-	private static final float DISTANCE_TO_ANGLE_RATIO = 0.001f;// MAX_SPEED/MAX_SPIN_SPEED;
-	public static final float MAX_BODY_BEND_ANGLE = 0;
-	public static final int angleSpeedIncrement = 2;
-	private static final int angleSpeedHeadDefault = angleSpeedIncrement/2;
-	private static int angleSpeedHead = angleSpeedIncrement;
-	private static final int angleBackSpeed = 10;
-	private static float moveStep = 0.005f;
-	private static final int STRIDE_BYTES = D3GLES20.COORDS_PER_VERTEX * D3GLES20.BYTES_PER_FLOAT;
-	private final float[] preyColor = {
-		0.0f, 0.0f, 0.0f, 0.0f };
-	private final float preySize = 1.0f;
-	private final float bodyLength = 0.1f * preySize;
-	private final float bodyWidth = 1.0f * bodyLength;
-	private final float bodyHeight = 1.0f * bodyLength;
-	
-	//Head
-	private final float headSize = 0.04f * preySize;
-	
-	private final float[] headPosition = {
-			0, bodyHeight/2 + headSize*0.4f, 0
-	};
-	
-	private final float[] eyePosition = { -0.40f * headSize, 0.25f * headSize, 0.0f };
-	private final float eyeSize = 0.25f*headSize;
-	private float[] eyeVertexData;
-			
-	private float[] headPart1Start = { 0.0f, 1.0f, 0.0f };
-	private float[] headPart1B = { -0.5f, 0.75f, 0.0f };
-	private float[] headPart1C = { -1.0f, 0.5f, 0.0f };
-	private float[] headPart2Start = { -1.0f, -0.5f, 0.0f };
-	private float[] headPart2B = { -0.2f, -0.3f, 0.0f };
-	private float[] headPart2C = { 0.2f, -0.3f, 0.0f };
-	private float[] headPart3Start = { 1.0f, -0.5f, 0.0f };
-	private float[] headPart3B = { 1.0f, 0.5f, 0.0f };
-	private float[] headPart3C = { 0.5f, 0.75f, 0.0f };
-	private float detailsStep = 0.1f;
-	
-	private int headVerticesNum;
-	private FloatBuffer headVertexBuffer;
-	private float[] mHeadModelMatrix = new float[16];
-	
-	// Body
-
-	private final float[] bodyStart = { 0, 0.5f, 0};
-	private final float[] bodyB = {0, 0.2f, 0};
-	private final float[] bodyC = {0, -0.2f, 0};
-	private final float[] bodyEnd = { 0, -0.5f, 0};
-	
-	private int bodyVerticesNum;
-	private FloatBuffer bodyVertexBuffer;
-	
-	// Fins
-	private int maxAngle = 40;
-	private int minAngle = 0;
-	private final float finSize = 0.05f * preySize;
-	
-	private final float[] rightFinStart = { 0.0f, 0.0f, 0.0f };
-	private final float[] rightFinB = { 0.55f, -0.4f, 0.0f };
-	private final float[] rightFinC = { 0.7f, -0.6f, 0.0f };
-	private final float[] rightFinEnd = { 0.8f, -1.0f, 0.0f };
-	
-	private final float[] leftFinStart = { rightFinStart[0], rightFinStart[1], 0.0f };
-	private final float[] leftFinB = { -rightFinB[0], rightFinB[1], 0.0f };
-	private final float[] leftFinC = { -rightFinC[0], rightFinC[1], 0.0f };
-	private final float[] leftFinEnd = { -rightFinEnd[0], rightFinEnd[1], 0.0f };
-	
-	private int finVerticesNum;
-	
-	private float[] headVerticesData;
-	private float[] leftFinVerticesData;
-	private float[] rightFinVerticesData;
-	
-	private final float[] leftFootPosition = {
-			0, -bodyHeight/2, 0
-	};
-	
-	private FloatBuffer rightFinVertexBuffer;
-	private FloatBuffer leftFinVertexBuffer;
-	
-	// Shaders
-	
-	private static final String vertexShaderCode =
-			"uniform mat4 u_MVPMatrix;      \n"
-		 
-		  + "attribute vec4 a_Position;     \n"
-		 
-		  + "void main()                    \n"
-		  + "{                              \n"
-		  + "   gl_Position = u_MVPMatrix   \n"
-		  + "               * a_Position;   \n"
-		  + "}                              \n";
-
-
-	private static final String fragmentShaderCode =
-			  "precision mediump float;       \n"
-			+ "uniform vec4 u_Color;          \n"
-			+ "void main()                    \n"
-			+ "{                              \n"
-			+ "   gl_FragColor = u_Color;     \n"
-			+ "}                              \n";
-	
-	private float mAngleFins; // 0 for up, 90 for right, kept in range 0..360
-	private float mAngleHead;
-	private int mProgram;
-	private int mMVPMatrixHandle;
-	private int mPositionHandle;
-	private int mColorHandle;
-
-	private float vx;
-	private float vy;
-	private float mPosY;
-	private float mPosX;
-
-	private float[] mModelMatrix = new float[16];
-	private float[] mRModelMatrix = new float[16];
-	private float[] mMVPMatrix = new float[16];
-	private float mPredictedPosX;
-	private float mPredictedPosY;
-	private float[] mFeetModelMatrix;
-	private int mLeftFootAngle = minAngle;
-	private int mRightFootAngle = minAngle;
-	private int vLeft;
-	private int vRight;
-	private float forwardAngleSpeed;
-	private FloatBuffer eyeVertexBuffer;
-	private int headDelay;
-	private float[] bodyStart4 = new float[4];
-	private float[] bodyB4 = new float[4];
-	private float[] bodyStartRot = new float[4];
-	private float[] bodyBRot = new float[4];
 	private Planner mPlanner;
 	private WorldModel mWorldModel;
 	private Sensor mSensor;
-	private float mPosHeadX;
-	private float mPosHeadY;
 	private Environment mEnv;
+	private PreyData mD;
 
 	public void update(float dx, float dy) {
 		float[] posTemp = { 0.0f, 0.07f, 0.0f, 1.0f };
-		Matrix.setIdentityM(mHeadModelMatrix, 0);
-		Matrix.translateM(mHeadModelMatrix, 0, mPosX, mPosY, 0);
-		Matrix.rotateM(mHeadModelMatrix, 0, mAngleHead, 0, 0, 1);
-		Matrix.multiplyMV(posTemp, 0, mHeadModelMatrix, 0, posTemp, 0);
+		Matrix.setIdentityM(mD.mHeadModelMatrix, 0);
+		Matrix.translateM(mD.mHeadModelMatrix, 0, mD.mPosX, mD.mPosY, 0);
+		Matrix.rotateM(mD.mHeadModelMatrix, 0, mD.mAngleHead, 0, 0, 1);
+		Matrix.multiplyMV(posTemp, 0, mD.mHeadModelMatrix, 0, posTemp, 0);
 		
-		mPosHeadX = posTemp[0]; 
-		mPosHeadY = posTemp[1];
+		mD.mPosHeadX = posTemp[0]; 
+		mD.mPosHeadY = posTemp[1];
 		
-		mWorldModel.update(mSensor.sense(mPosHeadX, mPosHeadY, mPosX, mPosY));
+		mWorldModel.update(mSensor.sense(mD.mPosHeadX, mD.mPosHeadY, mD.mPosX, mD.mPosY));
 		doAction(mPlanner.nextAction(mWorldModel)); 
 		
 		move(dx, dy);
 	}
 	
 	public Prey(float screenWidth, float screenHeight, Environment env) {
+		mD = new PreyData();
 		mWorldModel = new WorldModel(screenWidth, screenHeight);
 		mPlanner = new Planner();
 		mEnv = env;
 		mSensor = new Sensor(mEnv);
 		
-		Matrix.setIdentityM(mModelMatrix, 0);
-		mPosX = mPosY = 0;
+		Matrix.setIdentityM(mD.mModelMatrix, 0);
+		mD.mPosX = mD.mPosY = 0;
 
 		for (int i = 0; i < 3; ++i) {
-			bodyStart4[i] = bodyStart[i];
+			mD.bodyStart4[i] = mD.bodyStart[i];
 		}
 		for (int i = 0; i < 3; ++i) {
-			bodyB4[i] = bodyB[i];
+			mD.bodyB4[i] = mD.bodyB[i];
 		}
 		
-		headVerticesData = calcHeadVerticesData();
-		leftFinVerticesData = calcLeftFinVerticesData();
-		rightFinVerticesData = calcRightFinVerticesData();
-		eyeVertexData = D3GLES20.circleVerticesData(eyePosition, eyeSize, 10);
+		mD.headVerticesData = calcHeadVerticesData();
+		mD.leftFinVerticesData = calcLeftFinVerticesData();
+		mD.rightFinVerticesData = calcRightFinVerticesData();
+		mD.eyeVertexData = D3GLES20.circleVerticesData(mD.eyePosition, mD.eyeSize, mD.eyeDetailsLevel);
 		
-		finVerticesNum = rightFinVerticesData.length / D3GLES20.COORDS_PER_VERTEX;
+		mD.finVerticesNum = mD.rightFinVerticesData.length / D3GLES20.COORDS_PER_VERTEX;
 //		bodyVerticesNum =
 //		bodyVertexBuffer = D3GLES20.newFloatBuffer(bodyVerticesData);
-		leftFinVertexBuffer = D3GLES20.newFloatBuffer(leftFinVerticesData);
-		rightFinVertexBuffer = D3GLES20.newFloatBuffer(rightFinVerticesData);
-		headVertexBuffer = D3GLES20.newFloatBuffer(headVerticesData);
-		eyeVertexBuffer = D3GLES20.newFloatBuffer(eyeVertexData);
+		mD.leftFinVertexBuffer = D3GLES20.newFloatBuffer(mD.leftFinVerticesData);
+		mD.rightFinVertexBuffer = D3GLES20.newFloatBuffer(mD.rightFinVerticesData);
+		mD.headVertexBuffer = D3GLES20.newFloatBuffer(mD.headVerticesData);
+		mD.eyeVertexBuffer = D3GLES20.newFloatBuffer(mD.eyeVertexData);
 		
-		int vertexShaderHandle = TheHuntRenderer.loadShader(GLES20.GL_VERTEX_SHADER, vertexShaderCode);
-        int fragmentShaderHandle = TheHuntRenderer.loadShader(GLES20.GL_FRAGMENT_SHADER, fragmentShaderCode);
+		int vertexShaderHandle = TheHuntRenderer.loadShader(GLES20.GL_VERTEX_SHADER, mD.vertexShaderCode);
+        int fragmentShaderHandle = TheHuntRenderer.loadShader(GLES20.GL_FRAGMENT_SHADER, mD.fragmentShaderCode);
         
-        mProgram = D3GLES20.createProgram(vertexShaderHandle, fragmentShaderHandle);
+        mD.mProgram = D3GLES20.createProgram(vertexShaderHandle, fragmentShaderHandle);
         
-        mMVPMatrixHandle = GLES20.glGetUniformLocation(mProgram, "u_MVPMatrix"); 
-        mPositionHandle = GLES20.glGetAttribLocation(mProgram, "a_Position");
-        mColorHandle = GLES20.glGetUniformLocation(mProgram, "u_Color");
+        mD.mMVPMatrixHandle = GLES20.glGetUniformLocation(mD.mProgram, "u_MVPMatrix"); 
+        mD.mPositionHandle = GLES20.glGetAttribLocation(mD.mProgram, "a_Position");
+        mD.mColorHandle = GLES20.glGetUniformLocation(mD.mProgram, "u_Color");
 	}
 	
 	private float[] calcRightFinVerticesData() {
 		return D3GLES20.quadBezierCurveVertices(
-				rightFinStart, rightFinB, rightFinC, rightFinEnd, detailsStep, finSize);
+				mD.rightFinStart, mD.rightFinB, mD.rightFinC, mD.rightFinEnd, mD.detailsStep, mD.finSize);
 	}
 
 	private float[] calcLeftFinVerticesData() {
 		return D3GLES20.quadBezierCurveVertices(
-				leftFinStart, leftFinB, leftFinC, leftFinEnd, detailsStep, finSize);
+				mD.leftFinStart, mD.leftFinB, mD.leftFinC, mD.leftFinEnd, mD.detailsStep, mD.finSize);
 	}
 
 	private float[] calcHeadVerticesData() {
 		float[] part1 = D3GLES20.quadBezierCurveVertices(
-				headPart1Start, headPart1B, headPart1C, headPart2Start, detailsStep, headSize);
+				mD.headPart1Start, mD.headPart1B, mD.headPart1C, mD.headPart2Start, mD.detailsStep, mD.headSize);
 		float[] part2 = D3GLES20.quadBezierCurveVertices(
-				headPart2Start, headPart2B, headPart2C, headPart3Start, detailsStep, headSize);
+				mD.headPart2Start, mD.headPart2B, mD.headPart2C, mD.headPart3Start, mD.detailsStep, mD.headSize);
 		float[] part3 = D3GLES20.quadBezierCurveVertices(
-				headPart3Start, headPart3B, headPart3C, headPart1Start, detailsStep, headSize);
+				mD.headPart3Start, mD.headPart3B, mD.headPart3C, mD.headPart1Start, mD.detailsStep, mD.headSize);
 		float[] headVerticesData = new float[part1.length + part2.length + part3.length];
 		for (int i = 0; i < part1.length; ++i) {
 			headVerticesData[i] = part1[i];
@@ -238,204 +107,200 @@ public class Prey {
 		for (int i = 0; i < part3.length; ++i) {
 			headVerticesData[part1.length + part2.length + i] = part3[i];
 		}
-		headVerticesNum = headVerticesData.length / D3GLES20.COORDS_PER_VERTEX;
+		mD.headVerticesNum = headVerticesData.length / D3GLES20.COORDS_PER_VERTEX;
 		return headVerticesData;
 	}
 
 	public void draw(float[] mVMatrix, float[] mProjMatrix, float interpolation) {
 //		GLES20.glEnable(GLES20.GL_PO)
 //		GLES20.glLineWidth(3f);
-		GLES20.glUseProgram(mProgram);
+		GLES20.glUseProgram(mD.mProgram);
 		
-        GLES20.glUniform4fv(mColorHandle, 1, preyColor , 0);
-        GLES20.glEnableVertexAttribArray(mColorHandle);
+        GLES20.glUniform4fv(mD.mColorHandle, 1, mD.preyColor , 0);
+        GLES20.glEnableVertexAttribArray(mD.mColorHandle);
         
-        mPredictedPosX = mPosX + vx*interpolation; mPredictedPosY = mPosY + vy*interpolation;
-        Matrix.setIdentityM(mModelMatrix, 0);
-        Matrix.translateM(mModelMatrix , 0, mPredictedPosX, mPredictedPosY, 0);
+        mD.mPredictedPosX = mD.mPosX + mD.vx*interpolation; mD.mPredictedPosY = mD.mPosY + mD.vy*interpolation;
+        Matrix.setIdentityM(mD.mModelMatrix, 0);
+        Matrix.translateM(mD.mModelMatrix , 0, mD.mPredictedPosX, mD.mPredictedPosY, 0);
 //      TODO:  mPredictedAngle = mAngle + // depend on the deg, make a flag for rotating
-        Matrix.rotateM(mRModelMatrix, 0, mModelMatrix, 0, mAngleFins, 0, 0, 1);
-        Matrix.rotateM(mHeadModelMatrix, 0, mModelMatrix, 0, mAngleHead-mAngleFins, 0, 0, 1);
-        Matrix.multiplyMM(mMVPMatrix, 0, mVMatrix, 0, mRModelMatrix, 0);
-        Matrix.multiplyMM(mMVPMatrix, 0, mProjMatrix, 0, mMVPMatrix, 0);
+        Matrix.rotateM(mD.mRModelMatrix, 0, mD.mModelMatrix, 0, mD.mAngleFins, 0, 0, 1);
+        Matrix.rotateM(mD.mHeadModelMatrix, 0, mD.mModelMatrix, 0, mD.mAngleHead-mD.mAngleFins, 0, 0, 1);
+        Matrix.multiplyMM(mD.mMVPMatrix, 0, mVMatrix, 0, mD.mRModelMatrix, 0);
+        Matrix.multiplyMM(mD.mMVPMatrix, 0, mProjMatrix, 0, mD.mMVPMatrix, 0);
         
 		// Body
         updateBodyVertexBuffer();
         
-        GLES20.glVertexAttribPointer(mPositionHandle, D3GLES20.COORDS_PER_VERTEX, 
-        		GLES20.GL_FLOAT, false, STRIDE_BYTES, bodyVertexBuffer);
-        GLES20.glEnableVertexAttribArray(mPositionHandle);
+        GLES20.glVertexAttribPointer(mD.mPositionHandle, D3GLES20.COORDS_PER_VERTEX, 
+        		GLES20.GL_FLOAT, false, mD.STRIDE_BYTES, mD.bodyVertexBuffer);
+        GLES20.glEnableVertexAttribArray(mD.mPositionHandle);
         
-        GLES20.glUniformMatrix4fv(mMVPMatrixHandle, 1, false, mMVPMatrix, 0);
-        GLES20.glDrawArrays(GLES20.GL_LINE_STRIP, 0, bodyVerticesNum);
+        GLES20.glUniformMatrix4fv(mD.mMVPMatrixHandle, 1, false, mD.mMVPMatrix, 0);
+        GLES20.glDrawArrays(GLES20.GL_LINE_STRIP, 0, mD.bodyVerticesNum);
         
         // Feet
-        mFeetModelMatrix = mRModelMatrix.clone();
-        Matrix.translateM(mFeetModelMatrix, 0, 
-        		leftFootPosition[0], leftFootPosition[1], 0);
-        Matrix.rotateM(mFeetModelMatrix, 0, mLeftFootAngle, 0, 0, 1);
-        Matrix.multiplyMM(mMVPMatrix, 0, mVMatrix, 0, mFeetModelMatrix, 0);
-        Matrix.multiplyMM(mMVPMatrix, 0, mProjMatrix, 0, mMVPMatrix, 0);
+        mD.mFeetModelMatrix = mD.mRModelMatrix.clone();
+        Matrix.translateM(mD.mFeetModelMatrix, 0, 
+        		mD.leftFootPosition[0], mD.leftFootPosition[1], 0);
+        Matrix.rotateM(mD.mFeetModelMatrix, 0, mD.mLeftFootAngle, 0, 0, 1);
+        Matrix.multiplyMM(mD.mMVPMatrix, 0, mVMatrix, 0, mD.mFeetModelMatrix, 0);
+        Matrix.multiplyMM(mD.mMVPMatrix, 0, mProjMatrix, 0, mD.mMVPMatrix, 0);
         
-        GLES20.glUniformMatrix4fv(mMVPMatrixHandle, 1, false, mMVPMatrix, 0);
+        GLES20.glUniformMatrix4fv(mD.mMVPMatrixHandle, 1, false, mD.mMVPMatrix, 0);
         
-        GLES20.glVertexAttribPointer(mPositionHandle, D3GLES20.COORDS_PER_VERTEX, 
-        		GLES20.GL_FLOAT, false, STRIDE_BYTES, leftFinVertexBuffer);
-        GLES20.glEnableVertexAttribArray(mPositionHandle);
-        GLES20.glDrawArrays(GLES20.GL_LINE_STRIP, 0, finVerticesNum);
+        GLES20.glVertexAttribPointer(mD.mPositionHandle, D3GLES20.COORDS_PER_VERTEX, 
+        		GLES20.GL_FLOAT, false, mD.STRIDE_BYTES, mD.leftFinVertexBuffer);
+        GLES20.glEnableVertexAttribArray(mD.mPositionHandle);
+        GLES20.glDrawArrays(GLES20.GL_LINE_STRIP, 0, mD.finVerticesNum);
         
-        mFeetModelMatrix = mRModelMatrix.clone();
-        Matrix.translateM(mFeetModelMatrix, 0, 
-        		-leftFootPosition[0], leftFootPosition[1], 0);
-        Matrix.rotateM(mFeetModelMatrix, 0, -mRightFootAngle, 0, 0, 1);
-        Matrix.multiplyMM(mMVPMatrix, 0, mVMatrix, 0, mFeetModelMatrix, 0);
-        Matrix.multiplyMM(mMVPMatrix, 0, mProjMatrix, 0, mMVPMatrix, 0);
+        mD.mFeetModelMatrix = mD.mRModelMatrix.clone();
+        Matrix.translateM(mD.mFeetModelMatrix, 0, 
+        		-mD.leftFootPosition[0], mD.leftFootPosition[1], 0);
+        Matrix.rotateM(mD.mFeetModelMatrix, 0, -mD.mRightFootAngle, 0, 0, 1);
+        Matrix.multiplyMM(mD.mMVPMatrix, 0, mVMatrix, 0, mD.mFeetModelMatrix, 0);
+        Matrix.multiplyMM(mD.mMVPMatrix, 0, mProjMatrix, 0, mD.mMVPMatrix, 0);
         
-        GLES20.glUniformMatrix4fv(mMVPMatrixHandle, 1, false, mMVPMatrix, 0);
+        GLES20.glUniformMatrix4fv(mD.mMVPMatrixHandle, 1, false, mD.mMVPMatrix, 0);
         
-        GLES20.glVertexAttribPointer(mPositionHandle, D3GLES20.COORDS_PER_VERTEX, 
-        		GLES20.GL_FLOAT, false, STRIDE_BYTES, rightFinVertexBuffer);
-        GLES20.glEnableVertexAttribArray(mPositionHandle);
-        GLES20.glDrawArrays(GLES20.GL_LINE_STRIP, 0, finVerticesNum);
+        GLES20.glVertexAttribPointer(mD.mPositionHandle, D3GLES20.COORDS_PER_VERTEX, 
+        		GLES20.GL_FLOAT, false, mD.STRIDE_BYTES, mD.rightFinVertexBuffer);
+        GLES20.glEnableVertexAttribArray(mD.mPositionHandle);
+        GLES20.glDrawArrays(GLES20.GL_LINE_STRIP, 0, mD.finVerticesNum);
         
         // Head
 //        mHeadModelMatrix = mRModelMatrix.clone();
-        Matrix.rotateM(mHeadModelMatrix, 0, mModelMatrix, 0, mAngleHead, 0, 0, 1);
-        Matrix.translateM(mHeadModelMatrix , 0, 
-        		headPosition[0], headPosition[1], 0);
-        Matrix.multiplyMM(mMVPMatrix, 0, mVMatrix, 0, mHeadModelMatrix, 0);
-        Matrix.multiplyMM(mMVPMatrix, 0, mProjMatrix, 0, mMVPMatrix, 0);
+        Matrix.rotateM(mD.mHeadModelMatrix, 0, mD.mModelMatrix, 0, mD.mAngleHead, 0, 0, 1);
+        Matrix.translateM(mD.mHeadModelMatrix , 0, 
+        		mD.headPosition[0], mD.headPosition[1], 0);
+        Matrix.multiplyMM(mD.mMVPMatrix, 0, mVMatrix, 0, mD.mHeadModelMatrix, 0);
+        Matrix.multiplyMM(mD.mMVPMatrix, 0, mProjMatrix, 0, mD.mMVPMatrix, 0);
         
-        GLES20.glUniformMatrix4fv(mMVPMatrixHandle, 1, false, mMVPMatrix, 0);
+        GLES20.glUniformMatrix4fv(mD.mMVPMatrixHandle, 1, false, mD.mMVPMatrix, 0);
         
-        GLES20.glVertexAttribPointer(mPositionHandle, D3GLES20.COORDS_PER_VERTEX, 
-        		GLES20.GL_FLOAT, false, STRIDE_BYTES, headVertexBuffer);
-        GLES20.glEnableVertexAttribArray(mPositionHandle);
-		GLES20.glDrawArrays(GLES20.GL_LINE_STRIP, 0, headVerticesNum );
+        GLES20.glVertexAttribPointer(mD.mPositionHandle, D3GLES20.COORDS_PER_VERTEX, 
+        		GLES20.GL_FLOAT, false, mD.STRIDE_BYTES, mD.headVertexBuffer);
+        GLES20.glEnableVertexAttribArray(mD.mPositionHandle);
+		GLES20.glDrawArrays(GLES20.GL_LINE_STRIP, 0, mD.headVerticesNum );
 		
 		//EYE
 //        mHeadModelMatrix = mModelMatrix.clone();
        
-        Matrix.translateM(mHeadModelMatrix , 0, 
-        		eyePosition[0], eyePosition[1], 0);
-        Matrix.multiplyMM(mMVPMatrix, 0, mVMatrix, 0, mHeadModelMatrix, 0);
-        Matrix.multiplyMM(mMVPMatrix, 0, mProjMatrix, 0, mMVPMatrix, 0);
+        Matrix.translateM(mD.mHeadModelMatrix , 0, 
+        		mD.eyePosition[0], mD.eyePosition[1], 0);
+        Matrix.multiplyMM(mD.mMVPMatrix, 0, mVMatrix, 0, mD.mHeadModelMatrix, 0);
+        Matrix.multiplyMM(mD.mMVPMatrix, 0, mProjMatrix, 0, mD.mMVPMatrix, 0);
         
-        GLES20.glUniformMatrix4fv(mMVPMatrixHandle, 1, false, mMVPMatrix, 0);
+        GLES20.glUniformMatrix4fv(mD.mMVPMatrixHandle, 1, false, mD.mMVPMatrix, 0);
         
-		GLES20.glVertexAttribPointer(mPositionHandle, D3GLES20.COORDS_PER_VERTEX, 
-        		GLES20.GL_FLOAT, false, STRIDE_BYTES, eyeVertexBuffer);
-		GLES20.glEnableVertexAttribArray(mPositionHandle);
-		GLES20.glDrawArrays(GLES20.GL_LINE_LOOP, 0, 10);
+		GLES20.glVertexAttribPointer(mD.mPositionHandle, D3GLES20.COORDS_PER_VERTEX, 
+        		GLES20.GL_FLOAT, false, mD.STRIDE_BYTES, mD.eyeVertexBuffer);
+		GLES20.glEnableVertexAttribArray(mD.mPositionHandle);
+		GLES20.glDrawArrays(GLES20.GL_LINE_LOOP, 0, mD.eyeDetailsLevel);
 		
 		if (Planner.SHOW_TARGET) mPlanner.draw(mVMatrix, mProjMatrix);
 	}
 	
 	private void updateBodyVertexBuffer() {
-		Matrix.multiplyMV(bodyStartRot, 0, mHeadModelMatrix, 0, bodyStart4, 0);
-		Matrix.multiplyMV(bodyBRot, 0, mHeadModelMatrix, 0, bodyB4, 0);
-		float[] bodyVerticesData = D3GLES20.quadBezierCurveVertices(bodyStartRot, bodyBRot, bodyC, bodyEnd, detailsStep, bodyLength);
-		bodyVerticesNum = bodyVerticesData.length/D3GLES20.COORDS_PER_VERTEX;
-		bodyVertexBuffer = D3GLES20.newFloatBuffer(bodyVerticesData);
+		Matrix.multiplyMV(mD.bodyStartRot, 0, mD.mHeadModelMatrix, 0, mD.bodyStart4, 0);
+		Matrix.multiplyMV(mD.bodyBRot, 0, mD.mHeadModelMatrix, 0, mD.bodyB4, 0);
+		float[] bodyVerticesData = D3GLES20.quadBezierCurveVertices(mD.bodyStartRot, mD.bodyBRot, mD.bodyC, mD.bodyEnd, mD.detailsStep, mD.bodyLength);
+		mD.bodyVerticesNum = bodyVerticesData.length/D3GLES20.COORDS_PER_VERTEX;
+		mD.bodyVertexBuffer = D3GLES20.newFloatBuffer(bodyVerticesData);
 	}
 
 	public void moveForward(float distance) {
-		distance *= DISTANCE_TO_ANGLE_RATIO;
+		distance *= mD.DISTANCE_TO_ANGLE_RATIO;
 		Log.v(TAG, "Moving the prey forward to a distance of " + distance);
-		float radAngle = (float)Math.toRadians(mAngleFins);
-		vx += -FloatMath.sin(radAngle)*distance;
-		vy += FloatMath.cos(radAngle)*distance;  
+		float radAngle = (float)Math.toRadians(mD.mAngleFins);
+		mD.vx += -FloatMath.sin(radAngle)*distance;
+		mD.vy += FloatMath.cos(radAngle)*distance;  
 	}
 	
 	public float getAngle() {
-		return mAngleFins; 
+		return mD.mAngleFins; 
 	}
 	
 	public void updateSpeed(float dx, float dy) {
-		vx += dx; vy += dy;
+		mD.vx += dx; mD.vy += dy;
 		
-		vx -= EnvironmentData.frictionCoeff*vx;
-		vy -= EnvironmentData.frictionCoeff*vy;
-		vLeft -= EnvironmentData.frictionCoeff*vLeft;
-		vRight -= EnvironmentData.frictionCoeff*vRight;
+		mD.vx -= EnvironmentData.frictionCoeff*mD.vx;
+		mD.vy -= EnvironmentData.frictionCoeff*mD.vy;
+		mD.vLeft -= EnvironmentData.frictionCoeff*mD.vLeft;
+		mD.vRight -= EnvironmentData.frictionCoeff*mD.vRight;
 		
 		
-		float curSpeed = FloatMath.sqrt(vx*vx+vy*vy);
-		if (curSpeed > MAX_SPEED) {
-			float ratio = MAX_SPEED/curSpeed;
-			vx *= ratio; vy *= ratio;
+		float curSpeed = FloatMath.sqrt(mD.vx*mD.vx+mD.vy*mD.vy);
+		if (curSpeed > mD.MAX_SPEED) {
+			float ratio = mD.MAX_SPEED/curSpeed;
+			mD.vx *= ratio; mD.vy *= ratio;
 		}
 	}
 	
 	public void move(float x, float y) {
-		forwardAngleSpeed = 0;
-		if (vLeft > 0 && vLeft <= vRight) {
-			forwardAngleSpeed = vLeft;
-			vRight -= vLeft;
-			vLeft = 0;
+		mD.forwardAngleSpeed = 0;
+		if (mD.vLeft > 0 && mD.vLeft <= mD.vRight) {
+			mD.forwardAngleSpeed = mD.vLeft;
+			mD.vRight -= mD.vLeft;
+			mD.vLeft = 0;
 		}
-		else if (vRight > 0 && vRight < vLeft) {
-			forwardAngleSpeed = vRight;
-			vLeft -= vRight;
-			vRight = 0;
+		else if (mD.vRight > 0 && mD.vRight < mD.vLeft) {
+			mD.forwardAngleSpeed = mD.vRight;
+			mD.vLeft -= mD.vRight;
+			mD.vRight = 0;
 		}
-		mAngleFins += vLeft - vRight;
+		mD.mAngleFins += mD.vLeft - mD.vRight;
 		
-		if (forwardAngleSpeed > 0) {
-			Log.v(TAG, vLeft + " " + vRight + " " + forwardAngleSpeed);
-			moveForward(forwardAngleSpeed);
+		if (mD.forwardAngleSpeed > 0) {
+			Log.v(TAG, mD.vLeft + " " + mD.vRight + " " + mD.forwardAngleSpeed);
+			moveForward(mD.forwardAngleSpeed);
 		}
 		
 		moveFins();
 		moveHead();
-		mPosX += vx ; mPosY += vy;
+		mD.mPosX += mD.vx ; mD.mPosY += mD.vy;
 		updateSpeed(x, y);
 	}
 
 	private void moveFins() {
-		if (mLeftFootAngle > minAngle) {
-			mLeftFootAngle -= angleBackSpeed;
+		if (mD.mLeftFootAngle > mD.minAngle) {
+			mD.mLeftFootAngle -= mD.angleBackSpeed;
 		}
-		if (mRightFootAngle > minAngle) {
-			mRightFootAngle -= angleBackSpeed;
+		if (mD.mRightFootAngle > mD.minAngle) {
+			mD.mRightFootAngle -= mD.angleBackSpeed;
 		}
-//		if (mAngleFins != mAngleHead && Math.abs(mAngleFins - mAngleHead) > MAX_BODY_BEND_ANGLE) {
-//			angleSpeedHead = angleSpeedTail;
-//		}
-//		else angleSpeedHead = angleSpeedHeadDefault;
 	}
 
 	private void moveHead() {
 //		Log.v(TAG, "Head and fins " + mAngleHead + " " + mAngleFins);
-		if (mAngleHead + MAX_BODY_BEND_ANGLE < mAngleFins) {
-			mAngleHead += vLeft - vRight;
+		if (mD.mAngleHead + mD.MAX_BODY_BEND_ANGLE < mD.mAngleFins) {
+			mD.mAngleHead += mD.vLeft - mD.vRight;
 			//if (mAngleHead > mAngleFins) mAngleHead = mAngleFins;
 		}
-		else if (mAngleHead - MAX_BODY_BEND_ANGLE > mAngleFins) {
-			mAngleHead += vLeft - vRight;
+		else if (mD.mAngleHead - mD.MAX_BODY_BEND_ANGLE > mD.mAngleFins) {
+			mD.mAngleHead += mD.vLeft - mD.vRight;
 			//if (mAngleHead < mAngleFins) mAngleHead = mAngleFins;
 		}
 		//TODO: // Straighten the body
 	}
 	
 	public PointF getWorldPosition() {
-		return new PointF(D3GLES20.toWorldWidth(mPosX), D3GLES20.toWorldHeight(mPosY));
+		return new PointF(D3GLES20.toWorldWidth(mD.mPosX), D3GLES20.toWorldHeight(mD.mPosY));
 	}
 	
 	public PointF getPosition() {
-		return new PointF(mPosX, mPosY);
+		return new PointF(mD.mPosX, mD.mPosY);
 	}
 
 	public void flopLeft() {
-		if (vLeft < MAX_SPIN_SPEED) vLeft += angleSpeedIncrement;
-		//mLeftFootAngle = maxAngle;
-		mAngleHead = -angleSpeedHead;
+		if (mD.vLeft < mD.MAX_SPIN_SPEED) mD.vLeft += mD.angleSpeedIncrement;
+		mD.mLeftFootAngle = mD.maxAngle;
+//		mAngleHead = -angleSpeedHead;
 	}
 	
 	public void flopRight() {
-		if (vRight < MAX_SPIN_SPEED) vRight += angleSpeedIncrement;
-//		mRightFootAngle = maxAngle;
-		mAngleHead = angleSpeedHead;
+		if (mD.vRight < mD.MAX_SPIN_SPEED) mD.vRight += mD.angleSpeedIncrement;
+		mD.mRightFootAngle = mD.maxAngle;
+//		mAngleHead = angleSpeedHead;
 	}
 
 	private void doAction(Action nextAction) {
@@ -449,8 +314,8 @@ public class Prey {
 	}
 
 	private void eat() {
-		Log.v(TAG, "Eating food at " + mPosHeadX + " " + mPosHeadY);
-		mEnv.eatFood(mPosHeadX, mPosHeadY);
-		mWorldModel.eatFood(mPosHeadX, mPosHeadY);
+		Log.v(TAG, "Eating food at " + mD.mPosHeadX + " " + mD.mPosHeadY);
+		mEnv.eatFood(mD.mPosHeadX, mD.mPosHeadY);
+		mWorldModel.eatFood(mD.mPosHeadX, mD.mPosHeadY);
 	}
 }
