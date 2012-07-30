@@ -42,6 +42,9 @@ public class Prey {
 	
 	public Prey(float screenWidth, float screenHeight, Environment env) {
 		mD = new PreyData();
+		
+		mD.delayV = new float[mD.delayVLength][2];
+		
 		mWorldModel = new WorldModel(screenWidth, screenHeight);
 		mPlanner = new Planner();
 		mEnv = env;
@@ -53,10 +56,11 @@ public class Prey {
 		for (int i = 0; i < 3; ++i) {
 			mD.bodyStart4[i] = mD.bodyStart[i];
 		}
+//		mD.bodyStart4[3] = 1;
 		for (int i = 0; i < 3; ++i) {
 			mD.bodyB4[i] = mD.bodyB[i];
 		}
-		
+//		mD.bodyB4[3] = 1;
 		mD.headVerticesData = calcHeadVerticesData();
 		mD.leftFinVerticesData = calcLeftFinVerticesData();
 		mD.rightFinVerticesData = calcRightFinVerticesData();
@@ -124,6 +128,8 @@ public class Prey {
         Matrix.translateM(mD.mModelMatrix , 0, mD.mPredictedPosX, mD.mPredictedPosY, 0);
 //      TODO:  mPredictedAngle = mAngle + // depend on the deg, make a flag for rotating
         Matrix.rotateM(mD.mRModelMatrix, 0, mD.mModelMatrix, 0, mD.mAngleFins, 0, 0, 1);
+//        mD.mRModelMatrix = mD.mModelMatrix.clone();
+        
         Matrix.rotateM(mD.mHeadModelMatrix, 0, mD.mModelMatrix, 0, mD.mAngleHead-mD.mAngleFins, 0, 0, 1);
         Matrix.multiplyMM(mD.mMVPMatrix, 0, mVMatrix, 0, mD.mRModelMatrix, 0);
         Matrix.multiplyMM(mD.mMVPMatrix, 0, mProjMatrix, 0, mD.mMVPMatrix, 0);
@@ -211,23 +217,26 @@ public class Prey {
 	public void moveForward(float distance) {
 		distance *= mD.DISTANCE_TO_ANGLE_RATIO;
 		Log.v(TAG, "Moving the prey forward to a distance of " + distance);
-		float radAngle = (float)Math.toRadians(mD.mAngleFins);
+		float radAngle = (float)Math.toRadians(mD.mAngleHead);
 		mD.vx += -FloatMath.sin(radAngle)*distance;
 		mD.vy += FloatMath.cos(radAngle)*distance;  
 	}
 	
-	public float getAngle() {
-		return mD.mAngleFins; 
-	}
+//	public float getAngle() {
+//		return mD.mAngleFins; 
+//	}
 	
 	public void updateSpeed(float dx, float dy) {
 		mD.vx += dx; mD.vy += dy;
 		
 		mD.vx -= EnvironmentData.frictionCoeff*mD.vx;
 		mD.vy -= EnvironmentData.frictionCoeff*mD.vy;
-		mD.vLeft -= EnvironmentData.frictionCoeff*mD.vLeft;
-		mD.vRight -= EnvironmentData.frictionCoeff*mD.vRight;
 		
+		mD.vHeadLeft -= EnvironmentData.frictionCoeff*mD.vHeadLeft;
+		mD.vHeadRight -= EnvironmentData.frictionCoeff*mD.vHeadRight;
+		
+		mD.vTailLeft -= EnvironmentData.frictionCoeff*mD.vTailLeft;
+		mD.vTailRight -= EnvironmentData.frictionCoeff*mD.vTailRight;
 		
 		float curSpeed = FloatMath.sqrt(mD.vx*mD.vx+mD.vy*mD.vy);
 		if (curSpeed > mD.MAX_SPEED) {
@@ -238,20 +247,25 @@ public class Prey {
 	
 	public void move(float x, float y) {
 		mD.forwardAngleSpeed = 0;
-		if (mD.vLeft > 0 && mD.vLeft <= mD.vRight) {
-			mD.forwardAngleSpeed = mD.vLeft;
-			mD.vRight -= mD.vLeft;
-			mD.vLeft = 0;
+		if (mD.vHeadLeft > 0 && mD.vHeadLeft <= mD.vHeadRight) {
+			mD.forwardAngleSpeed = mD.vHeadLeft;
+			mD.vHeadRight -= mD.vHeadLeft;
+//			mD.vTailRight -= mD.vTailLeft;
+			mD.vHeadLeft = 0;
+//			mD.vTailLeft = 0;
 		}
-		else if (mD.vRight > 0 && mD.vRight < mD.vLeft) {
-			mD.forwardAngleSpeed = mD.vRight;
-			mD.vLeft -= mD.vRight;
-			mD.vRight = 0;
+		else if (mD.vHeadRight > 0 && mD.vHeadRight < mD.vHeadLeft) {
+			mD.forwardAngleSpeed = mD.vHeadRight;
+			mD.vHeadLeft -= mD.vHeadRight;
+//			mD.vTailLeft = mD.vTailRight;
+			mD.vHeadRight = 0;
+//			mD.vTailRight = 0;
 		}
-		mD.mAngleFins += mD.vLeft - mD.vRight;
+		
+		progressVelocity();
 		
 		if (mD.forwardAngleSpeed > 0) {
-			Log.v(TAG, mD.vLeft + " " + mD.vRight + " " + mD.forwardAngleSpeed);
+			Log.v(TAG, mD.vHeadLeft + " " + mD.vHeadRight + " " + mD.forwardAngleSpeed);
 			moveForward(mD.forwardAngleSpeed);
 		}
 		
@@ -261,46 +275,86 @@ public class Prey {
 		updateSpeed(x, y);
 	}
 
+	private void progressVelocity() {
+		mD.vTailLeft = mD.delayV[mD.delayVLength-1][0];
+		mD.vTailRight = mD.delayV[mD.delayVLength-1][1];
+//		if (mD.vTailLeft != 0) Log.v(TAG, "vTailLeft is not zero!");
+//		String out = "progressVelocity: ";
+		for (int i = mD.delayVLength-1; i > 0; --i) {
+//			out += (mD.delayV[i][0]) + " ";
+			mD.delayV[i][0] = mD.delayV[i-1][0];
+			mD.delayV[i][1] = mD.delayV[i-1][1];
+		}
+//		Log.v(TAG, out);
+		mD.delayV[0][0] = mD.vHeadLeft;
+		mD.delayV[0][1] = mD.vHeadRight;
+	}
+
 	private void moveFins() {
-		if (mD.mLeftFootAngle > mD.minAngle) {
-			mD.mLeftFootAngle -= mD.angleBackSpeed;
-		}
-		if (mD.mRightFootAngle > mD.minAngle) {
-			mD.mRightFootAngle -= mD.angleBackSpeed;
-		}
+//		if (mD.mLeftFootAngle > mD.minAngle) {
+//			mD.mLeftFootAngle -= mD.angleBackSpeed;
+//		}
+//		if (mD.mRightFootAngle > mD.minAngle) {
+//			mD.mRightFootAngle -= mD.angleBackSpeed;
+//		}
+//		if (mD.mAngleFins < mD.mAngleHead) {
+//		if (mD.mAngleFins - mD.mAngleHead < mD.mAngleHead
+//				|| -mD.mAngleFins + mD.mAngleHead > mD.mAngleHead)
+//		if (Math.abs(mD.mAngleHead - mD.mAngleFins) < mD.MAX_BODY_BEND_ANGLE)
+			mD.mAngleFins += mD.vTailLeft - mD.vTailRight;
+//		else mD.mAngleFins += mD.vHeadLeft - mD.vHeadRight;
+//		}
+//		if (mD.mAngleFins > mD.mAngleHead) {
+//			mD.mAngleFins -= mD.angleBackSpeed;
+//		}
 	}
 
 	private void moveHead() {
 //		Log.v(TAG, "Head and fins " + mAngleHead + " " + mAngleFins);
-		if (mD.mAngleHead + mD.MAX_BODY_BEND_ANGLE < mD.mAngleFins) {
-			mD.mAngleHead += mD.vLeft - mD.vRight;
-			//if (mAngleHead > mAngleFins) mAngleHead = mAngleFins;
-		}
-		else if (mD.mAngleHead - mD.MAX_BODY_BEND_ANGLE > mD.mAngleFins) {
-			mD.mAngleHead += mD.vLeft - mD.vRight;
-			//if (mAngleHead < mAngleFins) mAngleHead = mAngleFins;
-		}
+//		if (mD.mAngleHead + mD.MAX_BODY_BEND_ANGLE < mD.mAngleFins) {
+//			mD.mAngleHead += mD.vLeft - mD.vRight;
+//			//if (mAngleHead > mAngleFins) mAngleHead = mAngleFins;
+//		}
+//		else if (mD.mAngleHead - mD.MAX_BODY_BEND_ANGLE > mD.mAngleFins) {
+//			mD.mAngleHead += mD.vLeft - mD.vRight;
+//			//if (mAngleHead < mAngleFins) mAngleHead = mAngleFins;
+//		}
 		//TODO: // Straighten the body
+		mD.mAngleHead += mD.vHeadLeft - mD.vHeadRight;
 	}
-	
+
 	public PointF getWorldPosition() {
 		return new PointF(D3GLES20.toWorldWidth(mD.mPosX), D3GLES20.toWorldHeight(mD.mPosY));
 	}
-	
+
 	public PointF getPosition() {
 		return new PointF(mD.mPosX, mD.mPosY);
 	}
 
 	public void flopLeft() {
-		if (mD.vLeft < mD.MAX_SPIN_SPEED) mD.vLeft += mD.angleSpeedIncrement;
-		mD.mLeftFootAngle = mD.maxAngle;
-//		mAngleHead = -angleSpeedHead;
+//		if (mD.mAngleHead - mD.mAngleFins > mD.MAX_BODY_BEND_ANGLE) {
+//			Log.v(TAG, "Angle head: " + mD.mAngleHead + " Angle fins: " + mD.mAngleFins);
+//			return;
+//		}
+		if (mD.vHeadLeft < mD.MAX_SPIN_SPEED) {
+			mD.vHeadLeft += mD.angleSpeedIncrement;
+//			mD.vTailLeft -= mD.angleSpeedIncrement;
+		}
+//		mD.mLeftFootAngle = mD.maxAngle;
+//		mD.mAngleHead += mD.angleSpeedHead;
 	}
-	
+
 	public void flopRight() {
-		if (mD.vRight < mD.MAX_SPIN_SPEED) mD.vRight += mD.angleSpeedIncrement;
-		mD.mRightFootAngle = mD.maxAngle;
-//		mAngleHead = angleSpeedHead;
+//		if (-mD.mAngleHead + mD.mAngleFins > mD.MAX_BODY_BEND_ANGLE) {
+//			Log.v(TAG, "Angle head: " + mD.mAngleHead + " Angle fins: " + mD.mAngleFins);
+//			return; 
+//		}
+		if (mD.vHeadRight < mD.MAX_SPIN_SPEED) {
+			mD.vHeadRight += mD.angleSpeedIncrement;
+//			mD.vTailRight -= mD.angleSpeedIncrement;
+		}
+//		mD.mRightFootAngle = mD.maxAngle;
+//		mD.mAngleHead -= mD.angleSpeedHead;
 	}
 
 	private void doAction(Action nextAction) {

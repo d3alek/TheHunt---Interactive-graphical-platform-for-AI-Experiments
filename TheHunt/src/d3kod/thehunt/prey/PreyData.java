@@ -8,11 +8,11 @@ public class PreyData {
 	protected static final float MAX_SPEED = 0.1f;
 	protected static final int MAX_SPIN_SPEED = 10;
 	protected static final float DISTANCE_TO_ANGLE_RATIO = 0.001f;// MAX_SPEED/MAX_SPIN_SPEED;
-	protected static final float MAX_BODY_BEND_ANGLE = 0;
-	protected static final int angleSpeedIncrement = 2;
+	protected static final float MAX_BODY_BEND_ANGLE = 30;
+	protected static final int angleSpeedIncrement = 1;
 	protected static final int angleSpeedHeadDefault = angleSpeedIncrement/2;
-	protected static int angleSpeedHead = angleSpeedIncrement;
-	protected static final int angleBackSpeed = 10;
+	protected static int angleSpeedHead = 30;
+	protected static final int angleBackSpeed = 3;
 	protected static float moveStep = 0.005f;
 	protected static final int STRIDE_BYTES = D3GLES20.COORDS_PER_VERTEX * D3GLES20.BYTES_PER_FLOAT;
 	protected static final float[] preyColor = {
@@ -21,6 +21,16 @@ public class PreyData {
 	protected static final float bodyLength = 0.1f * preySize;
 	protected static final float bodyWidth = 1.0f * bodyLength;
 	protected static final float bodyHeight = 1.0f * bodyLength;
+	
+	protected final int maxAngle = 40;
+	protected final int minAngle = 0;
+	protected int mLeftFootAngle = minAngle;
+	protected int mRightFootAngle = minAngle;
+	protected float vHeadLeft;
+	protected float vHeadRight;
+	protected float vTailLeft;
+	protected float vTailRight;
+	protected float forwardAngleSpeed;
 	
 	//Head
 	protected static final float headSize = 0.04f * preySize;
@@ -51,8 +61,6 @@ public class PreyData {
 	protected static final float[] bodyEnd = { 0, -0.5f, 0};
 	
 	// Fins
-	protected final int maxAngle = 40;
-	protected final int minAngle = 0;
 	protected final float finSize = 0.05f * preySize;
 	
 	protected final float[] rightFinStart = { 0.0f, 0.0f, 0.0f };
@@ -96,6 +104,7 @@ public class PreyData {
 			+ "{                              \n"
 			+ "   gl_FragColor = u_Color;     \n"
 			+ "}                              \n";
+	public static final int delayVLength = 10;
 	
 	protected float mAngleFins; // 0 for up, 90 for right, kept in range 0..360
 	protected float mAngleHead;
@@ -115,11 +124,6 @@ public class PreyData {
 	protected float mPredictedPosX;
 	protected float mPredictedPosY;
 	protected float[] mFeetModelMatrix;
-	protected int mLeftFootAngle = minAngle;
-	protected int mRightFootAngle = minAngle;
-	protected int vLeft;
-	protected int vRight;
-	protected float forwardAngleSpeed;
 	protected FloatBuffer eyeVertexBuffer;
 	protected int headDelay;
 	protected float[] bodyStart4 = new float[4];
@@ -139,4 +143,5 @@ public class PreyData {
 	protected FloatBuffer rightFinVertexBuffer;
 	protected FloatBuffer leftFinVertexBuffer;
 	protected final int eyeDetailsLevel = 10;
+	public float[][] delayV;
 }
