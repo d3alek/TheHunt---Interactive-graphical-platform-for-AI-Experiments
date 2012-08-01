@@ -71,4 +71,11 @@ public class Environment {
 		}
 		return new EventNone();
 	}
+	public Event senseLight(float hX, float hY) {
+		for (FloatingObject fo: data.getFloatingObjects()) {
+			if (fo.getType() == Type.ALGAE && D3GLES20.contains(fo.getIndex(), hX, hY)) 
+				return new LightEvent(0);
+		}
+		return new LightEvent(1);
+	}
 }

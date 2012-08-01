@@ -3,6 +3,7 @@ package d3kod.thehunt.prey.memory;
 import java.util.ArrayList;
 
 import d3kod.thehunt.environment.EnvironmentData;
+import d3kod.thehunt.environment.LightEvent;
 import d3kod.thehunt.prey.sensor.Event;
 import d3kod.thehunt.prey.sensor.EventAlgae;
 import d3kod.thehunt.prey.sensor.EventAt;
@@ -21,6 +22,7 @@ private static final String TAG = "WorldModel";
 	private float mFoodY;
 	private float mAlgaeX;
 	private float mAlgaeY;
+	private int mLightLevel;
 	
 	public void updateNode(float posX, float posY, float currentX, float currentY) {
 		mNodes.getNode(posX, posY).setCurrent(currentX, currentY);
@@ -55,7 +57,14 @@ private static final String TAG = "WorldModel";
 		case ALGAE:
 			mAlgaeX = ((EventAlgae) e).getAlgaeX();
 			mAlgaeY = ((EventAlgae) e).getAlgaeY();
+			break;
+		case LIGHT:
+			mLightLevel = ((LightEvent) e).getLightLevel();
+			break;
 		}
+	}
+	public int getLightLevel() {
+		return mLightLevel;
 	}
 	public boolean knowFoodLocation() {
 		return (mFoodX != -1 && mFoodY != -1);

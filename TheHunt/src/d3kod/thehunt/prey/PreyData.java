@@ -7,14 +7,18 @@ import d3kod.d3gles20.D3GLES20;
 public class PreyData {
 	protected static final float MAX_SPEED = 0.1f;
 	protected static final int MAX_SPIN_SPEED = 10;
-	protected static final float DISTANCE_TO_ANGLE_RATIO = 0.00005f;// MAX_SPEED/MAX_SPIN_SPEED;
+	protected static final float DISTANCE_TO_ANGLE_RATIO = 0.0002f;// MAX_SPEED/MAX_SPIN_SPEED;
 	protected static final float MAX_BODY_BEND_ANGLE = 30;
 	protected static final int angleSpeedIncrement = 1;
 	protected static final int angleSpeedHeadDefault = angleSpeedIncrement/2;
 	protected float targetAngleFins;
 	protected static int angleSpeedFins = 1;
 	protected static int angleSpeedHead = 30;
+	
 	protected static int angleFlopHead = 30;
+	public int rotateSpeed = 5;
+	public float thrust;
+	
 	protected static final int angleBackSpeed = 3;
 	protected static float moveStep = 0.005f;
 	protected static final int STRIDE_BYTES = D3GLES20.COORDS_PER_VERTEX * D3GLES20.BYTES_PER_FLOAT;
@@ -166,7 +170,4 @@ public class PreyData {
 	public int bodyCAngleTarget;
 	public int bodyBAngleTarget;
 	public int bodyStartAngleTarget;
-	
-	public int rotateSpeed = 5;
-	public float thrust;
 }

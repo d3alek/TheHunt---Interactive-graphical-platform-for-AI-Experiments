@@ -115,7 +115,8 @@ public class D3GLES20 {
 	}
 	
 	public static void draw(int key, float[] mMMatrix, float[] mVMatrix, float[] mProjMatrix) {
-		shapes.get(key).draw(mMMatrix, mVMatrix, mProjMatrix);
+		shapes.get(key).setModelMatrix(mMMatrix);
+		shapes.get(key).draw(mVMatrix, mProjMatrix);
 	}
 
 	public static void removeShape(int key) {
@@ -209,5 +210,15 @@ public class D3GLES20 {
 	
 	public static float det(float x1, float y1, float x2, float y2, float x3, float y3) {
 		return x1 * y2 + y1 * x3 + x2 * y3 - x3 * y2 - y3 * x1 - x2 * y1;
+	}
+
+	public static boolean contains(int key, float hX, float hY) {
+//		shapes.get(key).contains(hX, hY);
+		return circleContains(shapes.get(key).getCenterX(), shapes.get(key).getCenterY(), shapes.get(key).getRadius(), hX, hY);
+	}
+
+	private static boolean circleContains(float centerX, float centerY,
+			float radius, float x, float y) {
+		return D3GLES20.distance(centerX, centerY, x, y) <= radius;
 	}
 }

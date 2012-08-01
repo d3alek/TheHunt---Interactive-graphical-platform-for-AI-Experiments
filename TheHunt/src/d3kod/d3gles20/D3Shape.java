@@ -6,7 +6,7 @@ import android.opengl.GLES20;
 import android.opengl.Matrix;
 import android.util.Log;
 
-public class D3Shape {
+abstract public class D3Shape {
 	private int VERTICES_NUM;
 	protected static final int STRIDE_BYTES = D3GLES20.COORDS_PER_VERTEX * D3GLES20.BYTES_PER_FLOAT;
 	private static final String TAG = "D3Shape";
@@ -19,12 +19,19 @@ public class D3Shape {
 	
 	private FloatBuffer vertexBuffer;
 	private int drawType;
+	private float[] mMMatrix;
+	private float[] mCenter;
+	private float[] mCenterDefault;
 	
 	protected D3Shape(int verticesNum, FloatBuffer vertBuffer, float[] colorData, int drType, boolean useDefaultShaders) {
 		color = colorData;
 		vertexBuffer = vertBuffer;
 		drawType = drType;
 		VERTICES_NUM = verticesNum;
+		mMMatrix = new float[16];
+		mCenterDefault = new float[] {0.0f, 0.0f, 0.0f, 1.0f};
+		mCenter = new float[4];
+		Matrix.setIdentityM(mMMatrix, 0);
 		if (useDefaultShaders) {
 			mProgram = D3GLES20.createProgram(D3GLES20.defaultVertexShader(), D3GLES20.defaultFragmentShader());
 			mMVPMatrixHandle = GLES20.glGetUniformLocation(mProgram, "u_MVPMatrix"); 
@@ -36,7 +43,13 @@ public class D3Shape {
 		}
 	}
 	
-	public void draw(float[] mMMatrix, float[] mVMatrix, float[] mProjMatrix) {
+	public void setModelMatrix(float[] modelMatrix) {
+		mMMatrix = modelMatrix;
+		Matrix.multiplyMV(mCenter, 0, mMMatrix, 0, mCenterDefault, 0);
+	}
+	
+	public void draw(float[] mVMatrix, float[] mProjMatrix) {
+		//float[] mMMatrix, 
 		// Add program to OpenGL ES environment
         GLES20.glUseProgram(mProgram);
         
@@ -60,4 +73,14 @@ public class D3Shape {
 
         GLES20.glDrawArrays(drawType, 0, VERTICES_NUM);
 	}
+
+	public float getCenterX() {
+		return mCenter[0];
+	}
+
+	public float getCenterY() {
+		return mCenter[1];
+	}
+	
+	abstract public float getRadius();
 }

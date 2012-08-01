@@ -51,7 +51,10 @@ public class Planner {
 		switch(mState) {
 		case EXPLORE: return chooseRandomAction();
 		case SCAVAGE: mPlan = makeScavagePlan(mWorldModel); break;
-		case HIDE: mPlan = makeHidePlan(mWorldModel); break;
+		case HIDE: 
+			if (mWorldModel.getLightLevel() > 0) mPlan = makeHidePlan(mWorldModel); 
+			else mPlan = new NoPlan(mWorldModel.getHeadX(), mWorldModel.getHeadY());
+			break;
 		case DONOTHING: mPlan = new NoPlan(mWorldModel.getHeadX(), mWorldModel.getHeadY()); break;
 		}
 		mPlan.update(mWorldModel);

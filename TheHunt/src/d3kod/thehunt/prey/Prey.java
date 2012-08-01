@@ -16,7 +16,7 @@ import d3kod.thehunt.prey.sensor.Sensor;
 public class Prey {
 	
 	private static final String TAG = "Prey";
-	private static final int DELAY_START = 1;
+	private static final int DELAY_START = 2;
 	private static final int ACTION_DELAY = 5;
 	private Planner mPlanner;
 	private WorldModel mWorldModel;
@@ -50,15 +50,25 @@ public class Prey {
 	public void move(float x, float y) {
 		
 		if (delay == 0) {
+//			if (mD.bodyEndAngleTarget != mD.bodyCAngleTarget) {
+//				//going to change the end angle target and thus create thrust
+//				//TODO: think it through
+//				mD.thrust = Math.abs(mD.bodyCAngleTarget - mD.bodyEndAngle);
+//			}
+//			if (mD.bodyEndAngleTarget != mD.bodyCAngleTarget) {
+				//going to change the end angle target and thus create thrust
+				mD.thrust = Math.abs(mD.bodyCAngleTarget - mD.bodyEndAngleTarget);
+//			}
 			mD.bodyEndAngleTarget = mD.bodyCAngleTarget;
 			mD.bodyCAngleTarget = mD.bodyBAngleTarget;
 			mD.bodyBAngleTarget = mD.bodyStartAngleTarget;
-			//TODO: think it through
-			mD.thrust = Math.abs(mD.bodyEndAngleTarget - mD.bodyEndAngle);
 			delay = DELAY_START;
 //			Log.v(TAG, "Passing spin " + mD.bodyStartAngleTarget + " " + mD.bodyBAngle + " " + mD.bodyCAngle + " " + mD.bodyEndAngle);
 		}
-		else --delay;
+		else {
+			mD.thrust = 0;
+			--delay;
+		}
 		
 		if (mD.bodyStartAngleTarget > mD.bodyStartAngle) mD.bodyStartAngle += mD.rotateSpeed;
 		else if (mD.bodyStartAngleTarget < mD.bodyStartAngle) mD.bodyStartAngle -= mD.rotateSpeed;
@@ -92,7 +102,7 @@ public class Prey {
 	
 	public void moveForward(float distance) {
 		distance *= mD.DISTANCE_TO_ANGLE_RATIO;
-//		Log.v(TAG, "Moving the prey forward to a distance of " + distance);
+		Log.v(TAG, "Moving the prey forward to a distance of " + distance + " thrust is " + mD.thrust);
 		float radAngle = (float)Math.toRadians(mD.bodyStartAngle);
 		mD.vx += -FloatMath.sin(radAngle)*distance;
 		mD.vy += FloatMath.cos(radAngle)*distance;  

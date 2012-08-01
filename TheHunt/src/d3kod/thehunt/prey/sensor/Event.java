@@ -2,7 +2,7 @@ package d3kod.thehunt.prey.sensor;
 
 public class Event {
 	public enum EventType {
-		AT, FOOD, CURRENT, ALGAE, NONE;
+		AT, FOOD, CURRENT, ALGAE, LIGHT, NONE;
 	}
 	EventType mType;
 	

@@ -65,7 +65,8 @@ public class TileQuad extends D3Quad {
         		-EnvironmentData.mScreenWidth/2+c*EnvironmentData.tWidth+EnvironmentData.tWidth/2, 
         		EnvironmentData.mScreenHeight/2-r*EnvironmentData.tHeight-EnvironmentData.tHeight/2, 0);
 		
-        super.draw(mMMatrix, mVMatrix, mProjMatrix);
+        super.setModelMatrix(mMMatrix);
+        super.draw(mVMatrix, mProjMatrix);
         
 		if (showCurrents) {
         	currentBuffer.position(0);

@@ -8,17 +8,17 @@ import d3kod.thehunt.prey.memory.WorldModel;
 public class GoToPlan extends Plan {
 	private static final float DISTANCE_ENOUGH = 0.1f;
 	private static final String TAG = "GoToPlan";
-	private float distanceFromFoodPrev;
-	private boolean distanceDecreases;
+//	private float distanceFromFoodPrev;
+//	private boolean distanceDecreases;
 	Action spinAction = Action.flopLeft;
-	private boolean moveForward;
-	private boolean distanceFinsDecreases;
+//	private boolean moveForward;
+//	private boolean distanceFinsDecreases;
 	private float fX;
 	private float fY;
 	
-	private float[] targetColor = {1.0f, 0.0f, 0.0f};
-	private float targetSize = 0.005f;
-	private boolean finishAfterNext;
+//	private float[] targetColor = {1.0f, 0.0f, 0.0f};
+//	private float targetSize = 0.005f;
+//	private boolean finishAfterNext;
 	private boolean arrived;
 	public GoToPlan(float hX, float hY, float bX, float bY, float fX, float fY) {
 		super(fX, fY);
@@ -31,10 +31,6 @@ public class GoToPlan extends Plan {
 		arrived = false;
 	}
 	public void update(WorldModel mWorldModel) {
-//		if (finishAfterNext) {
-//			finish();
-//			return;
-//		}
 		if (arrived) return;
 		float hX = mWorldModel.getHeadX(), hY = mWorldModel.getHeadY(),
 				bX = mWorldModel.getBodyX(), bY = mWorldModel.getBodyY();
