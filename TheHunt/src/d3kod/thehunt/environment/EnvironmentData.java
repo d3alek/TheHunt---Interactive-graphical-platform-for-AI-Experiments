@@ -11,7 +11,7 @@ import d3kod.thehunt.prey.sensor.EventFood;
 import d3kod.thehunt.prey.sensor.EventNone;
 
 public class EnvironmentData {
-	public static final String TAG = "TheHuntDebug";
+	public static final String TAG = "EnvironmentData";
 	
 	public static final int numDirs = Dir.numDirs;
 	
@@ -21,13 +21,14 @@ public class EnvironmentData {
 	public static final int tileCols = 20; 
 
 	public static final float currentStep = 0.002f;
+
+	private static final int ALGAE_NUM = 1;
 	public static float tHeight;
 	public static float tWidth;
 	public static float mScreenWidth;
 	public static float mScreenHeight;
 	
-//	public Algae mFloatingObjects;
-//	public Rect mFrame;
+	
 	private ArrayList<FloatingObject> mFloatingObjects = new ArrayList<FloatingObject>();
 	public static Tile[][] mTiles;
 	public Currents currents;
@@ -46,8 +47,6 @@ public class EnvironmentData {
 	
 	public EnvironmentData(int width, int height) {
 		setSize(width, height);
-//		tHeight = tileRows/height;
-//		tWidth = tileCols/width;
 		currents = new Currents(this);
 		mFoodX = -1; mFoodY = -1;
 	}
@@ -175,9 +174,17 @@ public class EnvironmentData {
 			float foX = fo.getX(), foY = fo.getY();
 			if (D3GLES20.rectContains(x, y, 0.2f, 0.2f, foX, foY)) {
 				Log.v(TAG, "Removing floating object " + fo.getIndex());
+				D3GLES20.removeShape(fo.getIndex());
 				mFloatingObjects.remove(fo);
 				return;
 			}
 		}
 	}
+
+//	public void makeAlgae() {
+//		for (int i = 0; i < ALGAE_NUM; ++i) {
+//			addFloatingObject(
+//					new FloatingObject(D3GLES20.newDefaultCircle(1, color, vertices), x, y, type))
+//		}
+//	}
 }

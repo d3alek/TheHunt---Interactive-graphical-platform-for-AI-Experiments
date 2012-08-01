@@ -41,4 +41,5 @@ class FloatingObject {
 	public float getY() {
 		return mY;
 	}
+	
 }

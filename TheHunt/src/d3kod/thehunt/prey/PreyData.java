@@ -7,11 +7,14 @@ import d3kod.d3gles20.D3GLES20;
 public class PreyData {
 	protected static final float MAX_SPEED = 0.1f;
 	protected static final int MAX_SPIN_SPEED = 10;
-	protected static final float DISTANCE_TO_ANGLE_RATIO = 0.001f;// MAX_SPEED/MAX_SPIN_SPEED;
+	protected static final float DISTANCE_TO_ANGLE_RATIO = 0.00005f;// MAX_SPEED/MAX_SPIN_SPEED;
 	protected static final float MAX_BODY_BEND_ANGLE = 30;
 	protected static final int angleSpeedIncrement = 1;
 	protected static final int angleSpeedHeadDefault = angleSpeedIncrement/2;
+	protected float targetAngleFins;
+	protected static int angleSpeedFins = 1;
 	protected static int angleSpeedHead = 30;
+	protected static int angleFlopHead = 30;
 	protected static final int angleBackSpeed = 3;
 	protected static float moveStep = 0.005f;
 	protected static final int STRIDE_BYTES = D3GLES20.COORDS_PER_VERTEX * D3GLES20.BYTES_PER_FLOAT;
@@ -22,7 +25,7 @@ public class PreyData {
 	protected static final float bodyWidth = 1.0f * bodyLength;
 	protected static final float bodyHeight = 1.0f * bodyLength;
 	
-	protected final int maxAngle = 40;
+	protected final int maxAngle = 60;
 	protected final int minAngle = 0;
 	protected int mLeftFootAngle = minAngle;
 	protected int mRightFootAngle = minAngle;
@@ -123,14 +126,18 @@ public class PreyData {
 	protected float[] mMVPMatrix = new float[16];
 	protected float mPredictedPosX;
 	protected float mPredictedPosY;
-	protected float[] mFeetModelMatrix;
+	protected float[] mFeetModelMatrix = new float[16];
 	protected FloatBuffer eyeVertexBuffer;
 	protected int headDelay;
 	protected float[] bodyStart4 = new float[4];
 	protected float[] bodyB4 = new float[4];
+	protected float[] bodyC4 = new float[4];
+	protected float[] bodyEnd4 = new float[4];
 	protected float[] bodyStartRot = new float[4];
 	protected float[] bodyBRot = new float[4];
-
+	protected float[] bodyCRot = new float[4];
+	protected float[] bodyEndRot = new float[4];
+	
 	protected float mPosHeadX;
 	protected float mPosHeadY;
 	
@@ -144,4 +151,22 @@ public class PreyData {
 	protected FloatBuffer leftFinVertexBuffer;
 	protected final int eyeDetailsLevel = 10;
 	public float[][] delayV;
+	public float targetAngleHead;
+	
+	public int bodyStartAngle;
+	public int bodyBAngle;
+	public int bodyCAngle;
+	public int bodyEndAngle;
+	
+	float[] mBodyStartRMatrix = new float[16];
+	float[] mBodyBRMatrix = new float[16];
+	float[] mBodyCRMatrix = new float[16];
+	float[] mBodyEndRMatrix = new float[16];
+	public int bodyEndAngleTarget;
+	public int bodyCAngleTarget;
+	public int bodyBAngleTarget;
+	public int bodyStartAngleTarget;
+	
+	public int rotateSpeed = 5;
+	public float thrust;
 }

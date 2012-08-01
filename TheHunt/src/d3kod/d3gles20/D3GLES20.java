@@ -4,6 +4,7 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import android.opengl.GLES20;
 import android.util.FloatMath;
@@ -42,7 +43,9 @@ public class D3GLES20 {
 	private static int defFragmentShaderHandle = -1;
 	
 //	ArrayList<D3Shape> shapes;
-	private static ArrayList<D3Shape> shapes = new ArrayList<D3Shape>();
+	//private static ArrayList<D3Shape> shapes = new ArrayList<D3Shape>();
+	private static HashMap<Integer, D3Shape> shapes = new HashMap<Integer, D3Shape>();
+	private static int shapesNum = 0;
 	
 	public static int createProgram(int vertexShaderHandle, int fragmentShaderHandle) {
 		// Create a program object and store the handle to it.
@@ -96,19 +99,29 @@ public class D3GLES20 {
 	}
 	
 	public static int newDefaultQuad(float width, float height, float[] color) {
-		shapes.add(new D3Quad(width, height, color, true));
-		return shapes.size()-1;
-	}
-	
-	public static int newDefaultCircle(float r, float[] color, int vertices) {
-		shapes.add(new D3Circle(r, color, vertices, true));
-		return shapes.size()-1;
-	}
-	
-	public static void draw(int index, float[] mMMatrix, float[] mVMatrix, float[] mProjMatrix) {
-		shapes.get(index).draw(mMMatrix, mVMatrix, mProjMatrix);
+		return putShape(new D3Quad(width, height, color, true));
 	}
 
+	public static int newDefaultCircle(float r, float[] color, int vertices) {
+		return putShape(new D3Circle(r, color, vertices, true));
+	}
+	
+	private static int putShape(D3Shape shape) {
+		while (shapes.containsKey(shapesNum)) {
+			shapesNum++;
+		}
+		shapes.put(shapesNum, shape);
+		return shapesNum++;
+	}
+	
+	public static void draw(int key, float[] mMMatrix, float[] mVMatrix, float[] mProjMatrix) {
+		shapes.get(key).draw(mMMatrix, mVMatrix, mProjMatrix);
+	}
+
+	public static void removeShape(int key) {
+		shapes.remove(key);
+	}
+	
 	public static void clean() {
 		defVertexShaderHandle = -1;
 		defFragmentShaderHandle = -1;
@@ -185,7 +198,7 @@ public class D3GLES20 {
 			vertices[i*COORDS_PER_VERTEX + 1] = r * FloatMath.cos(angleRad);
 			vertices[i*COORDS_PER_VERTEX + 2] = 0;
 			angleRad += step;
-			Log.v(TAG, "Making new circle" + vertices[i*COORDS_PER_VERTEX] + " " + vertices[i*COORDS_PER_VERTEX + 1]);
+//			Log.v(TAG, "Making new circle" + vertices[i*COORDS_PER_VERTEX] + " " + vertices[i*COORDS_PER_VERTEX + 1]);
 		}
 		return vertices;
 	}

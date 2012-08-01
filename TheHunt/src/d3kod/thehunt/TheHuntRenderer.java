@@ -20,8 +20,8 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 	
 	private static final String TAG = "TheHuntRenderer";
 	private static final boolean LOGGING_TIME = false;
-	private static final boolean SHOW_TILES = true;
-	private static final boolean SHOW_CURRENTS = true;
+	private static final boolean SHOW_TILES = false;
+	private static final boolean SHOW_CURRENTS = false;
 	private static final boolean MANUAL_CONTROLS = true;
 	private static final boolean FEED_WITH_TOUCH = true;
 

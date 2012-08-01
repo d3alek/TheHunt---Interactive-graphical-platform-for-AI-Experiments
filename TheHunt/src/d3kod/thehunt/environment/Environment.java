@@ -14,10 +14,7 @@ public class Environment {
 	
 	public Environment() {
 		data = new EnvironmentData();
-//		data.createTiles();
-////		data.currents.initialize();
-//		data.mFloatingObjects = new Algae(EnvironmentData.tWidth, EnvironmentData.tHeight);
-//		data.mFloatingObjects.setPosition(data.mFrame.centerX(), data.mFrame.centerY());
+//		data.makeAlgae();
 	}
 //	public Drawable getObjects() {
 //		return data.mFloatingObjects.getDrawable();

@@ -35,7 +35,7 @@ public class Plan {
 		}
 	}
 	public boolean isFinished() {
-		Log.v(TAG, mActions.size() + " " + mCurrentAction + " " + mLastAction);
+//		Log.v(TAG, mActions.size() + " " + mCurrentAction + " " + mLastAction);
 		return mCurrentAction == -1 || mActions.size() <= mCurrentAction || mCurrentAction >= mLastAction;
 	}
 	public Action nextAction() {
@@ -56,6 +56,7 @@ public class Plan {
 //		Log.v(TAG, "Added action " + action + " to index " + index);
 	}
 	public void update(WorldModel mWorldModel) {
+		
 	}
 	public void finish() {
 		mCurrentAction = mActions.size();
@@ -81,4 +82,10 @@ public class Plan {
 	public float[] getTargetMMatrix() {
 		return modelMatrix;
 	}
+
+	public void done() {
+		D3GLES20.removeShape(target);
+	}
+	
+	
 }

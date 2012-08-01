@@ -43,9 +43,10 @@ public class Planner {
 	public Action nextAction(WorldModel mWorldModel) {
 		mPlan.update(mWorldModel);
 		if (!mPlan.isFinished()) {
-			Log.v(TAG, "Plan not finished yet, go on doing it");
+//			Log.v(TAG, "Plan not finished yet, go on doing it");
 			return mPlan.nextAction();
 		}
+		else mPlan.done();
 		mState = checkForSomethingInteresting(mWorldModel);
 		switch(mState) {
 		case EXPLORE: return chooseRandomAction();
