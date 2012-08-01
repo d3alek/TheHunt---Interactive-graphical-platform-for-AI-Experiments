@@ -45,7 +45,7 @@ public class Plan {
 		}
 		return mActions.get(mCurrentAction++);
 	}
-	public void addNextAction(Action action) {
+	public void addLastAction(Action action) {
 		mActions.add(action); 
 //		Log.v(TAG, "Added action " + action);
 //		mCurrentAction++;
@@ -59,7 +59,8 @@ public class Plan {
 		
 	}
 	public void finish() {
-		mCurrentAction = mActions.size();
+		//mCurrentAction = mActions.size();
+		mActions.subList(mCurrentAction, mActions.size()).clear();
 	}
 	public Action getPrevAction() {
 		return mActions.get(mCurrentAction - 1);
@@ -67,7 +68,7 @@ public class Plan {
 	public void finishAfterNext() {
 		mLastAction = mCurrentAction + 1;
 	}
-	public void addNAction(Action action) {
+	public void addNextAction(Action action) {
 		mActions.add(mCurrentAction, action);
 	}
 	public void clearActions() {
@@ -85,6 +86,10 @@ public class Plan {
 
 	public void done() {
 		D3GLES20.removeShape(target);
+	}
+
+	public boolean isEmpty() {
+		return mActions.isEmpty();
 	}
 	
 	

@@ -51,6 +51,7 @@ public class Planner {
 		switch(mState) {
 		case EXPLORE: return chooseRandomAction();
 		case SCAVAGE: mPlan = makeScavagePlan(mWorldModel); break;
+		case HIDE: mPlan = makeHidePlan(mWorldModel); break;
 		case DONOTHING: mPlan = new NoPlan(mWorldModel.getHeadX(), mWorldModel.getHeadY()); break;
 		}
 		mPlan.update(mWorldModel);
@@ -62,18 +63,32 @@ public class Planner {
 			Log.v(TAG, "Found an interesting food location!");
 			return PlanState.SCAVAGE;
 		}
+		if (mWorldModel.knowAlgaeLocation()) {
+			Log.v(TAG, "Found an interesting algae location!");
+			return PlanState.HIDE;
+		}
 		return PlanState.DONOTHING;
 	}
 
 	private Plan makeScavagePlan(WorldModel mWorldModel) {
 		Log.v(TAG, "Making scavage plan");
-		Plan scvgPlan = new ScavagePlan(
+		Plan scvgPlan = new GoToPlan(
 				mWorldModel.getHeadX(), mWorldModel.getHeadY(), 
 				mWorldModel.getBodyX(), mWorldModel.getBodyY(), 
 				mWorldModel.getFoodX(), mWorldModel.getFoodY());
+		scvgPlan.addLastAction(Action.eat);
 		return scvgPlan;
 	}
 
+	private Plan makeHidePlan(WorldModel mWorldModel) {
+		Log.v(TAG, "Making hide plan");
+		Plan hidePlan = new GoToPlan(
+				mWorldModel.getHeadX(), mWorldModel.getHeadY(), 
+				mWorldModel.getBodyX(), mWorldModel.getBodyY(), 
+				mWorldModel.getAlgaeX(), mWorldModel.getAlgaeY());
+		return hidePlan;
+	}
+	
 	private Action chooseRandomAction() {
 		int actionInd = Math.round((numActions-1) * mRandom.nextFloat());
 		return allActions[actionInd];

@@ -23,6 +23,13 @@ public class EnvironmentData {
 	public static final float currentStep = 0.002f;
 
 	private static final int ALGAE_NUM = 1;
+	private static final float[] algaeColor = 
+		{ 0.0f, 1.0f, 0.0f, 0.0f};
+
+	private static final int ALGAE_DETAILS = 10;
+
+	private static final float ALGAE_SIZE = 0.3f;
+	
 	public static float tHeight;
 	public static float tWidth;
 	public static float mScreenWidth;
@@ -143,19 +150,6 @@ public class EnvironmentData {
 		return mFloatingObjects;
 	}
 
-	public Event senseCurrent(float x, float y) {
-		Tile tile = getTileFromPos(new PointF(x, y));
-		return new EventNone();
-	}
-
-	public Event senseFood(float x, float y) {
-//		Tile tile = getTileFromPos(new PointF(x, y));
-//		if (mFoodX == -1 || mFoodY == -1) return new EventNone();
-		for (FloatingObject fo: mFloatingObjects) {
-			if (fo.getType() == Type.FOOD) return new EventFood(fo.getX(), fo.getY());
-		}
-		return new EventNone();
-	}
 	public static Tile getTileFromPos(PointF pos) {
 		int col = (int) Math.floor(tileCols/2+pos.x/tWidth),
 				row = (int) Math.floor(tileRows/2-pos.y/tHeight);
@@ -181,10 +175,10 @@ public class EnvironmentData {
 		}
 	}
 
-//	public void makeAlgae() {
-//		for (int i = 0; i < ALGAE_NUM; ++i) {
-//			addFloatingObject(
-//					new FloatingObject(D3GLES20.newDefaultCircle(1, color, vertices), x, y, type))
-//		}
-//	}
+	public void makeAlgae() {
+		for (int i = 0; i < ALGAE_NUM; ++i) {
+			addFloatingObject(
+					new FloatingObject(D3GLES20.newDefaultCircle(ALGAE_SIZE, algaeColor, ALGAE_DETAILS), 0, 0, Type.ALGAE));
+		}
+	}
 }

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import d3kod.thehunt.environment.EnvironmentData;
 import d3kod.thehunt.prey.sensor.Event;
+import d3kod.thehunt.prey.sensor.EventAlgae;
 import d3kod.thehunt.prey.sensor.EventAt;
 import d3kod.thehunt.prey.sensor.EventFood;
 
@@ -11,20 +12,15 @@ import android.util.Log;
 
 public class WorldModel {
 private static final String TAG = "WorldModel";
-	//	private Memory mMemory;
-//	private float mPosX;
-//	private float mPosY;
-//	private float mHeadX;
-//	private float mHeadY;
 	MemoryGraph mNodes;
 	private float mHeadX;
 	private float mHeadY;
-//	private float mPosFinsX;
-//	private float mPosFinsY;
 	private float mBodyY;
 	private float mBodyX;
 	private float mFoodX;
 	private float mFoodY;
+	private float mAlgaeX;
+	private float mAlgaeY;
 	
 	public void updateNode(float posX, float posY, float currentX, float currentY) {
 		mNodes.getNode(posX, posY).setCurrent(currentX, currentY);
@@ -32,6 +28,7 @@ private static final String TAG = "WorldModel";
 	public WorldModel(float screenWidth, float screenHeight) {
 		mNodes = new MemoryGraph(screenWidth, screenHeight);
 		mFoodX = mFoodY = -1;
+		mAlgaeX = mAlgaeY = -1;
 	}
 	public void update(ArrayList<Event> sensorEvents) {
 		for (Event e: sensorEvents) {
@@ -49,18 +46,17 @@ private static final String TAG = "WorldModel";
 				// TODO: There is a movement! Improve detection?
 				mHeadX = newHeadX; mHeadY = newHeadY;
 				mBodyX = newBodyX; mBodyY = newBodyY;
-//				mNodes.setMyNode(mHeadX, mHeadY);
 			}
 			break;
 		case FOOD: 
 			mFoodX = ((EventFood) e).getFoodX();
 			mFoodY = ((EventFood) e).getFoodY(); 
 			break;
+		case ALGAE:
+			mAlgaeX = ((EventAlgae) e).getAlgaeX();
+			mAlgaeY = ((EventAlgae) e).getAlgaeY();
 		}
 	}
-//	public Node getFoodLocation() {
-//		return mNodes.getFoodNode();
-//	}
 	public boolean knowFoodLocation() {
 		return (mFoodX != -1 && mFoodY != -1);
 	}
@@ -70,9 +66,12 @@ private static final String TAG = "WorldModel";
 	public float getFoodY() {
 		return mFoodY;
 	}
-//	public Node getLocation() {
-//		return mNodes.getMyNode();
-//	}
+	public float getAlgaeX() {
+		return mAlgaeX;
+	}
+	public float getAlgaeY() {
+		return mAlgaeY;
+	}
 	public float getHeadX() {
 		return mHeadX;
 	}
@@ -81,8 +80,6 @@ private static final String TAG = "WorldModel";
 	}
 	public void eatFood(float mPosHeadX, float mPosHeadY) {
 		//TODO: improve functionality
-//		mNodes.removeFoodNode();
-//		EnvironmentData.removeFood();
 		mFoodX = mFoodY = -1;
 	}
 	public float getBodyX() {
@@ -90,5 +87,8 @@ private static final String TAG = "WorldModel";
 	}
 	public float getBodyY() {
 		return mBodyY;
+	}
+	public boolean knowAlgaeLocation() {
+		return (mAlgaeX != -1 && mAlgaeY != -1);
 	}
 }

@@ -5,7 +5,7 @@ import android.opengl.Matrix;
 class FloatingObject {
 
 	public enum Type {
-		FOOD;
+		FOOD, ALGAE;
 	}
 	
 	private int mIndex;

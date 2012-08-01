@@ -42,7 +42,6 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 	}
 	
 	public TheHuntRenderer() {
-		mEnv = new Environment();
 		next_game_tick = System.currentTimeMillis();
 	}
 	
@@ -57,7 +56,7 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 		GLES20.glClearColor(0.8f, 0.8f, 0.8f, 1.0f);
 		D3GLES20.clean();
 		mManuControl = new ManualControl();
-		
+		mEnv = new Environment();
 	    Matrix.orthoM(mVMatrix, 0, -1, 1, -1, 1, 0.1f, 100f);
 	}
 
