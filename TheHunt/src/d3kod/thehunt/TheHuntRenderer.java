@@ -3,6 +3,7 @@ package d3kod.thehunt;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
+import android.content.Context;
 import android.graphics.PointF;
 import android.hardware.SensorEvent;
 import android.opengl.GLES20;
@@ -14,16 +15,17 @@ import d3kod.thehunt.environment.EnvironmentData;
 import d3kod.thehunt.environment.Tile;
 import d3kod.thehunt.prey.ManualControl;
 import d3kod.thehunt.prey.Prey;
+import d3kod.thehunt.prey.planner.Planner;
 import android.opengl.GLSurfaceView;
 
 public class TheHuntRenderer implements GLSurfaceView.Renderer {
 	
 	private static final String TAG = "TheHuntRenderer";
-	private static final boolean LOGGING_TIME = false;
-	private static final boolean SHOW_TILES = false;
-	private static final boolean SHOW_CURRENTS = false;
-	private static final boolean MANUAL_CONTROLS = false;
-	private static final boolean FEED_WITH_TOUCH = true;
+	public static boolean LOGGING_TIME = false;
+	public static boolean SHOW_TILES = false;
+	public static boolean SHOW_CURRENTS = false;
+	public static boolean MANUAL_CONTROLS = false;
+	public static boolean FEED_WITH_TOUCH = true;
 
 	private float[] mProjMatrix = new float[16]; 
 	private float[] mVMatrix = new float[16];
@@ -36,12 +38,14 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
     private final int MILLISEC_PER_TICK = 1000 / TICKS_PER_SECOND;
     private final int MAX_FRAMESKIP = 5;
 	private long next_game_tick;
+	private Context mContext;
 
 	public void onSensorChanged(SensorEvent event) {
 		
 	}
 	
-	public TheHuntRenderer() {
+	public TheHuntRenderer(Context context) {
+		mContext = context;
 		next_game_tick = System.currentTimeMillis();
 	}
 	
@@ -78,11 +82,11 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 		GLES20.glClear(clearMask);
 
 		
-		if (SHOW_TILES) {
+		if (SHOW_TILES || SHOW_CURRENTS) {
 //			Log.v(TAG, "Showing the tiles");
 			for (Tile[] tile_row: mEnv.getTiles()) {
 				for (Tile tile: tile_row) {
-					tile.draw(mVMatrix, mProjMatrix, SHOW_CURRENTS);
+					tile.draw(mVMatrix, mProjMatrix, SHOW_TILES, SHOW_CURRENTS);
 				}
 			}
 		}
@@ -118,6 +122,14 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 	}		
 
 	private void updateWorld() {
+		
+		//TODO: fix all these static shits
+		((TheHunt) mContext).runOnUiThread(new Runnable() {
+			public void run() {
+				((TheHunt) mContext).mPreyState.setText(Planner.mState.toString());
+			}
+		});
+		
 		PointF curDirDelta = mEnv.data.getTileFromPos(mPrey.getPosition()).getDir().getDelta();
 		mPrey.update(curDirDelta.x * EnvironmentData.currentStep, 
 				curDirDelta.y * EnvironmentData.currentStep);
@@ -142,7 +154,7 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 	    mEnv.setSize(width, height);
 	    mPrey = new Prey(EnvironmentData.mScreenWidth, EnvironmentData.mScreenHeight, mEnv);
 	    
-	    if (MANUAL_CONTROLS) mManuControl.setSize();
+	    mManuControl.setSize();
 	}
 	
 	public static int loadShader(int type, String shaderCode){

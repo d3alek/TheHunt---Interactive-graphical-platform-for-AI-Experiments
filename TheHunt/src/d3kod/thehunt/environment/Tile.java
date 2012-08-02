@@ -36,8 +36,8 @@ public class Tile {
 	public String toString() {
 		return "(" + r + ", " + c + ", " + dir + ")";
 	}
-	public void draw(float[] mVMatrix, float[] mProjMatrix, boolean showCurrents) {
-        mTileQuad.draw(r, c, mVMatrix, mProjMatrix, showCurrents, dir);
+	public void draw(float[] mVMatrix, float[] mProjMatrix, boolean showTiles, boolean showCurrents) {
+        mTileQuad.draw(r, c, mVMatrix, mProjMatrix, showTiles, showCurrents, dir);
 
 	}
 }

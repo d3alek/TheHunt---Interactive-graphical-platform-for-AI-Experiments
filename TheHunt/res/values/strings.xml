@@ -3,5 +3,9 @@
 
     <string name="hello">Hello World!</string>
     <string name="app_name">TheHuntOpenGL</string>
-
+    <string name="showTiles">Tiles</string>
+	<string name="showCurrents">Currents</string>
+	<string name="bodyBendDelay">Body Bend Delay</string>
+	<string name="actionDelay">Action Delay</string>
+	<string name="preyStateText">Prey State</string>
 </resources>

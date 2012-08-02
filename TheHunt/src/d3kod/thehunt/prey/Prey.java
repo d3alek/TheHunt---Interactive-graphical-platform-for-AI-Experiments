@@ -16,15 +16,17 @@ import d3kod.thehunt.prey.sensor.Sensor;
 public class Prey {
 	
 	private static final String TAG = "Prey";
-	private static final int DELAY_START = 1;
-	private static final int ACTION_DELAY = 5;
+	public static int BODY_BEND_DELAY = 1;
+	public static int BODY_BEND_DELAY_MAX = 10;
+	public static int ACTION_DELAY = 5;
+	public static int ACTION_DELAY_MAX = 20;
 	private Planner mPlanner;
 	private WorldModel mWorldModel;
 	private Sensor mSensor;
 	private Environment mEnv;
 	private PreyData mD;
-	private int delay;
-	private int actionDelay;
+	private int bodyBendCounter;
+	private int actionDelayCounter;
 
 	public void update(float dx, float dy) {
 		float[] posTemp = { 0.0f, 0.07f, 0.0f, 1.0f };
@@ -39,17 +41,17 @@ public class Prey {
 		
 		mWorldModel.update(mSensor.sense(mD.mPosHeadX, mD.mPosHeadY, mD.mPosX, mD.mPosY));
 		
-		if (actionDelay == 0) {
+		if (actionDelayCounter == 0) {
 			doAction(mPlanner.nextAction(mWorldModel));
-			actionDelay = ACTION_DELAY;
+			actionDelayCounter = ACTION_DELAY;
 		}
-		else actionDelay--;
+		else actionDelayCounter--;
 		move(dx, dy);
 	}
 	
 	public void move(float x, float y) {
 		
-		if (delay == 0) {
+		if (bodyBendCounter == 0) {
 //			if (mD.bodyEndAngleTarget != mD.bodyCAngleTarget) {
 //				//going to change the end angle target and thus create thrust
 //				//TODO: think it through
@@ -62,12 +64,12 @@ public class Prey {
 			mD.bodyEndAngleTarget = mD.bodyCAngleTarget;
 			mD.bodyCAngleTarget = mD.bodyBAngleTarget;
 			mD.bodyBAngleTarget = mD.bodyStartAngleTarget;
-			delay = DELAY_START;
+			bodyBendCounter = BODY_BEND_DELAY;
 //			Log.v(TAG, "Passing spin " + mD.bodyStartAngleTarget + " " + mD.bodyBAngle + " " + mD.bodyCAngle + " " + mD.bodyEndAngle);
 		}
 		else {
 			mD.thrust = 0;
-			--delay;
+			--bodyBendCounter;
 		}
 		
 		if (mD.bodyStartAngleTarget > mD.bodyStartAngle) mD.bodyStartAngle += mD.rotateSpeed;

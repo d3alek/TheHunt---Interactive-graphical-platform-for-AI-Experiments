@@ -83,4 +83,8 @@ abstract public class D3Shape {
 	}
 	
 	abstract public float getRadius();
+	
+	protected void setProgram() {
+		GLES20.glUseProgram(mProgram);
+	}
 }

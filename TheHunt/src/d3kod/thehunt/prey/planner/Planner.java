@@ -12,7 +12,7 @@ import android.util.Log;
 public class Planner {
 	private static final String TAG = "Planner";
 	public static final boolean SHOW_TARGET = true;
-	private PlanState mState;
+	public static PlanState mState;
 	private Action[] allActions;
 	private int numActions; 
 	private Random mRandom;
@@ -49,11 +49,11 @@ public class Planner {
 
 	private PlanState checkForSomethingInteresting(WorldModel mWorldModel) {
 		if (mWorldModel.knowFoodLocation()) {
-			Log.v(TAG, "Found an interesting food location!");
+//			Log.v(TAG, "Found an interesting food location!");
 			return PlanState.SCAVAGE;
 		}
 		if (mWorldModel.knowAlgaeLocation()) {
-			Log.v(TAG, "Found an interesting algae location!");
+//			Log.v(TAG, "Found an interesting algae location!");
 			return PlanState.HIDE;
 		}
 		return PlanState.DONOTHING;

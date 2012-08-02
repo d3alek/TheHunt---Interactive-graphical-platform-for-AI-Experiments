@@ -34,19 +34,6 @@ public class TileQuad extends D3Quad {
 	};
 	private static final String TAG = "TileQuad";
 	
-//	private static FloatBuffer makeVerticesBuffer(float width, float height) {
-//		float[] quadVertices = new float[verticesNum * D3GLES20.COORDS_PER_VERTEX];
-//		FloatBuffer buffer = ByteBuffer.allocateDirect(quadVertices.length * D3GLES20.BYTES_PER_FLOAT)
-//				.order(ByteOrder.nativeOrder()).asFloatBuffer();
-//		for (int i = 0; i < verticesNum; ++i) {
-//			quadVertices[i*3] = tileVerticesDefault[i * 3] * width;
-//			quadVertices[i*3+1] = tileVerticesDefault[i * 3 + 1] * height;
-////			Log.v(TAG, "D3Quad vertex " + i + " " + quadVertices[i*3] + " " + quadVertices[i*3 + 1] + " " + quadVertices[i*3 + 2]);
-//		}
-//		buffer.put(quadVertices).position(0);
-//		return buffer;
-//	}
-//	
 	public TileQuad(float width, float height) {
 		super(width, height, tileVerticesDefault, colorDefault, GLES20.GL_LINE_LOOP, true);
 		
@@ -59,14 +46,15 @@ public class TileQuad extends D3Quad {
 		currentBuffer.put(currentN).position(0);
 	}
 	
-	public void draw(int r, int c, float[] mVMatrix, float[] mProjMatrix, boolean showCurrents, Dir dir) {
+	public void draw(int r, int c, float[] mVMatrix, float[] mProjMatrix, boolean showTiles, boolean showCurrents, Dir dir) {
 		Matrix.setIdentityM(mMMatrix , 0);
         Matrix.translateM(mMMatrix, 0, 
         		-EnvironmentData.mScreenWidth/2+c*EnvironmentData.tWidth+EnvironmentData.tWidth/2, 
         		EnvironmentData.mScreenHeight/2-r*EnvironmentData.tHeight-EnvironmentData.tHeight/2, 0);
 		
         super.setModelMatrix(mMMatrix);
-        super.draw(mVMatrix, mProjMatrix);
+        if (showTiles) super.draw(mVMatrix, mProjMatrix);
+        else super.setProgram();
         
 		if (showCurrents) {
         	currentBuffer.position(0);
@@ -86,11 +74,11 @@ public class TileQuad extends D3Quad {
         	case NW: Matrix.rotateM(mMMatrix, 0, 45, 0, 0, 1); break;
         	default: return;
         	}
-        	if (!dir.equals(Dir.N)){
-        		Matrix.multiplyMM(mMVPMatrix , 0, mVMatrix, 0, mMMatrix, 0);
-        		Matrix.multiplyMM(mMVPMatrix, 0, mProjMatrix, 0, mMVPMatrix, 0);
-        		GLES20.glUniformMatrix4fv(mMVPMatrixHandle, 1, false, mMVPMatrix, 0);
-        	}
+        	
+        	Matrix.multiplyMM(mMVPMatrix , 0, mVMatrix, 0, mMMatrix, 0);
+        	Matrix.multiplyMM(mMVPMatrix, 0, mProjMatrix, 0, mMVPMatrix, 0);
+        	GLES20.glUniformMatrix4fv(mMVPMatrixHandle, 1, false, mMVPMatrix, 0);
+        	
         	GLES20.glDrawArrays(GLES20.GL_LINE_LOOP, 0, 3);
         }
 	}

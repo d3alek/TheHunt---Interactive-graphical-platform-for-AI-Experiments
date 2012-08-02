@@ -4,9 +4,103 @@
     android:layout_height="fill_parent"
     android:orientation="vertical" >
 
-    <TextView
+    <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:text="@string/hello" />
+        android:orientation="horizontal">
+    
+        <ToggleButton
+            android:id="@+id/showTilesToggle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="onToggleClicked"
+            android:textOff="@string/showTiles"
+            android:textOn="@string/showTiles" />
+        
+        <ToggleButton
+            android:id="@+id/showCurrentsToggle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="onToggleClicked"
+            android:textOff="@string/showCurrents"
+            android:textOn="@string/showCurrents" />
+
+        <TextView
+            android:id="@+id/bodyBendDelayLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/bodyBendDelay" >
+
+        </TextView>
+
+
+        <Button
+            android:id="@+id/minusBodyBendDelay"
+            style="?android:attr/buttonStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="onButtonClicked"
+            android:text="-" />        
+        <TextView 
+            android:id="@+id/bodyBendDelay"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text = "-1"/>
+        <Button
+            android:id="@+id/plusBodyBendDelay"
+            style="?android:attr/buttonStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="onButtonClicked"
+            android:text="+"/>        
+
+        <TextView
+            android:id="@+id/actionDelayLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/actionDelay" >
+
+        </TextView>
+        
+
+        <Button
+            android:id="@+id/minusActionDelay"
+            style="?android:attr/buttonStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="onButtonClicked"
+            android:text="-" />
+        <TextView 
+            android:id="@+id/actionDelay"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text = "-1"/>
+        <Button
+            android:id="@+id/plusActionDelay"
+            style="?android:attr/buttonStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="onButtonClicked"
+            android:text="+"/>        
+
+        <TextView
+            android:id="@+id/preyStateText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="7dp"
+            android:text="@string/preyStateText" />
+
+        <TextView 
+            android:id="@+id/preyState"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="none"/>
+        
+    </LinearLayout>
+
+    <d3kod.thehunt.MyGLSurfaceView
+        android:id="@+id/glSurfaceView"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent" />
 
 </LinearLayout>
