@@ -7,7 +7,7 @@ import d3kod.d3gles20.D3GLES20;
 public class PreyData {
 	protected static final float MAX_SPEED = 0.1f;
 	protected static final int MAX_SPIN_SPEED = 10;
-	protected static final float DISTANCE_TO_ANGLE_RATIO = 0.0002f;// MAX_SPEED/MAX_SPIN_SPEED;
+	protected static final float DISTANCE_TO_ANGLE_RATIO = 0.0003f;// MAX_SPEED/MAX_SPIN_SPEED;
 	protected static final float MAX_BODY_BEND_ANGLE = 30;
 	protected static final int angleSpeedIncrement = 1;
 	protected static final int angleSpeedHeadDefault = angleSpeedIncrement/2;

@@ -16,7 +16,7 @@ import d3kod.thehunt.prey.sensor.Sensor;
 public class Prey {
 	
 	private static final String TAG = "Prey";
-	private static final int DELAY_START = 2;
+	private static final int DELAY_START = 1;
 	private static final int ACTION_DELAY = 5;
 	private Planner mPlanner;
 	private WorldModel mWorldModel;
@@ -102,7 +102,7 @@ public class Prey {
 	
 	public void moveForward(float distance) {
 		distance *= mD.DISTANCE_TO_ANGLE_RATIO;
-		Log.v(TAG, "Moving the prey forward to a distance of " + distance + " thrust is " + mD.thrust);
+//		Log.v(TAG, "Moving the prey forward to a distance of " + distance + " thrust is " + mD.thrust);
 		float radAngle = (float)Math.toRadians(mD.bodyStartAngle);
 		mD.vx += -FloatMath.sin(radAngle)*distance;
 		mD.vy += FloatMath.cos(radAngle)*distance;  

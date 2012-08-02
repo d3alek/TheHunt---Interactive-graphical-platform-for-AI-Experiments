@@ -12,21 +12,11 @@ import android.util.Log;
 public class Planner {
 	private static final String TAG = "Planner";
 	public static final boolean SHOW_TARGET = true;
-	private static final float TOLERANCE = 0.001f; 
 	private PlanState mState;
 	private Action[] allActions;
 	private int numActions; 
 	private Random mRandom;
 	private Plan mPlan;
-	private float distanceFromFoodPrev;
-	private Action actionPrev;
-//	private boolean targetNotShown;
-//	private float[] targetColor = {1.0f, 0.0f, 0.0f};
-//	private float targetSize = 0.005f;
-//	private int target;
-//	private static float[] modelMatrix = new float[16];
-	private boolean firstMistake;
-	private boolean stop;
 
 	public Planner() {
 		mPlan = new NoPlan(0, 0);
@@ -34,19 +24,15 @@ public class Planner {
 		allActions = Action.values();
 		numActions = allActions.length;
 		mRandom = new Random();
-		distanceFromFoodPrev = 50;
-		actionPrev = Action.flopLeft;
-//		if (SHOW_TARGET) target = D3GLES20.newDefaultCircle(targetSize, targetColor, 10);
-		stop = false;
 	}
 
 	public Action nextAction(WorldModel mWorldModel) {
 		mPlan.update(mWorldModel);
 		if (!mPlan.isFinished()) {
-//			Log.v(TAG, "Plan not finished yet, go on doing it");
 			return mPlan.nextAction();
 		}
 		else mPlan.done();
+		
 		mState = checkForSomethingInteresting(mWorldModel);
 		switch(mState) {
 		case EXPLORE: return chooseRandomAction();
@@ -75,17 +61,16 @@ public class Planner {
 
 	private Plan makeScavagePlan(WorldModel mWorldModel) {
 		Log.v(TAG, "Making scavage plan");
-		Plan scvgPlan = new GoToPlan(
+		Plan scvgPlan = new GoToAndEatPlan(
 				mWorldModel.getHeadX(), mWorldModel.getHeadY(), 
 				mWorldModel.getBodyX(), mWorldModel.getBodyY(), 
 				mWorldModel.getFoodX(), mWorldModel.getFoodY());
-		scvgPlan.addLastAction(Action.eat);
 		return scvgPlan;
 	}
 
 	private Plan makeHidePlan(WorldModel mWorldModel) {
 		Log.v(TAG, "Making hide plan");
-		Plan hidePlan = new GoToPlan(
+		Plan hidePlan = new GoToAndStayPlan(
 				mWorldModel.getHeadX(), mWorldModel.getHeadY(), 
 				mWorldModel.getBodyX(), mWorldModel.getBodyY(), 
 				mWorldModel.getAlgaeX(), mWorldModel.getAlgaeY());

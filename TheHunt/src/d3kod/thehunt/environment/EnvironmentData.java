@@ -15,7 +15,7 @@ public class EnvironmentData {
 	
 	public static final int numDirs = Dir.numDirs;
 	
-	public static final float frictionCoeff = 0.05f;//0.015f;
+	public static final float frictionCoeff = 0.1f;//0.015f;
 	
 	public static final int tileRows = 12;
 	public static final int tileCols = 20; 
@@ -165,6 +165,7 @@ public class EnvironmentData {
 //	}
 	public void removeFood(float x, float y) {
 		for (FloatingObject fo: mFloatingObjects) {
+			if (fo.getType() != Type.FOOD) continue;
 			float foX = fo.getX(), foY = fo.getY();
 			if (D3GLES20.rectContains(x, y, 0.2f, 0.2f, foX, foY)) {
 				Log.v(TAG, "Removing floating object " + fo.getIndex());

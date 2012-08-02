@@ -22,7 +22,7 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 	private static final boolean LOGGING_TIME = false;
 	private static final boolean SHOW_TILES = false;
 	private static final boolean SHOW_CURRENTS = false;
-	private static final boolean MANUAL_CONTROLS = true;
+	private static final boolean MANUAL_CONTROLS = false;
 	private static final boolean FEED_WITH_TOUCH = true;
 
 	private float[] mProjMatrix = new float[16]; 

@@ -91,6 +91,17 @@ public class Plan {
 	public boolean isEmpty() {
 		return mActions.isEmpty();
 	}
-	
-	
+	public void addAfterNextAction(Action action) {
+		mActions.add(mCurrentAction+1, action);
+	}
+//	public void changeNextAction(Action action) {
+//		mActions.
+//	}
+	public void logActions() {
+		String planStr = "Actions log ";
+		for (Action action: mActions) {
+			planStr += action + " ";
+		}
+		Log.v(TAG, planStr);
+	}
 }
