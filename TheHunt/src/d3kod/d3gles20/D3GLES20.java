@@ -86,14 +86,14 @@ public class D3GLES20 {
 	
 	public static int defaultVertexShader() {
 		if (defVertexShaderHandle == -1) 
-			defVertexShaderHandle = TheHuntRenderer.loadShader(GLES20.GL_VERTEX_SHADER, vertexShaderCode);
+			defVertexShaderHandle = loadShader(GLES20.GL_VERTEX_SHADER, vertexShaderCode);
 		
 		return defVertexShaderHandle;
 	}
 	
 	public static int defaultFragmentShader() {
 		if (defFragmentShaderHandle == -1) 
-			defFragmentShaderHandle = TheHuntRenderer.loadShader(GLES20.GL_FRAGMENT_SHADER, fragmentShaderCode);
+			defFragmentShaderHandle = loadShader(GLES20.GL_FRAGMENT_SHADER, fragmentShaderCode);
 		
 		return defFragmentShaderHandle;
 	}
@@ -221,4 +221,38 @@ public class D3GLES20 {
 			float radius, float x, float y) {
 		return D3GLES20.distance(centerX, centerY, x, y) <= radius;
 	}
+	public static int loadShader(int type, String shaderCode){
+
+        // create a vertex shader type (GLES20.GL_VERTEX_SHADER)
+        // or a fragment shader type (GLES20.GL_FRAGMENT_SHADER)
+    	
+        int shaderHandle = GLES20.glCreateShader(type);
+         
+        if (shaderHandle != 0)
+        {
+            // Pass in the shader source.
+            GLES20.glShaderSource(shaderHandle, shaderCode);
+         
+            // Compile the shader.
+            GLES20.glCompileShader(shaderHandle);
+         
+            // Get the compilation status.
+            final int[] compileStatus = new int[1];
+            GLES20.glGetShaderiv(shaderHandle, GLES20.GL_COMPILE_STATUS, compileStatus, 0);
+         
+            // If the compilation failed, delete the shader.
+            if (compileStatus[0] == 0)
+            {
+                GLES20.glDeleteShader(shaderHandle);
+                shaderHandle = 0;
+            }
+        }
+        
+         
+        if (shaderHandle == 0)
+        {
+            throw new RuntimeException("Error creating vertex shader.");
+        }
+        return shaderHandle;
+    }
 }

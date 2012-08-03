@@ -15,7 +15,7 @@ public class PreyData {
 	protected static int angleSpeedFins = 1;
 	protected static int angleSpeedHead = 30;
 	
-	protected static int angleFlopHead = 30;
+	protected int angleFlop = 30;
 	public int rotateSpeed = 5;
 	public float thrust;
 	

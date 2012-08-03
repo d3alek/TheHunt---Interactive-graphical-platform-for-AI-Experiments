@@ -18,6 +18,7 @@ public class TheHunt extends Activity {
 	private TextView mBodyBendDelay;
 	private TextView mActionDelay;
 	public TextView mPreyState;
+	protected TextView mMSperFrame;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -31,6 +32,7 @@ public class TheHunt extends Activity {
         mActionDelay = (TextView)findViewById(R.id.actionDelay);
         mActionDelay.setText(Prey.ACTION_DELAY+"");
         mPreyState = (TextView)findViewById(R.id.preyState);
+        mMSperFrame = (TextView)findViewById(R.id.msPerFrame);
     }
     
     @Override
@@ -54,6 +56,15 @@ public class TheHunt extends Activity {
     		break;
     	case R.id.showCurrentsToggle:
     		TheHuntRenderer.SHOW_CURRENTS = checked;
+    		break;
+    	case R.id.aiToggle:
+    		Prey.AI = checked;
+    		break;
+    	case R.id.angleInterpolationToggle:
+    		Prey.angleInterpolation = checked;
+    		break;
+    	case R.id.posInterpolationToggle:
+    		Prey.posInterpolation = checked;
     		break;
     	}
     }

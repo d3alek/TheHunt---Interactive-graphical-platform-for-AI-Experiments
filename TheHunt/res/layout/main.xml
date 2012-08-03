@@ -96,8 +96,36 @@
             android:layout_height="wrap_content"
             android:text="none"/>
         
+        <ToggleButton
+            android:id="@+id/aiToggle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="onToggleClicked"
+            android:textOff="@string/ai"
+            android:textOn="@string/ai" />
+        
+        <ToggleButton
+            android:id="@+id/posInterpolationToggle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="onToggleClicked"
+            android:textOff="@string/posInterpolation"
+            android:textOn="@string/posInterpolation" />
+                
+        <ToggleButton
+            android:id="@+id/angleInterpolationToggle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="onToggleClicked"
+            android:textOff="@string/angleInterpolation"
+            android:textOn="@string/angleInterpolation" />
+        <TextView 
+        	android:id="@+id/msPerFrame"
+        	android:layout_width="wrap_content"
+        	android:layout_height="wrap_content"/>
+        
     </LinearLayout>
-
+    
     <d3kod.thehunt.MyGLSurfaceView
         android:id="@+id/glSurfaceView"
         android:layout_width="fill_parent"

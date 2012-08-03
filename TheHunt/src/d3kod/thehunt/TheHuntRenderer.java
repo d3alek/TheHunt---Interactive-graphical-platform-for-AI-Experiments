@@ -21,6 +21,7 @@ import android.opengl.GLSurfaceView;
 public class TheHuntRenderer implements GLSurfaceView.Renderer {
 	
 	private static final String TAG = "TheHuntRenderer";
+	private static final int SMOOTHING_SIZE = 30;
 	public static boolean LOGGING_TIME = false;
 	public static boolean SHOW_TILES = false;
 	public static boolean SHOW_CURRENTS = false;
@@ -34,11 +35,14 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 	private Prey mPrey;
 	private ManualControl mManuControl;
 	
-    private final int TICKS_PER_SECOND = 25;
+    private final int TICKS_PER_SECOND = 30;
     private final int MILLISEC_PER_TICK = 1000 / TICKS_PER_SECOND;
     private final int MAX_FRAMESKIP = 5;
 	private long next_game_tick;
 	private Context mContext;
+	private long mslf;
+	private long smoothMspf;
+	private int smoothingCount;
 
 	public void onSensorChanged(SensorEvent event) {
 		
@@ -47,6 +51,14 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 	public TheHuntRenderer(Context context) {
 		mContext = context;
 		next_game_tick = System.currentTimeMillis();
+		mslf = 0;
+	}
+	
+	public void resume() {
+		next_game_tick = System.currentTimeMillis();
+		mslf = next_game_tick;
+		smoothMspf = 0;
+		smoothingCount = 0;
 	}
 	
 	public void release() {
@@ -56,90 +68,14 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 	/**
 	 * The Surface is created/init()
 	 */
-	public void onSurfaceCreated(GL10 unused, EGLConfig config) {	
+	public void onSurfaceCreated(GL10 unused, EGLConfig config) {
+//		GLES20.glEnable(GLES20.)
 		GLES20.glClearColor(0.8f, 0.8f, 0.8f, 1.0f);
 		D3GLES20.clean();
 		mManuControl = new ManualControl();
 		mEnv = new Environment();
 	    Matrix.orthoM(mVMatrix, 0, -1, 1, -1, 1, 0.1f, 100f);
 	}
-
-	/**
-	 * Here we do our drawing
-	 */
-	public void onDrawFrame(GL10 unused) {
-		if (LOGGING_TIME) {
-			timePreviousNS = System.nanoTime();
-		}
-		
-		int clearMask = GLES20.GL_COLOR_BUFFER_BIT;
-		
-		if (MultisampleConfigChooser.usesCoverageAa()) {
-			final int GL_COVERAGE_BUFFER_BIT_NV = 0x8000;
-            clearMask |= GL_COVERAGE_BUFFER_BIT_NV;
-		}
-		
-		GLES20.glClear(clearMask);
-
-		
-		if (SHOW_TILES || SHOW_CURRENTS) {
-//			Log.v(TAG, "Showing the tiles");
-			for (Tile[] tile_row: mEnv.getTiles()) {
-				for (Tile tile: tile_row) {
-					tile.draw(mVMatrix, mProjMatrix, SHOW_TILES, SHOW_CURRENTS);
-				}
-			}
-		}
-		if (MANUAL_CONTROLS) {
-			mManuControl.draw(mVMatrix, mProjMatrix);
-		}
-		
-		int loops = 0;
-		long now = System.currentTimeMillis();
-		while (next_game_tick < now && loops < MAX_FRAMESKIP) {
-			updateWorld();
-			next_game_tick += MILLISEC_PER_TICK;
-			loops++;
-		}
-		
-		float interpolation = (System.currentTimeMillis() + MILLISEC_PER_TICK - next_game_tick) / (float) MILLISEC_PER_TICK;
-		drawWorld(interpolation);
-	    
-	    if (LOGGING_TIME) {
-	    	// Update base time values.
-	        final long  timeCurrentNS = System.nanoTime();
-	        final long  timeDeltaNS = timeCurrentNS - timePreviousNS;
-	         
-	        // Determine time since last frame in seconds.
-	        final float timeDeltaS = timeDeltaNS * 1.0e-9f;
-	         
-	        // Print a notice if rendering falls behind 60Hz.
-	        if( timeDeltaS > (1.0f / 60.0f) )
-	        {
-	            Log.d( "SpikeTest", "Spike: " + timeDeltaS );
-	        }
-	    }
-	}		
-
-	private void updateWorld() {
-		
-		//TODO: fix all these static shits
-		((TheHunt) mContext).runOnUiThread(new Runnable() {
-			public void run() {
-				((TheHunt) mContext).mPreyState.setText(Planner.mState.toString());
-			}
-		});
-		
-		PointF curDirDelta = mEnv.data.getTileFromPos(mPrey.getPosition()).getDir().getDelta();
-		mPrey.update(curDirDelta.x * EnvironmentData.currentStep, 
-				curDirDelta.y * EnvironmentData.currentStep);
-	}
-
-	private void drawWorld(float interpolation) {
-		mPrey.draw(mVMatrix, mProjMatrix, interpolation);
-		mEnv.draw(mVMatrix, mProjMatrix, interpolation);
-	}
-
 	/**
 	 * If the surface changes, reset the view
 	 */
@@ -156,41 +92,62 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 	    
 	    mManuControl.setSize();
 	}
-	
-	public static int loadShader(int type, String shaderCode){
+	/**
+	 * Here we do our drawing
+	 */
+	public void onDrawFrame(GL10 unused) {
 
-        // create a vertex shader type (GLES20.GL_VERTEX_SHADER)
-        // or a fragment shader type (GLES20.GL_FRAGMENT_SHADER)
-    	
-        int shaderHandle = GLES20.glCreateShader(type);
-         
-        if (shaderHandle != 0)
-        {
-            // Pass in the shader source.
-            GLES20.glShaderSource(shaderHandle, shaderCode);
-         
-            // Compile the shader.
-            GLES20.glCompileShader(shaderHandle);
-         
-            // Get the compilation status.
-            final int[] compileStatus = new int[1];
-            GLES20.glGetShaderiv(shaderHandle, GLES20.GL_COMPILE_STATUS, compileStatus, 0);
-         
-            // If the compilation failed, delete the shader.
-            if (compileStatus[0] == 0)
-            {
-                GLES20.glDeleteShader(shaderHandle);
-                shaderHandle = 0;
-            }
-        }
-        
-         
-        if (shaderHandle == 0)
-        {
-            throw new RuntimeException("Error creating vertex shader.");
-        }
-        return shaderHandle;
-    }
+		int loops = 0;
+		while (next_game_tick < System.currentTimeMillis() && loops < MAX_FRAMESKIP) {
+			updateWorld();
+			next_game_tick += MILLISEC_PER_TICK;
+			loops++;
+		}
+		
+		mslf = System.currentTimeMillis();
+		float interpolation = (System.currentTimeMillis() + MILLISEC_PER_TICK - next_game_tick) / (float) MILLISEC_PER_TICK;
+		drawWorld(interpolation);
+		long mspf = System.currentTimeMillis() - mslf;
+		smoothMspf = (smoothMspf*smoothingCount + mspf)/(smoothingCount+1);
+		smoothingCount++;
+		if (smoothingCount >= SMOOTHING_SIZE) {
+			smoothingCount = 0;
+			((TheHunt) mContext).runOnUiThread(new Runnable() {
+				public void run() {
+					((TheHunt) mContext).mPreyState.setText(Planner.mState.toString());
+					((TheHunt) mContext).mMSperFrame.setText(smoothMspf + "");
+				}
+			});
+		}
+	}		
+
+	private void updateWorld() {
+		
+		//TODO: fix all these static shits
+		((TheHunt) mContext).runOnUiThread(new Runnable() {
+			public void run() {
+				((TheHunt) mContext).mPreyState.setText(Planner.mState.toString());
+			}
+		});
+//		
+		PointF curDirDelta = mEnv.data.getTileFromPos(mPrey.getPosition()).getDir().getDelta();
+		mPrey.update(curDirDelta.x * EnvironmentData.currentStep, 
+				curDirDelta.y * EnvironmentData.currentStep);
+	}
+
+	private void drawWorld(float interpolation) {
+		int clearMask = GLES20.GL_COLOR_BUFFER_BIT;
+		
+		if (MultisampleConfigChooser.usesCoverageAa()) {
+			final int GL_COVERAGE_BUFFER_BIT_NV = 0x8000;
+            clearMask |= GL_COVERAGE_BUFFER_BIT_NV;
+		}
+		
+		GLES20.glClear(clearMask);
+		
+		mPrey.draw(mVMatrix, mProjMatrix, interpolation);
+		mEnv.draw(mVMatrix, mProjMatrix, interpolation);
+	}
 
 	public void handleTouch(float x, float y) {
 		x = D3GLES20.fromWorldWidth(x);

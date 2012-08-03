@@ -37,4 +37,9 @@ class MyGLSurfaceView extends GLSurfaceView {
     	}
     	return super.onTouchEvent(event);
     }
+    @Override
+    public void onResume() {
+    	mRenderer.resume();
+    	super.onResume();
+    }
 }
