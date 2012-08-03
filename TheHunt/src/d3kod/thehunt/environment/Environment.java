@@ -15,26 +15,25 @@ public class Environment {
 	public EnvironmentData data;
 	private float[] foodColor = {0.5f, 0.5f, 0.0f};
 	
-	public Environment() {
-		data = new EnvironmentData();
-		data.makeAlgae();
+	public Environment(int width, int height) {
+		data = new EnvironmentData(width, height);
 	}
-//	public Drawable getObjects() {
-//		return data.mFloatingObjects.getDrawable();
-//	}
+	public void initGraphics() {
+		data.makeAlgae();
+		Tile.initBuffers();
+		
+	}
 	public void recalculateCurrents() {
-		data.createTiles();
-		data.currents.initialize();
 	}
 	
 //	public void update() {
 //		Tile objTile = getTileFromPos(data.mFloatingObjects.getPosition());
 //		data.mFloatingObjects.update(objTile.getDir().getDelta());
 //	}
-	public void setSize(int width, int height) {
-		data.setSize(width, height);
-		data.createTiles();
-	}
+//	public void setSize(int width, int height) {
+//		data.setSize(width, height);
+//		data.createTiles();
+//	}
 	public Tile[][] getTiles() {
 		return data.mTiles;
 	}
@@ -48,6 +47,7 @@ public class Environment {
 //		data.newFood(x, y);
 	}
 	public void draw(float[] mVMatrix, float[] mProjMatrix, float interpolation) {
+//		data.logFloatingObjects();
 		for (FloatingObject fo: data.getFloatingObjects()) {
 			D3GLES20.draw(fo.getIndex(), fo.getModelMatrix(), mVMatrix, mProjMatrix);
 		}

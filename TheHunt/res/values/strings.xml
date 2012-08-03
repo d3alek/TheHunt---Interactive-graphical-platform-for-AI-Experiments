@@ -2,7 +2,7 @@
 <resources>
 
     <string name="hello">Hello World!</string>
-    <string name="app_name">TheHuntOpenGL</string>
+    <string name="app_name">TheHunt</string>
     <string name="showTiles">Tiles</string>
 	<string name="showCurrents">Currents</string>
 	<string name="bodyBendDelay">Body Bend Delay</string>

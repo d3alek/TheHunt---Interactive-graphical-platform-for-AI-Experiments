@@ -115,6 +115,7 @@ public class D3GLES20 {
 	}
 	
 	public static void draw(int key, float[] mMMatrix, float[] mVMatrix, float[] mProjMatrix) {
+//		Log.v(TAG, "Drawing " + key);
 		shapes.get(key).setModelMatrix(mMMatrix);
 		shapes.get(key).draw(mVMatrix, mProjMatrix);
 	}

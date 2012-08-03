@@ -38,7 +38,7 @@ public class EnvironmentData {
 	
 	private ArrayList<FloatingObject> mFloatingObjects = new ArrayList<FloatingObject>();
 	public static Tile[][] mTiles;
-	public Currents currents;
+//	public Currents currents;
 
 	public static int realWidth;
 
@@ -48,13 +48,15 @@ public class EnvironmentData {
 
 	private static float mFoodY;
 
-	public EnvironmentData() {
-		this(1, 1);
-	}
+//	public EnvironmentData() {
+//		this(1, 1);
+//	}
 	
 	public EnvironmentData(int width, int height) {
 		setSize(width, height);
-		currents = new Currents(this);
+		createTiles();
+//		currents = new Currents(this);
+//		currents.initialize();
 		mFoodX = -1; mFoodY = -1;
 	}
 	
@@ -138,7 +140,7 @@ public class EnvironmentData {
 		}
 		
 		// Fill the buffers for drawing the tiles
-		Tile.initBuffers();
+//		Tile.initBuffers();
 	}
 
 	public void addFloatingObject(FloatingObject floatingObject) {
@@ -181,5 +183,13 @@ public class EnvironmentData {
 			addFloatingObject(
 					new FloatingObject(D3GLES20.newDefaultCircle(ALGAE_SIZE, algaeColor, ALGAE_DETAILS), 0, 0, Type.ALGAE));
 		}
+	}
+	
+	public void logFloatingObjects() {
+		String log = "Floating objects log: ";
+		for (FloatingObject fo: mFloatingObjects) {
+			log += fo.getType() + " " + fo.getIndex() + " ";
+		}
+		Log.v(TAG, log);
 	}
 }

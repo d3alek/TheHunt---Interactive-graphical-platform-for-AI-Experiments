@@ -142,7 +142,6 @@ public class Currents {
 		return neighborsArray;
 	}
 	
-	@SuppressWarnings("unchecked")
 	protected void initialize() {
 		LinkedList<Tile> queue1 = new LinkedList<Tile>(),
 				queue2 = new LinkedList<Tile>();
@@ -237,56 +236,4 @@ public class Currents {
 			}
 		}
 	}
-	
-//	public ShapeDrawable[] draw() {
-//		int drawableIndex = 0, drawableSize=2;
-//		ShapeDrawable[] tDrawables = new ShapeDrawable[tileCols*tileRows];
-//		Path E, SE, S, SW, W, NW, N, NE, undef;
-//		E = new Path();
-//		E.moveTo(-1, -1);
-//		E.lineTo(1, 0);
-//		E.lineTo(-1, 1);
-//		E.close();
-//		Matrix transformMatrix = new Matrix();
-//		transformMatrix.setRotate(45);
-//		SE = new Path(E); SE.transform(transformMatrix);
-//		transformMatrix.setRotate(45);
-//		S = new Path(SE); S.transform(transformMatrix);
-//		transformMatrix.setRotate(45);
-//		SW = new Path(S); SW.transform(transformMatrix);
-//		transformMatrix.setRotate(45);
-//		W = new Path(SW); W.transform(transformMatrix);
-//		transformMatrix.setRotate(45);
-//		NW = new Path(W); NW.transform(transformMatrix);
-//		transformMatrix.setRotate(45);
-//		N = new Path(NW); N.transform(transformMatrix);
-//		transformMatrix.setRotate(45);
-//		NE = new Path(N); NE.transform(transformMatrix);
-//		undef = new Path();
-//		undef.addCircle(0, 0, 1, Direction.CCW);
-//		undef.close();
-//		PathShape arrowPath;
-//		for (int i = 0; i < tileRows; i++) {
-//			for (int j = 0; j < tileCols; j++) {
-//				switch(data.mTiles[i][j].getDir()) {
-//				case E: arrowPath = new PathShape(E, drawableSize, drawableSize); break;
-//				case SE: arrowPath = new PathShape(SE, drawableSize, drawableSize); break;
-//				case S: arrowPath = new PathShape(S, drawableSize, drawableSize); break;
-//				case SW: arrowPath = new PathShape(SW, drawableSize, drawableSize); break;
-//				case W: arrowPath = new PathShape(W, drawableSize, drawableSize); break;
-//				case NW: arrowPath = new PathShape(NW, drawableSize, drawableSize); break;
-//				case N: arrowPath = new PathShape(N, drawableSize, drawableSize); break;
-//				case NE: arrowPath = new PathShape(NE, drawableSize, drawableSize); break;
-//				default: arrowPath = new PathShape(undef, drawableSize, drawableSize);
-//				}
-//				ShapeDrawable temp = new ShapeDrawable(arrowPath);
-//				temp.getPaint().setColor(CURRENTS_COLOR);
-//				temp.getPaint().setStyle(Paint.Style.STROKE);
-//				temp.setBounds(j*tWidth+tWidth/2, i*tHeight+tHeight/2, (j+1)*tWidth, (i+1)*tHeight);
-//				tDrawables[drawableIndex++] = temp;
-//			}
-//		}
-//		
-//		return tDrawables;
-//	}
 }

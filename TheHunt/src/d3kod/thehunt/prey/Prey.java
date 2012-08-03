@@ -40,6 +40,7 @@ public class Prey {
 	private int bodyEndAngleRot;
 	private int mInterpolationSampleSize;
 	private float meanInterpolation;
+	private int mPlanTarget;
 	public static boolean angleInterpolation = false;
 	public static boolean posInterpolation = false;
 
@@ -61,7 +62,7 @@ public class Prey {
 				doAction(mPlanner.nextAction(mWorldModel));
 				actionDelayCounter = ACTION_DELAY;
 			}
-		else actionDelayCounter--;
+			else actionDelayCounter--;
 		}
 		move(dx, dy);
 	}
@@ -157,25 +158,13 @@ public class Prey {
 		for (int i = 0; i < 3; ++i) {
 			mD.bodyEnd4[i] = mD.bodyEnd[i];
 		}
+		
 		mD.headVerticesData = calcHeadVerticesData();
 		mD.leftFinVerticesData = calcLeftFinVerticesData();
 		mD.rightFinVerticesData = calcRightFinVerticesData();
 		mD.eyeVertexData = D3GLES20.circleVerticesData(mD.eyePosition, mD.eyeSize, mD.eyeDetailsLevel);
 		
 		mD.finVerticesNum = mD.rightFinVerticesData.length / D3GLES20.COORDS_PER_VERTEX;
-		mD.leftFinVertexBuffer = D3GLES20.newFloatBuffer(mD.leftFinVerticesData);
-		mD.rightFinVertexBuffer = D3GLES20.newFloatBuffer(mD.rightFinVerticesData);
-		mD.headVertexBuffer = D3GLES20.newFloatBuffer(mD.headVerticesData);
-		mD.eyeVertexBuffer = D3GLES20.newFloatBuffer(mD.eyeVertexData);
-		
-		int vertexShaderHandle = D3GLES20.loadShader(GLES20.GL_VERTEX_SHADER, mD.vertexShaderCode);
-        int fragmentShaderHandle = D3GLES20.loadShader(GLES20.GL_FRAGMENT_SHADER, mD.fragmentShaderCode);
-        
-        mD.mProgram = D3GLES20.createProgram(vertexShaderHandle, fragmentShaderHandle);
-        
-        mD.mMVPMatrixHandle = GLES20.glGetUniformLocation(mD.mProgram, "u_MVPMatrix"); 
-        mD.mPositionHandle = GLES20.glGetAttribLocation(mD.mProgram, "a_Position");
-        mD.mColorHandle = GLES20.glGetUniformLocation(mD.mProgram, "u_Color");
 	}
 	
 	private float[] calcRightFinVerticesData() {
@@ -209,6 +198,26 @@ public class Prey {
 		return headVerticesData;
 	}
 
+	public void initGraphics() {
+		mD.leftFinVertexBuffer = D3GLES20.newFloatBuffer(mD.leftFinVerticesData);
+		mD.rightFinVertexBuffer = D3GLES20.newFloatBuffer(mD.rightFinVerticesData);
+		mD.headVertexBuffer = D3GLES20.newFloatBuffer(mD.headVerticesData);
+		mD.eyeVertexBuffer = D3GLES20.newFloatBuffer(mD.eyeVertexData);
+		
+		int vertexShaderHandle = D3GLES20.loadShader(GLES20.GL_VERTEX_SHADER, mD.vertexShaderCode);
+        int fragmentShaderHandle = D3GLES20.loadShader(GLES20.GL_FRAGMENT_SHADER, mD.fragmentShaderCode);
+        
+        mD.mProgram = D3GLES20.createProgram(vertexShaderHandle, fragmentShaderHandle);
+        
+        mD.mMVPMatrixHandle = GLES20.glGetUniformLocation(mD.mProgram, "u_MVPMatrix"); 
+        mD.mPositionHandle = GLES20.glGetAttribLocation(mD.mProgram, "a_Position");
+        mD.mColorHandle = GLES20.glGetUniformLocation(mD.mProgram, "u_Color");
+        
+		if (Planner.SHOW_TARGET) {
+			mPlanner.makeTarget();
+		}
+	}
+	
 	public void draw(float[] mVMatrix, float[] mProjMatrix, float interpolation) {
 //		GLES20.glLineWidth(2f);
 		
@@ -326,7 +335,9 @@ public class Prey {
 		GLES20.glEnableVertexAttribArray(mD.mPositionHandle);
 		GLES20.glDrawArrays(GLES20.GL_LINE_LOOP, 0, mD.eyeDetailsLevel);
 		
-		if (Planner.SHOW_TARGET) mPlanner.draw(mVMatrix, mProjMatrix);
+		if (Planner.SHOW_TARGET) {
+			D3GLES20.draw(mPlanner.getTarget(), mPlanner.getTargetMMatrix(), mVMatrix, mProjMatrix);
+		}
 	}
 	
 	private void updateBodyVertexBuffer() {

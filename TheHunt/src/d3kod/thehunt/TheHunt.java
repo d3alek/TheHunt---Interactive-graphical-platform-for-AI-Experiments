@@ -1,12 +1,12 @@
 package d3kod.thehunt;
 
 import android.app.Activity;
+import android.content.res.Configuration;
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
-import android.widget.NumberPicker;
-import android.widget.NumberPicker.OnValueChangeListener;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 import d3kod.thehunt.prey.Prey;
@@ -37,12 +37,14 @@ public class TheHunt extends Activity {
     
     @Override
     protected void onPause() {
+    	Log.v(TAG, "Pausing activity");
     	mGLView.onPause();
     	super.onPause();
     }
     
     @Override
     protected void onResume() {
+    	Log.v(TAG, "Resuming activity");
     	mGLView.onResume();
     	super.onResume();
     }

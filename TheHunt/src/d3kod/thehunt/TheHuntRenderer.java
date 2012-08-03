@@ -25,7 +25,7 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 	public static boolean LOGGING_TIME = false;
 	public static boolean SHOW_TILES = false;
 	public static boolean SHOW_CURRENTS = false;
-	public static boolean MANUAL_CONTROLS = false;
+	public static boolean MANUAL_CONTROLS = true;
 	public static boolean FEED_WITH_TOUCH = true;
 
 	private float[] mProjMatrix = new float[16]; 
@@ -52,6 +52,10 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 		mContext = context;
 		next_game_tick = System.currentTimeMillis();
 		mslf = 0;
+	    mEnv = null;
+	    mPrey = null;
+//	    mManuControl.setSize();
+		
 	}
 	
 	public void resume() {
@@ -72,8 +76,6 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 //		GLES20.glEnable(GLES20.)
 		GLES20.glClearColor(0.8f, 0.8f, 0.8f, 1.0f);
 		D3GLES20.clean();
-		mManuControl = new ManualControl();
-		mEnv = new Environment();
 	    Matrix.orthoM(mVMatrix, 0, -1, 1, -1, 1, 0.1f, 100f);
 	}
 	/**
@@ -81,16 +83,18 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 	 */
 	public void onSurfaceChanged(GL10 unused, int width, int height) {
 		GLES20.glViewport(0, 0, width, height);
-
+		
+		if (mEnv == null) mEnv = new Environment(width, height);
+	    if (mPrey == null) mPrey = new Prey(EnvironmentData.mScreenWidth, EnvironmentData.mScreenHeight, mEnv);
+	    if (MANUAL_CONTROLS && mManuControl == null) mManuControl = new ManualControl();
+		mManuControl.setSize();
+	    mEnv.initGraphics();
+		mPrey.initGraphics();
+		
 	    float ratio = (float) width / height;
 	    
 	    if (width > height) Matrix.frustumM(mProjMatrix, 0, -ratio, ratio, -1, 1, 1, 10);
 	    else Matrix.frustumM(mProjMatrix, 0, -1, 1, -1/ratio, 1/ratio, 1, 10);
-	    
-	    mEnv.setSize(width, height);
-	    mPrey = new Prey(EnvironmentData.mScreenWidth, EnvironmentData.mScreenHeight, mEnv);
-	    
-	    mManuControl.setSize();
 	}
 	/**
 	 * Here we do our drawing
@@ -144,9 +148,13 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 		}
 		
 		GLES20.glClear(clearMask);
+
+		if (MANUAL_CONTROLS) {
+			mManuControl.draw(mVMatrix, mProjMatrix);
+		}
 		
-		mPrey.draw(mVMatrix, mProjMatrix, interpolation);
 		mEnv.draw(mVMatrix, mProjMatrix, interpolation);
+		mPrey.draw(mVMatrix, mProjMatrix, interpolation);
 	}
 
 	public void handleTouch(float x, float y) {

@@ -14,7 +14,11 @@ public class Plan {
 	ArrayList<Action> mActions;
 	int mCurrentAction;
 	private int mLastAction;
-	private int target;
+//	private int target;
+	private float mTargetX;
+	private float mTargetY;
+	private float[] mTargetColor;
+	private float mTargetSize;
 	private final static float[] targetColorDefault = {1.0f, 0.0f, 0.0f};
 	private final static float targetSizeDefault = 0.005f;
 	private static float[] modelMatrix;
@@ -27,12 +31,31 @@ public class Plan {
 		mActions = new ArrayList<Action>();
 		mCurrentAction = 0;
 		mLastAction = MAX_ACTIONS;
+		mTargetX = targetX;
+		mTargetY = targetY;
+		mTargetSize = targetSize;
+		mTargetColor = targetColor.clone();
 		if (Planner.SHOW_TARGET) {
-			target = D3GLES20.newDefaultCircle(targetSize, targetColor, 10);
+//			target = D3GLES20.newDefaultCircle(targetSize, targetColor, 10);
 			modelMatrix = new float[16];
 			Matrix.setIdentityM(modelMatrix , 0);
 			Matrix.translateM(modelMatrix, 0, targetX, targetY, 0);
 		}
+	}
+	public float getTargetX() {
+		return mTargetX;
+	}
+	public float getTargetY() {
+		return mTargetY;
+	}
+	public float getTargetSize() {
+		return mTargetSize;
+	}
+	public float[] getTargetColor() {
+		return mTargetColor;
+	}
+	public float[] getTargetMMatrix() {
+		return modelMatrix;
 	}
 	public boolean isFinished() {
 //		Log.v(TAG, mActions.size() + " " + mCurrentAction + " " + mLastAction);
@@ -76,17 +99,13 @@ public class Plan {
 		mCurrentAction = 0;
 	}
 
-	public int getTarget() {
-		return target;
-	}
-
-	public float[] getTargetMMatrix() {
-		return modelMatrix;
-	}
-
-	public void done() {
-		D3GLES20.removeShape(target);
-	}
+//	public int getTarget() {
+//		return target;
+//	}
+//
+//	public void done() {
+//		D3GLES20.removeShape(target);
+//	}
 
 	public boolean isEmpty() {
 		return mActions.isEmpty();
