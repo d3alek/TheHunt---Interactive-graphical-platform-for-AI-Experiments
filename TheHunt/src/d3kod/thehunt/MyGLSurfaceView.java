@@ -7,7 +7,7 @@ import android.view.MotionEvent;
 
 class MyGLSurfaceView extends GLSurfaceView {
 
-    private TheHuntRenderer mRenderer;
+    public TheHuntRenderer mRenderer;
 //    public MyGLSurfaceView(Context context, )
 //    {
 //       

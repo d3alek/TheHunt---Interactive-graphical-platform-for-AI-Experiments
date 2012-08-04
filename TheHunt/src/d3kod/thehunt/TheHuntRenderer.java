@@ -25,14 +25,14 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 	public static boolean LOGGING_TIME = false;
 	public static boolean SHOW_TILES = false;
 	public static boolean SHOW_CURRENTS = false;
-	public static boolean MANUAL_CONTROLS = true;
+	public static boolean MANUAL_CONTROLS = false;
 	public static boolean FEED_WITH_TOUCH = true;
 
 	private float[] mProjMatrix = new float[16]; 
 	private float[] mVMatrix = new float[16];
 	private long timePreviousNS;
 	private Environment mEnv;
-	private Prey mPrey;
+	public Prey mPrey;
 	private ManualControl mManuControl;
 	
     private final int TICKS_PER_SECOND = 30;
@@ -87,7 +87,7 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 		if (mEnv == null) mEnv = new Environment(width, height);
 	    if (mPrey == null) mPrey = new Prey(EnvironmentData.mScreenWidth, EnvironmentData.mScreenHeight, mEnv);
 	    if (MANUAL_CONTROLS && mManuControl == null) mManuControl = new ManualControl();
-		mManuControl.setSize();
+		if (MANUAL_CONTROLS) mManuControl.setSize();
 	    mEnv.initGraphics();
 		mPrey.initGraphics();
 		

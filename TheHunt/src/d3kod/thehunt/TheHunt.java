@@ -1,8 +1,6 @@
 package d3kod.thehunt;
 
 import android.app.Activity;
-import android.content.res.Configuration;
-import android.opengl.GLSurfaceView;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -14,11 +12,13 @@ import d3kod.thehunt.prey.Prey;
 public class TheHunt extends Activity {
 
     private static final String TAG = "TheHunt";
-	private GLSurfaceView mGLView;
+	private MyGLSurfaceView mGLView;
 	private TextView mBodyBendDelay;
 	private TextView mActionDelay;
 	public TextView mPreyState;
 	protected TextView mMSperFrame;
+	private ToggleButton mPosInterpolation;
+	private ToggleButton mAngleInterpolation;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -26,13 +26,16 @@ public class TheHunt extends Activity {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         
         setContentView(R.layout.main);
-        mGLView = (GLSurfaceView)findViewById(R.id.glSurfaceView);
+        mGLView = (MyGLSurfaceView)findViewById(R.id.glSurfaceView);
         mBodyBendDelay = (TextView)findViewById(R.id.bodyBendDelay);
-        mBodyBendDelay.setText(Prey.BODY_BEND_DELAY+"");
+        
         mActionDelay = (TextView)findViewById(R.id.actionDelay);
-        mActionDelay.setText(Prey.ACTION_DELAY+"");
+        
+        mPosInterpolation = (ToggleButton)findViewById(R.id.posInterpolationToggle);
+        mAngleInterpolation = (ToggleButton)findViewById(R.id.angleInterpolationToggle);
+        
         mPreyState = (TextView)findViewById(R.id.preyState);
-        mMSperFrame = (TextView)findViewById(R.id.msPerFrame);
+        mMSperFrame = (TextView)findViewById(R.id.msPerFrame);        
     }
     
     @Override
@@ -45,6 +48,13 @@ public class TheHunt extends Activity {
     @Override
     protected void onResume() {
     	Log.v(TAG, "Resuming activity");
+    	
+    	((ToggleButton)findViewById(R.id.aiToggle)).setChecked(Prey.AI);
+    	if (mBodyBendDelay != null) mBodyBendDelay.setText(Prey.BODY_BEND_DELAY+"");
+    	if (mActionDelay != null) mActionDelay.setText(Prey.ACTION_DELAY+"");
+    	if (mPosInterpolation != null) mPosInterpolation.setChecked(Prey.posInterpolation);//mPosInterpolation = (ToggleButton)findViewById(R.id.posInterpolationToggle);
+        if (mAngleInterpolation != null) mAngleInterpolation.setChecked(Prey.angleInterpolation);
+    	
     	mGLView.onResume();
     	super.onResume();
     }
@@ -89,6 +99,20 @@ public class TheHunt extends Activity {
 			if (Prey.ACTION_DELAY > 0) Prey.ACTION_DELAY--;
 			mActionDelay.setText(Prey.ACTION_DELAY+"");
 			break;
-		}
+    	case R.id.flopLeft:
+    		mGLView.post(new Runnable() {
+				public void run() {
+					mGLView.mRenderer.mPrey.flopLeft();
+				}
+			});
+    		break;
+    	case R.id.flopRight:
+    		mGLView.post(new Runnable() {
+				public void run() {
+					mGLView.mRenderer.mPrey.flopRight();
+				}
+			});
+    		break;
+    	}
     }
 }

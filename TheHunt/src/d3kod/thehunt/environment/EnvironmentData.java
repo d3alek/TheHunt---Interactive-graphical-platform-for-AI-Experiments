@@ -23,10 +23,11 @@ public class EnvironmentData {
 	public static final float currentStep = 0.002f;
 
 	private static final int ALGAE_NUM = 1;
+	
 	private static final float[] algaeColor = 
-		{ 0.0f, 1.0f, 0.0f, 0.0f};
+		{ 0.4f, 0.4f, 0.4f, 0.0f};
 
-	private static final int ALGAE_DETAILS = 10;
+	private static final int ALGAE_DETAILS = 100;
 
 	private static final float ALGAE_SIZE = 0.3f;
 	

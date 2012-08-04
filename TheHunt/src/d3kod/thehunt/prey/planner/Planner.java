@@ -37,7 +37,7 @@ public class Planner {
 		mState = checkForSomethingInteresting(mWorldModel);
 		switch(mState) {
 		case EXPLORE: return chooseRandomAction();
-		case SCAVAGE: mPlan = makeScavagePlan(mWorldModel); break;
+		case FORAGE: mPlan = makeScavagePlan(mWorldModel); break;
 		case HIDE: 
 			if (mWorldModel.getLightLevel() > 0) mPlan = makeHidePlan(mWorldModel); 
 			else mPlan = new NoPlan(mWorldModel.getHeadX(), mWorldModel.getHeadY());
@@ -52,7 +52,7 @@ public class Planner {
 	private PlanState checkForSomethingInteresting(WorldModel mWorldModel) {
 		if (mWorldModel.knowFoodLocation()) {
 //			Log.v(TAG, "Found an interesting food location!");
-			return PlanState.SCAVAGE;
+			return PlanState.FORAGE;
 		}
 		if (mWorldModel.knowAlgaeLocation()) {
 //			Log.v(TAG, "Found an interesting algae location!");

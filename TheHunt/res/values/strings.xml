@@ -7,8 +7,9 @@
 	<string name="showCurrents">Currents</string>
 	<string name="bodyBendDelay">Body Bend Delay</string>
 	<string name="actionDelay">Action Delay</string>
-	<string name="preyStateText">Prey State</string>
+	<string name="preyStateText">State: </string>
 	<string name="ai">AI</string>
 	<string name="posInterpolation">Position Interpolation</string>
 	<string name="angleInterpolation">Angle Interpolation</string>
+	<string name="msPF">msPerFrame</string>
 </resources>

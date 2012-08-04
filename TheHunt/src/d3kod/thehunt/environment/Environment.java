@@ -13,7 +13,7 @@ import d3kod.thehunt.prey.sensor.Event.EventType;
 public class Environment {
 	private static final String TAG = "Environment";
 	public EnvironmentData data;
-	private float[] foodColor = {0.5f, 0.5f, 0.0f};
+	private float[] foodColor = {0.5f, 0.5f, 0.5f};
 	
 	public Environment(int width, int height) {
 		data = new EnvironmentData(width, height);

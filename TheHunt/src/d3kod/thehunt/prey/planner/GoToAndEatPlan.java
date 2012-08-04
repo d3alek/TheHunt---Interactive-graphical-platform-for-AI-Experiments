@@ -21,7 +21,7 @@ public class GoToAndEatPlan extends GoToPlan {
 			finish();
 			addNextAction(Action.eat);
 			ate = true;
-			logActions();
+//			logActions();
 			return;
 		}
 	}

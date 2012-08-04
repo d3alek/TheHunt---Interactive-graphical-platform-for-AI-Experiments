@@ -41,8 +41,8 @@ public class Prey {
 	private int mInterpolationSampleSize;
 	private float meanInterpolation;
 	private int mPlanTarget;
-	public static boolean angleInterpolation = false;
-	public static boolean posInterpolation = false;
+	public static boolean angleInterpolation = true;
+	public static boolean posInterpolation = true;
 
 	public void update(float dx, float dy) {
 		float[] posTemp = { 0.0f, 0.07f, 0.0f, 1.0f };
@@ -165,6 +165,9 @@ public class Prey {
 		mD.eyeVertexData = D3GLES20.circleVerticesData(mD.eyePosition, mD.eyeSize, mD.eyeDetailsLevel);
 		
 		mD.finVerticesNum = mD.rightFinVerticesData.length / D3GLES20.COORDS_PER_VERTEX;
+		
+		
+//		AI = false;
 	}
 	
 	private float[] calcRightFinVerticesData() {

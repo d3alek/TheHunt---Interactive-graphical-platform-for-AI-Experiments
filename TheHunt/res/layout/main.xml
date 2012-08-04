@@ -4,127 +4,78 @@
     android:layout_height="fill_parent"
     android:orientation="vertical" >
 
-    <LinearLayout
-        android:layout_width="fill_parent"
+    <RelativeLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:layout_marginLeft="7dp"
+        android:layout_marginRight="7dp"
+        android:orientation="horizontal" >
     
-        <ToggleButton
-            android:id="@+id/showTilesToggle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:onClick="onToggleClicked"
-            android:textOff="@string/showTiles"
-            android:textOn="@string/showTiles" />
-        
-        <ToggleButton
-            android:id="@+id/showCurrentsToggle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:onClick="onToggleClicked"
-            android:textOff="@string/showCurrents"
-            android:textOn="@string/showCurrents" />
-
-        <TextView
-            android:id="@+id/bodyBendDelayLabel"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/bodyBendDelay" >
-
-        </TextView>
-
-
-        <Button
-            android:id="@+id/minusBodyBendDelay"
-            style="?android:attr/buttonStyleSmall"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:onClick="onButtonClicked"
-            android:text="-" />        
-        <TextView 
-            android:id="@+id/bodyBendDelay"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text = "-1"/>
-        <Button
-            android:id="@+id/plusBodyBendDelay"
-            style="?android:attr/buttonStyleSmall"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:onClick="onButtonClicked"
-            android:text="+"/>        
-
-        <TextView
-            android:id="@+id/actionDelayLabel"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/actionDelay" >
-
-        </TextView>
-        
-
-        <Button
-            android:id="@+id/minusActionDelay"
-            style="?android:attr/buttonStyleSmall"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:onClick="onButtonClicked"
-            android:text="-" />
-        <TextView 
-            android:id="@+id/actionDelay"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text = "-1"/>
-        <Button
-            android:id="@+id/plusActionDelay"
-            style="?android:attr/buttonStyleSmall"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:onClick="onButtonClicked"
-            android:text="+"/>        
-
         <TextView
             android:id="@+id/preyStateText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
             android:layout_marginRight="7dp"
             android:text="@string/preyStateText" />
 
-        <TextView 
+        <TextView
             android:id="@+id/preyState"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="none"/>
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@id/preyStateText"
+            android:text="none" />
         
-        <ToggleButton
-            android:id="@+id/aiToggle"
+        <LinearLayout 
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:onClick="onToggleClicked"
-            android:textOff="@string/ai"
-            android:textOn="@string/ai" />
+            android:layout_centerInParent="true"
+            android:layout_centerVertical="true">
+            <ToggleButton
+	            android:id="@+id/aiToggle"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:onClick="onToggleClicked"
+	            android:textOff="@string/ai"
+	            android:textOn="@string/ai"
+	            android:layout_marginRight="50dp"/>
+            <Button 
+                android:id="@+id/flopLeft"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Flop left"
+                android:onClick="onButtonClicked"/>
+            <Button 
+                android:id="@+id/flopRight"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Flop right"
+                android:onClick="onButtonClicked"/>
+        </LinearLayout>
         
-        <ToggleButton
-            android:id="@+id/posInterpolationToggle"
+        
+
+        <TextView
+            android:id="@+id/msPFText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:onClick="onToggleClicked"
-            android:textOff="@string/posInterpolation"
-            android:textOn="@string/posInterpolation" />
-                
-        <ToggleButton
-            android:id="@+id/angleInterpolationToggle"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_gravity="right"
+            android:text="@string/msPF" />
+
+        <TextView
+            android:id="@+id/msPerFrame"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:onClick="onToggleClicked"
-            android:textOff="@string/angleInterpolation"
-            android:textOn="@string/angleInterpolation" />
-        <TextView 
-        	android:id="@+id/msPerFrame"
-        	android:layout_width="wrap_content"
-        	android:layout_height="wrap_content"/>
+            android:layout_centerVertical="true"
+            android:layout_marginRight="7dp"
+            android:layout_toLeftOf="@id/msPFText"
+            android:text="00" />
         
-    </LinearLayout>
+    </RelativeLayout>
     
     <d3kod.thehunt.MyGLSurfaceView
         android:id="@+id/glSurfaceView"
