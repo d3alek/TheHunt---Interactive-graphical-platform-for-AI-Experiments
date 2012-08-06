@@ -19,10 +19,17 @@ public class Prey {
 	
 	private static final String TAG = "Prey";
 	public static boolean AI = false;
-	public static int BODY_BEND_DELAY = 1;
-	public static int BODY_BEND_DELAY_MAX = 10;
+//	public static int BODY_BEND_DELAY = 1;
+	public static final int BODY_BENDS_PER_SECOND_MAX = 30;
+	public static int BODY_BENDS_PER_SECOND = 12;
+	public static int BODY_BEND_DELAY = TheHuntRenderer.TICKS_PER_SECOND/BODY_BENDS_PER_SECOND;
 	public static int ACTION_DELAY = 5;
 	public static int ACTION_DELAY_MAX = 20;
+	
+	public static int SECONDS_PER_REV = 3;
+	public static int BODY_ANGLE_COUNTER = PreyData.angleFlop/PreyData.rotateSpeed;
+//	public static int rotateSpeed = 360/(TheHuntRenderer.TICKS_PER_SECOND*SECONDS_PER_FULL_ROT); 
+	
 	private Planner mPlanner;
 	private WorldModel mWorldModel;
 	private Sensor mSensor;
@@ -38,9 +45,9 @@ public class Prey {
 	private int bodyBAngleRot;
 	private int bodyCAngleRot;
 	private int bodyEndAngleRot;
-	private int mInterpolationSampleSize;
-	private float meanInterpolation;
-	private int mPlanTarget;
+	private int nextBodyEndAngleTarget;
+	private int newBodyStartAngleTarget;
+	private int bodyAngleCounter;
 	public static boolean angleInterpolation = true;
 	public static boolean posInterpolation = true;
 
@@ -74,23 +81,11 @@ public class Prey {
 			mD.bodyEndAngleTarget = mD.bodyCAngleTarget;
 			mD.bodyCAngleTarget = mD.bodyBAngleTarget;
 			mD.bodyBAngleTarget = mD.bodyStartAngleTarget;
-			bodyBendCounter = BODY_BEND_DELAY;
+//			mD.bodyStartAngleTarget = newBodyStartAngleTarget;
+//			if (mD.bodyEndAngleTarget == nextBodyEndAngleTarget) nextBodyEndAngleTarget = 0;
+//			if (nextBodyEndAngleTarget != 0) mD.bodyEndAngleTarget = nextBodyEndAngleTarget;
 			
-			if (mD.bodyStartAngleTarget > mD.bodyStartAngle + mD.rotateSpeed*BODY_BEND_DELAY) bodyStartAngleRot = mD.rotateSpeed;
-			else if (mD.bodyStartAngleTarget < mD.bodyStartAngle - mD.rotateSpeed*BODY_BEND_DELAY) bodyStartAngleRot = -mD.rotateSpeed;
-			else bodyStartAngleRot = 0;
-			
-			if (mD.bodyBAngleTarget > mD.bodyBAngle + mD.rotateSpeed*BODY_BEND_DELAY) bodyBAngleRot = +mD.rotateSpeed;
-			else if (mD.bodyBAngleTarget < mD.bodyBAngle - mD.rotateSpeed*BODY_BEND_DELAY) bodyBAngleRot = -mD.rotateSpeed;
-			else bodyBAngleRot = 0;
-			
-			if (mD.bodyCAngleTarget > mD.bodyCAngle + mD.rotateSpeed*BODY_BEND_DELAY) bodyCAngleRot = +mD.rotateSpeed;
-			else if (mD.bodyCAngleTarget < mD.bodyCAngle - mD.rotateSpeed*BODY_BEND_DELAY) bodyCAngleRot = -mD.rotateSpeed;
-			else bodyCAngleRot = 0;
-			
-			if (mD.bodyEndAngleTarget > mD.bodyEndAngle + mD.rotateSpeed*BODY_BEND_DELAY) bodyEndAngleRot = +mD.rotateSpeed;
-			else if (mD.bodyEndAngleTarget < mD.bodyEndAngle - mD.rotateSpeed*BODY_BEND_DELAY) bodyEndAngleRot = -mD.rotateSpeed;
-			else bodyEndAngleRot = 0;
+			bodyBendCounter = BODY_BEND_DELAY-1;
 			
 //			Log.v(TAG, "Passing spin " + mD.bodyStartAngleTarget + " " + mD.bodyBAngle + " " + mD.bodyCAngle + " " + mD.bodyEndAngle);
 		}
@@ -99,21 +94,67 @@ public class Prey {
 			--bodyBendCounter;
 		}
 		
+		if (bodyAngleCounter == 0) {
+			Log.v(TAG, "DEBUGGING " + mD.bodyStartAngleTarget + " " + mD.bodyStartAngle + " " + mD.rotateSpeed);
+			if (mD.bodyStartAngleTarget > mD.bodyStartAngle + mD.rotateSpeed*BODY_ANGLE_COUNTER) bodyStartAngleRot = mD.rotateSpeed;
+			else if (mD.bodyStartAngleTarget < mD.bodyStartAngle - mD.rotateSpeed*BODY_ANGLE_COUNTER) bodyStartAngleRot = -mD.rotateSpeed;
+			else {
+				bodyStartAngleRot = 0;
+				mD.bodyStartAngle = mD.bodyStartAngleTarget;
+			}
+			
+			if (mD.bodyBAngleTarget > mD.bodyBAngle + mD.rotateSpeed*BODY_ANGLE_COUNTER) bodyBAngleRot = +mD.rotateSpeed;
+			else if (mD.bodyBAngleTarget < mD.bodyBAngle - mD.rotateSpeed*BODY_ANGLE_COUNTER) bodyBAngleRot = -mD.rotateSpeed;
+			else {
+				bodyBAngleRot = 0;
+				mD.bodyBAngle = mD.bodyBAngleTarget;
+			}
+			
+			if (mD.bodyCAngleTarget > mD.bodyCAngle + mD.rotateSpeed*BODY_ANGLE_COUNTER) bodyCAngleRot = +mD.rotateSpeed;
+			else if (mD.bodyCAngleTarget < mD.bodyCAngle - mD.rotateSpeed*BODY_ANGLE_COUNTER) bodyCAngleRot = -mD.rotateSpeed;
+			else {
+				bodyCAngleRot = 0;
+				mD.bodyCAngle = mD.bodyCAngleTarget;
+			}
+			
+			if (mD.bodyEndAngleTarget > mD.bodyEndAngle + mD.rotateSpeed*BODY_ANGLE_COUNTER) bodyEndAngleRot = +mD.rotateSpeed;
+			else if (mD.bodyEndAngleTarget < mD.bodyEndAngle - mD.rotateSpeed*BODY_ANGLE_COUNTER) bodyEndAngleRot = -mD.rotateSpeed;
+			else {
+				bodyEndAngleRot = 0;
+				mD.bodyEndAngle = mD.bodyEndAngleTarget;
+			}
+			
+			bodyAngleCounter = BODY_ANGLE_COUNTER-1;
+		}
+		else {
+			bodyAngleCounter--;
+		}
+		
+		
 		mD.bodyStartAngle += bodyStartAngleRot;
 		mD.bodyBAngle += bodyBAngleRot;
 		mD.bodyCAngle += bodyCAngleRot;
 		mD.bodyEndAngle += bodyEndAngleRot;
+		
 		//TODO: fix thurst, maybe do it in this method instead of updateSpeed
 		updateSpeed(x, y);
 		applyFriction();
 		mD.mPosX += mD.vx ; mD.mPosY += mD.vy;
 	}
 	public void flopLeft() {
+//		newBodyStartAngleTarget += mD.angleFlop;
 		mD.bodyStartAngleTarget += mD.angleFlop;
 	}
 
 	public void flopRight() {
+//		newBodyStartAngleTarget -= mD.angleFlop;
 		mD.bodyStartAngleTarget -= mD.angleFlop;
+	}
+	
+	public void flopBack() {
+//		mD.bodyCAngleTarget -= mD.angleFlop;
+		nextBodyEndAngleTarget = mD.bodyEndAngleTarget + mD.angleFlop;
+		mD.bodyEndAngleTarget -= mD.angleFlop;//mD.bodyCAngleTarget;
 	}
 	public void updateSpeed(float dx, float dy) {
 		mD.vx += dx; mD.vy += dy;
@@ -142,6 +183,8 @@ public class Prey {
 		mPlanner = new Planner();
 		mEnv = env;
 		mSensor = new Sensor(mEnv);
+		nextBodyEndAngleTarget = 0;
+		newBodyStartAngleTarget = 0;
 		
 		Matrix.setIdentityM(mD.mModelMatrix, 0);
 		mD.mPosX = mD.mPosY = 0;

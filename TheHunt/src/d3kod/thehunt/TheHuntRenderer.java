@@ -35,7 +35,7 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 	public Prey mPrey;
 	private ManualControl mManuControl;
 	
-    private final int TICKS_PER_SECOND = 30;
+    public static final int TICKS_PER_SECOND = 30;
     private final int MILLISEC_PER_TICK = 1000 / TICKS_PER_SECOND;
     private final int MAX_FRAMESKIP = 5;
 	private long next_game_tick;

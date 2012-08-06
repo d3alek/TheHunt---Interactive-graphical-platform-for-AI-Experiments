@@ -5,7 +5,7 @@
     <string name="app_name">TheHunt</string>
     <string name="showTiles">Tiles</string>
 	<string name="showCurrents">Currents</string>
-	<string name="bodyBendDelay">Body Bend Delay</string>
+	<string name="bodyBendDelay">BodyBendsPerSecond</string>
 	<string name="actionDelay">Action Delay</string>
 	<string name="preyStateText">State: </string>
 	<string name="ai">AI</string>

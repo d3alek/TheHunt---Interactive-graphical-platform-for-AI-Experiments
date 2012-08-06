@@ -8,6 +8,7 @@ import android.view.Window;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 import d3kod.thehunt.prey.Prey;
+import d3kod.thehunt.prey.PreyData;
 
 public class TheHunt extends Activity {
 
@@ -50,7 +51,7 @@ public class TheHunt extends Activity {
     	Log.v(TAG, "Resuming activity");
     	
     	((ToggleButton)findViewById(R.id.aiToggle)).setChecked(Prey.AI);
-    	if (mBodyBendDelay != null) mBodyBendDelay.setText(Prey.BODY_BEND_DELAY+"");
+    	if (mBodyBendDelay != null) mBodyBendDelay.setText(Prey.BODY_BENDS_PER_SECOND+"");
     	if (mActionDelay != null) mActionDelay.setText(Prey.ACTION_DELAY+"");
     	if (mPosInterpolation != null) mPosInterpolation.setChecked(Prey.posInterpolation);//mPosInterpolation = (ToggleButton)findViewById(R.id.posInterpolationToggle);
         if (mAngleInterpolation != null) mAngleInterpolation.setChecked(Prey.angleInterpolation);
@@ -63,12 +64,12 @@ public class TheHunt extends Activity {
     	boolean checked = ((ToggleButton) view).isChecked();
     	
     	switch(view.getId()) {
-    	case R.id.showTilesToggle:
-    		TheHuntRenderer.SHOW_TILES = checked;
-    		break;
-    	case R.id.showCurrentsToggle:
-    		TheHuntRenderer.SHOW_CURRENTS = checked;
-    		break;
+//    	case R.id.showTilesToggle:
+//    		TheHuntRenderer.SHOW_TILES = checked;
+//    		break;
+//    	case R.id.showCurrentsToggle:
+//    		TheHuntRenderer.SHOW_CURRENTS = checked;
+//    		break;
     	case R.id.aiToggle:
     		Prey.AI = checked;
     		break;
@@ -84,12 +85,24 @@ public class TheHunt extends Activity {
     public void onButtonClicked(View view) {
     	switch(view.getId()) {
     	case R.id.plusBodyBendDelay:
-    		if (Prey.BODY_BEND_DELAY < Prey.BODY_BEND_DELAY_MAX) Prey.BODY_BEND_DELAY++;
-    		mBodyBendDelay.setText(Prey.BODY_BEND_DELAY+"");
+    		if (Prey.BODY_BENDS_PER_SECOND < Prey.BODY_BENDS_PER_SECOND_MAX) {
+    			//Prey.BODY_BEND_DELAY++;
+    			Prey.BODY_BENDS_PER_SECOND++;
+    			Prey.BODY_BEND_DELAY = TheHuntRenderer.TICKS_PER_SECOND/Prey.BODY_BENDS_PER_SECOND;
+//    			PreyData.rotateSpeed = PreyData.angleFlop/Prey.BODY_BEND_DELAY;
+    			Log.v(TAG, "Body bend delay is " + Prey.BODY_BEND_DELAY);
+    		}
+    		mBodyBendDelay.setText(Prey.BODY_BENDS_PER_SECOND+"");
     		break;
     	case R.id.minusBodyBendDelay:
-    		if (Prey.BODY_BEND_DELAY > 0) Prey.BODY_BEND_DELAY--;
-    		mBodyBendDelay.setText(Prey.BODY_BEND_DELAY+"");
+    		if (Prey.BODY_BENDS_PER_SECOND > 0) {
+    			//Prey.BODY_BEND_DELAY--;
+    			Prey.BODY_BENDS_PER_SECOND--;
+    			Prey.BODY_BEND_DELAY = TheHuntRenderer.TICKS_PER_SECOND/Prey.BODY_BENDS_PER_SECOND;
+//    			PreyData.rotateSpeed = PreyData.angleFlop/Prey.BODY_BEND_DELAY;
+    			Log.v(TAG, "Body bend delay is " + Prey.BODY_BEND_DELAY);
+    		}
+    		mBodyBendDelay.setText(Prey.BODY_BENDS_PER_SECOND+"");
     		break;
 		case R.id.plusActionDelay:
 			if (Prey.ACTION_DELAY < Prey.ACTION_DELAY_MAX) Prey.ACTION_DELAY++;
@@ -110,6 +123,13 @@ public class TheHunt extends Activity {
     		mGLView.post(new Runnable() {
 				public void run() {
 					mGLView.mRenderer.mPrey.flopRight();
+				}
+			});
+    		break;
+    	case R.id.flopBack:
+    		mGLView.post(new Runnable() {
+				public void run() {
+					mGLView.mRenderer.mPrey.flopBack();
 				}
 			});
     		break;

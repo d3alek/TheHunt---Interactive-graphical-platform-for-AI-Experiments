@@ -9,21 +9,21 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal">
     
-        <ToggleButton
-            android:id="@+id/showTilesToggle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:onClick="onToggleClicked"
-            android:textOff="@string/showTiles"
-            android:textOn="@string/showTiles" />
+<!--         <ToggleButton -->
+<!--             android:id="@+id/showTilesToggle" -->
+<!--             android:layout_width="wrap_content" -->
+<!--             android:layout_height="wrap_content" -->
+<!--             android:onClick="onToggleClicked" -->
+<!--             android:textOff="@string/showTiles" -->
+<!--             android:textOn="@string/showTiles" /> -->
         
-        <ToggleButton
-            android:id="@+id/showCurrentsToggle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:onClick="onToggleClicked"
-            android:textOff="@string/showCurrents"
-            android:textOn="@string/showCurrents" />
+<!--         <ToggleButton -->
+<!--             android:id="@+id/showCurrentsToggle" -->
+<!--             android:layout_width="wrap_content" -->
+<!--             android:layout_height="wrap_content" -->
+<!--             android:onClick="onToggleClicked" -->
+<!--             android:textOff="@string/showCurrents" -->
+<!--             android:textOn="@string/showCurrents" /> -->
 
         <TextView
             android:id="@+id/bodyBendDelayLabel"
@@ -129,6 +129,12 @@
             android:layout_height="wrap_content"
             android:text="Flop left"
             android:onClick="onButtonClicked"/>
+        <Button 
+	        android:id="@+id/flopBack"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:text="Flop back"
+	        android:onClick="onButtonClicked"/>
         <Button 
 	        android:id="@+id/flopRight"
 	        android:layout_width="wrap_content"

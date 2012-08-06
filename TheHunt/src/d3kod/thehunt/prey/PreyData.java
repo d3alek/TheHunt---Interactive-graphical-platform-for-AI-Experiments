@@ -3,11 +3,12 @@ package d3kod.thehunt.prey;
 import java.nio.FloatBuffer;
 
 import d3kod.d3gles20.D3GLES20;
+import d3kod.thehunt.TheHuntRenderer;
 
 public class PreyData {
 	protected static final float MAX_SPEED = 0.1f;
 	protected static final int MAX_SPIN_SPEED = 10;
-	protected static final float DISTANCE_TO_ANGLE_RATIO = 0.0003f;// MAX_SPEED/MAX_SPIN_SPEED;
+	protected static final float DISTANCE_TO_ANGLE_RATIO = 0.0002f;// MAX_SPEED/MAX_SPIN_SPEED;
 	protected static final float MAX_BODY_BEND_ANGLE = 30;
 	protected static final int angleSpeedIncrement = 1;
 	protected static final int angleSpeedHeadDefault = angleSpeedIncrement/2;
@@ -15,8 +16,9 @@ public class PreyData {
 	protected static int angleSpeedFins = 1;
 	protected static int angleSpeedHead = 30;
 	
-	protected int angleFlop = 30;
-	public int rotateSpeed = 5;
+	public static int angleFlop = 15;
+//	public static int rotateSpeed = angleFlop/Prey.BODY_BEND_DELAY;
+	public static int rotateSpeed = 360/(TheHuntRenderer.TICKS_PER_SECOND*Prey.SECONDS_PER_REV);
 	public float thrust;
 	
 	protected static final int angleBackSpeed = 3;
