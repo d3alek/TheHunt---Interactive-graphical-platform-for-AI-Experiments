@@ -5,8 +5,10 @@ import d3kod.thehunt.prey.Action;
 import d3kod.thehunt.prey.memory.WorldModel;
 
 public class GoToAndStayPlan extends MoveTowardsPlan {
-	private static final float SLOW_DOWN_DISTANCE = 0.5f;
-	private static final float DISTANCE_ENOUGH = 0.1f;
+	//private static final float SLOW_DOWN_DISTANCE = 0.5f;
+	private static final float DISTANCE_ENOUGH = 0.05f;
+	private static final float DISTANCE_MEDIUM = 2f;
+	private static final float DISTANCE_SMALL = 0.5f;
 	private static final int KEEP_DISTANCE_FOR = 4;
 	
 	private int slowdown;
@@ -34,14 +36,25 @@ public class GoToAndStayPlan extends MoveTowardsPlan {
 			return;
 		}
 		
-		if (headFromTarget <= SLOW_DOWN_DISTANCE && slowdownCounter > 0) {
-			slowdownCounter--;
-			addNextAction(Action.none);
-			return;
-		}
-		else {
-			slowdownCounter = (int)(SLOW_DOWN_DISTANCE/headFromTarget);
-			super.update(mWorldModel);
+//		if (headFromTarget <= SLOW_DOWN_DISTANCE && slowdownCounter > 0) {
+//			slowdownCounter--;
+//			addNextAction(Action.none);
+//			return;
+//		}
+//		else {
+//			slowdownCounter = (int)(SLOW_DOWN_DISTANCE/headFromTarget);
+//			super.update(mWorldModel);
+//		}
+		
+		super.update(mWorldModel);
+		
+		if (getNextAction() == Action.FORWARD_LARGE) {
+			if (headFromTarget < DISTANCE_SMALL) {
+				changeNextAction(Action.FORWARD_SMALL);
+			}
+			else if (headFromTarget < DISTANCE_MEDIUM) {
+				changeNextAction(Action.FORWARD_MEDIUM);
+			}
 		}
 	}
 }

@@ -94,6 +94,16 @@ public class Plan {
 	public void addNextAction(Action action) {
 		mActions.add(mCurrentAction, action);
 	}
+	
+	public Action getNextAction() {
+		return mActions.get(mCurrentAction);
+	}
+	
+	public void changeNextAction(Action action) {
+		mActions.remove(mCurrentAction);
+		mActions.add(mCurrentAction, action);
+	}
+	
 	public void clearActions() {
 		mActions.clear();
 		mCurrentAction = 0;

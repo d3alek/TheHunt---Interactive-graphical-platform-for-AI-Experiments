@@ -16,10 +16,13 @@ public class PreyData {
 	protected static int angleSpeedFins = 1;
 	protected static int angleSpeedHead = 30;
 	
-	public static int angleFlop = 30;
+	public static int angleFlopSmall = 10;
+	public static int angleFlopMedium = 30;
+	public static int angleFlopLarge = 60;
 //	public static int rotateSpeed = angleFlop/Prey.BODY_BEND_DELAY;
-	public static int rotateSpeed = 360/(TheHuntRenderer.TICKS_PER_SECOND*Prey.SECONDS_PER_REV);
-	public static int rotateSpeedHead = 2*360/(TheHuntRenderer.TICKS_PER_SECOND*Prey.SECONDS_PER_REV);
+	public static int rotateSpeed = angleFlopSmall*Prey.SMALL_TURNS_PER_SECOND/(TheHuntRenderer.TICKS_PER_SECOND);
+//	public static int rotateSpeedHead = 360/(TheHuntRenderer.TICKS_PER_SECOND*Prey.SECONDS_PER_REV);
+	public static int rotateSpeedHead = 2*rotateSpeed;
 	public float thrust;
 	
 	protected static final int angleBackSpeed = 3;

@@ -256,4 +256,8 @@ public class D3GLES20 {
         }
         return shaderHandle;
     }
+
+	public static float angleBetweenVectors(float x1, float y1, float x2, float y2, float len1, float len2) {
+		return (float) Math.toDegrees(Math.acos((x1*x2 + y1*y2)/(len1*len2)));
+	}
 }
