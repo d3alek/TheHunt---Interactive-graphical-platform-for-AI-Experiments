@@ -196,24 +196,12 @@ public class Prey {
 	public void backFinMotion(TurnAngle angle) {
 		flopBack = true;
 		backFinAngle = angle.getValue();
-//		switch(angle) {
-//		case BACK_SMALL: backFinAngle = 10 * backAngleToggle; backAngleToggle = -backAngleToggle; break;
-//		case BACK_MEDIUM: backFinAngle = 20 * backAngleToggle; backAngleToggle = -backAngleToggle; break;
-//		case BACK_LARGE: backFinAngle = 30 * backAngleToggle; backAngleToggle = -backAngleToggle; break;
-//		case BACK_LEFT_SMALL: backFinAngle = 10; break;
-//		case BACK_LEFT_MEDIUM: backFinAngle = 20; break;
-//		case BACK_LEFT_LARGE: backFinAngle = 30; break;
-//		case BACK_RIGHT_SMALL: backFinAngle = -10; break;
-//		case BACK_RIGHT_MEDIUM: backFinAngle = -20; break;
-//		case BACK_RIGHT_LARGE: backFinAngle = -30; break;
-//		}
 		mD.bodyEndAngle = mD.bodyCAngle;
 		flopBackTargetFirst = +backFinAngle;
 		flopBackAngle = 0;
 		flopBackTargetSecond = -backFinAngle;
 		floppedFirst = false;
 		floppedSecond = false;
-		//mD.thrust = Math.abs(backFinAngle);
 		flopBackSpeed = Math.abs(backFinAngle)/flopBackTicks;
 		moveForward(Math.abs(backFinAngle));
 	}
@@ -267,11 +255,18 @@ public class Prey {
 		mD.leftFinVerticesData = calcLeftFinVerticesData();
 		mD.rightFinVerticesData = calcRightFinVerticesData();
 		mD.eyeVertexData = D3GLES20.circleVerticesData(mD.eyePosition, mD.eyeSize, mD.eyeDetailsLevel);
+		mD.ribVerticesData = caclRibVerticesData();
 		
 		mD.finVerticesNum = mD.rightFinVerticesData.length / D3GLES20.COORDS_PER_VERTEX;
+		mD.ribVerticesNum = mD.ribVerticesData.length / D3GLES20.COORDS_PER_VERTEX;
 		
 	}
 	
+	private float[] caclRibVerticesData() {
+		return D3GLES20.quadBezierCurveVertices(
+				mD.ribA, mD.ribB, mD.ribC, mD.ribD, mD.detailsStep, mD.ribSize);
+	}
+
 	private float[] calcRightFinVerticesData() {
 		return D3GLES20.quadBezierCurveVertices(
 				mD.rightFinStart, mD.rightFinB, mD.rightFinC, mD.rightFinEnd, mD.detailsStep, mD.finSize);
@@ -308,6 +303,7 @@ public class Prey {
 		mD.rightFinVertexBuffer = D3GLES20.newFloatBuffer(mD.rightFinVerticesData);
 		mD.headVertexBuffer = D3GLES20.newFloatBuffer(mD.headVerticesData);
 		mD.eyeVertexBuffer = D3GLES20.newFloatBuffer(mD.eyeVertexData);
+		mD.ribVertexBuffer = D3GLES20.newFloatBuffer(mD.ribVerticesData);
 		
 		int vertexShaderHandle = D3GLES20.loadShader(GLES20.GL_VERTEX_SHADER, mD.vertexShaderCode);
         int fragmentShaderHandle = D3GLES20.loadShader(GLES20.GL_FRAGMENT_SHADER, mD.fragmentShaderCode);
@@ -381,6 +377,48 @@ public class Prey {
         GLES20.glUniformMatrix4fv(mD.mMVPMatrixHandle, 1, false, mD.mMVPMatrix, 0);
         GLES20.glDrawArrays(GLES20.GL_LINE_STRIP, 0, mD.bodyVerticesNum);
         
+        // Ribs
+  
+//        mD.mRibsModelMatrix = mD.mModelMatrix.clone();
+        int rib1PosIndex = (1*mD.bodyVerticesNum/4+1)*D3GLES20.COORDS_PER_VERTEX;
+        int rib2PosIndex = (3*mD.bodyVerticesNum/4-1)*D3GLES20.COORDS_PER_VERTEX;
+        float[] rib1Pos = {mD.bodyVerticesData[rib1PosIndex], 
+        		mD.bodyVerticesData[rib1PosIndex + 1],
+        		mD.bodyVerticesData[rib1PosIndex + 2]
+        };
+        float[] rib2Pos = {mD.bodyVerticesData[rib2PosIndex], 
+        		mD.bodyVerticesData[rib2PosIndex + 1],
+        		mD.bodyVerticesData[rib2PosIndex + 2]
+        };
+        mD.mRibsModelMatrix = mD.mModelMatrix.clone();
+        Matrix.translateM(mD.mRibsModelMatrix, 0, rib1Pos[0], rib1Pos[1], rib1Pos[2]);
+//        Matrix.rotateM(mD.mRibsModelMatrix, 0, mD.mRibsModelMatrix, 0, bodyBAnglePredicted, 0, 0, 1);
+        Matrix.rotateM(mD.mRibsModelMatrix, 0, bodyBAnglePredicted, 0, 0, 1);
+        Matrix.multiplyMM(mD.mMVPMatrix, 0, mVMatrix, 0, mD.mRibsModelMatrix, 0);
+        Matrix.multiplyMM(mD.mMVPMatrix, 0, mProjMatrix, 0, mD.mMVPMatrix, 0);
+        
+        GLES20.glUniformMatrix4fv(mD.mMVPMatrixHandle, 1, false, mD.mMVPMatrix, 0);
+        
+        GLES20.glVertexAttribPointer(mD.mPositionHandle, D3GLES20.COORDS_PER_VERTEX, 
+        		GLES20.GL_FLOAT, false, mD.STRIDE_BYTES, mD.ribVertexBuffer);
+        GLES20.glEnableVertexAttribArray(mD.mPositionHandle);
+        GLES20.glDrawArrays(GLES20.GL_LINE_STRIP, 0, mD.ribVerticesNum);
+        
+        
+        mD.mRibsModelMatrix = mD.mModelMatrix.clone();
+        Matrix.translateM(mD.mRibsModelMatrix, 0, rib2Pos[0], rib2Pos[1], rib2Pos[2]);
+//        Matrix.rotateM(mD.mRibsModelMatrix, 0, mD.mRibsModelMatrix, 0, bodyCAnglePredicted, 0, 0, 1);
+        Matrix.rotateM(mD.mRibsModelMatrix, 0, bodyCAnglePredicted, 0, 0, 1);
+        Matrix.multiplyMM(mD.mMVPMatrix, 0, mVMatrix, 0, mD.mRibsModelMatrix, 0);
+        Matrix.multiplyMM(mD.mMVPMatrix, 0, mProjMatrix, 0, mD.mMVPMatrix, 0);
+        
+        GLES20.glUniformMatrix4fv(mD.mMVPMatrixHandle, 1, false, mD.mMVPMatrix, 0);
+        
+        GLES20.glVertexAttribPointer(mD.mPositionHandle, D3GLES20.COORDS_PER_VERTEX, 
+        		GLES20.GL_FLOAT, false, mD.STRIDE_BYTES, mD.ribVertexBuffer);
+        GLES20.glEnableVertexAttribArray(mD.mPositionHandle);
+        GLES20.glDrawArrays(GLES20.GL_LINE_STRIP, 0, mD.ribVerticesNum);
+        
         // Feet
         
         Matrix.rotateM(mD.mFeetModelMatrix, 0, mD.mModelMatrix, 0, bodyEndAnglePredicted, 0, 0, 1);
@@ -450,9 +488,9 @@ public class Prey {
 		Matrix.multiplyMV(mD.bodyBRot, 0, mD.mBodyBRMatrix, 0, mD.bodyB4, 0);
 		Matrix.multiplyMV(mD.bodyCRot, 0, mD.mBodyCRMatrix, 0, mD.bodyC4, 0);
 		Matrix.multiplyMV(mD.bodyEndRot, 0, mD.mBodyEndRMatrix, 0, mD.bodyEnd4, 0);
-		float[] bodyVerticesData = D3GLES20.quadBezierCurveVertices(mD.bodyStartRot, mD.bodyBRot, mD.bodyCRot, mD.bodyEndRot, mD.detailsStep, mD.bodyLength);
-		mD.bodyVerticesNum = bodyVerticesData.length/D3GLES20.COORDS_PER_VERTEX;
-		mD.bodyVertexBuffer = D3GLES20.newFloatBuffer(bodyVerticesData);
+		mD.bodyVerticesData = D3GLES20.quadBezierCurveVertices(mD.bodyStartRot, mD.bodyBRot, mD.bodyCRot, mD.bodyEndRot, mD.detailsStep, mD.bodyLength);
+		mD.bodyVerticesNum = mD.bodyVerticesData.length/D3GLES20.COORDS_PER_VERTEX;
+		mD.bodyVertexBuffer = D3GLES20.newFloatBuffer(mD.bodyVerticesData);
 	}
 
 	public PointF getWorldPosition() {

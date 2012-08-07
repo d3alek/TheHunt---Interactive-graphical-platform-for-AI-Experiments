@@ -35,7 +35,7 @@ public class PreyData {
 		0.0f, 0.0f, 0.0f, 0.0f };
 	protected static final float preySize = 1.0f;
 	protected static final float bodyLength = 0.1f * preySize;
-	protected static final float bodyWidth = 1.0f * bodyLength;
+//	protected static final float bodyWidth = 1.0f * bodyLength;
 	protected static final float bodyHeight = 1.0f * bodyLength;
 	
 	protected final int maxAngle = 60;
@@ -76,6 +76,21 @@ public class PreyData {
 	protected static final float[] bodyC = {0, -0.2f, 0};
 	protected static final float[] bodyEnd = { 0, -0.5f, 0};
 	
+	// Ribs
+	
+	protected static final float[] ribA = { -0.5f, -0.2f , 0 };
+	protected static final float[] ribB = { -0.25f, 0 , 0 };
+	protected static final float[] ribC = { 0.25f, 0 , 0 };
+	protected static final float[] ribD = { 0.5f, -0.2f , 0 };
+	
+	protected static final float[] rib1Pos = {
+		bodyB[0]*bodyLength, bodyB[1]*bodyLength, bodyB[2]*bodyLength
+	};
+	protected static final float[] rib2Pos = {
+		bodyC[0]*bodyLength, bodyC[1]*bodyLength, bodyC[2]*bodyLength
+	};
+	
+	protected final float ribSize = 0.07f * preySize;
 	// Fins
 	protected final float finSize = 0.05f * preySize;
 	
@@ -179,4 +194,9 @@ public class PreyData {
 	public int bodyCAngleTarget;
 	public int bodyBAngleTarget;
 	public int bodyStartAngleTarget;
+	public float[] ribVerticesData;
+	public FloatBuffer ribVertexBuffer;
+	public float[] mRibsModelMatrix = new float[16];
+	public int ribVerticesNum;
+	public float[] bodyVerticesData;
 }
