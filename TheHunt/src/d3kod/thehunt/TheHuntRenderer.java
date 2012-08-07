@@ -160,13 +160,13 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 	public void handleTouch(float x, float y) {
 		x = D3GLES20.fromWorldWidth(x);
 		y = D3GLES20.fromWorldHeight(y);
-		if (MANUAL_CONTROLS) {
-	    	switch(mManuControl.contains(x, y)) {
-	    	case LEFT: mPrey.flopLeft(); return;
-	    	case RIGHT: mPrey.flopRight(); return;
-	    	case FORWARD: mPrey.flopLeft(); mPrey.flopRight(); return;
-	    	}
-		}
+//		if (MANUAL_CONTROLS) {
+//	    	switch(mManuControl.contains(x, y)) {
+//	    	case LEFT: mPrey.flopLeft(); return;
+//	    	case RIGHT: mPrey.flopRight(); return;
+//	    	case FORWARD: mPrey.flopLeft(); mPrey.flopRight(); return;
+//	    	}
+//		}
 		if (FEED_WITH_TOUCH) {
 			mEnv.putFood(x, y);
 		}

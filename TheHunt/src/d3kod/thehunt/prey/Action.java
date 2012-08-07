@@ -1,5 +1,5 @@
 package d3kod.thehunt.prey;
 
 public enum Action {
-	flopLeft, flopRight, eat, none;
+	TURN_LEFT_SMALL, TURN_RIGHT_SMALL, eat, none;
 }

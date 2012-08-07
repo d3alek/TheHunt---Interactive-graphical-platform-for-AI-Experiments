@@ -34,17 +34,17 @@ public class MoveTowardsPlan extends Plan {
 //		}
 		float bhf = D3GLES20.det(bX, bY, hX, hY, tX, tY);
 		if (bhf > 0) {
-			addNextAction(Action.flopLeft);
+			addNextAction(Action.TURN_LEFT_SMALL);
 		}
 		else if (bhf < 0) {
-			addNextAction(Action.flopRight);
+			addNextAction(Action.TURN_RIGHT_SMALL);
 		}
 		else if (headFromTarget > bodyFromTarget) {
-			addNextAction(Action.flopLeft);
+			addNextAction(Action.TURN_LEFT_SMALL);
 		}
 		else {
-			addNextAction(Action.flopLeft);
-			addNextAction(Action.flopRight);
+			addNextAction(Action.TURN_LEFT_SMALL);
+			addNextAction(Action.TURN_RIGHT_SMALL);
 		}
 	}
 }
