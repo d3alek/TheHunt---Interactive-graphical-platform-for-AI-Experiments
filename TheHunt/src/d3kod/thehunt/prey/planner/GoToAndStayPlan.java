@@ -7,8 +7,8 @@ import d3kod.thehunt.prey.memory.WorldModel;
 public class GoToAndStayPlan extends MoveTowardsPlan {
 	//private static final float SLOW_DOWN_DISTANCE = 0.5f;
 	private static final float DISTANCE_ENOUGH = 0.05f;
-	private static final float DISTANCE_MEDIUM = 2f;
-	private static final float DISTANCE_SMALL = 0.5f;
+	private static final float DISTANCE_MEDIUM = 0.5f;
+	private static final float DISTANCE_SMALL = 0.1f;
 	private static final int KEEP_DISTANCE_FOR = 4;
 	
 	private int slowdown;
