@@ -94,7 +94,7 @@ public class Prey {
 			
 			bodyBendCounter = BODY_BEND_DELAY-1;
 			
-			Log.v(TAG, "Passing spin " + mD.bodyStartAngleTarget + " " + mD.bodyStartAngle + " " + mD.bodyBAngleTarget + " " + mD.bodyBAngle + " " + mD.bodyCAngleTarget + " " + mD.bodyCAngle + " " + mD.bodyEndAngleTarget + " " + mD.bodyEndAngle);
+//			Log.v(TAG, "Passing spin " + mD.bodyStartAngleTarget + " " + mD.bodyStartAngle + " " + mD.bodyBAngleTarget + " " + mD.bodyBAngle + " " + mD.bodyCAngleTarget + " " + mD.bodyCAngle + " " + mD.bodyEndAngleTarget + " " + mD.bodyEndAngle);
 		}
 		else {
 			--bodyBendCounter;
@@ -176,7 +176,16 @@ public class Prey {
 		}
 	}
 	public void turn(TurnAngle angle) {
+		
 		int value = angle.getValue();
+		
+		if (mD.bodyStartAngleTarget + value - mD.bodyCAngle > mD.MAX_BODY_BEND_ANGLE 
+				|| mD.bodyStartAngleTarget + value - mD.bodyCAngle < -mD.MAX_BODY_BEND_ANGLE) {
+			Log.v(TAG, "Can't bend that much!");
+			return;
+		}
+			
+		
 		mD.bodyStartAngleTarget += value;
 		
 		if (angle == TurnAngle.LEFT_SMALL || angle == TurnAngle.RIGHT_SMALL) {
@@ -190,6 +199,15 @@ public class Prey {
 //		else turningBackFinAngle = TurnAngle.BACK_LEFT_SMALL;
 //		
 //		turningBackFinMotion = true;
+		
+		if (angle == TurnAngle.RIGHT_LARGE) {
+			turningBackFinAngle = TurnAngle.BACK_LEFT_SMALL;
+			turningBackFinMotion = true;
+		}
+		else if (angle == TurnAngle.LEFT_LARGE) {
+			turningBackFinAngle = TurnAngle.BACK_RIGHT_SMALL;
+			turningBackFinMotion = true;
+		}
 		
 	}
 	
@@ -380,8 +398,8 @@ public class Prey {
         // Ribs
   
 //        mD.mRibsModelMatrix = mD.mModelMatrix.clone();
-        int rib1PosIndex = (1*mD.bodyVerticesNum/4+1)*D3GLES20.COORDS_PER_VERTEX;
-        int rib2PosIndex = (3*mD.bodyVerticesNum/4-1)*D3GLES20.COORDS_PER_VERTEX;
+        int rib1PosIndex = (1*mD.bodyVerticesNum/4)*D3GLES20.COORDS_PER_VERTEX;
+        int rib2PosIndex = (3*mD.bodyVerticesNum/4-2)*D3GLES20.COORDS_PER_VERTEX;
         float[] rib1Pos = {mD.bodyVerticesData[rib1PosIndex], 
         		mD.bodyVerticesData[rib1PosIndex + 1],
         		mD.bodyVerticesData[rib1PosIndex + 2]

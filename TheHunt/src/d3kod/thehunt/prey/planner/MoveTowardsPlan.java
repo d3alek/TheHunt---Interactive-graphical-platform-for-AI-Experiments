@@ -30,10 +30,10 @@ public class MoveTowardsPlan extends Plan {
 				bX - hX, bY - hY, //bodyToHead
 				bX - tX, bY - tY, //bodyToTarget
 				Prey.bodyToHeadLength, bodyFromTarget);
-		Log.v(TAG, "angleToTarget is " + angleToTarget + " bht is " + bht);
+//		Log.v(TAG, "angleToTarget is " + angleToTarget + " bht is " + bht);
 		if (bht > 0) {
 			//Target is to the left
-			Log.v(TAG, "Target is to the left");
+//			Log.v(TAG, "Target is to the left");
 //			if (angleToTarget < TurnAngle.LEFT_SMALL.getValue()) {
 //				//addNextAction(Action.TURN_LEFT_SMALL);
 //				addNextAction(Action.FORWARD_LARGE);
@@ -65,7 +65,7 @@ public class MoveTowardsPlan extends Plan {
 		}
 		else {
 			//Target is to the right
-			Log.v(TAG, "Target is to the right");
+//			Log.v(TAG, "Target is to the right");
 //			if (angleToTarget < TurnAngle.LEFT_SMALL.getValue()) {
 //				//addNextAction(Action.TURN_LEFT_SMALL);
 //				addNextAction(Action.FORWARD_LARGE);
