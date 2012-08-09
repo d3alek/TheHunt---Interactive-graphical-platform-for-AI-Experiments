@@ -26,7 +26,7 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 	public static boolean SHOW_TILES = false;
 	public static boolean SHOW_CURRENTS = false;
 	public static boolean MANUAL_CONTROLS = false;
-	public static boolean FEED_WITH_TOUCH = true;
+	public static boolean FEED_WITH_TOUCH = false;
 
 	private float[] mProjMatrix = new float[16]; 
 	private float[] mVMatrix = new float[16];
@@ -34,8 +34,10 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 	private Environment mEnv;
 	public Prey mPrey;
 	private ManualControl mManuControl;
+	private CatchNet mNet;
 	
     public static final int TICKS_PER_SECOND = 30;
+	public static boolean NET_WITH_TOUCH = false;
     private final int MILLISEC_PER_TICK = 1000 / TICKS_PER_SECOND;
     private final int MAX_FRAMESKIP = 5;
 	private long next_game_tick;
@@ -54,6 +56,7 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 		mslf = 0;
 	    mEnv = null;
 	    mPrey = null;
+	    mNet = null;
 //	    mManuControl.setSize();
 		
 	}
@@ -86,10 +89,12 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 		
 		if (mEnv == null) mEnv = new Environment(width, height);
 	    if (mPrey == null) mPrey = new Prey(EnvironmentData.mScreenWidth, EnvironmentData.mScreenHeight, mEnv);
+	    if (mNet == null) mNet = new CatchNet();
 	    if (MANUAL_CONTROLS && mManuControl == null) mManuControl = new ManualControl();
 		if (MANUAL_CONTROLS) mManuControl.setSize();
 	    mEnv.initGraphics();
 		mPrey.initGraphics();
+		mNet.initGraphics();
 		
 	    float ratio = (float) width / height;
 	    
@@ -118,7 +123,7 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 			smoothingCount = 0;
 			((TheHunt) mContext).runOnUiThread(new Runnable() {
 				public void run() {
-					((TheHunt) mContext).mPreyState.setText(Planner.mState.toString());
+//					((TheHunt) mContext).mPreyState.setText(Planner.mState.toString());
 					((TheHunt) mContext).mMSperFrame.setText(smoothMspf + "");
 				}
 			});
@@ -128,11 +133,11 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 	private void updateWorld() {
 		
 		//TODO: fix all these static shits
-		((TheHunt) mContext).runOnUiThread(new Runnable() {
-			public void run() {
-				((TheHunt) mContext).mPreyState.setText(Planner.mState.toString());
-			}
-		});
+//		((TheHunt) mContext).runOnUiThread(new Runnable() {
+//			public void run() {
+//				((TheHunt) mContext).mPreyState.setText(Planner.mState.toString());
+//			}
+//		});
 //		
 		PointF curDirDelta = mEnv.data.getTileFromPos(mPrey.getPosition()).getDir().getDelta();
 		mPrey.update(curDirDelta.x * EnvironmentData.currentStep, 
@@ -155,9 +160,10 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 		
 		mEnv.draw(mVMatrix, mProjMatrix, interpolation);
 		mPrey.draw(mVMatrix, mProjMatrix, interpolation);
+		mNet.draw(mVMatrix, mProjMatrix);
 	}
 
-	public void handleTouch(float x, float y) {
+	public void handleTouchDown(float x, float y) {
 		x = D3GLES20.fromWorldWidth(x);
 		y = D3GLES20.fromWorldHeight(y);
 //		if (MANUAL_CONTROLS) {
@@ -170,6 +176,24 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 		if (FEED_WITH_TOUCH) {
 			mEnv.putFood(x, y);
 		}
-    	
+		else if (NET_WITH_TOUCH) {
+			mNet.start(x, y);
+		}
+	}
+
+	public void handleTouchMove(float x, float y) {
+		x = D3GLES20.fromWorldWidth(x);
+		y = D3GLES20.fromWorldHeight(y);
+		if (NET_WITH_TOUCH && mNet.isFarEnoughFromLast(x, y)) {
+			mNet.next(x, y);
+		}
+	}
+
+	public void handleTouchUp(float x, float y) {
+		x = D3GLES20.fromWorldWidth(x);
+		y = D3GLES20.fromWorldHeight(y);
+		if (NET_WITH_TOUCH) {
+			mNet.finish(x, y);
+		}
 	}
 }

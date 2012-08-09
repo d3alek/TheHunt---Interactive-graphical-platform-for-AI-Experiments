@@ -2,42 +2,47 @@ package d3kod.thehunt.prey.memory;
 
 import java.util.ArrayList;
 
+import d3kod.d3gles20.D3GLES20;
 import d3kod.thehunt.environment.EnvironmentData;
-import d3kod.thehunt.environment.LightEvent;
 import d3kod.thehunt.prey.sensor.Event;
+import d3kod.thehunt.prey.sensor.Event.EventType;
 import d3kod.thehunt.prey.sensor.EventAlgae;
 import d3kod.thehunt.prey.sensor.EventAt;
 import d3kod.thehunt.prey.sensor.EventFood;
+import d3kod.thehunt.prey.sensor.EventLight;
 
 import android.util.Log;
 
 public class WorldModel {
 private static final String TAG = "WorldModel";
-	MemoryGraph mNodes;
+private static final float INF = 100;
+	//MemoryGraph mNodes;
 	private float mHeadX;
 	private float mHeadY;
 	private float mBodyY;
 	private float mBodyX;
-	private float mFoodX;
-	private float mFoodY;
-	private float mAlgaeX;
-	private float mAlgaeY;
 	private int mLightLevel;
 	
-	public void updateNode(float posX, float posY, float currentX, float currentY) {
-		mNodes.getNode(posX, posY).setCurrent(currentX, currentY);
-	}
+	private ArrayList<Event> mEventMemory = new ArrayList<Event>();
+	private EventFood mNearestFood;
+	private EventAlgae mNearestAlgae;
+//	public void updateNode(float posX, float posY, float currentX, float currentY) {
+//		mNodes.getNode(posX, posY).setCurrent(currentX, currentY);
+//	}
 	public WorldModel(float screenWidth, float screenHeight) {
-		mNodes = new MemoryGraph(screenWidth, screenHeight);
-		mFoodX = mFoodY = -1;
-		mAlgaeX = mAlgaeY = -1;
+//		mNodes = new MemoryGraph(screenWidth, screenHeight);
+//		mNearestFoodX = mNearestFoodY = -1;
+		mNearestFood = null;
+		mNearestAlgae = null;
 	}
 	public void update(ArrayList<Event> sensorEvents) {
 		for (Event e: sensorEvents) {
 			processEvent(e);
 		}
+		mNearestAlgae = recallNearestAlgae();
 	}
 	private void processEvent(Event e) {
+		if (mEventMemory.contains(e)) return;
 		switch(e.type()) { 
 		case AT: 
 			float newBodyX = ((EventAt) e).getBodyX();
@@ -51,35 +56,56 @@ private static final String TAG = "WorldModel";
 			}
 			break;
 		case FOOD: 
-			mFoodX = ((EventFood) e).getFoodX();
-			mFoodY = ((EventFood) e).getFoodY(); 
+			EventFood food = (EventFood)e;
+			float foodX = food.getFoodX();
+			float foodY = food.getFoodY();
+			if (!knowFoodLocation() ||
+					D3GLES20.distance(mHeadX, mHeadY, mNearestFood.getFoodX(), mNearestFood.getFoodY()) > 
+					D3GLES20.distance(mHeadX, mHeadY, foodX, foodY)) {
+				mNearestFood = food;
+				//TODO cache current food distance
+			}
 			break;
 		case ALGAE:
-			mAlgaeX = ((EventAlgae) e).getAlgaeX();
-			mAlgaeY = ((EventAlgae) e).getAlgaeY();
+//			EventAlgae algae = (EventAlgae)e;
+//			float algaeX = algae.getAlgaeX();
+//			float algaeY = algae.getAlgaeY();
+//			if (!knowAlgaeLocation() || 
+//					D3GLES20.distance(mHeadX, mHeadY, mNearestAlgae.getAlgaeX(), mNearestAlgae.getAlgaeY()) > 
+//					D3GLES20.distance(mHeadX, mHeadY, algaeX, algaeY)) {
+//				mNearestAlgae = algae;
+//			}
 			break;
 		case LIGHT:
-			mLightLevel = ((LightEvent) e).getLightLevel();
+			mLightLevel = ((EventLight) e).getLightLevel();
 			break;
 		}
+		if (e.type() == EventType.FOOD || e.type() == EventType.ALGAE) {
+			rememberEvent(e);
+		}
+	}
+	private void rememberEvent(Event e) {
+//		if (eventMemory.contains(e)) return;
+		Log.v(TAG, "Remembering event " + e);
+		mEventMemory.add(e);
 	}
 	public int getLightLevel() {
 		return mLightLevel;
 	}
 	public boolean knowFoodLocation() {
-		return (mFoodX != -1 && mFoodY != -1);
+		return (mNearestFood != null);
 	}
-	public float getFoodX() {
-		return mFoodX;
+	public float getNearestFoodX() {
+		return mNearestFood.getFoodX();
 	}
-	public float getFoodY() {
-		return mFoodY;
+	public float getNearestFoodY() {
+		return mNearestFood.getFoodY();
 	}
-	public float getAlgaeX() {
-		return mAlgaeX;
+	public float getNearestAlgaeX() {
+		return mNearestAlgae.getAlgaeX();
 	}
-	public float getAlgaeY() {
-		return mAlgaeY;
+	public float getNearestAlgaeY() {
+		return mNearestAlgae.getAlgaeY();
 	}
 	public float getHeadX() {
 		return mHeadX;
@@ -88,9 +114,52 @@ private static final String TAG = "WorldModel";
 		return mHeadY;
 	}
 	public void eatFood(float mPosHeadX, float mPosHeadY) {
-		//TODO: improve functionality
-		mFoodX = mFoodY = -1;
+		//TODO: the food removed is not always the nearest food #BUG
+		mEventMemory.remove(mNearestFood);
+		mNearestFood = recallNearestFood();
 	}
+	private EventFood recallNearestFood() {
+		float closestX = INF, closestY = INF;
+		EventFood closestFood = null;
+		
+		for (Event e: mEventMemory) {
+			if (e.type() == EventType.FOOD) {
+				EventFood ef = (EventFood)e;
+				float foodX = ef.getFoodX();
+				float foodY = ef.getFoodY();
+				if (D3GLES20.distance(mHeadX, mHeadY, foodX, foodY) <
+						D3GLES20.distance(mHeadX, mHeadY, closestX, closestY)) {
+					closestFood = ef;
+					closestX = foodX; 
+					closestY = foodY;
+				}
+			}
+		}
+		
+		return closestFood;
+	}
+	
+	private EventAlgae recallNearestAlgae() {
+		float closestX = INF, closestY = INF;
+		EventAlgae closestAlgae = null;
+		
+		for (Event e: mEventMemory) {
+			if (e.type() == EventType.ALGAE) {
+				EventAlgae ea = (EventAlgae)e;
+				float foodX = ea.getAlgaeX();
+				float foodY = ea.getAlgaeY();
+				if (D3GLES20.distance(mHeadX, mHeadY, foodX, foodY) <
+						D3GLES20.distance(mHeadX, mHeadY, closestX, closestY)) {
+					closestAlgae = ea;
+					closestX = foodX; 
+					closestY = foodY;
+				}
+			}
+		}
+		
+		return closestAlgae;	
+	}
+	
 	public float getBodyX() {
 		return mBodyX;
 	}
@@ -98,6 +167,6 @@ private static final String TAG = "WorldModel";
 		return mBodyY;
 	}
 	public boolean knowAlgaeLocation() {
-		return (mAlgaeX != -1 && mAlgaeY != -1);
+		return mNearestAlgae != null;
 	}
 }

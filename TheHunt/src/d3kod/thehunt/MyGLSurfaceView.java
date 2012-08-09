@@ -29,7 +29,29 @@ class MyGLSurfaceView extends GLSurfaceView {
     			final float x = event.getX(), y = event.getY();
     			queueEvent(new Runnable() {
     				public void run() {
-    					mRenderer.handleTouch(x, y);
+    					mRenderer.handleTouchDown(x, y);
+    					}
+    			});
+    		}
+    		return true;
+    	}
+    	if (event.getAction() == MotionEvent.ACTION_MOVE) {
+    		if (mRenderer != null) {
+    			final float x = event.getX(), y = event.getY();
+    			queueEvent(new Runnable() {
+    				public void run() {
+    					mRenderer.handleTouchMove(x, y);
+    					}
+    			});
+    		}
+    		return true;
+    	}
+    	if (event.getAction() == MotionEvent.ACTION_UP) {
+    		if (mRenderer != null) {
+    			final float x = event.getX(), y = event.getY();
+    			queueEvent(new Runnable() {
+    				public void run() {
+    					mRenderer.handleTouchUp(x, y);
     					}
     			});
     		}

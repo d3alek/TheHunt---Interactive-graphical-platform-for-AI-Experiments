@@ -1,5 +1,7 @@
 package d3kod.thehunt.environment;
 
+import java.util.ArrayList;
+
 import android.graphics.PointF;
 import android.opengl.Matrix;
 import android.util.Log;
@@ -9,6 +11,7 @@ import d3kod.thehunt.prey.sensor.Event;
 import d3kod.thehunt.prey.sensor.EventAlgae;
 import d3kod.thehunt.prey.sensor.EventFood;
 import d3kod.thehunt.prey.sensor.EventNone;
+import d3kod.thehunt.prey.sensor.EventLight;
 import d3kod.thehunt.prey.sensor.Event.EventType;
 public class Environment {
 	private static final String TAG = "Environment";
@@ -39,12 +42,7 @@ public class Environment {
 	}
 	public void putFood(float x, float y) {
 		Log.v(TAG, "Putting food at " + x +  " " + y);
-		//D3GLES20.circleVerticesData(new float[] {x, y}, 0.5f, 20);
-//		float[] modelMatrix = new float[16];
-//		Matrix.setIdentityM(modelMatrix, 0);
-//		Matrix.translateM(modelMatrix, 0, x, y, 0);
 		data.addFloatingObject(new FloatingObject(D3GLES20.newDefaultCircle(0.01f, foodColor , 20), x, y, Type.FOOD));
-//		data.newFood(x, y);
 	}
 	public void draw(float[] mVMatrix, float[] mProjMatrix, float interpolation) {
 //		data.logFloatingObjects();
@@ -56,26 +54,28 @@ public class Environment {
 		Tile tile = data.getTileFromPos(new PointF(x, y));
 		return new EventNone();
 	}
-	public Event senseFood(float x, float y) {
+	public ArrayList<Event> senseFood(float x, float y) {
+		ArrayList<Event> sensedFood = new ArrayList<Event>();
 		for (FloatingObject fo: data.getFloatingObjects()) {
-			if (fo.getType() == Type.FOOD) return new EventFood(fo.getX(), fo.getY());
+			if (fo.getType() == Type.FOOD) sensedFood.add(new EventFood(fo.getX(), fo.getY()));
 		}
-		return new EventNone();
+		return sensedFood;
 	}
 	public void eatFood(float mPosHeadX, float mPosHeadY) {
 		data.removeFood(mPosHeadX, mPosHeadY);
 	}
-	public Event senseAlgae() {
+	public ArrayList<Event> senseAlgae() {
+		ArrayList<Event> sensedAlgae = new ArrayList<Event>();
 		for (FloatingObject fo: data.getFloatingObjects()) {
-			if (fo.getType() == Type.ALGAE) return new EventAlgae(fo.getX(), fo.getX());
+			if (fo.getType() == Type.ALGAE) sensedAlgae.add(new EventAlgae(fo.getX(), fo.getY()));
 		}
-		return new EventNone();
+		return sensedAlgae;
 	}
 	public Event senseLight(float hX, float hY) {
 		for (FloatingObject fo: data.getFloatingObjects()) {
 			if (fo.getType() == Type.ALGAE && D3GLES20.contains(fo.getIndex(), hX, hY)) 
-				return new LightEvent(0);
+				return new EventLight(0);
 		}
-		return new LightEvent(1);
+		return new EventLight(1);
 	}
 }

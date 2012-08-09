@@ -27,8 +27,8 @@ public class Sensor {
 		for (Sensors sensor: mSensors) {
 			switch(sensor) {
 			case CURRENT_SENSOR: sensedEvents.add(mEnv.senseCurrent(bX, bY)); break;
-			case FOOD_SENSOR:  sensedEvents.add(mEnv.senseFood(hX, hY)); break;
-			case ALGAE_SENSOR: sensedEvents.add(mEnv.senseAlgae()); break;
+			case FOOD_SENSOR:  sensedEvents.addAll(mEnv.senseFood(hX, hY)); break;
+			case ALGAE_SENSOR: sensedEvents.addAll(mEnv.senseAlgae()); break;
 			case LIGHT_SENSOR: sensedEvents.add(mEnv.senseLight(hX, hY)); break;
 			}
 		}

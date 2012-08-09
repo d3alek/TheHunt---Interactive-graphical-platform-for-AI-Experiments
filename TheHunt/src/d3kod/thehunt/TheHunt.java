@@ -27,14 +27,14 @@ public class TheHunt extends Activity {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         
-        setContentView(R.layout.main);
+        setContentView(R.layout.clean_main);
         mGLView = (MyGLSurfaceView)findViewById(R.id.glSurfaceView);
         mBodyBendDelay = (TextView)findViewById(R.id.bodyBendDelay);
         
-        mActionDelay = (TextView)findViewById(R.id.actionDelay);
-        
-        mPosInterpolation = (ToggleButton)findViewById(R.id.posInterpolationToggle);
-        mAngleInterpolation = (ToggleButton)findViewById(R.id.angleInterpolationToggle);
+//        mActionDelay = (TextView)findViewById(R.id.actionDelay);
+//        
+//        mPosInterpolation = (ToggleButton)findViewById(R.id.posInterpolationToggle);
+//        mAngleInterpolation = (ToggleButton)findViewById(R.id.angleInterpolationToggle);
         
         mPreyState = (TextView)findViewById(R.id.preyState);
         mMSperFrame = (TextView)findViewById(R.id.msPerFrame);        
@@ -52,6 +52,8 @@ public class TheHunt extends Activity {
     	Log.v(TAG, "Resuming activity");
     	
     	((ToggleButton)findViewById(R.id.aiToggle)).setChecked(Prey.AI);
+    	((ToggleButton)findViewById(R.id.foodToggle)).setChecked(TheHuntRenderer.FEED_WITH_TOUCH);
+    	((ToggleButton)findViewById(R.id.netToggle)).setChecked(TheHuntRenderer.NET_WITH_TOUCH);
     	if (mBodyBendDelay != null) mBodyBendDelay.setText(Prey.BODY_BENDS_PER_SECOND+"");
     	if (mActionDelay != null) mActionDelay.setText(Prey.ACTIONS_PER_SECOND+"");
     	if (mPosInterpolation != null) mPosInterpolation.setChecked(Prey.posInterpolation);//mPosInterpolation = (ToggleButton)findViewById(R.id.posInterpolationToggle);
@@ -65,21 +67,20 @@ public class TheHunt extends Activity {
     	boolean checked = ((ToggleButton) view).isChecked();
     	
     	switch(view.getId()) {
-//    	case R.id.showTilesToggle:
-//    		TheHuntRenderer.SHOW_TILES = checked;
-//    		break;
-//    	case R.id.showCurrentsToggle:
-//    		TheHuntRenderer.SHOW_CURRENTS = checked;
-//    		break;
     	case R.id.aiToggle:
     		Prey.AI = checked;
     		break;
-    	case R.id.angleInterpolationToggle:
-    		Prey.angleInterpolation = checked;
+    	case R.id.foodToggle:
+    		TheHuntRenderer.FEED_WITH_TOUCH = checked;
     		break;
-    	case R.id.posInterpolationToggle:
-    		Prey.posInterpolation = checked;
-    		break;
+    	case R.id.netToggle:
+    		TheHuntRenderer.NET_WITH_TOUCH = checked;
+//    	case R.id.angleInterpolationToggle:
+//    		Prey.angleInterpolation = checked;
+//    		break;
+//    	case R.id.posInterpolationToggle:
+//    		Prey.posInterpolation = checked;
+//    		break;
     	}
     }
     
@@ -105,16 +106,16 @@ public class TheHunt extends Activity {
     		}
     		mBodyBendDelay.setText(Prey.BODY_BENDS_PER_SECOND+"");
     		break;
-		case R.id.plusActionDelay:
-			if (Prey.ACTIONS_PER_SECOND < Prey.ACTIONS_PER_SECOND_MAX) Prey.ACTIONS_PER_SECOND++;
-			Prey.ACTION_DELAY = TheHuntRenderer.TICKS_PER_SECOND/Prey.ACTIONS_PER_SECOND;
-			mActionDelay.setText(Prey.ACTIONS_PER_SECOND+"");
-			break;
-		case R.id.minusActionDelay:
-			if (Prey.ACTIONS_PER_SECOND > 1) Prey.ACTIONS_PER_SECOND--;
-			Prey.ACTION_DELAY = TheHuntRenderer.TICKS_PER_SECOND/Prey.ACTIONS_PER_SECOND;
-			mActionDelay.setText(Prey.ACTIONS_PER_SECOND+"");
-			break;
+//		case R.id.plusActionDelay:
+//			if (Prey.ACTIONS_PER_SECOND < Prey.ACTIONS_PER_SECOND_MAX) Prey.ACTIONS_PER_SECOND++;
+//			Prey.ACTION_DELAY = TheHuntRenderer.TICKS_PER_SECOND/Prey.ACTIONS_PER_SECOND;
+//			mActionDelay.setText(Prey.ACTIONS_PER_SECOND+"");
+//			break;
+//		case R.id.minusActionDelay:
+//			if (Prey.ACTIONS_PER_SECOND > 1) Prey.ACTIONS_PER_SECOND--;
+//			Prey.ACTION_DELAY = TheHuntRenderer.TICKS_PER_SECOND/Prey.ACTIONS_PER_SECOND;
+//			mActionDelay.setText(Prey.ACTIONS_PER_SECOND+"");
+//			break;
     	case R.id.flopLeft:
     		mGLView.post(new Runnable() {
 				public void run() {

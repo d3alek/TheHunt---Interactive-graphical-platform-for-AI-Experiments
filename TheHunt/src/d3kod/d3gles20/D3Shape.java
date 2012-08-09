@@ -87,4 +87,16 @@ abstract public class D3Shape {
 	protected void setProgram() {
 		GLES20.glUseProgram(mProgram);
 	}
+	
+	public void setVertexBuffer(FloatBuffer vertexBuffer) {
+		this.vertexBuffer = vertexBuffer;
+	}
+	
+	public void setDrawType(int drawType) {
+		this.drawType = drawType;
+	}
+	
+	public void setColor(float[] color) {
+		this.color = color;
+	}
 }

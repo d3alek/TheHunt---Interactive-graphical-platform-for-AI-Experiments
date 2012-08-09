@@ -73,7 +73,7 @@ public class Planner {
 		Plan scvgPlan = new GoToAndEatPlan(
 				mWorldModel.getHeadX(), mWorldModel.getHeadY(), 
 				mWorldModel.getBodyX(), mWorldModel.getBodyY(), 
-				mWorldModel.getFoodX(), mWorldModel.getFoodY());
+				mWorldModel.getNearestFoodX(), mWorldModel.getNearestFoodY());
 		return scvgPlan;
 	}
 
@@ -82,7 +82,7 @@ public class Planner {
 		Plan hidePlan = new GoToAndStayPlan(
 				mWorldModel.getHeadX(), mWorldModel.getHeadY(), 
 				mWorldModel.getBodyX(), mWorldModel.getBodyY(), 
-				mWorldModel.getAlgaeX(), mWorldModel.getAlgaeY());
+				mWorldModel.getNearestAlgaeX(), mWorldModel.getNearestAlgaeY());
 		return hidePlan;
 	}
 	

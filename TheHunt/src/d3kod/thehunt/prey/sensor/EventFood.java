@@ -16,4 +16,22 @@ public class EventFood extends Event {
 	public float getFoodY() {
 		return foodY;
 	}
+	
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (!(o instanceof EventFood) ) return false;
+		
+		EventFood that = (EventFood)o;
+		
+		return that.getFoodX() == foodX && that.getFoodY() == foodY;
+	}
+	@Override
+	public int hashCode() {
+		throw new UnsupportedOperationException();
+	}
+	@Override
+	public String toString() {
+		return "EventFood " + foodX + " " + foodY;
+	}
 }

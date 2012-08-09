@@ -308,7 +308,7 @@ public class Prey {
 	public void moveForward(float force) {
 		float distance = force * FORCE_TO_DISTANCE;
 //		Log.v(TAG, "Moving the prey forward to a distance of " + distance + " thrust is " + mD.thrust);
-		float radAngle = (float)Math.toRadians(mD.bodyStartAngle);
+		float radAngle = (float)Math.toRadians(mD.bodyCAngle);
 		mD.vx += -FloatMath.sin(radAngle)*distance;
 		mD.vy += FloatMath.cos(radAngle)*distance;  
 	}

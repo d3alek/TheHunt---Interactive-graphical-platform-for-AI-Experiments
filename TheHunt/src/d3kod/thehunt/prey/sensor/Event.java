@@ -13,4 +13,8 @@ public class Event {
 	public EventType type() {
 		return mType;
 	}
+	
+	public String toString() {
+		return "Event " + mType;
+	};
 }

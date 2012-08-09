@@ -22,7 +22,12 @@ public class EnvironmentData {
 
 	public static final float currentStep = 0.002f;
 
-	private static final int ALGAE_NUM = 1;
+	private static final int ALGAE_NUM = 2;
+	
+	private static final float[] AlGAE_HARDCODED_POS = {
+		-0.5f, 0.5f,
+		1.0f, -0.3f
+	};
 	
 	private static final float[] algaeColor = 
 		{ 0.4f, 0.4f, 0.4f, 0.0f};
@@ -180,9 +185,11 @@ public class EnvironmentData {
 	}
 
 	public void makeAlgae() {
+		float algaeX, algaeY;
 		for (int i = 0; i < ALGAE_NUM; ++i) {
+			algaeX = AlGAE_HARDCODED_POS[i*2]; algaeY = AlGAE_HARDCODED_POS[i*2+1];
 			addFloatingObject(
-					new FloatingObject(D3GLES20.newDefaultCircle(ALGAE_SIZE, algaeColor, ALGAE_DETAILS), 0, 0, Type.ALGAE));
+					new FloatingObject(D3GLES20.newDefaultCircle(ALGAE_SIZE, algaeColor, ALGAE_DETAILS), algaeX, algaeY, Type.ALGAE));
 		}
 	}
 	

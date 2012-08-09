@@ -17,4 +17,24 @@ public class EventAlgae extends Event {
 	public float getAlgaeY() {
 		return algaeY;
 	}
+	
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (!(o instanceof EventAlgae) ) return false;
+		
+		EventAlgae that = (EventAlgae)o;
+		
+		return that.getAlgaeX() == algaeX && that.getAlgaeY() == algaeY;
+	}
+	
+	@Override
+	public int hashCode() {
+		throw new UnsupportedOperationException();
+	}
+	
+	@Override
+	public String toString() {
+		return "EventAlgae " + algaeX + " " + algaeY;
+	}
 }

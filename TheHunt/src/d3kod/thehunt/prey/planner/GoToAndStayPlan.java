@@ -9,7 +9,7 @@ public class GoToAndStayPlan extends MoveTowardsPlan {
 	private static final float DISTANCE_ENOUGH = 0.05f;
 	private static final float DISTANCE_MEDIUM = 0.5f;
 	private static final float DISTANCE_SMALL = 0.1f;
-	private static final int KEEP_DISTANCE_FOR = 4;
+	private static final int KEEP_DISTANCE_FOR = 1;
 	
 	private int slowdown;
 	private int keepDistanceCounter;

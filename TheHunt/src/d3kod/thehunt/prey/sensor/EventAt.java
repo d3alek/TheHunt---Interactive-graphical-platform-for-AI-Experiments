@@ -24,4 +24,9 @@ public class EventAt extends Event {
 	public float getBodyY() {
 		return bodyY;
 	}
+	
+	@Override
+	public String toString() {
+		return "EventAt head: " + headX + " " + headY + " body: " + bodyX + " " + bodyY;
+	}
 }
