@@ -119,7 +119,7 @@ public class TheHunt extends Activity {
     		mGLView.post(new Runnable() {
 				public void run() {
 //					mGLView.mRenderer.mPrey.flopLeft();
-					mGLView.mRenderer.mPrey.turn(TurnAngle.LEFT_MEDIUM);
+					mGLView.mRenderer.mPrey.turn(TurnAngle.LEFT_LARGE);
 				}
 			});
     		break;
@@ -127,7 +127,7 @@ public class TheHunt extends Activity {
     		mGLView.post(new Runnable() {
 				public void run() {
 //					mGLView.mRenderer.mPrey.flopRight();
-					mGLView.mRenderer.mPrey.turn(TurnAngle.RIGHT_MEDIUM);
+					mGLView.mRenderer.mPrey.turn(TurnAngle.RIGHT_LARGE);
 				}
 			});
     		break;

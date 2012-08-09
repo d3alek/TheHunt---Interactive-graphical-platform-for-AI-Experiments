@@ -26,9 +26,12 @@ public class Prey {
 	public static int ACTION_DELAY = TheHuntRenderer.TICKS_PER_SECOND/ACTIONS_PER_SECOND;
 //	public static int ACTION_DELAY_MAX = 20;
 	
-	public static int TURNS_PER_SECOND = 4;
-	public static int TICKS_PER_TURN = TheHuntRenderer.TICKS_PER_SECOND/TURNS_PER_SECOND;
-	
+	public static int SMALL_TURNS_PER_SECOND = 10;
+	public static int MEDIUM_TURNS_PER_SECOND = 8;
+	public static int LARGE_TURNS_PER_SECOND = 4;
+	public static int SMALL_TICKS_PER_TURN = TheHuntRenderer.TICKS_PER_SECOND/SMALL_TURNS_PER_SECOND;
+	public static int MEDIUM_TICKS_PER_TURN = TheHuntRenderer.TICKS_PER_SECOND/MEDIUM_TURNS_PER_SECOND;
+	public static int LARGE_TICKS_PER_TURN = TheHuntRenderer.TICKS_PER_SECOND/LARGE_TURNS_PER_SECOND;
 	
 	private Planner mPlanner;
 	private WorldModel mWorldModel;
@@ -59,10 +62,12 @@ public class Prey {
 	public static boolean posInterpolation = true;
 
 	public static final float bodyToHeadLength = 0.07f;
+	private static final float FORCE_TO_DISTANCE = 0.00004f;
 	
-	public static int flopBacksPerSecond = 3;
+	public static int flopBacksPerSecond = 2;
 	public static int flopBackTicks = TheHuntRenderer.TICKS_PER_SECOND/flopBacksPerSecond;
 	private float flopBackSpeed;
+	private boolean floppedThird;
 	
 	public void update(float dx, float dy) {
 		float[] posTemp = { 0.0f, bodyToHeadLength, 0.0f, 1.0f };
@@ -91,7 +96,7 @@ public class Prey {
 
 //		Log.v(TAG, "Debug " + mD.bodyStartAngleTarget + " " + mD.bodyStartAngle + " " + mD.bodyBAngleTarget + " " + mD.bodyBAngle + " " + mD.bodyCAngleTarget + " " + mD.bodyCAngle + " " + mD.bodyEndAngleTarget + mD.bodyEndAngle);
 		if (bodyBendCounter == 0) {
-			if (!flopBack) moveForward(Math.abs(mD.bodyEndAngleTarget-mD.bodyCAngleTarget));
+//			if (!flopBack) moveForward(Math.abs(mD.bodyEndAngleTarget-mD.bodyCAngleTarget));
 			mD.bodyEndAngleTarget = mD.bodyCAngleTarget;
 			mD.bodyCAngleTarget = mD.bodyBAngleTarget;
 			mD.bodyBAngleTarget = mD.bodyStartAngleTarget;
@@ -133,7 +138,7 @@ public class Prey {
 		}
 		
 		if (!flopBack) {
-//			Log.v(TAG, "Not flopping back, normal bend of the back flop " 
+//			Log.v(TAG, "Not flopping back, normal bend of the back flop "
 //					+ mD.bodyEndAngleTarget + " " + mD.bodyEndAngle + " " + mD.rotateSpeedBody);
 			if (mD.bodyEndAngleTarget > mD.bodyEndAngle + flopBackSpeed) bodyEndAngleRot = flopBackSpeed;
 			else if (mD.bodyEndAngleTarget < mD.bodyEndAngle - flopBackSpeed) bodyEndAngleRot = -flopBackSpeed;
@@ -155,10 +160,10 @@ public class Prey {
 		mD.mPosX += mD.vx ; mD.mPosY += mD.vy;
 	}
 	private boolean stoppedTurning() {
-//		return (mD.bodyStartAngleTarget == mD.bodyBAngleTarget && mD.bodyBAngleTarget == mD.bodyCAngleTarget);
-		return (mD.bodyStartAngleTarget == mD.bodyBAngleTarget 
-				&& mD.bodyBAngleTarget == mD.bodyCAngleTarget
-				&& mD.bodyCAngle == mD.bodyCAngleTarget);
+		return (mD.bodyStartAngleTarget == mD.bodyBAngleTarget && mD.bodyBAngleTarget == mD.bodyCAngleTarget);
+//		return (mD.bodyStartAngleTarget == mD.bodyBAngleTarget 
+//				&& mD.bodyBAngleTarget == mD.bodyCAngleTarget
+//				&& mD.bodyCAngle == mD.bodyCAngleTarget);
 	}
 
 	private void doFlopBack() {
@@ -169,38 +174,54 @@ public class Prey {
 			else {
 				flopBackAngle = flopBackTargetFirst;
 				floppedFirst = true;
+				moveForward(Math.abs(backFinAngle*flopBackSpeed)); // F = ma
 //				Log.v(TAG, "Flopped First done " + flopBackAngle);
 			}
 			mD.bodyEndAngle = (int)(mD.bodyCAngle + flopBackAngle);
 		}
-		else {
+		else if (!floppedSecond) {
 //			Log.v(TAG, "Flopping second " + flopBackTargetSecond + " " + flopBackAngle);
 			if (flopBackTargetSecond > flopBackAngle + flopBackSpeed) flopBackAngle += flopBackSpeed;
 			else if (flopBackTargetSecond < flopBackAngle - flopBackSpeed) flopBackAngle -= flopBackSpeed;
 			else {
 				flopBackAngle = flopBackTargetSecond;
 				floppedSecond = true;
+				moveForward(Math.abs(2*backFinAngle*flopBackSpeed)); // F = ma
 //				Log.v(TAG, "Flopped Second done " + flopBackAngle);
+			}
+			mD.bodyEndAngle = (int)(mD.bodyCAngle + flopBackAngle);
+		}
+		else {
+			//flopping third
+//			Log.v(TAG, "Flopping third " + flopBackAngle);
+			if (0 > flopBackAngle + flopBackSpeed) flopBackAngle += flopBackSpeed;
+			else if (0 < flopBackAngle - flopBackSpeed) flopBackAngle -= flopBackSpeed;
+			else {
+				flopBackAngle = 0;
+//				floppedSecond = true;
+				floppedThird = true;
+				moveForward(Math.abs(backFinAngle*flopBackSpeed)); // F = ma
+//				Log.v(TAG, "Flopped Third done " + flopBackAngle);
 			}
 			mD.bodyEndAngle = (int)(mD.bodyCAngle + flopBackAngle);
 		}
 //		else {
 //			if (f)
 //		}
-		if (floppedFirst && floppedSecond) {
+		if (floppedFirst && floppedSecond && floppedThird) {
 			if (turningBackFinMotion) {
 				if (stoppedTurning()) {
-					Log.v(TAG, "Stopped turning flop");
+//					Log.v(TAG, "Stopped turning flop");
 					turningBackFinMotion = false;
 					flopBack = false;
 				}
 				else {
-					Log.v(TAG, "Continue turning flop");
+//					Log.v(TAG, "Continue turning flop");
 					backFinMotion(turningBackFinAngle);
 				}
 			}
 			else {
-				Log.v(TAG, "Stopping flop");
+//				Log.v(TAG, "Stopping flop");
 				flopBack = false;
 			}
 //			if (turningBackFinMotion == false) flopBack = false;
@@ -217,7 +238,16 @@ public class Prey {
 			return;
 		}
 			
-		mD.rotateSpeedHead = Math.abs(value)/TICKS_PER_TURN;
+		switch(angle) {
+		case LEFT_SMALL: 
+		case RIGHT_SMALL: mD.rotateSpeedHead = mD.rotateSpeedSmall; break;
+		case LEFT_MEDIUM: 
+		case RIGHT_MEDIUM: mD.rotateSpeedHead = mD.rotateSpeedMedium; break;
+		case LEFT_LARGE: 
+		case RIGHT_LARGE: mD.rotateSpeedHead = mD.rotateSpeedLarge; break;
+		default: Log.v(TAG, "Turning to unknown angle");
+		}
+		
 		mD.rotateSpeedBody = mD.rotateSpeedHead/2;
 		if (mD.rotateSpeedBody < 1) mD.rotateSpeedBody = 1;
  		mD.bodyStartAngleTarget += value;
@@ -234,24 +264,20 @@ public class Prey {
 //		
 //		turningBackFinMotion = true;
 		
-		if (angle == TurnAngle.RIGHT_LARGE || angle == TurnAngle.RIGHT_MEDIUM || angle == TurnAngle.RIGHT_SMALL) {
-			turningBackFinAngle = TurnAngle.BACK_LEFT_SMALL;
-			if (!turningBackFinMotion) {
-				Log.v(TAG, "New backFinMotion from " + angle);
-				turningBackFinMotion = true;
-				backFinMotion(turningBackFinAngle);
-			}
-//			backFinMotion(turningBackFinAngle);
-		}
-		else if (angle == TurnAngle.LEFT_LARGE  || angle == TurnAngle.LEFT_MEDIUM || angle == TurnAngle.LEFT_SMALL) {
-			turningBackFinAngle = TurnAngle.BACK_RIGHT_SMALL;
-//			turningBackFinMotion = true;
-//			backFinMotion(turningBackFinAngle);
-			if (!turningBackFinMotion) {
-				Log.v(TAG, "New backFinMotion from " + angle);
-				turningBackFinMotion = true;
-				backFinMotion(turningBackFinAngle);
-			}
+ 		switch(angle) {
+ 		case RIGHT_SMALL: turningBackFinAngle = TurnAngle.BACK_LEFT_SMALL; break;
+ 		case RIGHT_MEDIUM: turningBackFinAngle = TurnAngle.BACK_LEFT_MEDIUM; break;
+ 		case RIGHT_LARGE: turningBackFinAngle = TurnAngle.BACK_LEFT_LARGE; break;
+ 		case LEFT_SMALL: turningBackFinAngle = TurnAngle.BACK_RIGHT_SMALL; break;
+ 		case LEFT_MEDIUM: turningBackFinAngle = TurnAngle.BACK_RIGHT_MEDIUM; break;
+ 		case LEFT_LARGE: turningBackFinAngle = TurnAngle.BACK_RIGHT_LARGE; break;
+ 		}
+ 		
+
+		if (!turningBackFinMotion) {
+//			Log.v(TAG, "New backFinMotion from " + angle);
+			turningBackFinMotion = true;
+			backFinMotion(turningBackFinAngle);
 		}
 		
 	}
@@ -259,24 +285,28 @@ public class Prey {
 	public void backFinMotion(TurnAngle angle) {
 		flopBack = true;
 		backFinAngle = angle.getValue();
-//		mD.bodyEndAngle = mD.bodyCAngle;
+		mD.bodyEndAngle = mD.bodyCAngle;
 		flopBackTargetFirst = +backFinAngle;
-		flopBackAngle = mD.bodyEndAngle-mD.bodyCAngle;
+		//flopBackAngle = mD.bodyEndAngle-mD.bodyCAngle;
+		flopBackAngle = 0;
 		flopBackTargetSecond = -backFinAngle;
 		floppedFirst = false;
 		floppedSecond = false;
-		flopBackSpeed = Math.abs((backFinAngle-flopBackAngle) + 2*backFinAngle)/(float)flopBackTicks; // S=3*backFinAngle
+		floppedThird = false;
+		flopBackSpeed = Math.abs(4*backFinAngle)/(float)flopBackTicks; // S=3*backFinAngle
 //		Log.v(TAG, "flopBackSpeed is " + flopBackSpeed);
-		moveForward(Math.abs(backFinAngle));
-		Log.v(TAG, "New back fin motion " + flopBackSpeed + " " + backFinAngle + " " + flopBackAngle + " " + flopBackTargetFirst + " " + flopBackTargetSecond);
+//		moveForward(Math.abs(2*backFinAngle*flopBackSpeed)); // F = ma
+//		Log.v(TAG, "New back fin motion " + flopBackSpeed + " " 
+//				+ backFinAngle + " " + flopBackAngle + " " + flopBackTargetFirst 
+//				+ " " + flopBackTargetSecond + " " + mD.bodyCAngle + " " + " " + mD.bodyCAngleTarget);
 	}
 	
 	public void updateSpeed(float dx, float dy) {
 		mD.vx += dx; mD.vy += dy;
 	}
 	
-	public void moveForward(float distance) {
-		distance *= mD.DISTANCE_TO_ANGLE_RATIO;
+	public void moveForward(float force) {
+		float distance = force * FORCE_TO_DISTANCE;
 //		Log.v(TAG, "Moving the prey forward to a distance of " + distance + " thrust is " + mD.thrust);
 		float radAngle = (float)Math.toRadians(mD.bodyStartAngle);
 		mD.vx += -FloatMath.sin(radAngle)*distance;
@@ -325,7 +355,7 @@ public class Prey {
 		mD.finVerticesNum = mD.rightFinVerticesData.length / D3GLES20.COORDS_PER_VERTEX;
 		mD.ribVerticesNum = mD.ribVerticesData.length / D3GLES20.COORDS_PER_VERTEX;
 		
-		mD.rotateSpeedHead = Math.abs(TurnAngle.LEFT_SMALL.getValue())/TICKS_PER_TURN;
+		mD.rotateSpeedHead = mD.rotateSpeedSmall;//Math.abs(TurnAngle.LEFT_SMALL.getValue())/SMALL_TICKS_PER_TURN;
 		mD.rotateSpeedBody = mD.rotateSpeedHead/2;
 		if (mD.rotateSpeedBody < 1) mD.rotateSpeedBody = 1;
 		
