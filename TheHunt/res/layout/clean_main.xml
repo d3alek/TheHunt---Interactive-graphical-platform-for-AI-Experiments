@@ -21,14 +21,14 @@
     	    android:layout_height="wrap_content"
     	    android:onClick="onToggleClicked"
     	    android:textOn="Food"
-    	    android:textOff="Food" />
-    	<ToggleButton
-    	    android:id="@+id/netToggle"
-    	    android:layout_width="wrap_content"
-    	    android:layout_height="wrap_content"
-    	    android:onClick="onToggleClicked"
-    	    android:textOn="Net"
     	    android:textOff="Net" />
+<!--     	<ToggleButton -->
+<!--     	    android:id="@+id/netToggle" -->
+<!--     	    android:layout_width="wrap_content" -->
+<!--     	    android:layout_height="wrap_content" -->
+<!--     	    android:onClick="onToggleClicked" -->
+<!--     	    android:textOn="Net" -->
+<!--     	    android:textOff="Net" /> -->
     	<TextView 
         	android:id="@+id/msPerFrame"
         	android:layout_width="wrap_content"

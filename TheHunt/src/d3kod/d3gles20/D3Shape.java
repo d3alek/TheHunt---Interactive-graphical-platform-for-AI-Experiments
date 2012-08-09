@@ -90,6 +90,7 @@ abstract public class D3Shape {
 	
 	public void setVertexBuffer(FloatBuffer vertexBuffer) {
 		this.vertexBuffer = vertexBuffer;
+		VERTICES_NUM = vertexBuffer.capacity()/D3GLES20.COORDS_PER_VERTEX;
 	}
 	
 	public void setDrawType(int drawType) {

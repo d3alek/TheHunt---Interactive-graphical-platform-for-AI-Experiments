@@ -27,6 +27,7 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 	public static boolean SHOW_CURRENTS = false;
 	public static boolean MANUAL_CONTROLS = false;
 	public static boolean FEED_WITH_TOUCH = false;
+	public static boolean NET_WITH_TOUCH = true;
 
 	private float[] mProjMatrix = new float[16]; 
 	private float[] mVMatrix = new float[16];
@@ -37,7 +38,6 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 	private CatchNet mNet;
 	
     public static final int TICKS_PER_SECOND = 30;
-	public static boolean NET_WITH_TOUCH = false;
     private final int MILLISEC_PER_TICK = 1000 / TICKS_PER_SECOND;
     private final int MAX_FRAMESKIP = 5;
 	private long next_game_tick;
@@ -142,6 +142,10 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 		PointF curDirDelta = mEnv.data.getTileFromPos(mPrey.getPosition()).getDir().getDelta();
 		mPrey.update(curDirDelta.x * EnvironmentData.currentStep, 
 				curDirDelta.y * EnvironmentData.currentStep);
+		PointF preyPos = mPrey.getPosition();
+		if (D3GLES20.contains(mNet.getGraphicIndex(), preyPos.x, preyPos.y)) {
+			Log.v(TAG, "Prey is caught!");
+		}
 	}
 
 	private void drawWorld(float interpolation) {
@@ -160,7 +164,7 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 		
 		mEnv.draw(mVMatrix, mProjMatrix, interpolation);
 		mPrey.draw(mVMatrix, mProjMatrix, interpolation);
-		mNet.draw(mVMatrix, mProjMatrix);
+		if (mNet.show()) mNet.draw(mVMatrix, mProjMatrix);
 	}
 
 	public void handleTouchDown(float x, float y) {

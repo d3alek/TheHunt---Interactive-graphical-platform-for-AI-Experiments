@@ -106,7 +106,7 @@ public class D3GLES20 {
 		return putShape(new D3Circle(r, color, vertices, true));
 	}
 	
-	private static int putShape(D3Shape shape) {
+	public static int putShape(D3Shape shape) {
 		while (shapes.containsKey(shapesNum)) {
 			shapesNum++;
 		}
