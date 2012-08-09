@@ -47,21 +47,31 @@ public class MoveTowardsPlan extends Plan {
 //			else {
 //				addNextAction(Action.TURN_LEFT_LARGE);
 //			}
-			if (angleToTarget < TurnAngle.LEFT_SMALL.getValue()/2) {
+//			if (angleToTarget < TurnAngle.LEFT_SMALL.getValue()/2) {
+//				addNextAction(Action.FORWARD_LARGE);
+//			}
+//			else if (angleToTarget < TurnAngle.LEFT_SMALL.getValue()) {
+//				addNextAction(Action.TURN_LEFT_SMALL);
+////				addNextAction(Action.FORWARD_LARGE);
+//			}
+//			else if (angleToTarget < TurnAngle.LEFT_MEDIUM.getValue()) {
+////				addNextAction(Action.TURN_RIGHT_SMALL);
+//				addNextAction(Action.TURN_LEFT_MEDIUM);
+//			}
+//			else {
+////				addNextAction(Action.TURN_RIGHT_MEDIUM);
+//				addNextAction(Action.TURN_LEFT_LARGE);
+//			}
+			if (angleToTarget < TurnAngle.LEFT_SMALL.getValue()) {
 				addNextAction(Action.FORWARD_LARGE);
 			}
-			else if (angleToTarget < TurnAngle.LEFT_SMALL.getValue()) {
+			else if (angleToTarget <= TurnAngle.LEFT_MEDIUM.getValue()) {
 				addNextAction(Action.TURN_LEFT_SMALL);
-//				addNextAction(Action.FORWARD_LARGE);
 			}
-			else if (angleToTarget < TurnAngle.LEFT_MEDIUM.getValue()) {
-//				addNextAction(Action.TURN_RIGHT_SMALL);
+			else if (angleToTarget <= TurnAngle.LEFT_LARGE.getValue()) {
 				addNextAction(Action.TURN_LEFT_MEDIUM);
 			}
-			else {
-//				addNextAction(Action.TURN_RIGHT_MEDIUM);
-				addNextAction(Action.TURN_LEFT_LARGE);
-			}
+			else addNextAction(Action.TURN_LEFT_LARGE);
 		}
 		else {
 			//Target is to the right
@@ -79,21 +89,32 @@ public class MoveTowardsPlan extends Plan {
 //			else {
 //				addNextAction(Action.TURN_RIGHT_LARGE);
 //			}
-			if (angleToTarget < TurnAngle.LEFT_SMALL.getValue()/2) {
-				addNextAction(Action.FORWARD_LARGE);
-			}
-			else if (angleToTarget < TurnAngle.LEFT_SMALL.getValue()) {
-				addNextAction(Action.TURN_RIGHT_SMALL);
+//			if (angleToTarget < TurnAngle.LEFT_SMALL.getValue()/2) {
 //				addNextAction(Action.FORWARD_LARGE);
-			}
-			else if (angleToTarget < TurnAngle.LEFT_MEDIUM.getValue()) {
+//			}
+//			else if (angleToTarget < TurnAngle.LEFT_SMALL.getValue()) {
 //				addNextAction(Action.TURN_RIGHT_SMALL);
+////				addNextAction(Action.FORWARD_LARGE);
+//			}
+//			else if (angleToTarget < TurnAngle.LEFT_MEDIUM.getValue()) {
+////				addNextAction(Action.TURN_RIGHT_SMALL);
+//				addNextAction(Action.TURN_RIGHT_MEDIUM);
+//			}
+//			else {
+////				addNextAction(Action.TURN_RIGHT_MEDIUM);
+//				addNextAction(Action.TURN_RIGHT_LARGE);
+//			}
+			if (angleToTarget < TurnAngle.LEFT_SMALL.getValue()) {
+				addNextAction(Action.FORWARD_LARGE);
+//				Log.v(TAG, "Adding next action to be " + Action.FORWARD_LARGE);
+			}
+			else if (angleToTarget <= TurnAngle.LEFT_MEDIUM.getValue()) {
+				addNextAction(Action.TURN_RIGHT_SMALL);
+			}
+			else if (angleToTarget <= TurnAngle.LEFT_LARGE.getValue()) {
 				addNextAction(Action.TURN_RIGHT_MEDIUM);
 			}
-			else {
-//				addNextAction(Action.TURN_RIGHT_MEDIUM);
-				addNextAction(Action.TURN_RIGHT_LARGE);
-			}
+			else addNextAction(Action.TURN_RIGHT_LARGE);
 		}
 //		if (angleToTarget > TOLERANCE) {
 //			addNextAction(Action.TURN_LEFT_SMALL);

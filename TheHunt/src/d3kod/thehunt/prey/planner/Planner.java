@@ -28,8 +28,15 @@ public class Planner {
 	}
 
 	public Action nextAction(WorldModel mWorldModel) {
+		if (!mPlan.finishedCurrentAction()) {
+			mPlan.tickCurrentAction();
+//			Log.v(TAG, "Ticking current action, doing none now");
+			return Action.none;
+		}
+//		Log.v(TAG, "Done ticking current action");
 		mPlan.update(mWorldModel);
 		if (!mPlan.isFinished()) {
+//			Log.v(TAG, "Doing next action!");
 			return mPlan.nextAction();
 		}
 		else if (SHOW_TARGET) D3GLES20.removeShape(mPlanTarget);

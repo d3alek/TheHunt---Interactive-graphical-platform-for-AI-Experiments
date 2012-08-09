@@ -19,6 +19,7 @@ public class Plan {
 	private float mTargetY;
 	private float[] mTargetColor;
 	private float mTargetSize;
+	private int mCurrentActionTicks;
 	private final static float[] targetColorDefault = {1.0f, 0.0f, 0.0f};
 	private final static float targetSizeDefault = 0.005f;
 	private static float[] modelMatrix;
@@ -66,7 +67,9 @@ public class Plan {
 			Log.v(TAG, "Next action is null!");
 			return null;
 		}
-		return mActions.get(mCurrentAction++);
+		Action nextAction = mActions.get(mCurrentAction++);
+		mCurrentActionTicks = nextAction.getTicks()-1; // we tick once now
+		return nextAction;
 	}
 	public void addLastAction(Action action) {
 		mActions.add(action); 
@@ -132,5 +135,13 @@ public class Plan {
 			planStr += action + " ";
 		}
 		Log.v(TAG, planStr);
+	}
+
+	public boolean finishedCurrentAction() {
+		return (mCurrentActionTicks <= 0);
+	}
+
+	public void tickCurrentAction() {
+		mCurrentActionTicks--;
 	}
 }

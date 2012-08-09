@@ -53,7 +53,7 @@ public class TheHunt extends Activity {
     	
     	((ToggleButton)findViewById(R.id.aiToggle)).setChecked(Prey.AI);
     	if (mBodyBendDelay != null) mBodyBendDelay.setText(Prey.BODY_BENDS_PER_SECOND+"");
-    	if (mActionDelay != null) mActionDelay.setText(Prey.ACTION_DELAY+"");
+    	if (mActionDelay != null) mActionDelay.setText(Prey.ACTIONS_PER_SECOND+"");
     	if (mPosInterpolation != null) mPosInterpolation.setChecked(Prey.posInterpolation);//mPosInterpolation = (ToggleButton)findViewById(R.id.posInterpolationToggle);
         if (mAngleInterpolation != null) mAngleInterpolation.setChecked(Prey.angleInterpolation);
     	
@@ -96,7 +96,7 @@ public class TheHunt extends Activity {
     		mBodyBendDelay.setText(Prey.BODY_BENDS_PER_SECOND+"");
     		break;
     	case R.id.minusBodyBendDelay:
-    		if (Prey.BODY_BENDS_PER_SECOND > 0) {
+    		if (Prey.BODY_BENDS_PER_SECOND > 1) {
     			//Prey.BODY_BEND_DELAY--;
     			Prey.BODY_BENDS_PER_SECOND--;
     			Prey.BODY_BEND_DELAY = TheHuntRenderer.TICKS_PER_SECOND/Prey.BODY_BENDS_PER_SECOND;
@@ -106,18 +106,20 @@ public class TheHunt extends Activity {
     		mBodyBendDelay.setText(Prey.BODY_BENDS_PER_SECOND+"");
     		break;
 		case R.id.plusActionDelay:
-			if (Prey.ACTION_DELAY < Prey.ACTION_DELAY_MAX) Prey.ACTION_DELAY++;
-			mActionDelay.setText(Prey.ACTION_DELAY+"");
+			if (Prey.ACTIONS_PER_SECOND < Prey.ACTIONS_PER_SECOND_MAX) Prey.ACTIONS_PER_SECOND++;
+			Prey.ACTION_DELAY = TheHuntRenderer.TICKS_PER_SECOND/Prey.ACTIONS_PER_SECOND;
+			mActionDelay.setText(Prey.ACTIONS_PER_SECOND+"");
 			break;
 		case R.id.minusActionDelay:
-			if (Prey.ACTION_DELAY > 0) Prey.ACTION_DELAY--;
-			mActionDelay.setText(Prey.ACTION_DELAY+"");
+			if (Prey.ACTIONS_PER_SECOND > 1) Prey.ACTIONS_PER_SECOND--;
+			Prey.ACTION_DELAY = TheHuntRenderer.TICKS_PER_SECOND/Prey.ACTIONS_PER_SECOND;
+			mActionDelay.setText(Prey.ACTIONS_PER_SECOND+"");
 			break;
     	case R.id.flopLeft:
     		mGLView.post(new Runnable() {
 				public void run() {
 //					mGLView.mRenderer.mPrey.flopLeft();
-					mGLView.mRenderer.mPrey.turn(TurnAngle.LEFT_LARGE);
+					mGLView.mRenderer.mPrey.turn(TurnAngle.LEFT_MEDIUM);
 				}
 			});
     		break;
@@ -125,14 +127,14 @@ public class TheHunt extends Activity {
     		mGLView.post(new Runnable() {
 				public void run() {
 //					mGLView.mRenderer.mPrey.flopRight();
-					mGLView.mRenderer.mPrey.turn(TurnAngle.RIGHT_LARGE);
+					mGLView.mRenderer.mPrey.turn(TurnAngle.RIGHT_MEDIUM);
 				}
 			});
     		break;
     	case R.id.flopBack:
     		mGLView.post(new Runnable() {
 				public void run() {
-					mGLView.mRenderer.mPrey.backFinMotion(TurnAngle.BACK_SMALL);
+					mGLView.mRenderer.mPrey.backFinMotion(TurnAngle.BACK_LARGE);
 				}
 			});
     		break;

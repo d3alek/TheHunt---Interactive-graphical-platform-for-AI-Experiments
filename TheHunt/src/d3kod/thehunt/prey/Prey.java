@@ -21,10 +21,14 @@ public class Prey {
 	public static final int BODY_BENDS_PER_SECOND_MAX = 30;
 	public static int BODY_BENDS_PER_SECOND = 12;
 	public static int BODY_BEND_DELAY = TheHuntRenderer.TICKS_PER_SECOND/BODY_BENDS_PER_SECOND;
-	public static int ACTION_DELAY = 5;
-	public static int ACTION_DELAY_MAX = 20;
+	public static final int ACTIONS_PER_SECOND_MAX = 30;
+	public static int ACTIONS_PER_SECOND = 30;
+	public static int ACTION_DELAY = TheHuntRenderer.TICKS_PER_SECOND/ACTIONS_PER_SECOND;
+//	public static int ACTION_DELAY_MAX = 20;
 	
-	public static int SMALL_TURNS_PER_SECOND = 10;
+	public static int TURNS_PER_SECOND = 4;
+	public static int TICKS_PER_TURN = TheHuntRenderer.TICKS_PER_SECOND/TURNS_PER_SECOND;
+	
 	
 	private Planner mPlanner;
 	private WorldModel mWorldModel;
@@ -40,7 +44,7 @@ public class Prey {
 	private int bodyStartAngleRot;
 	private int bodyBAngleRot;
 	private int bodyCAngleRot;
-	private int bodyEndAngleRot;
+	private float bodyEndAngleRot;
 	private int backFinAngle;
 	private boolean flopBack;
 	private int flopBackTargetFirst;
@@ -48,7 +52,7 @@ public class Prey {
 	private boolean floppedFirst;
 	private boolean floppedSecond;
 	private boolean turningBackFinMotion;
-	private int flopBackAngle;
+	private float flopBackAngle;
 	private TurnAngle turningBackFinAngle;
 	private int backAngleToggle;
 	public static boolean angleInterpolation = true;
@@ -56,9 +60,9 @@ public class Prey {
 
 	public static final float bodyToHeadLength = 0.07f;
 	
-	int flopBacksPerSecond = 10;
-	int flopBackTicks = TheHuntRenderer.TICKS_PER_SECOND/flopBacksPerSecond;
-	private int flopBackSpeed;
+	public static int flopBacksPerSecond = 3;
+	public static int flopBackTicks = TheHuntRenderer.TICKS_PER_SECOND/flopBacksPerSecond;
+	private float flopBackSpeed;
 	
 	public void update(float dx, float dy) {
 		float[] posTemp = { 0.0f, bodyToHeadLength, 0.0f, 1.0f };
@@ -74,11 +78,11 @@ public class Prey {
 		mWorldModel.update(mSensor.sense(mD.mPosHeadX, mD.mPosHeadY, mD.mPosX, mD.mPosY));
 
 		if (AI) {
-			if (actionDelayCounter == 0) {
+//			if (actionDelayCounter == 0) {
 				doAction(mPlanner.nextAction(mWorldModel));
-				actionDelayCounter = ACTION_DELAY;
-			}
-			else actionDelayCounter--;
+//				actionDelayCounter = ACTION_DELAY;
+//			}
+//			else actionDelayCounter--;
 		}
 		move(dx, dy);
 	}
@@ -100,12 +104,12 @@ public class Prey {
 			--bodyBendCounter;
 		}
 		
-		if (turningBackFinMotion && !flopBack) {
-			if (stoppedTurning()) {
-				turningBackFinMotion = false;
-			}
-			backFinMotion(turningBackFinAngle);
-		}
+//		if (turningBackFinMotion && !flopBack) {
+//			if (stoppedTurning()) {
+//				turningBackFinMotion = false;
+//			}
+//			backFinMotion(turningBackFinAngle);
+//		}
 		
 		if (mD.bodyStartAngleTarget > mD.bodyStartAngle + mD.rotateSpeedHead) bodyStartAngleRot = mD.rotateSpeedHead;
 		else if (mD.bodyStartAngleTarget < mD.bodyStartAngle - mD.rotateSpeedHead) bodyStartAngleRot = -mD.rotateSpeedHead;
@@ -114,65 +118,93 @@ public class Prey {
 			mD.bodyStartAngle = mD.bodyStartAngleTarget;
 		}
 		
-		if (mD.bodyBAngleTarget > mD.bodyBAngle + mD.rotateSpeed) bodyBAngleRot = +mD.rotateSpeed;
-		else if (mD.bodyBAngleTarget < mD.bodyBAngle - mD.rotateSpeed) bodyBAngleRot = -mD.rotateSpeed;
+		if (mD.bodyBAngleTarget > mD.bodyBAngle + mD.rotateSpeedBody) bodyBAngleRot = +mD.rotateSpeedBody;
+		else if (mD.bodyBAngleTarget < mD.bodyBAngle - mD.rotateSpeedBody) bodyBAngleRot = -mD.rotateSpeedBody;
 		else {
 			bodyBAngleRot = 0;
 			mD.bodyBAngle = mD.bodyBAngleTarget;
 		}
 		
-		if (mD.bodyCAngleTarget > mD.bodyCAngle + mD.rotateSpeed) bodyCAngleRot = +mD.rotateSpeed;
-		else if (mD.bodyCAngleTarget < mD.bodyCAngle - mD.rotateSpeed) bodyCAngleRot = -mD.rotateSpeed;
+		if (mD.bodyCAngleTarget > mD.bodyCAngle + mD.rotateSpeedBody) bodyCAngleRot = +mD.rotateSpeedBody;
+		else if (mD.bodyCAngleTarget < mD.bodyCAngle - mD.rotateSpeedBody) bodyCAngleRot = -mD.rotateSpeedBody;
 		else {
 			bodyCAngleRot = 0;
 			mD.bodyCAngle = mD.bodyCAngleTarget;
 		}
 		
 		if (!flopBack) {
-			if (mD.bodyEndAngleTarget > mD.bodyEndAngle + mD.rotateSpeed) bodyEndAngleRot = +mD.rotateSpeed;
-			else if (mD.bodyEndAngleTarget < mD.bodyEndAngle - mD.rotateSpeed) bodyEndAngleRot = -mD.rotateSpeed;
+//			Log.v(TAG, "Not flopping back, normal bend of the back flop " 
+//					+ mD.bodyEndAngleTarget + " " + mD.bodyEndAngle + " " + mD.rotateSpeedBody);
+			if (mD.bodyEndAngleTarget > mD.bodyEndAngle + flopBackSpeed) bodyEndAngleRot = flopBackSpeed;
+			else if (mD.bodyEndAngleTarget < mD.bodyEndAngle - flopBackSpeed) bodyEndAngleRot = -flopBackSpeed;
 			else {
 				bodyEndAngleRot = 0;
 				mD.bodyEndAngle = mD.bodyEndAngleTarget;
 			}
 		}
 
-		else doFlopBack();
+		if (flopBack) doFlopBack();
 		
 		mD.bodyStartAngle += bodyStartAngleRot;
 		mD.bodyBAngle += bodyBAngleRot;
 		mD.bodyCAngle += bodyCAngleRot;
-		if (!flopBack) mD.bodyEndAngle += bodyEndAngleRot;
+		if (!flopBack) mD.bodyEndAngle += (int)bodyEndAngleRot;
 		
 		updateSpeed(x, y);
 		applyFriction();
 		mD.mPosX += mD.vx ; mD.mPosY += mD.vy;
 	}
 	private boolean stoppedTurning() {
-		return (mD.bodyStartAngleTarget == mD.bodyBAngleTarget && mD.bodyBAngleTarget == mD.bodyCAngleTarget);
+//		return (mD.bodyStartAngleTarget == mD.bodyBAngleTarget && mD.bodyBAngleTarget == mD.bodyCAngleTarget);
+		return (mD.bodyStartAngleTarget == mD.bodyBAngleTarget 
+				&& mD.bodyBAngleTarget == mD.bodyCAngleTarget
+				&& mD.bodyCAngle == mD.bodyCAngleTarget);
 	}
 
 	private void doFlopBack() {
 		if (!floppedFirst) {
+//			Log.v(TAG, "Flopping first " + flopBackTargetFirst + " " + flopBackAngle);
 			if (flopBackTargetFirst > flopBackAngle + flopBackSpeed) flopBackAngle += flopBackSpeed;
 			else if (flopBackTargetFirst < flopBackAngle - flopBackSpeed) flopBackAngle -= flopBackSpeed;
 			else {
 				flopBackAngle = flopBackTargetFirst;
 				floppedFirst = true;
+//				Log.v(TAG, "Flopped First done " + flopBackAngle);
 			}
-			mD.bodyEndAngle = mD.bodyCAngle + flopBackAngle;
+			mD.bodyEndAngle = (int)(mD.bodyCAngle + flopBackAngle);
 		}
 		else {
+//			Log.v(TAG, "Flopping second " + flopBackTargetSecond + " " + flopBackAngle);
 			if (flopBackTargetSecond > flopBackAngle + flopBackSpeed) flopBackAngle += flopBackSpeed;
 			else if (flopBackTargetSecond < flopBackAngle - flopBackSpeed) flopBackAngle -= flopBackSpeed;
 			else {
 				flopBackAngle = flopBackTargetSecond;
 				floppedSecond = true;
+//				Log.v(TAG, "Flopped Second done " + flopBackAngle);
 			}
-			mD.bodyEndAngle = mD.bodyCAngle + flopBackAngle;
+			mD.bodyEndAngle = (int)(mD.bodyCAngle + flopBackAngle);
 		}
+//		else {
+//			if (f)
+//		}
 		if (floppedFirst && floppedSecond) {
-			flopBack = false;
+			if (turningBackFinMotion) {
+				if (stoppedTurning()) {
+					Log.v(TAG, "Stopped turning flop");
+					turningBackFinMotion = false;
+					flopBack = false;
+				}
+				else {
+					Log.v(TAG, "Continue turning flop");
+					backFinMotion(turningBackFinAngle);
+				}
+			}
+			else {
+				Log.v(TAG, "Stopping flop");
+				flopBack = false;
+			}
+//			if (turningBackFinMotion == false) flopBack = false;
+//			else 
 		}
 	}
 	public void turn(TurnAngle angle) {
@@ -185,13 +217,15 @@ public class Prey {
 			return;
 		}
 			
+		mD.rotateSpeedHead = Math.abs(value)/TICKS_PER_TURN;
+		mD.rotateSpeedBody = mD.rotateSpeedHead/2;
+		if (mD.rotateSpeedBody < 1) mD.rotateSpeedBody = 1;
+ 		mD.bodyStartAngleTarget += value;
 		
-		mD.bodyStartAngleTarget += value;
-		
-		if (angle == TurnAngle.LEFT_SMALL || angle == TurnAngle.RIGHT_SMALL) {
-			// do not move back fin if doing a small turn
-			return;
-		}
+//		if (angle == TurnAngle.LEFT_SMALL || angle == TurnAngle.RIGHT_SMALL) {
+//			// do not move back fin if doing a small turn
+//			return;
+//		}
 		
 //		if (value > 0) {
 //			turningBackFinAngle = TurnAngle.BACK_RIGHT_SMALL;
@@ -200,13 +234,24 @@ public class Prey {
 //		
 //		turningBackFinMotion = true;
 		
-		if (angle == TurnAngle.RIGHT_LARGE) {
+		if (angle == TurnAngle.RIGHT_LARGE || angle == TurnAngle.RIGHT_MEDIUM || angle == TurnAngle.RIGHT_SMALL) {
 			turningBackFinAngle = TurnAngle.BACK_LEFT_SMALL;
-			turningBackFinMotion = true;
+			if (!turningBackFinMotion) {
+				Log.v(TAG, "New backFinMotion from " + angle);
+				turningBackFinMotion = true;
+				backFinMotion(turningBackFinAngle);
+			}
+//			backFinMotion(turningBackFinAngle);
 		}
-		else if (angle == TurnAngle.LEFT_LARGE) {
+		else if (angle == TurnAngle.LEFT_LARGE  || angle == TurnAngle.LEFT_MEDIUM || angle == TurnAngle.LEFT_SMALL) {
 			turningBackFinAngle = TurnAngle.BACK_RIGHT_SMALL;
-			turningBackFinMotion = true;
+//			turningBackFinMotion = true;
+//			backFinMotion(turningBackFinAngle);
+			if (!turningBackFinMotion) {
+				Log.v(TAG, "New backFinMotion from " + angle);
+				turningBackFinMotion = true;
+				backFinMotion(turningBackFinAngle);
+			}
 		}
 		
 	}
@@ -214,14 +259,16 @@ public class Prey {
 	public void backFinMotion(TurnAngle angle) {
 		flopBack = true;
 		backFinAngle = angle.getValue();
-		mD.bodyEndAngle = mD.bodyCAngle;
+//		mD.bodyEndAngle = mD.bodyCAngle;
 		flopBackTargetFirst = +backFinAngle;
-		flopBackAngle = 0;
+		flopBackAngle = mD.bodyEndAngle-mD.bodyCAngle;
 		flopBackTargetSecond = -backFinAngle;
 		floppedFirst = false;
 		floppedSecond = false;
-		flopBackSpeed = Math.abs(backFinAngle)/flopBackTicks;
+		flopBackSpeed = Math.abs((backFinAngle-flopBackAngle) + 2*backFinAngle)/(float)flopBackTicks; // S=3*backFinAngle
+//		Log.v(TAG, "flopBackSpeed is " + flopBackSpeed);
 		moveForward(Math.abs(backFinAngle));
+		Log.v(TAG, "New back fin motion " + flopBackSpeed + " " + backFinAngle + " " + flopBackAngle + " " + flopBackTargetFirst + " " + flopBackTargetSecond);
 	}
 	
 	public void updateSpeed(float dx, float dy) {
@@ -277,6 +324,10 @@ public class Prey {
 		
 		mD.finVerticesNum = mD.rightFinVerticesData.length / D3GLES20.COORDS_PER_VERTEX;
 		mD.ribVerticesNum = mD.ribVerticesData.length / D3GLES20.COORDS_PER_VERTEX;
+		
+		mD.rotateSpeedHead = Math.abs(TurnAngle.LEFT_SMALL.getValue())/TICKS_PER_TURN;
+		mD.rotateSpeedBody = mD.rotateSpeedHead/2;
+		if (mD.rotateSpeedBody < 1) mD.rotateSpeedBody = 1;
 		
 	}
 	

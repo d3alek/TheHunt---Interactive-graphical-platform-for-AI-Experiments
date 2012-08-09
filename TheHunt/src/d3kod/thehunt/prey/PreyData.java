@@ -9,23 +9,25 @@ public class PreyData {
 	protected static final float MAX_SPEED = 0.1f;
 	protected static final int MAX_SPIN_SPEED = 10;
 	protected static final float DISTANCE_TO_ANGLE_RATIO = 0.0002f;// MAX_SPEED/MAX_SPIN_SPEED;
-	protected static final float MAX_BODY_BEND_ANGLE = 90;
+	protected static final float MAX_BODY_BEND_ANGLE = 110;
 	protected static final int angleSpeedIncrement = 1;
 	protected static final int angleSpeedHeadDefault = angleSpeedIncrement/2;
 	protected float targetAngleFins;
 	protected static int angleSpeedFins = 1;
 	protected static int angleSpeedHead = 30;
 	
-	public static int angleFlopSmall = 10;
-	public static int angleFlopMedium = 30;
+	public static int angleFlopSmall = 20;
+	public static int angleFlopMedium = 45;
 	public static int angleFlopLarge = 90;
 	public static int angleFlopBackSmall = 10;
 	public static int angleFlopBackMedium = 15;
 	public static int angleFlopBackLarge = 25;
 //	public static int rotateSpeed = angleFlop/Prey.BODY_BEND_DELAY;
-	public static int rotateSpeed = angleFlopSmall*Prey.SMALL_TURNS_PER_SECOND/(TheHuntRenderer.TICKS_PER_SECOND);
+	public static int rotateSpeedSmall = angleFlopSmall*Prey.TURNS_PER_SECOND/(TheHuntRenderer.TICKS_PER_SECOND);
+	public static int rotateSpeedMedium = angleFlopMedium*Prey.TURNS_PER_SECOND/(TheHuntRenderer.TICKS_PER_SECOND);
+	public static int rotateSpeedLarge = angleFlopLarge*Prey.TURNS_PER_SECOND/(TheHuntRenderer.TICKS_PER_SECOND);
 //	public static int rotateSpeedHead = 360/(TheHuntRenderer.TICKS_PER_SECOND*Prey.SECONDS_PER_REV);
-	public static int rotateSpeedHead = 3*rotateSpeed;
+//	public static int rotateSpeedHead = angleFlop*rotateSpeed;
 	public float thrust;
 	
 	protected static final int angleBackSpeed = 3;
@@ -199,4 +201,6 @@ public class PreyData {
 	public float[] mRibsModelMatrix = new float[16];
 	public int ribVerticesNum;
 	public float[] bodyVerticesData;
+	public int rotateSpeedHead;
+	public int rotateSpeedBody;
 }
