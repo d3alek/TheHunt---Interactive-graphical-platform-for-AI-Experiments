@@ -16,6 +16,7 @@ public class D3GLES20 {
 	public static final int BYTES_PER_FLOAT = 4;
 	public static final int BYTES_PER_SHORT = 2;
 	public static final int COORDS_PER_VERTEX = 3;
+	public static final float EPSILON = 0.00001f;
 	
 	private static final String vertexShaderCode =
 			"uniform mat4 u_MVPMatrix;      \n"     // A constant representing the combined model/view/projection matrix.
@@ -39,6 +40,7 @@ public class D3GLES20 {
 			+ "   gl_FragColor = u_Color;     \n"     // Pass the color directly through the pipeline.
 			+ "}                              \n";
 	private static final String TAG = "D3GLES20";
+	private static final int TEMP_CIRCLE_TICKS = 50;
 	private static int defVertexShaderHandle = -1;
 	private static int defFragmentShaderHandle = -1;
 	
@@ -220,8 +222,25 @@ public class D3GLES20 {
 
 	private static boolean circleContains(float centerX, float centerY,
 			float radius, float x, float y) {
+//		if (SHOW_CIRCLE_CONTAINS_CHECKS) {
+//			putShape(new TempCircle(centerX, centerY, radius, TEMP_CIRCLE_TICKS));
+//		}
 		return D3GLES20.distance(centerX, centerY, x, y) <= radius;
 	}
+	
+//	public static int showContainsCheck(int key, float hX, float hY) {
+//		return newTempCircle(shapes.get(key).getCenterX(), shapes.get(key).getCenterY(), shapes.get(key).getRadius());
+//	}
+//	private static int newTempCircle(float centerX, float centerY,
+//			float radius) {
+//		return putShape(new TempCircle(centerX, centerY, radius, TEMP_CIRCLE_TICKS));
+//	}
+
+	public static TempCircle newContainsCheckCircle(int key, float hX, float hY) {
+		return new TempCircle(shapes.get(key).getCenterX(), shapes.get(key).getCenterY(), shapes.get(key).getRadius(), TEMP_CIRCLE_TICKS);
+//		return newTempCircle(shapes.get(key).getCenterX(), shapes.get(key).getCenterY(), shapes.get(key).getRadius());
+	}
+	
 	public static int loadShader(int type, String shaderCode){
 
         // create a vertex shader type (GLES20.GL_VERTEX_SHADER)
@@ -259,5 +278,11 @@ public class D3GLES20 {
 
 	public static float angleBetweenVectors(float x1, float y1, float x2, float y2, float len1, float len2) {
 		return (float) Math.toDegrees(Math.acos((x1*x2 + y1*y2)/(len1*len2)));
+	}
+
+	public static int compareFloats(float f, float g) {
+		if (f < g + EPSILON && f > g - EPSILON) return 0;
+		if (f < g - EPSILON) return -1;
+		else return 1;
 	}
 }

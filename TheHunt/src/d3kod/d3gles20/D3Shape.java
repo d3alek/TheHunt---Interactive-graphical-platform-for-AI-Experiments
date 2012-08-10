@@ -2,6 +2,8 @@ package d3kod.d3gles20;
 
 import java.nio.FloatBuffer;
 
+import d3kod.thehunt.TheHuntRenderer;
+
 import android.opengl.GLES20;
 import android.opengl.Matrix;
 import android.util.Log;
@@ -22,6 +24,11 @@ abstract public class D3Shape {
 	private float[] mMMatrix;
 	private float[] mCenter;
 	private float[] mCenterDefault;
+	
+//	private static final int SEC_TO_FADE = 1;
+//	private static final int FADE_TICKS = TheHuntRenderer.TICKS_PER_SECOND*SEC_TO_FADE;
+	
+	private static final float FADE_SPEED = 0.05f;
 	
 	protected D3Shape(int verticesNum, FloatBuffer vertBuffer, float[] colorData, int drType, boolean useDefaultShaders) {
 		color = colorData;
@@ -98,6 +105,25 @@ abstract public class D3Shape {
 	}
 	
 	public void setColor(float[] color) {
-		this.color = color;
+		this.color = color.clone();
+	}
+	public int getVerticesNum() {
+		return VERTICES_NUM;
+	}
+	public boolean fadeDone() {
+		for (int i = 0; i < 3; ++i) {
+			if (D3GLES20.compareFloats(color[i], TheHuntRenderer.bgColor[i]) != 0) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	public void fade() {
+		for (int i = 0; i < color.length; ++i) {
+			int compare = D3GLES20.compareFloats(color[i], TheHuntRenderer.bgColor[i]);
+			if (compare < 0) color[i] += FADE_SPEED;
+			else if (compare > 0) color[i] -= FADE_SPEED;
+		}
 	}
 }

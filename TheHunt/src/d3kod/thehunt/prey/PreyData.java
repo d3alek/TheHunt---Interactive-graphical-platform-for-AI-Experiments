@@ -33,7 +33,9 @@ public class PreyData {
 	protected static final int angleBackSpeed = 3;
 	protected static float moveStep = 0.005f;
 	protected static final int STRIDE_BYTES = D3GLES20.COORDS_PER_VERTEX * D3GLES20.BYTES_PER_FLOAT;
-	protected static final float[] preyColor = {
+	protected static float[] preyColor = {
+		0.0f, 0.0f, 0.0f, 0.0f };
+	protected static final float[] preyColorDefault = {
 		0.0f, 0.0f, 0.0f, 0.0f };
 	protected static final float preySize = 1.0f;
 	protected static final float bodyLength = 0.1f * preySize;

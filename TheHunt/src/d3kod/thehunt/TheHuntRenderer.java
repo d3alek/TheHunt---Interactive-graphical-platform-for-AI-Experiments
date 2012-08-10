@@ -10,6 +10,7 @@ import android.opengl.GLES20;
 import android.opengl.Matrix;
 import android.util.Log;
 import d3kod.d3gles20.D3GLES20;
+import d3kod.d3gles20.TempCircle;
 import d3kod.thehunt.environment.Environment;
 import d3kod.thehunt.environment.EnvironmentData;
 import d3kod.thehunt.environment.Tile;
@@ -29,6 +30,9 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 	public static boolean FEED_WITH_TOUCH = false;
 	public static boolean NET_WITH_TOUCH = true;
 
+	private static final boolean SHOW_CIRCLE_CONTAINS_CHECKS = false;
+	
+	
 	private float[] mProjMatrix = new float[16]; 
 	private float[] mVMatrix = new float[16];
 	private long timePreviousNS;
@@ -45,6 +49,10 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 	private long mslf;
 	private long smoothMspf;
 	private int smoothingCount;
+	private int mCaughtCounter;
+	private TempCircle tempCircle;
+	public static float[] bgColor = {
+			0.8f, 0.8f, 0.8f, 1.0f};
 
 	public void onSensorChanged(SensorEvent event) {
 		
@@ -52,11 +60,12 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 	
 	public TheHuntRenderer(Context context) {
 		mContext = context;
-		next_game_tick = System.currentTimeMillis();
-		mslf = 0;
+//		next_game_tick = System.currentTimeMillis();
+//		mslf = 0;
 	    mEnv = null;
 	    mPrey = null;
 	    mNet = null;
+	    mCaughtCounter = 0;
 //	    mManuControl.setSize();
 		
 	}
@@ -66,6 +75,11 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 		mslf = next_game_tick;
 		smoothMspf = 0;
 		smoothingCount = 0;
+		((TheHunt) mContext).runOnUiThread(new Runnable() {
+			public void run() {
+				((TheHunt) mContext).mCaughtCounter.setText(mCaughtCounter + "");
+			}
+		});
 	}
 	
 	public void release() {
@@ -77,7 +91,8 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 	 */
 	public void onSurfaceCreated(GL10 unused, EGLConfig config) {
 //		GLES20.glEnable(GLES20.)
-		GLES20.glClearColor(0.8f, 0.8f, 0.8f, 1.0f);
+//		GLES20.glClearColor(0.8f, 0.8f, 0.8f, 1.0f);
+		GLES20.glClearColor(bgColor[0], bgColor[1], bgColor[2], bgColor[3]);
 		D3GLES20.clean();
 	    Matrix.orthoM(mVMatrix, 0, -1, 1, -1, 1, 0.1f, 100f);
 	}
@@ -89,12 +104,12 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 		
 		if (mEnv == null) mEnv = new Environment(width, height);
 	    if (mPrey == null) mPrey = new Prey(EnvironmentData.mScreenWidth, EnvironmentData.mScreenHeight, mEnv);
-	    if (mNet == null) mNet = new CatchNet();
+	    if (mNet == null) mNet = new CatchNet(mEnv);
 	    if (MANUAL_CONTROLS && mManuControl == null) mManuControl = new ManualControl();
 		if (MANUAL_CONTROLS) mManuControl.setSize();
 	    mEnv.initGraphics();
 		mPrey.initGraphics();
-		mNet.initGraphics();
+//		mNet.initGraphics();
 		
 	    float ratio = (float) width / height;
 	    
@@ -142,9 +157,21 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 		PointF curDirDelta = mEnv.data.getTileFromPos(mPrey.getPosition()).getDir().getDelta();
 		mPrey.update(curDirDelta.x * EnvironmentData.currentStep, 
 				curDirDelta.y * EnvironmentData.currentStep);
+		
 		PointF preyPos = mPrey.getPosition();
-		if (D3GLES20.contains(mNet.getGraphicIndex(), preyPos.x, preyPos.y)) {
+		if (SHOW_CIRCLE_CONTAINS_CHECKS && !mPrey.getCaught() && mNet.isBuilt()) {
+			tempCircle = D3GLES20.newContainsCheckCircle(mNet.getGraphicIndex(), preyPos.x, preyPos.y);
+		}
+		if (!mPrey.getCaught() && mNet.isBuilt() && D3GLES20.contains(mNet.getGraphicIndex(), preyPos.x, preyPos.y)) {
 			Log.v(TAG, "Prey is caught!");
+			mPrey.setCaught(true);
+			mNet.caughtPrey(mPrey);
+			mCaughtCounter += 1;
+			((TheHunt) mContext).runOnUiThread(new Runnable() {
+				public void run() {
+					((TheHunt) mContext).mCaughtCounter.setText(mCaughtCounter + "");
+				}
+			});
 		}
 	}
 
@@ -165,6 +192,12 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 		mEnv.draw(mVMatrix, mProjMatrix, interpolation);
 		mPrey.draw(mVMatrix, mProjMatrix, interpolation);
 		if (mNet.show()) mNet.draw(mVMatrix, mProjMatrix);
+		if (SHOW_CIRCLE_CONTAINS_CHECKS) {
+			if (tempCircle != null) {
+				if (tempCircle.isExpired()) tempCircle = null;
+				else tempCircle.draw(mVMatrix, mProjMatrix);
+			}
+		}
 	}
 
 	public void handleTouchDown(float x, float y) {
@@ -188,7 +221,7 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 	public void handleTouchMove(float x, float y) {
 		x = D3GLES20.fromWorldWidth(x);
 		y = D3GLES20.fromWorldHeight(y);
-		if (NET_WITH_TOUCH && mNet.isFarEnoughFromLast(x, y)) {
+		if (NET_WITH_TOUCH) {
 			mNet.next(x, y);
 		}
 	}

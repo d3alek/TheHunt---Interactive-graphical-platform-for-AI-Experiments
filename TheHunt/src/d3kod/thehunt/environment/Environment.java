@@ -78,4 +78,11 @@ public class Environment {
 		}
 		return new EventLight(1);
 	}
+	public boolean netObstacle(float x, float y) {
+		for (FloatingObject fo: data.getFloatingObjects()) {
+			if (fo.getType() == Type.ALGAE && D3GLES20.contains(fo.getIndex(), x, y)) 
+				return true;
+		}
+		return false;
+	}
 }

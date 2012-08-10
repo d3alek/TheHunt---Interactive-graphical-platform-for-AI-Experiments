@@ -169,4 +169,7 @@ private static final float INF = 100;
 	public boolean knowAlgaeLocation() {
 		return mNearestAlgae != null;
 	}
+	public void recalcNearestFood() {
+		mNearestFood = recallNearestFood();
+	}
 }

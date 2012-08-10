@@ -21,6 +21,7 @@ public class TheHunt extends Activity {
 	protected TextView mMSperFrame;
 	private ToggleButton mPosInterpolation;
 	private ToggleButton mAngleInterpolation;
+	protected TextView mCaughtCounter;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -28,7 +29,6 @@ public class TheHunt extends Activity {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         
         setContentView(R.layout.clean_main);
-        mGLView = (MyGLSurfaceView)findViewById(R.id.glSurfaceView);
         mBodyBendDelay = (TextView)findViewById(R.id.bodyBendDelay);
         
 //        mActionDelay = (TextView)findViewById(R.id.actionDelay);
@@ -37,7 +37,10 @@ public class TheHunt extends Activity {
 //        mAngleInterpolation = (ToggleButton)findViewById(R.id.angleInterpolationToggle);
         
         mPreyState = (TextView)findViewById(R.id.preyState);
-        mMSperFrame = (TextView)findViewById(R.id.msPerFrame);        
+        mMSperFrame = (TextView)findViewById(R.id.msPerFrame);
+        mCaughtCounter = (TextView)findViewById(R.id.caughtCounter);
+
+        mGLView = (MyGLSurfaceView)findViewById(R.id.glSurfaceView);
     }
     
     @Override

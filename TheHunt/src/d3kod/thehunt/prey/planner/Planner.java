@@ -20,11 +20,10 @@ public class Planner {
 	private int mPlanTarget;
 
 	public Planner() {
-		mPlan = new NoPlan(0, 0);
-		mState = PlanState.DONOTHING;
 		allActions = Action.values();
 		numActions = allActions.length;
 		mRandom = new Random();
+		clear();
 	}
 
 	public Action nextAction(WorldModel mWorldModel) {
@@ -105,6 +104,11 @@ public class Planner {
 
 	public int getTarget() {
 		return mPlanTarget;
+	}
+
+	public void clear() {
+		mPlan = new NoPlan(0, 0);
+		mState = PlanState.DONOTHING;
 	}
 	
 }

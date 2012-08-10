@@ -4,24 +4,29 @@
     android:layout_height="match_parent"
     android:orientation="vertical" >
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:orientation="horizontal" >
+
     	<ToggleButton
             android:id="@+id/aiToggle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:onClick="onToggleClicked"
             android:textOff="@string/ai"
-            android:textOn="@string/ai" />
+            android:textOn="@string/ai"
+            android:layout_alignParentLeft="true"/>
     	<ToggleButton
     	    android:id="@+id/foodToggle"
     	    android:layout_width="wrap_content"
     	    android:layout_height="wrap_content"
     	    android:onClick="onToggleClicked"
     	    android:textOn="Food"
-    	    android:textOff="Net" />
+    	    android:textOff="Net"
+    	    android:layout_centerInParent="true"/>
 <!--     	<ToggleButton -->
 <!--     	    android:id="@+id/netToggle" -->
 <!--     	    android:layout_width="wrap_content" -->
@@ -29,11 +34,26 @@
 <!--     	    android:onClick="onToggleClicked" -->
 <!--     	    android:textOn="Net" -->
 <!--     	    android:textOff="Net" /> -->
+		<TextView 
+		    android:id="@+id/caughtText"
+        	android:layout_width="wrap_content"
+        	android:layout_height="wrap_content"
+        	android:text="Score: "
+        	android:layout_toRightOf="@id/foodToggle"
+        	android:layout_centerVertical="true"/>
+		<TextView 
+        	android:id="@+id/caughtCounter"
+        	android:layout_width="wrap_content"
+        	android:layout_height="wrap_content"
+        	android:layout_toRightOf="@id/caughtText"
+        	android:layout_centerVertical="true"/>
     	<TextView 
         	android:id="@+id/msPerFrame"
         	android:layout_width="wrap_content"
-        	android:layout_height="wrap_content"/>
-    </LinearLayout>
+        	android:layout_height="wrap_content"
+			android:layout_alignParentRight="true"
+        	android:layout_centerVertical="true"/>
+    </RelativeLayout>
     
     <d3kod.thehunt.MyGLSurfaceView
         android:id="@+id/glSurfaceView"

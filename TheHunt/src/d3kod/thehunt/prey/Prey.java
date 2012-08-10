@@ -1,5 +1,8 @@
 package d3kod.thehunt.prey;
 
+import java.lang.reflect.Array;
+import java.util.Arrays;
+
 import android.graphics.PointF;
 import android.opengl.GLES20;
 import android.opengl.Matrix;
@@ -16,7 +19,7 @@ import d3kod.thehunt.prey.sensor.Sensor;
 public class Prey {
 	
 	private static final String TAG = "Prey";
-	public static boolean AI = false;
+	public static boolean AI = true;
 //	public static int BODY_BEND_DELAY = 1;
 	public static final int BODY_BENDS_PER_SECOND_MAX = 30;
 	public static int BODY_BENDS_PER_SECOND = 12;
@@ -32,6 +35,8 @@ public class Prey {
 	public static int SMALL_TICKS_PER_TURN = TheHuntRenderer.TICKS_PER_SECOND/SMALL_TURNS_PER_SECOND;
 	public static int MEDIUM_TICKS_PER_TURN = TheHuntRenderer.TICKS_PER_SECOND/MEDIUM_TURNS_PER_SECOND;
 	public static int LARGE_TICKS_PER_TURN = TheHuntRenderer.TICKS_PER_SECOND/LARGE_TURNS_PER_SECOND;
+
+	private static final float colorFadeSpeed = 0.01f;
 	
 	private Planner mPlanner;
 	private WorldModel mWorldModel;
@@ -68,17 +73,12 @@ public class Prey {
 	public static int flopBackTicks = TheHuntRenderer.TICKS_PER_SECOND/flopBacksPerSecond;
 	private float flopBackSpeed;
 	private boolean floppedThird;
+	private boolean mIsCaught;
 	
 	public void update(float dx, float dy) {
-		float[] posTemp = { 0.0f, bodyToHeadLength, 0.0f, 1.0f };
+		if (mIsCaught) return;
 		
-		Matrix.setIdentityM(mD.mHeadModelMatrix, 0);
-		Matrix.translateM(mD.mHeadModelMatrix, 0, mD.mPosX, mD.mPosY, 0);
-		Matrix.rotateM(mD.mHeadModelMatrix, 0, mD.bodyStartAngle, 0, 0, 1);
-		Matrix.multiplyMV(posTemp, 0, mD.mHeadModelMatrix, 0, posTemp, 0);
-		
-		mD.mPosHeadX = posTemp[0]; 
-		mD.mPosHeadY = posTemp[1];
+		calcPosHead();
 		
 		mWorldModel.update(mSensor.sense(mD.mPosHeadX, mD.mPosHeadY, mD.mPosX, mD.mPosY));
 
@@ -92,8 +92,20 @@ public class Prey {
 		move(dx, dy);
 	}
 	
-	public void move(float x, float y) {
+	private void calcPosHead() {
+		float[] posTemp = { 0.0f, bodyToHeadLength, 0.0f, 1.0f };
+		
+		Matrix.setIdentityM(mD.mHeadModelMatrix, 0);
+		Matrix.translateM(mD.mHeadModelMatrix, 0, mD.mPosX, mD.mPosY, 0);
+		Matrix.rotateM(mD.mHeadModelMatrix, 0, mD.bodyStartAngle, 0, 0, 1);
+		Matrix.multiplyMV(posTemp, 0, mD.mHeadModelMatrix, 0, posTemp, 0);
+		
+		mD.mPosHeadX = posTemp[0]; 
+		mD.mPosHeadY = posTemp[1];
+	}
 
+	public void move(float x, float y) {
+		if (mIsCaught) return;
 //		Log.v(TAG, "Debug " + mD.bodyStartAngleTarget + " " + mD.bodyStartAngle + " " + mD.bodyBAngleTarget + " " + mD.bodyBAngle + " " + mD.bodyCAngleTarget + " " + mD.bodyCAngle + " " + mD.bodyEndAngleTarget + mD.bodyEndAngle);
 		if (bodyBendCounter == 0) {
 //			if (!flopBack) moveForward(Math.abs(mD.bodyEndAngleTarget-mD.bodyCAngleTarget));
@@ -359,6 +371,8 @@ public class Prey {
 		mD.rotateSpeedBody = mD.rotateSpeedHead/2;
 		if (mD.rotateSpeedBody < 1) mD.rotateSpeedBody = 1;
 		
+		mIsCaught = false;
+		
 	}
 	
 	private float[] caclRibVerticesData() {
@@ -420,6 +434,11 @@ public class Prey {
 	
 	public void draw(float[] mVMatrix, float[] mProjMatrix, float interpolation) {
 //		GLES20.glLineWidth(2f);
+		
+		if (mIsCaught) {
+			if (colorIsBgColor()) return;
+			fadeColor();
+		}
 		
         // Interpolate
 		if (angleInterpolation) {
@@ -582,6 +601,21 @@ public class Prey {
 		}
 	}
 	
+	private boolean colorIsBgColor() {
+		for (int i = 0; i < 3; ++i) {
+			if (D3GLES20.compareFloats(mD.preyColor[i], TheHuntRenderer.bgColor[i]) != 0) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	private void fadeColor() {
+		for (int i = 0; i < mD.preyColor.length; ++i) {
+			mD.preyColor[i] += colorFadeSpeed ;
+		}
+	}
+
 	private void updateBodyVertexBuffer() {
 		Matrix.multiplyMV(mD.bodyStartRot, 0, mD.mBodyStartRMatrix, 0, mD.bodyStart4, 0);
 		Matrix.multiplyMV(mD.bodyBRot, 0, mD.mBodyBRMatrix, 0, mD.bodyB4, 0);
@@ -622,5 +656,29 @@ public class Prey {
 		Log.v(TAG, "Eating food at " + mD.mPosHeadX + " " + mD.mPosHeadY);
 		mEnv.eatFood(mD.mPosHeadX, mD.mPosHeadY);
 		mWorldModel.eatFood(mD.mPosHeadX, mD.mPosHeadY);
+	}
+
+	public void setCaught(boolean caught) {
+		mIsCaught = caught;
+		if (caught) {
+			mD.vx = mD.vy = bodyEndAngleRot =
+				bodyStartAngleRot = bodyBAngleRot 
+				= bodyCAngleRot = 0;
+		}
+	}
+
+	public boolean getCaught() {
+		return mIsCaught;
+	}
+
+	public void release() {
+		mD.preyColor = mD.preyColorDefault.clone();
+		mIsCaught = false;
+		mD.mPosX = mD.mPosY = 0;
+//		mD.bodyStartAngle = mD.bodyBAngle = mD.bodyCAngle = mD.bodyEndAngle = 0;
+		mPlanner.clear();
+		calcPosHead();
+		mWorldModel.update(mSensor.sense(mD.mPosHeadX, mD.mPosHeadY, mD.mPosX, mD.mPosY));
+		mWorldModel.recalcNearestFood();
 	}
 }
