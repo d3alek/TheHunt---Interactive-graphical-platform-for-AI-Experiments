@@ -108,6 +108,10 @@ public class D3GLES20 {
 		return putShape(new D3Circle(r, color, vertices, true));
 	}
 	
+//	public static int newPath(float[] beingBuiltColor) {
+//		return putShape(new D3Path(beingBuiltColor));
+//	}
+	
 	public static int putShape(D3Shape shape) {
 		while (shapes.containsKey(shapesNum)) {
 			shapesNum++;
@@ -284,5 +288,17 @@ public class D3GLES20 {
 		if (f < g + EPSILON && f > g - EPSILON) return 0;
 		if (f < g - EPSILON) return -1;
 		else return 1;
+	}
+
+	public static void drawAll(float[] mVMatrix, float[] mProjMatrix,
+			float interpolation) {
+		for (D3Shape shape: shapes.values()) {
+			shape.draw(mVMatrix, mProjMatrix);
+		}
+	}
+
+	public static void setShapePosition(int key, float x,
+			float y) {
+		shapes.get(key).setPosition(x, y);
 	}
 }

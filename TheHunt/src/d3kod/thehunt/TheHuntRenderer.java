@@ -150,10 +150,11 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 				curDirDelta.y * EnvironmentData.currentStep);
 		
 		PointF preyPos = mPrey.getPosition();
-		if (SHOW_CIRCLE_CONTAINS_CHECKS && !mPrey.getCaught() && mNet.isBuilt()) {
-			tempCircle = D3GLES20.newContainsCheckCircle(mNet.getGraphicIndex(), preyPos.x, preyPos.y);
-		}
-		if (!mPrey.getCaught() && mNet.isBuilt() && D3GLES20.contains(mNet.getGraphicIndex(), preyPos.x, preyPos.y)) {
+//		if (SHOW_CIRCLE_CONTAINS_CHECKS && !mPrey.getCaught() && mNet.isBuilt()) {
+//			tempCircle = D3GLES20.newContainsCheckCircle(mNet.getGraphicIndex(), preyPos.x, preyPos.y);
+//		}
+//		if (!mPrey.getCaught() && mNet.isBuilt() && D3GLES20.contains(mNet.getGraphicIndex(), preyPos.x, preyPos.y)) {
+		if (!mPrey.getCaught() && mNet.tryToCatch() && D3GLES20.contains(mNet.getGraphicIndex(), preyPos.x, preyPos.y)) {
 			Log.v(TAG, "Prey is caught!");
 			mPrey.setCaught(true);
 			mNet.caughtPrey(mPrey);
@@ -164,6 +165,8 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 				}
 			});
 		}
+		
+		mNet.update();
 	}
 
 	private void drawWorld(float interpolation) {
@@ -176,9 +179,11 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 		
 		GLES20.glClear(clearMask);
 		
+		D3GLES20.drawAll(mVMatrix, mProjMatrix, interpolation);
+		
 		mEnv.draw(mVMatrix, mProjMatrix, interpolation);
 		mPrey.draw(mVMatrix, mProjMatrix, interpolation);
-		if (mNet.show()) mNet.draw(mVMatrix, mProjMatrix);
+//		if (mNet.show()) mNet.draw(mVMatrix, mProjMatrix);
 		if (SHOW_CIRCLE_CONTAINS_CHECKS) {
 			if (tempCircle != null) {
 				if (tempCircle.isExpired()) tempCircle = null;

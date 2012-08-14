@@ -8,6 +8,7 @@ import d3kod.thehunt.prey.memory.WorldModel;
 import d3kod.thehunt.prey.planner.plans.GoToAndEatPlan;
 import d3kod.thehunt.prey.planner.plans.GoToAndStayPlan;
 import d3kod.thehunt.prey.planner.plans.NoPlan;
+import d3kod.thehunt.prey.planner.plans.Plan;
 
 import android.opengl.Matrix;
 import android.util.Log;
@@ -39,6 +40,7 @@ public class Planner {
 		mPlan.update(mWorldModel);
 		if (!mPlan.isFinished()) {
 //			Log.v(TAG, "Doing next action!");
+			if (SHOW_TARGET) D3GLES20.setShapePosition(mPlanTarget, mPlan.getTargetX(), mPlan.getTargetY());
 			return mPlan.nextAction();
 		}
 		else if (SHOW_TARGET) D3GLES20.removeShape(mPlanTarget);
@@ -55,6 +57,7 @@ public class Planner {
 		}
 		makeTarget();
 		mPlan.update(mWorldModel);
+		if (SHOW_TARGET) D3GLES20.setShapePosition(mPlanTarget, mPlan.getTargetX(), mPlan.getTargetY());
 		return mPlan.nextAction();
 	}
 
@@ -93,13 +96,13 @@ public class Planner {
 		return allActions[actionInd];
 	}
 	
-	public void draw(float[] mVMatrix, float[] mProjMatrix) {
-		D3GLES20.draw(mPlanTarget, mPlan.getTargetMMatrix(), mVMatrix, mProjMatrix);
-	}
+//	public void draw(float[] mVMatrix, float[] mProjMatrix) {
+//		D3GLES20.draw(mPlanTarget, mPlan.getTargetMMatrix(), mVMatrix, mProjMatrix);
+//	}
 
-	public float[] getTargetMMatrix() {
-		return mPlan.getTargetMMatrix();
-	}
+//	public float[] getTargetMMatrix() {
+//		return mPlan.getTargetMMatrix();
+//	}
 
 	public void makeTarget() {
 		mPlanTarget = D3GLES20.newDefaultCircle(mPlan.getTargetSize(), mPlan.getTargetColor(), 10);

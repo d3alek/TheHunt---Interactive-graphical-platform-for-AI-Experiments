@@ -1,4 +1,4 @@
-package d3kod.thehunt.prey.planner;
+package d3kod.thehunt.prey.planner.plans;
 
 import java.util.ArrayList;
 
@@ -7,6 +7,7 @@ import android.util.Log;
 import d3kod.d3gles20.D3GLES20;
 import d3kod.thehunt.prey.Action;
 import d3kod.thehunt.prey.memory.WorldModel;
+import d3kod.thehunt.prey.planner.Planner;
 
 public class Plan {
 	private static final String TAG = "Plan";
@@ -35,11 +36,11 @@ public class Plan {
 		mTargetY = targetY;
 		mTargetSize = targetSize;
 		mTargetColor = targetColor.clone();
-		if (Planner.SHOW_TARGET) {
-			modelMatrix = new float[16];
-			Matrix.setIdentityM(modelMatrix , 0);
-			Matrix.translateM(modelMatrix, 0, targetX, targetY, 0);
-		}
+//		if (Planner.SHOW_TARGET) {
+//			modelMatrix = new float[16];
+//			Matrix.setIdentityM(modelMatrix , 0);
+//			Matrix.translateM(modelMatrix, 0, targetX, targetY, 0);
+//		}
 	}
 	public float getTargetX() {
 		return mTargetX;
@@ -53,9 +54,9 @@ public class Plan {
 	public float[] getTargetColor() {
 		return mTargetColor;
 	}
-	public float[] getTargetMMatrix() {
-		return modelMatrix;
-	}
+//	public float[] getTargetMMatrix() {
+//		return modelMatrix;
+//	}
 	public boolean isFinished() {
 		return mCurrentAction == -1 || mActions.size() <= mCurrentAction || mCurrentAction >= mLastAction;
 	}

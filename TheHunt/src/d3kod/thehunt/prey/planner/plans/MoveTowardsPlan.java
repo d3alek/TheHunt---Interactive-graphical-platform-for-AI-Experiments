@@ -7,7 +7,6 @@ import d3kod.thehunt.prey.Prey;
 import d3kod.thehunt.prey.PreyData;
 import d3kod.thehunt.prey.TurnAngle;
 import d3kod.thehunt.prey.memory.WorldModel;
-import d3kod.thehunt.prey.planner.Plan;
 
 public class MoveTowardsPlan extends Plan {
 	private static final String TAG = "GoToPlan";

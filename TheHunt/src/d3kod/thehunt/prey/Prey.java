@@ -591,10 +591,6 @@ public class Prey {
         		GLES20.GL_FLOAT, false, mD.STRIDE_BYTES, mD.eyeVertexBuffer);
 		GLES20.glEnableVertexAttribArray(mD.mPositionHandle);
 		GLES20.glDrawArrays(GLES20.GL_LINE_LOOP, 0, mD.eyeDetailsLevel);
-		
-		if (Planner.SHOW_TARGET) {
-			D3GLES20.draw(mPlanner.getTarget(), mPlanner.getTargetMMatrix(), mVMatrix, mProjMatrix);
-		}
 	}
 	
 	private boolean colorIsBgColor() {

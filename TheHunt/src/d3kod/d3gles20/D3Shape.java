@@ -126,4 +126,10 @@ abstract public class D3Shape {
 			else if (compare > 0) color[i] -= FADE_SPEED;
 		}
 	}
+
+	public void setPosition(float x, float y) {
+		Matrix.setIdentityM(mMMatrix, 0);
+		Matrix.translateM(mMMatrix, 0, x, y, 0);
+		Matrix.multiplyMV(mCenter, 0, mMMatrix, 0, mCenterDefault, 0);
+	}
 }
