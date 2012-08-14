@@ -1,7 +1,6 @@
 package d3kod.thehunt.prey;
 
-import java.lang.reflect.Array;
-import java.util.Arrays;
+import java.util.Random;
 
 import android.graphics.PointF;
 import android.opengl.GLES20;
@@ -19,22 +18,6 @@ import d3kod.thehunt.prey.sensor.Sensor;
 public class Prey {
 	
 	private static final String TAG = "Prey";
-	public static boolean AI = true;
-//	public static int BODY_BEND_DELAY = 1;
-	public static final int BODY_BENDS_PER_SECOND_MAX = 30;
-	public static int BODY_BENDS_PER_SECOND = 12;
-	public static int BODY_BEND_DELAY = TheHuntRenderer.TICKS_PER_SECOND/BODY_BENDS_PER_SECOND;
-	public static final int ACTIONS_PER_SECOND_MAX = 30;
-	public static int ACTIONS_PER_SECOND = 30;
-	public static int ACTION_DELAY = TheHuntRenderer.TICKS_PER_SECOND/ACTIONS_PER_SECOND;
-//	public static int ACTION_DELAY_MAX = 20;
-	
-	public static int SMALL_TURNS_PER_SECOND = 10;
-	public static int MEDIUM_TURNS_PER_SECOND = 8;
-	public static int LARGE_TURNS_PER_SECOND = 4;
-	public static int SMALL_TICKS_PER_TURN = TheHuntRenderer.TICKS_PER_SECOND/SMALL_TURNS_PER_SECOND;
-	public static int MEDIUM_TICKS_PER_TURN = TheHuntRenderer.TICKS_PER_SECOND/MEDIUM_TURNS_PER_SECOND;
-	public static int LARGE_TICKS_PER_TURN = TheHuntRenderer.TICKS_PER_SECOND/LARGE_TURNS_PER_SECOND;
 
 	private static final float colorFadeSpeed = 0.01f;
 	
@@ -43,8 +26,9 @@ public class Prey {
 	private Sensor mSensor;
 	private Environment mEnv;
 	private PreyData mD;
+	
+	
 	private int bodyBendCounter;
-	private int actionDelayCounter;
 	private float bodyStartAnglePredicted;
 	private float bodyBAnglePredicted;
 	private float bodyCAnglePredicted;
@@ -62,7 +46,6 @@ public class Prey {
 	private boolean turningBackFinMotion;
 	private float flopBackAngle;
 	private TurnAngle turningBackFinAngle;
-	private int backAngleToggle;
 	public static boolean angleInterpolation = true;
 	public static boolean posInterpolation = true;
 
@@ -74,6 +57,10 @@ public class Prey {
 	private float flopBackSpeed;
 	private boolean floppedThird;
 	private boolean mIsCaught;
+
+	private int sMovementAdj = 5;
+
+//	private float bodyEndAngleRotated;
 	
 	public void update(float dx, float dy) {
 		if (mIsCaught) return;
@@ -82,7 +69,7 @@ public class Prey {
 		
 		mWorldModel.update(mSensor.sense(mD.mPosHeadX, mD.mPosHeadY, mD.mPosX, mD.mPosY));
 
-		if (AI) {
+		if (PreyData.AI) {
 			doAction(mPlanner.nextAction(mWorldModel));
 		}
 		move(dx, dy);
@@ -104,13 +91,14 @@ public class Prey {
 		if (mIsCaught) return;
 //		Log.v(TAG, "Debug " + mD.bodyStartAngleTarget + " " + mD.bodyStartAngle + " " + mD.bodyBAngleTarget + " " + mD.bodyBAngle + " " + mD.bodyCAngleTarget + " " + mD.bodyCAngle + " " + mD.bodyEndAngleTarget + mD.bodyEndAngle);
 		if (bodyBendCounter == 0) {
-//			if (!flopBack) moveForward(Math.abs(mD.bodyEndAngleTarget-mD.bodyCAngleTarget));
+//			if (!flopBack) moveForward(Math.abs(mD.bodyEndAngleTarget-mD.bodyCAngleTarget)*mD.rotateSpeedBody*sMovementAdj );
 			mD.bodyEndAngleTarget = mD.bodyCAngleTarget;
 			mD.bodyCAngleTarget = mD.bodyBAngleTarget;
 			mD.bodyBAngleTarget = mD.bodyStartAngleTarget;
 			
-			bodyBendCounter = BODY_BEND_DELAY-1;
+			bodyBendCounter = PreyData.BODY_BEND_DELAY-1;
 			
+//			moveForward(Math.abs(bodyEndAngleRotated*mD.rotateSpeedBody)); // F = ma
 //			Log.v(TAG, "Passing spin " + mD.bodyStartAngleTarget + " " + mD.bodyStartAngle + " " + mD.bodyBAngleTarget + " " + mD.bodyBAngle + " " + mD.bodyCAngleTarget + " " + mD.bodyCAngle + " " + mD.bodyEndAngleTarget + " " + mD.bodyEndAngle);
 		}
 		else {
@@ -148,11 +136,15 @@ public class Prey {
 		if (!flopBack) {
 //			Log.v(TAG, "Not flopping back, normal bend of the back flop "
 //					+ mD.bodyEndAngleTarget + " " + mD.bodyEndAngle + " " + mD.rotateSpeedBody);
+//			flopBackSpeed = Math.max(Math.abs(flopBackSpeed), mD.rotateSpeedBody);
 			if (mD.bodyEndAngleTarget > mD.bodyEndAngle + flopBackSpeed) bodyEndAngleRot = flopBackSpeed;
-			else if (mD.bodyEndAngleTarget < mD.bodyEndAngle - flopBackSpeed) bodyEndAngleRot = -flopBackSpeed;
+			else if (mD.bodyEndAngleTarget < mD.bodyEndAngle -flopBackSpeed) bodyEndAngleRot = -flopBackSpeed;
 			else {
 				bodyEndAngleRot = 0;
 				mD.bodyEndAngle = mD.bodyEndAngleTarget;
+//				Log.v(TAG, "bodyEndAngleRotated " + bodyEndAngleRotated);
+				
+//				bodyEndAngleRotated = 0;
 			}
 		}
 
@@ -161,7 +153,10 @@ public class Prey {
 		mD.bodyStartAngle += bodyStartAngleRot;
 		mD.bodyBAngle += bodyBAngleRot;
 		mD.bodyCAngle += bodyCAngleRot;
-		if (!flopBack) mD.bodyEndAngle += (int)bodyEndAngleRot;
+		if (!flopBack) {
+			mD.bodyEndAngle += (int)bodyEndAngleRot;
+//			bodyEndAngleRotated += bodyEndAngleRot;
+		}
 		
 		updateSpeed(x, y);
 		applyFriction();
@@ -176,32 +171,34 @@ public class Prey {
 
 	private void doFlopBack() {
 		if (!floppedFirst) {
-//			Log.v(TAG, "Flopping first " + flopBackTargetFirst + " " + flopBackAngle);
+			Log.v(TAG, "Flopping first " + flopBackTargetFirst + " " + flopBackAngle);
 			if (flopBackTargetFirst > flopBackAngle + flopBackSpeed) flopBackAngle += flopBackSpeed;
 			else if (flopBackTargetFirst < flopBackAngle - flopBackSpeed) flopBackAngle -= flopBackSpeed;
 			else {
 				flopBackAngle = flopBackTargetFirst;
 				floppedFirst = true;
 				moveForward(Math.abs(backFinAngle*flopBackSpeed)); // F = ma
-//				Log.v(TAG, "Flopped First done " + flopBackAngle);
+				Log.v(TAG, "Flopped First done " + flopBackAngle);
 			}
+			bodyEndAngleRot = (int)(mD.bodyCAngle + flopBackAngle)-mD.bodyEndAngle;
 			mD.bodyEndAngle = (int)(mD.bodyCAngle + flopBackAngle);
 		}
 		else if (!floppedSecond) {
-//			Log.v(TAG, "Flopping second " + flopBackTargetSecond + " " + flopBackAngle);
+			Log.v(TAG, "Flopping second " + flopBackTargetSecond + " " + flopBackAngle);
 			if (flopBackTargetSecond > flopBackAngle + flopBackSpeed) flopBackAngle += flopBackSpeed;
 			else if (flopBackTargetSecond < flopBackAngle - flopBackSpeed) flopBackAngle -= flopBackSpeed;
 			else {
 				flopBackAngle = flopBackTargetSecond;
 				floppedSecond = true;
 				moveForward(Math.abs(2*backFinAngle*flopBackSpeed)); // F = ma
-//				Log.v(TAG, "Flopped Second done " + flopBackAngle);
+				Log.v(TAG, "Flopped Second done " + flopBackAngle);
 			}
+			bodyEndAngleRot = (int)(mD.bodyCAngle + flopBackAngle)-mD.bodyEndAngle;
 			mD.bodyEndAngle = (int)(mD.bodyCAngle + flopBackAngle);
 		}
 		else {
 			//flopping third
-//			Log.v(TAG, "Flopping third " + flopBackAngle);
+			Log.v(TAG, "Flopping third " + flopBackAngle);
 			if (0 > flopBackAngle + flopBackSpeed) flopBackAngle += flopBackSpeed;
 			else if (0 < flopBackAngle - flopBackSpeed) flopBackAngle -= flopBackSpeed;
 			else {
@@ -209,29 +206,30 @@ public class Prey {
 //				floppedSecond = true;
 				floppedThird = true;
 				moveForward(Math.abs(backFinAngle*flopBackSpeed)); // F = ma
-//				Log.v(TAG, "Flopped Third done " + flopBackAngle);
+				Log.v(TAG, "Flopped Third done " + flopBackAngle);
 			}
+			bodyEndAngleRot = (int)(mD.bodyCAngle + flopBackAngle)-mD.bodyEndAngle;
 			mD.bodyEndAngle = (int)(mD.bodyCAngle + flopBackAngle);
 		}
 //		else {
 //			if (f)
 //		}
 		if (floppedFirst && floppedSecond && floppedThird) {
-			if (turningBackFinMotion) {
-				if (stoppedTurning()) {
-//					Log.v(TAG, "Stopped turning flop");
-					turningBackFinMotion = false;
-					flopBack = false;
-				}
-				else {
-//					Log.v(TAG, "Continue turning flop");
-					backFinMotion(turningBackFinAngle);
-				}
-			}
-			else {
-//				Log.v(TAG, "Stopping flop");
+//			if (turningBackFinMotion) {
+//				if (stoppedTurning()) {
+////					Log.v(TAG, "Stopped turning flop");
+//					turningBackFinMotion = false;
+//					flopBack = false;
+//				}
+//				else {
+////					Log.v(TAG, "Continue turning flop");
+//					backFinMotion(turningBackFinAngle);
+//				}
+//			}
+//			else {
+				Log.v(TAG, "Stopping flop");
 				flopBack = false;
-			}
+//			}
 //			if (turningBackFinMotion == false) flopBack = false;
 //			else 
 		}
@@ -271,22 +269,18 @@ public class Prey {
 //		else turningBackFinAngle = TurnAngle.BACK_LEFT_SMALL;
 //		
 //		turningBackFinMotion = true;
-		
- 		switch(angle) {
- 		case RIGHT_SMALL: turningBackFinAngle = TurnAngle.BACK_LEFT_SMALL; break;
- 		case RIGHT_MEDIUM: turningBackFinAngle = TurnAngle.BACK_LEFT_MEDIUM; break;
- 		case RIGHT_LARGE: turningBackFinAngle = TurnAngle.BACK_LEFT_LARGE; break;
- 		case LEFT_SMALL: turningBackFinAngle = TurnAngle.BACK_RIGHT_SMALL; break;
- 		case LEFT_MEDIUM: turningBackFinAngle = TurnAngle.BACK_RIGHT_MEDIUM; break;
- 		case LEFT_LARGE: turningBackFinAngle = TurnAngle.BACK_RIGHT_LARGE; break;
- 		}
- 		
-
-		if (!turningBackFinMotion) {
-//			Log.v(TAG, "New backFinMotion from " + angle);
-			turningBackFinMotion = true;
-			backFinMotion(turningBackFinAngle);
-		}
+//		if (!turningBackFinMotion) {
+//			turningBackFinMotion = true;
+//	 		switch(angle) {
+//	 		case RIGHT_SMALL: turningBackFinAngle = TurnAngle.BACK_LEFT_SMALL; break;
+//	 		case RIGHT_MEDIUM: turningBackFinAngle = TurnAngle.BACK_LEFT_MEDIUM; break;
+//	 		case RIGHT_LARGE: turningBackFinAngle = TurnAngle.BACK_LEFT_LARGE; break;
+//	 		case LEFT_SMALL: turningBackFinAngle = TurnAngle.BACK_RIGHT_SMALL; break;
+//	 		case LEFT_MEDIUM: turningBackFinAngle = TurnAngle.BACK_RIGHT_MEDIUM; break;
+//	 		case LEFT_LARGE: turningBackFinAngle = TurnAngle.BACK_RIGHT_LARGE; break;
+//	 		}
+//			backFinMotion(turningBackFinAngle);
+//		}
 		
 	}
 	
@@ -329,14 +323,14 @@ public class Prey {
 	public Prey(float screenWidth, float screenHeight, Environment env) {
 		mD = new PreyData();
 		
-		mD.delayV = new float[mD.delayVLength][2];
+//		mD.delayV = new float[mD.delayVLength][2];
 		
 		mWorldModel = new WorldModel(screenWidth, screenHeight);
 		mPlanner = new Planner();
 		mEnv = env;
 		mSensor = new Sensor(mEnv);
 		
-		backAngleToggle = 1;
+//		backAngleToggle = 1;
 		
 		Matrix.setIdentityM(mD.mModelMatrix, 0);
 		mD.mPosX = mD.mPosY = 0;
@@ -368,7 +362,7 @@ public class Prey {
 		if (mD.rotateSpeedBody < 1) mD.rotateSpeedBody = 1;
 		
 		mIsCaught = false;
-		
+//		bodyEndAngleRotated = 0;
 	}
 	
 	private float[] caclRibVerticesData() {
@@ -426,6 +420,8 @@ public class Prey {
 		if (Planner.SHOW_TARGET) {
 			mPlanner.makeTarget();
 		}
+		
+		randomizePos();
 	}
 	
 	public void draw(float[] mVMatrix, float[] mProjMatrix, float interpolation) {
@@ -666,11 +662,18 @@ public class Prey {
 	public void release() {
 		mD.preyColor = mD.preyColorDefault.clone();
 		mIsCaught = false;
-		mD.mPosX = mD.mPosY = 0;
+//		mD.mPosX = mD.mPosY = 0;
+		randomizePos();
 //		mD.bodyStartAngle = mD.bodyBAngle = mD.bodyCAngle = mD.bodyEndAngle = 0;
 		mPlanner.clear();
 		calcPosHead();
 		mWorldModel.update(mSensor.sense(mD.mPosHeadX, mD.mPosHeadY, mD.mPosX, mD.mPosY));
 		mWorldModel.recalcNearestFood();
+	}
+
+	private void randomizePos() {
+		Random rand = new Random();
+		mD.mPosX = -EnvironmentData.mScreenWidth/2+rand.nextFloat()*EnvironmentData.mScreenWidth;
+		mD.mPosY = -EnvironmentData.mScreenHeight/2+rand.nextFloat()*EnvironmentData.mScreenHeight;
 	}
 }

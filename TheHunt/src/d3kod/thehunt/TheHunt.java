@@ -54,11 +54,11 @@ public class TheHunt extends Activity {
     protected void onResume() {
     	Log.v(TAG, "Resuming activity");
     	
-    	((ToggleButton)findViewById(R.id.aiToggle)).setChecked(Prey.AI);
+    	((ToggleButton)findViewById(R.id.aiToggle)).setChecked(PreyData.AI);
     	((ToggleButton)findViewById(R.id.foodToggle)).setChecked(TheHuntRenderer.FEED_WITH_TOUCH);
 //    	((ToggleButton)findViewById(R.id.netToggle)).setChecked(TheHuntRenderer.NET_WITH_TOUCH);
-    	if (mBodyBendDelay != null) mBodyBendDelay.setText(Prey.BODY_BENDS_PER_SECOND+"");
-    	if (mActionDelay != null) mActionDelay.setText(Prey.ACTIONS_PER_SECOND+"");
+    	if (mBodyBendDelay != null) mBodyBendDelay.setText(PreyData.BODY_BENDS_PER_SECOND+"");
+    	if (mActionDelay != null) mActionDelay.setText(PreyData.ACTIONS_PER_SECOND+"");
     	if (mPosInterpolation != null) mPosInterpolation.setChecked(Prey.posInterpolation);//mPosInterpolation = (ToggleButton)findViewById(R.id.posInterpolationToggle);
         if (mAngleInterpolation != null) mAngleInterpolation.setChecked(Prey.angleInterpolation);
     	
@@ -71,7 +71,7 @@ public class TheHunt extends Activity {
     	
     	switch(view.getId()) {
     	case R.id.aiToggle:
-    		Prey.AI = checked;
+    		PreyData.AI = checked;
     		break;
     	case R.id.foodToggle:
     		TheHuntRenderer.FEED_WITH_TOUCH = checked;
@@ -91,24 +91,24 @@ public class TheHunt extends Activity {
     public void onButtonClicked(View view) {
     	switch(view.getId()) {
     	case R.id.plusBodyBendDelay:
-    		if (Prey.BODY_BENDS_PER_SECOND < Prey.BODY_BENDS_PER_SECOND_MAX) {
+    		if (PreyData.BODY_BENDS_PER_SECOND < PreyData.BODY_BENDS_PER_SECOND_MAX) {
     			//Prey.BODY_BEND_DELAY++;
-    			Prey.BODY_BENDS_PER_SECOND++;
-    			Prey.BODY_BEND_DELAY = TheHuntRenderer.TICKS_PER_SECOND/Prey.BODY_BENDS_PER_SECOND;
+    			PreyData.BODY_BENDS_PER_SECOND++;
+    			PreyData.BODY_BEND_DELAY = TheHuntRenderer.TICKS_PER_SECOND/PreyData.BODY_BENDS_PER_SECOND;
 //    			PreyData.rotateSpeed = PreyData.angleFlop/Prey.BODY_BEND_DELAY;
-    			Log.v(TAG, "Body bend delay is " + Prey.BODY_BEND_DELAY);
+    			Log.v(TAG, "Body bend delay is " + PreyData.BODY_BEND_DELAY);
     		}
-    		mBodyBendDelay.setText(Prey.BODY_BENDS_PER_SECOND+"");
+    		mBodyBendDelay.setText(PreyData.BODY_BENDS_PER_SECOND+"");
     		break;
     	case R.id.minusBodyBendDelay:
-    		if (Prey.BODY_BENDS_PER_SECOND > 1) {
+    		if (PreyData.BODY_BENDS_PER_SECOND > 1) {
     			//Prey.BODY_BEND_DELAY--;
-    			Prey.BODY_BENDS_PER_SECOND--;
-    			Prey.BODY_BEND_DELAY = TheHuntRenderer.TICKS_PER_SECOND/Prey.BODY_BENDS_PER_SECOND;
+    			PreyData.BODY_BENDS_PER_SECOND--;
+    			PreyData.BODY_BEND_DELAY = TheHuntRenderer.TICKS_PER_SECOND/PreyData.BODY_BENDS_PER_SECOND;
 //    			PreyData.rotateSpeed = PreyData.angleFlop/Prey.BODY_BEND_DELAY;
-    			Log.v(TAG, "Body bend delay is " + Prey.BODY_BEND_DELAY);
+    			Log.v(TAG, "Body bend delay is " + PreyData.BODY_BEND_DELAY);
     		}
-    		mBodyBendDelay.setText(Prey.BODY_BENDS_PER_SECOND+"");
+    		mBodyBendDelay.setText(PreyData.BODY_BENDS_PER_SECOND+"");
     		break;
 //		case R.id.plusActionDelay:
 //			if (Prey.ACTIONS_PER_SECOND < Prey.ACTIONS_PER_SECOND_MAX) Prey.ACTIONS_PER_SECOND++;
@@ -123,7 +123,6 @@ public class TheHunt extends Activity {
     	case R.id.flopLeft:
     		mGLView.post(new Runnable() {
 				public void run() {
-//					mGLView.mRenderer.mPrey.flopLeft();
 					mGLView.mRenderer.mPrey.turn(TurnAngle.LEFT_LARGE);
 				}
 			});
@@ -131,7 +130,6 @@ public class TheHunt extends Activity {
     	case R.id.flopRight:
     		mGLView.post(new Runnable() {
 				public void run() {
-//					mGLView.mRenderer.mPrey.flopRight();
 					mGLView.mRenderer.mPrey.turn(TurnAngle.RIGHT_LARGE);
 				}
 			});
@@ -139,7 +137,7 @@ public class TheHunt extends Activity {
     	case R.id.flopBack:
     		mGLView.post(new Runnable() {
 				public void run() {
-					mGLView.mRenderer.mPrey.backFinMotion(TurnAngle.BACK_LARGE);
+					mGLView.mRenderer.mPrey.backFinMotion(TurnAngle.BACK_SMALL);
 				}
 			});
     		break;

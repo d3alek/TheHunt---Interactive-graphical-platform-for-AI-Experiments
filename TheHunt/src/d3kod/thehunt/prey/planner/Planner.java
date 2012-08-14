@@ -2,6 +2,7 @@ package d3kod.thehunt.prey.planner;
 
 import java.util.Random;
 
+import android.util.Log;
 import d3kod.d3gles20.D3GLES20;
 import d3kod.thehunt.prey.Action;
 import d3kod.thehunt.prey.memory.WorldModel;
@@ -9,9 +10,6 @@ import d3kod.thehunt.prey.planner.plans.GoToAndEatPlan;
 import d3kod.thehunt.prey.planner.plans.GoToAndStayPlan;
 import d3kod.thehunt.prey.planner.plans.NoPlan;
 import d3kod.thehunt.prey.planner.plans.Plan;
-
-import android.opengl.Matrix;
-import android.util.Log;
 
 public class Planner {
 	private static final String TAG = "Planner";
@@ -95,14 +93,6 @@ public class Planner {
 		int actionInd = Math.round((numActions-1) * mRandom.nextFloat());
 		return allActions[actionInd];
 	}
-	
-//	public void draw(float[] mVMatrix, float[] mProjMatrix) {
-//		D3GLES20.draw(mPlanTarget, mPlan.getTargetMMatrix(), mVMatrix, mProjMatrix);
-//	}
-
-//	public float[] getTargetMMatrix() {
-//		return mPlan.getTargetMMatrix();
-//	}
 
 	public void makeTarget() {
 		mPlanTarget = D3GLES20.newDefaultCircle(mPlan.getTargetSize(), mPlan.getTargetColor(), 10);
