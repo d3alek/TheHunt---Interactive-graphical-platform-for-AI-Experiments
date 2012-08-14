@@ -7,17 +7,14 @@ import android.content.Context;
 import android.graphics.PointF;
 import android.hardware.SensorEvent;
 import android.opengl.GLES20;
+import android.opengl.GLSurfaceView;
 import android.opengl.Matrix;
 import android.util.Log;
 import d3kod.d3gles20.D3GLES20;
 import d3kod.d3gles20.TempCircle;
 import d3kod.thehunt.environment.Environment;
 import d3kod.thehunt.environment.EnvironmentData;
-import d3kod.thehunt.environment.Tile;
-import d3kod.thehunt.prey.ManualControl;
 import d3kod.thehunt.prey.Prey;
-import d3kod.thehunt.prey.planner.Planner;
-import android.opengl.GLSurfaceView;
 
 public class TheHuntRenderer implements GLSurfaceView.Renderer {
 	
@@ -26,7 +23,6 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 	public static boolean LOGGING_TIME = false;
 	public static boolean SHOW_TILES = false;
 	public static boolean SHOW_CURRENTS = false;
-	public static boolean MANUAL_CONTROLS = false;
 	public static boolean FEED_WITH_TOUCH = false;
 	public static boolean NET_WITH_TOUCH = true;
 
@@ -38,7 +34,6 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 	private long timePreviousNS;
 	private Environment mEnv;
 	public Prey mPrey;
-	private ManualControl mManuControl;
 	private CatchNet mNet;
 	
     public static final int TICKS_PER_SECOND = 30;
@@ -90,8 +85,6 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 	 * The Surface is created/init()
 	 */
 	public void onSurfaceCreated(GL10 unused, EGLConfig config) {
-//		GLES20.glEnable(GLES20.)
-//		GLES20.glClearColor(0.8f, 0.8f, 0.8f, 1.0f);
 		GLES20.glClearColor(bgColor[0], bgColor[1], bgColor[2], bgColor[3]);
 		D3GLES20.clean();
 	    Matrix.orthoM(mVMatrix, 0, -1, 1, -1, 1, 0.1f, 100f);
@@ -105,8 +98,6 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 		if (mEnv == null) mEnv = new Environment(width, height);
 	    if (mPrey == null) mPrey = new Prey(EnvironmentData.mScreenWidth, EnvironmentData.mScreenHeight, mEnv);
 	    if (mNet == null) mNet = new CatchNet(mEnv);
-	    if (MANUAL_CONTROLS && mManuControl == null) mManuControl = new ManualControl();
-		if (MANUAL_CONTROLS) mManuControl.setSize();
 	    mEnv.initGraphics();
 		mPrey.initGraphics();
 //		mNet.initGraphics();
@@ -184,10 +175,6 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 		}
 		
 		GLES20.glClear(clearMask);
-
-		if (MANUAL_CONTROLS) {
-			mManuControl.draw(mVMatrix, mProjMatrix);
-		}
 		
 		mEnv.draw(mVMatrix, mProjMatrix, interpolation);
 		mPrey.draw(mVMatrix, mProjMatrix, interpolation);
@@ -203,13 +190,6 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 	public void handleTouchDown(float x, float y) {
 		x = D3GLES20.fromWorldWidth(x);
 		y = D3GLES20.fromWorldHeight(y);
-//		if (MANUAL_CONTROLS) {
-//	    	switch(mManuControl.contains(x, y)) {
-//	    	case LEFT: mPrey.flopLeft(); return;
-//	    	case RIGHT: mPrey.flopRight(); return;
-//	    	case FORWARD: mPrey.flopLeft(); mPrey.flopRight(); return;
-//	    	}
-//		}
 		if (FEED_WITH_TOUCH) {
 			mEnv.putFood(x, y);
 		}

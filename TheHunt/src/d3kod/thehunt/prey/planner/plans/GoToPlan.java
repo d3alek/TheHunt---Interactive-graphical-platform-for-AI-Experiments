@@ -1,4 +1,4 @@
-package d3kod.thehunt.prey.planner;
+package d3kod.thehunt.prey.planner.plans;
 
 import d3kod.d3gles20.D3GLES20;
 import d3kod.thehunt.prey.Action;

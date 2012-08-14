@@ -2,16 +2,14 @@ package d3kod.thehunt.prey.memory;
 
 import java.util.ArrayList;
 
-import d3kod.d3gles20.D3GLES20;
-import d3kod.thehunt.environment.EnvironmentData;
-import d3kod.thehunt.prey.sensor.Event;
-import d3kod.thehunt.prey.sensor.Event.EventType;
-import d3kod.thehunt.prey.sensor.EventAlgae;
-import d3kod.thehunt.prey.sensor.EventAt;
-import d3kod.thehunt.prey.sensor.EventFood;
-import d3kod.thehunt.prey.sensor.EventLight;
-
 import android.util.Log;
+import d3kod.d3gles20.D3GLES20;
+import d3kod.thehunt.events.Event;
+import d3kod.thehunt.events.EventAlgae;
+import d3kod.thehunt.events.EventAt;
+import d3kod.thehunt.events.EventFood;
+import d3kod.thehunt.events.EventLight;
+import d3kod.thehunt.events.Event.EventType;
 
 public class WorldModel {
 private static final String TAG = "WorldModel";

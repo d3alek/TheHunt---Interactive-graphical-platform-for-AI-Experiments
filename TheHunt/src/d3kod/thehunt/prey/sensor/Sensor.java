@@ -4,6 +4,8 @@ import java.util.ArrayList;
 
 import d3kod.thehunt.environment.Environment;
 import d3kod.thehunt.environment.EnvironmentData;
+import d3kod.thehunt.events.Event;
+import d3kod.thehunt.events.EventAt;
 
 public class Sensor {
 	

@@ -14,7 +14,6 @@ public class Plan {
 	ArrayList<Action> mActions;
 	int mCurrentAction;
 	private int mLastAction;
-//	private int target;
 	private float mTargetX;
 	private float mTargetY;
 	private float[] mTargetColor;
@@ -37,7 +36,6 @@ public class Plan {
 		mTargetSize = targetSize;
 		mTargetColor = targetColor.clone();
 		if (Planner.SHOW_TARGET) {
-//			target = D3GLES20.newDefaultCircle(targetSize, targetColor, 10);
 			modelMatrix = new float[16];
 			Matrix.setIdentityM(modelMatrix , 0);
 			Matrix.translateM(modelMatrix, 0, targetX, targetY, 0);
@@ -59,7 +57,6 @@ public class Plan {
 		return modelMatrix;
 	}
 	public boolean isFinished() {
-//		Log.v(TAG, mActions.size() + " " + mCurrentAction + " " + mLastAction);
 		return mCurrentAction == -1 || mActions.size() <= mCurrentAction || mCurrentAction >= mLastAction;
 	}
 	public Action nextAction() {
@@ -72,20 +69,15 @@ public class Plan {
 		return nextAction;
 	}
 	public void addLastAction(Action action) {
-		mActions.add(action); 
-//		Log.v(TAG, "Added action " + action);
-//		mCurrentAction++;
-//		return mCurrentAction;
+		mActions.add(action);
 	}
 	public void addAction(int index, Action action) {
 		mActions.add(index, action);
-//		Log.v(TAG, "Added action " + action + " to index " + index);
 	}
 	public void update(WorldModel mWorldModel) {
 		
 	}
 	public void finish() {
-		//mCurrentAction = mActions.size();
 		mActions.subList(mCurrentAction, mActions.size()).clear();
 	}
 	public Action getPrevAction() {
@@ -112,23 +104,12 @@ public class Plan {
 		mCurrentAction = 0;
 	}
 
-//	public int getTarget() {
-//		return target;
-//	}
-//
-//	public void done() {
-//		D3GLES20.removeShape(target);
-//	}
-
 	public boolean isEmpty() {
 		return mActions.isEmpty();
 	}
 	public void addAfterNextAction(Action action) {
 		mActions.add(mCurrentAction+1, action);
 	}
-//	public void changeNextAction(Action action) {
-//		mActions.
-//	}
 	public void logActions() {
 		String planStr = "Actions log ";
 		for (Action action: mActions) {

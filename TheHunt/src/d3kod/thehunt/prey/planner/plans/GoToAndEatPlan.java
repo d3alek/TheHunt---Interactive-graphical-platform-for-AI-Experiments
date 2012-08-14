@@ -1,4 +1,4 @@
-package d3kod.thehunt.prey.planner;
+package d3kod.thehunt.prey.planner.plans;
 
 import d3kod.thehunt.prey.Action;
 import d3kod.thehunt.prey.memory.WorldModel;

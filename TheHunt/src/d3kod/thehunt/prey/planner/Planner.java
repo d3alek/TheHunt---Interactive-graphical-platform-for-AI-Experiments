@@ -5,6 +5,9 @@ import java.util.Random;
 import d3kod.d3gles20.D3GLES20;
 import d3kod.thehunt.prey.Action;
 import d3kod.thehunt.prey.memory.WorldModel;
+import d3kod.thehunt.prey.planner.plans.GoToAndEatPlan;
+import d3kod.thehunt.prey.planner.plans.GoToAndStayPlan;
+import d3kod.thehunt.prey.planner.plans.NoPlan;
 
 import android.opengl.Matrix;
 import android.util.Log;

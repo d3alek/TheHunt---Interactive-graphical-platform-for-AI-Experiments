@@ -1,4 +1,4 @@
-package d3kod.thehunt.prey.sensor;
+package d3kod.thehunt.events;
 
 public class EventFood extends Event {
 	private float foodX;

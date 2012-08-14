@@ -1,4 +1,4 @@
-package d3kod.thehunt.prey.sensor;
+package d3kod.thehunt.events;
 
 public class EventNone extends Event {
 	public EventNone() {

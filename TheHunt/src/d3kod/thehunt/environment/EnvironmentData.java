@@ -6,9 +6,9 @@ import android.graphics.PointF;
 import android.util.Log;
 import d3kod.d3gles20.D3GLES20;
 import d3kod.thehunt.environment.FloatingObject.Type;
-import d3kod.thehunt.prey.sensor.Event;
-import d3kod.thehunt.prey.sensor.EventFood;
-import d3kod.thehunt.prey.sensor.EventNone;
+import d3kod.thehunt.events.Event;
+import d3kod.thehunt.events.EventFood;
+import d3kod.thehunt.events.EventNone;
 
 public class EnvironmentData {
 	public static final String TAG = "EnvironmentData";

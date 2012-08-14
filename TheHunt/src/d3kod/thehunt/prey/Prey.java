@@ -83,11 +83,7 @@ public class Prey {
 		mWorldModel.update(mSensor.sense(mD.mPosHeadX, mD.mPosHeadY, mD.mPosX, mD.mPosY));
 
 		if (AI) {
-//			if (actionDelayCounter == 0) {
-				doAction(mPlanner.nextAction(mWorldModel));
-//				actionDelayCounter = ACTION_DELAY;
-//			}
-//			else actionDelayCounter--;
+			doAction(mPlanner.nextAction(mWorldModel));
 		}
 		move(dx, dy);
 	}

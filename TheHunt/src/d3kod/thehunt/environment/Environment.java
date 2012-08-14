@@ -7,12 +7,12 @@ import android.opengl.Matrix;
 import android.util.Log;
 import d3kod.d3gles20.D3GLES20;
 import d3kod.thehunt.environment.FloatingObject.Type;
-import d3kod.thehunt.prey.sensor.Event;
-import d3kod.thehunt.prey.sensor.EventAlgae;
-import d3kod.thehunt.prey.sensor.EventFood;
-import d3kod.thehunt.prey.sensor.EventNone;
-import d3kod.thehunt.prey.sensor.EventLight;
-import d3kod.thehunt.prey.sensor.Event.EventType;
+import d3kod.thehunt.events.Event;
+import d3kod.thehunt.events.EventAlgae;
+import d3kod.thehunt.events.EventFood;
+import d3kod.thehunt.events.EventLight;
+import d3kod.thehunt.events.EventNone;
+import d3kod.thehunt.events.Event.EventType;
 public class Environment {
 	private static final String TAG = "Environment";
 	public EnvironmentData data;
@@ -29,14 +29,6 @@ public class Environment {
 	public void recalculateCurrents() {
 	}
 	
-//	public void update() {
-//		Tile objTile = getTileFromPos(data.mFloatingObjects.getPosition());
-//		data.mFloatingObjects.update(objTile.getDir().getDelta());
-//	}
-//	public void setSize(int width, int height) {
-//		data.setSize(width, height);
-//		data.createTiles();
-//	}
 	public Tile[][] getTiles() {
 		return data.mTiles;
 	}
