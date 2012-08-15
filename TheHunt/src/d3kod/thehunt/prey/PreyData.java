@@ -205,4 +205,7 @@ public class PreyData {
 	public float[] bodyVerticesData;
 	public int rotateSpeedHead;
 	public int rotateSpeedBody;
+	public int bodyBSpeed;
+	public int bodyCSpeed;
+	public int bodyEndSpeed;
 }
