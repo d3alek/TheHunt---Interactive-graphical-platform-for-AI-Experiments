@@ -13,7 +13,7 @@ public class D3CatchNet extends D3Path {
 //	private static int closedShapeVerticesNum = 100;
 	
 	private static float[] beingBuiltColor = {
-		0.4f, 0.4f, 0.4f, 0.0f
+		0.6f, 0.6f, 0.6f, 0.0f
 	};
 
 	private static float[] isBuiltColor = {
@@ -25,13 +25,15 @@ public class D3CatchNet extends D3Path {
 	};
 	
 	private static final float DISTANCE_FAR_ENOUGH = 0.01f;
-	private static final float DISTANCE_FINISH_ENOUGH = 0.3f;
+	private static final float DISTANCE_FINISH_ENOUGH = 0.2f;
 	
-	private static final float MIN_RADIUS = 0.1f;
+	private static final float MIN_RADIUS = 0.15f;
 
 	private static int isBuiltType = GLES20.GL_LINE_LOOP;
 	
 	private static final float mShrinkSpeed = 0.05f;
+
+	private static final int CLOSED_SHAPE_VERTICES_NUM = 100;
 	
 	private float mScale;
 	
@@ -144,7 +146,7 @@ public class D3CatchNet extends D3Path {
 		}
 		
 		float[] center = {mCenterX, mCenterY, 0};
-		super.setVertexBuffer(D3GLES20.newFloatBuffer(D3GLES20.circleVerticesData(center, mRadius, verticesNum)));
+		super.setVertexBuffer(D3GLES20.newFloatBuffer(D3GLES20.circleVerticesData(center, mRadius, CLOSED_SHAPE_VERTICES_NUM)));
 		
 		mModelMatrix = new float[16];
 		Matrix.setIdentityM(mModelMatrix, 0);

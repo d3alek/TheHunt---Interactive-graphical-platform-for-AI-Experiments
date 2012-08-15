@@ -33,7 +33,7 @@ public class Environment {
 		return data.mTiles;
 	}
 	public void putFood(float x, float y) {
-		Log.v(TAG, "Putting food at " + x +  " " + y);
+//		Log.v(TAG, "Putting food at " + x +  " " + y);
 		data.addFloatingObject(new FloatingObject(D3GLES20.newDefaultCircle(0.01f, foodColor , 20), x, y, Type.FOOD));
 	}
 	public void draw(float[] mVMatrix, float[] mProjMatrix, float interpolation) {

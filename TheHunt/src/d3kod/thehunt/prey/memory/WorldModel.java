@@ -84,7 +84,7 @@ private static final float INF = 100;
 	}
 	private void rememberEvent(Event e) {
 //		if (eventMemory.contains(e)) return;
-		Log.v(TAG, "Remembering event " + e);
+//		Log.v(TAG, "Remembering event " + e);
 		mEventMemory.add(e);
 	}
 	public int getLightLevel() {

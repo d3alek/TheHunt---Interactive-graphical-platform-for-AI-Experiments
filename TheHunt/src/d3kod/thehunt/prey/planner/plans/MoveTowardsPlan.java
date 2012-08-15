@@ -33,34 +33,40 @@ public class MoveTowardsPlan extends Plan {
 //		Log.v(TAG, "angleToTarget is " + angleToTarget + " bht is " + bht);
 		if (bht > 0) {
 			//Target is to the left
-			if (angleToTarget < TurnAngle.LEFT_SMALL.getValue()) {
+			if (angleToTarget < TurnAngle.LEFT_SMALL.getValue()/2) {
 				addNextAction(Action.FORWARD_LARGE);
 			}
-			else if (angleToTarget <= TurnAngle.LEFT_MEDIUM.getValue()) {
+			else if (angleToTarget < TurnAngle.LEFT_SMALL.getValue()) {
 				addNextAction(Action.TURN_LEFT_SMALL);
 			}
-			else if (angleToTarget <= TurnAngle.LEFT_LARGE.getValue()) {
+			else if (angleToTarget <= TurnAngle.LEFT_MEDIUM.getValue()) {
 				addNextAction(Action.TURN_LEFT_MEDIUM);
 			}
 			else {
 				//TODO: don't do two large in a row
 				addNextAction(Action.TURN_LEFT_LARGE);
 			}
+//			else {
+//				
+//				
+//			}
 		}
 		else {
 			//Target is to the right
 //			}
-			if (angleToTarget < TurnAngle.LEFT_SMALL.getValue()) {
+			if (angleToTarget < TurnAngle.LEFT_SMALL.getValue()/2) {
 				addNextAction(Action.FORWARD_LARGE);
+			}
+			else if (angleToTarget < TurnAngle.LEFT_SMALL.getValue()) {
+				addNextAction(Action.TURN_RIGHT_SMALL);
 //				Log.v(TAG, "Adding next action to be " + Action.FORWARD_LARGE);
 			}
 			else if (angleToTarget <= TurnAngle.LEFT_MEDIUM.getValue()) {
-				addNextAction(Action.TURN_RIGHT_SMALL);
-			}
-			else if (angleToTarget <= TurnAngle.LEFT_LARGE.getValue()) {
 				addNextAction(Action.TURN_RIGHT_MEDIUM);
 			}
-			else addNextAction(Action.TURN_RIGHT_LARGE);
+			else {
+				addNextAction(Action.TURN_RIGHT_LARGE);
+			}
 		}
 	}
 }

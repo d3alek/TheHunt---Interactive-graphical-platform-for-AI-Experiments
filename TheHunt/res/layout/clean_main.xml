@@ -46,27 +46,27 @@
         	android:layout_height="wrap_content"
 			android:layout_alignParentRight="true"
         	android:layout_centerVertical="true"/>
-        <Button 
-	        android:id="@+id/flopRight"
-	        android:layout_width="wrap_content"
-	        android:layout_height="wrap_content"
-	        android:text="Flop right"
-	        android:onClick="onButtonClicked"
-	        android:layout_toLeftOf="@id/foodToggle"/>
-    	<Button 
-	        android:id="@+id/flopBack"
-	        android:layout_width="wrap_content"
-	        android:layout_height="wrap_content"
-	        android:text="Flop back"
-	        android:onClick="onButtonClicked"
-	        android:layout_toLeftOf="@id/flopRight"/>
-    	<Button 
-            android:id="@+id/flopLeft"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Flop left"
-            android:onClick="onButtonClicked"
-            android:layout_toLeftOf="@id/flopBack"/>
+<!--         <Button  -->
+<!-- 	        android:id="@+id/flopRight" -->
+<!-- 	        android:layout_width="wrap_content" -->
+<!-- 	        android:layout_height="wrap_content" -->
+<!-- 	        android:text="Flop right" -->
+<!-- 	        android:onClick="onButtonClicked" -->
+<!-- 	        android:layout_toLeftOf="@id/foodToggle"/> -->
+<!--     	<Button  -->
+<!-- 	        android:id="@+id/flopBack" -->
+<!-- 	        android:layout_width="wrap_content" -->
+<!-- 	        android:layout_height="wrap_content" -->
+<!-- 	        android:text="Flop back" -->
+<!-- 	        android:onClick="onButtonClicked" -->
+<!-- 	        android:layout_toLeftOf="@id/flopRight"/> -->
+<!--     	<Button  -->
+<!--             android:id="@+id/flopLeft" -->
+<!--             android:layout_width="wrap_content" -->
+<!--             android:layout_height="wrap_content" -->
+<!--             android:text="Flop left" -->
+<!--             android:onClick="onButtonClicked" -->
+<!--             android:layout_toLeftOf="@id/flopBack"/> -->
     </RelativeLayout>
     
     <d3kod.thehunt.MyGLSurfaceView

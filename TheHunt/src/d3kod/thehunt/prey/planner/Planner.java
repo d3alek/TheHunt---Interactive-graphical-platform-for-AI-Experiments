@@ -72,7 +72,7 @@ public class Planner {
 	}
 
 	private Plan makeScavagePlan(WorldModel mWorldModel) {
-		Log.v(TAG, "Making scavage plan");
+//		Log.v(TAG, "Making scavage plan");
 		Plan scvgPlan = new GoToAndEatPlan(
 				mWorldModel.getHeadX(), mWorldModel.getHeadY(), 
 				mWorldModel.getBodyX(), mWorldModel.getBodyY(), 
@@ -81,7 +81,7 @@ public class Planner {
 	}
 
 	private Plan makeHidePlan(WorldModel mWorldModel) {
-		Log.v(TAG, "Making hide plan");
+//		Log.v(TAG, "Making hide plan");
 		Plan hidePlan = new GoToAndStayPlan(
 				mWorldModel.getHeadX(), mWorldModel.getHeadY(), 
 				mWorldModel.getBodyX(), mWorldModel.getBodyY(), 

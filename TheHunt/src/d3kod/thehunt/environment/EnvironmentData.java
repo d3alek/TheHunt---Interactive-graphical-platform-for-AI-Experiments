@@ -176,7 +176,7 @@ public class EnvironmentData {
 			if (fo.getType() != Type.FOOD) continue;
 			float foX = fo.getX(), foY = fo.getY();
 			if (D3GLES20.rectContains(x, y, 0.2f, 0.2f, foX, foY)) {
-				Log.v(TAG, "Removing floating object " + fo.getIndex());
+//				Log.v(TAG, "Removing floating object " + fo.getIndex());
 				D3GLES20.removeShape(fo.getIndex());
 				mFloatingObjects.remove(fo);
 				return;

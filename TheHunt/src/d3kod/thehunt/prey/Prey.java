@@ -229,7 +229,7 @@ public class Prey {
 				}
 			}
 			else {
-				Log.v(TAG, "Stopping flop");
+//				Log.v(TAG, "Stopping flop");
 				flopBack = false;
 			}
 		}
@@ -631,7 +631,7 @@ public class Prey {
 	}
 
 	private void eat() {
-		Log.v(TAG, "Eating food at " + mD.mPosHeadX + " " + mD.mPosHeadY);
+//		Log.v(TAG, "Eating food at " + mD.mPosHeadX + " " + mD.mPosHeadY);
 		mEnv.eatFood(mD.mPosHeadX, mD.mPosHeadY);
 		mWorldModel.eatFood(mD.mPosHeadX, mD.mPosHeadY);
 	}
