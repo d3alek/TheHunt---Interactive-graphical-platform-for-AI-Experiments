@@ -33,9 +33,9 @@ public class Prey {
 	private float bodyBAnglePredicted;
 	private float bodyCAnglePredicted;
 	private float bodyEndAnglePredicted;
-	private int bodyStartAngleRot;
-	private int bodyBAngleRot;
-	private int bodyCAngleRot;
+	private float bodyStartAngleRot;
+	private float bodyBAngleRot;
+	private float bodyCAngleRot;
 	private float bodyEndAngleRot;
 	private int backFinAngle;
 	private boolean flopBack;
@@ -182,8 +182,8 @@ public class Prey {
 				moveForward(Math.abs(backFinAngle*flopBackSpeed)); // F = ma
 //				Log.v(TAG, "Flopped First done " + flopBackAngle);
 			}
-			bodyEndAngleRot = (int)(mD.bodyCAngle + flopBackAngle)-mD.bodyEndAngle;
-			mD.bodyEndAngle = (int)(mD.bodyCAngle + flopBackAngle);
+			bodyEndAngleRot = mD.bodyCAngle + flopBackAngle-mD.bodyEndAngle;
+			mD.bodyEndAngle = mD.bodyCAngle + flopBackAngle;
 		}
 		else if (!floppedSecond) {
 //			Log.v(TAG, "Flopping second " + flopBackTargetSecond + " " + flopBackAngle);
@@ -195,8 +195,8 @@ public class Prey {
 				moveForward(Math.abs(2*backFinAngle*flopBackSpeed)); // F = ma
 //				Log.v(TAG, "Flopped Second done " + flopBackAngle);
 			}
-			bodyEndAngleRot = (int)(mD.bodyCAngle + flopBackAngle)-mD.bodyEndAngle;
-			mD.bodyEndAngle = (int)(mD.bodyCAngle + flopBackAngle);
+			bodyEndAngleRot = mD.bodyCAngle + flopBackAngle-mD.bodyEndAngle;
+			mD.bodyEndAngle = mD.bodyCAngle + flopBackAngle;
 		}
 		else {
 			//flopping third
@@ -210,8 +210,8 @@ public class Prey {
 				moveForward(Math.abs(backFinAngle*flopBackSpeed)); // F = ma
 //				Log.v(TAG, "Flopped Third done " + flopBackAngle);
 			}
-			bodyEndAngleRot = (int)(mD.bodyCAngle + flopBackAngle)-mD.bodyEndAngle;
-			mD.bodyEndAngle = (int)(mD.bodyCAngle + flopBackAngle);
+			bodyEndAngleRot = mD.bodyCAngle + flopBackAngle-mD.bodyEndAngle;
+			mD.bodyEndAngle = mD.bodyCAngle + flopBackAngle;
 		}
 //		else {
 //			if (f)
@@ -244,18 +244,18 @@ public class Prey {
 			return;
 		}
 			
-		switch(angle) {
-		case LEFT_SMALL: 
-		case RIGHT_SMALL: mD.rotateSpeedHead = mD.rotateSpeedSmall; break;
-		case LEFT_MEDIUM: 
-		case RIGHT_MEDIUM: mD.rotateSpeedHead = mD.rotateSpeedMedium; break;
-		case LEFT_LARGE: 
-		case RIGHT_LARGE: mD.rotateSpeedHead = mD.rotateSpeedLarge; break;
-		default: Log.v(TAG, "Turning to unknown angle");
-		}
-		
-		mD.rotateSpeedBody = mD.rotateSpeedHead/2;
-		if (mD.rotateSpeedBody < 1) mD.rotateSpeedBody = 1;
+//		switch(angle) {
+//		case LEFT_SMALL: 
+//		case RIGHT_SMALL: mD.rotateSpeedHead = mD.rotateSpeedSmall; break;
+//		case LEFT_MEDIUM: 
+//		case RIGHT_MEDIUM: mD.rotateSpeedHead = mD.rotateSpeedMedium; break;
+//		case LEFT_LARGE: 
+//		case RIGHT_LARGE: mD.rotateSpeedHead = mD.rotateSpeedLarge; break;
+//		default: Log.v(TAG, "Turning to unknown angle");
+//		}
+		mD.rotateSpeedHead = angle.getRotateSpeed();
+//		mD.rotateSpeedBody = mD.rotateSpeedHead/2;
+//		if (mD.rotateSpeedBody < 1) mD.rotateSpeedBody = 1;
  		mD.bodyStartAngleTarget += value;
 	
 		if (!turningBackFinMotion) {
@@ -277,6 +277,7 @@ public class Prey {
 	public void backFinMotion(TurnAngle angle) {
 		flopBack = true;
 		backFinAngle = angle.getValue();
+//		flopBackTicks = angle.getTicks(), ;
 		mD.bodyEndAngle = mD.bodyCAngle;
 		flopBackTargetFirst = +backFinAngle;
 		//flopBackAngle = mD.bodyEndAngle-mD.bodyCAngle;
@@ -285,7 +286,8 @@ public class Prey {
 		floppedFirst = false;
 		floppedSecond = false;
 		floppedThird = false;
-		flopBackSpeed = Math.abs(4*backFinAngle)/(float)flopBackTicks; // S=3*backFinAngle
+//		flopBackSpeed = Math.abs(4*backFinAngle)/(float)flopBackTicks; // S=3*backFinAngle
+		flopBackSpeed = angle.getRotateSpeed();
 //		Log.v(TAG, "flopBackSpeed is " + flopBackSpeed);
 //		moveForward(Math.abs(2*backFinAngle*flopBackSpeed)); // F = ma
 //		Log.v(TAG, "New back fin motion " + flopBackSpeed + " " 
@@ -348,8 +350,8 @@ public class Prey {
 		mD.ribVerticesNum = mD.ribVerticesData.length / D3GLES20.COORDS_PER_VERTEX;
 		
 		mD.rotateSpeedHead = mD.rotateSpeedSmall;//Math.abs(TurnAngle.LEFT_SMALL.getValue())/SMALL_TICKS_PER_TURN;
-		mD.rotateSpeedBody = mD.rotateSpeedHead/2;
-		if (mD.rotateSpeedBody < 1) mD.rotateSpeedBody = 1;
+//		mD.rotateSpeedBody = mD.rotateSpeedHead/2;
+//		if (mD.rotateSpeedBody < 1) mD.rotateSpeedBody = 1;
 		
 		mIsCaught = false;
 //		bodyEndAngleRotated = 0;

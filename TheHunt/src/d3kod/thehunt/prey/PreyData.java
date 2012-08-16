@@ -17,23 +17,33 @@ public class PreyData {
 	
 	protected final float MAX_BODY_BEND_ANGLE = 110;
 	
-	private static int SMALL_TURNS_PER_SECOND = 5; //TODO: Make it 4-5.
+	private static int SMALL_TURNS_PER_SECOND = 5;
 	private static int MEDIUM_TURNS_PER_SECOND = 4;
 	private static int LARGE_TURNS_PER_SECOND = 3;
+	private static int SMALL_TURNS_BACK_PER_SECOND = 3;
+	private static int MEDIUM_TURNS_BACK_PER_SECOND = 3;
+	private static int LARGE_TURNS_BACK_PER_SECOND = 2;
 	public static int SMALL_TICKS_PER_TURN = TheHuntRenderer.TICKS_PER_SECOND/SMALL_TURNS_PER_SECOND;
 	public static int MEDIUM_TICKS_PER_TURN = TheHuntRenderer.TICKS_PER_SECOND/MEDIUM_TURNS_PER_SECOND;
 	public static int LARGE_TICKS_PER_TURN = TheHuntRenderer.TICKS_PER_SECOND/LARGE_TURNS_PER_SECOND;
+	public static int SMALL_TICKS_BACK_PER_TURN = TheHuntRenderer.TICKS_PER_SECOND/SMALL_TURNS_BACK_PER_SECOND;
+	public static int MEDIUM_TICKS_BACK_PER_TURN = TheHuntRenderer.TICKS_PER_SECOND/MEDIUM_TURNS_BACK_PER_SECOND;
+	public static int LARGE_TICKS_BACK_PER_TURN = TheHuntRenderer.TICKS_PER_SECOND/LARGE_TURNS_BACK_PER_SECOND;
+	
 	
 	public static int angleFlopSmall = 20;
 	public static int angleFlopMedium = 45;
 	public static int angleFlopLarge = 90;
+	public static float rotateSpeedSmall = angleFlopSmall*SMALL_TURNS_PER_SECOND/(TheHuntRenderer.TICKS_PER_SECOND);
+	public static float rotateSpeedMedium = angleFlopMedium*MEDIUM_TURNS_PER_SECOND/(TheHuntRenderer.TICKS_PER_SECOND);
+	public static float rotateSpeedLarge = angleFlopLarge*LARGE_TURNS_PER_SECOND/(TheHuntRenderer.TICKS_PER_SECOND);
 	public static int angleFlopBackSmall = 10;
-	public static int angleFlopBackMedium = 15;
-	public static int angleFlopBackLarge = 25;
-	public int rotateSpeedSmall = angleFlopSmall*SMALL_TURNS_PER_SECOND/(TheHuntRenderer.TICKS_PER_SECOND);
-	public int rotateSpeedMedium = angleFlopMedium*MEDIUM_TURNS_PER_SECOND/(TheHuntRenderer.TICKS_PER_SECOND);
-	public int rotateSpeedLarge = angleFlopLarge*LARGE_TURNS_PER_SECOND/(TheHuntRenderer.TICKS_PER_SECOND);
-
+	public static int angleFlopBackMedium = 20;
+	public static int angleFlopBackLarge = 30;
+	public static float rotateSpeedBackSmall = 4*angleFlopBackSmall/SMALL_TICKS_BACK_PER_TURN;
+	public static float rotateSpeedBackMedium = 4*angleFlopBackMedium/MEDIUM_TICKS_BACK_PER_TURN;
+	public static float rotateSpeedBackLarge = 4*angleFlopBackLarge/LARGE_TICKS_BACK_PER_TURN;
+	
 	protected final int STRIDE_BYTES = D3GLES20.COORDS_PER_VERTEX * D3GLES20.BYTES_PER_FLOAT;
 	protected float[] preyColor = {
 		0.0f, 0.0f, 0.0f, 0.0f };
@@ -185,10 +195,10 @@ public class PreyData {
 //	public float[][] delayV;
 //	public float targetAngleHead;
 	
-	public int bodyStartAngle;
-	public int bodyBAngle;
-	public int bodyCAngle;
-	public int bodyEndAngle;
+	public float bodyStartAngle;
+	public float bodyBAngle;
+	public float bodyCAngle;
+	public float bodyEndAngle;
 	
 	float[] mBodyStartRMatrix = new float[16];
 	float[] mBodyBRMatrix = new float[16];
@@ -203,9 +213,9 @@ public class PreyData {
 	public float[] mRibsModelMatrix = new float[16];
 	public int ribVerticesNum;
 	public float[] bodyVerticesData;
-	public int rotateSpeedHead;
-	public int rotateSpeedBody;
-	public int bodyBSpeed;
-	public int bodyCSpeed;
-	public int bodyEndSpeed;
+	public float rotateSpeedHead;
+//	public float rotateSpeedBody;
+	public float bodyBSpeed;
+	public float bodyCSpeed;
+	public float bodyEndSpeed;
 }

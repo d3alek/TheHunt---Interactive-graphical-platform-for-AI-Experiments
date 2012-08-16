@@ -177,7 +177,8 @@ public class EnvironmentData {
 			float foX = fo.getX(), foY = fo.getY();
 			if (D3GLES20.rectContains(x, y, 0.2f, 0.2f, foX, foY)) {
 //				Log.v(TAG, "Removing floating object " + fo.getIndex());
-				D3GLES20.removeShape(fo.getIndex());
+//				D3GLES20.removeShape(fo.getIndex());
+				fo.clearGraphic();
 				mFloatingObjects.remove(fo);
 				return;
 			}
@@ -196,7 +197,7 @@ public class EnvironmentData {
 	public void logFloatingObjects() {
 		String log = "Floating objects log: ";
 		for (FloatingObject fo: mFloatingObjects) {
-			log += fo.getType() + " " + fo.getIndex() + " ";
+			log += fo.getType() + " " + fo.getKey() + " ";
 		}
 		Log.v(TAG, log);
 	}

@@ -36,12 +36,12 @@ public class Environment {
 //		Log.v(TAG, "Putting food at " + x +  " " + y);
 		data.addFloatingObject(new FloatingObject(D3GLES20.newDefaultCircle(0.01f, foodColor , 20), x, y, Type.FOOD));
 	}
-	public void draw(float[] mVMatrix, float[] mProjMatrix, float interpolation) {
-//		data.logFloatingObjects();
-		for (FloatingObject fo: data.getFloatingObjects()) {
-			D3GLES20.draw(fo.getIndex(), fo.getModelMatrix(), mVMatrix, mProjMatrix);
-		}
-	}
+//	public void draw(float[] mVMatrix, float[] mProjMatrix, float interpolation) {
+////		data.logFloatingObjects();
+//		for (FloatingObject fo: data.getFloatingObjects()) {
+//			D3GLES20.draw(fo.getIndex(), fo.getModelMatrix(), mVMatrix, mProjMatrix);
+//		}
+//	}
 	public Event senseCurrent(float x, float y) {
 		Tile tile = data.getTileFromPos(new PointF(x, y));
 		return new EventNone();
@@ -65,14 +65,14 @@ public class Environment {
 	}
 	public Event senseLight(float hX, float hY) {
 		for (FloatingObject fo: data.getFloatingObjects()) {
-			if (fo.getType() == Type.ALGAE && D3GLES20.contains(fo.getIndex(), hX, hY)) 
+			if (fo.getType() == Type.ALGAE && D3GLES20.contains(fo.getKey(), hX, hY)) 
 				return new EventLight(0);
 		}
 		return new EventLight(1);
 	}
 	public boolean netObstacle(float x, float y) {
 		for (FloatingObject fo: data.getFloatingObjects()) {
-			if (fo.getType() == Type.ALGAE && D3GLES20.contains(fo.getIndex(), x, y)) 
+			if (fo.getType() == Type.ALGAE && D3GLES20.contains(fo.getKey(), x, y)) 
 				return true;
 		}
 		return false;
