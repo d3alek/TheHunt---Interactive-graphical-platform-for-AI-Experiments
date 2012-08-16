@@ -50,7 +50,10 @@ public class Prey {
 	public static boolean posInterpolation = true;
 
 	public static final float bodyToHeadLength = 0.07f;
-	private static final float FORCE_TO_DISTANCE = 0.00004f;
+	
+	
+//	private static final float FORCE_TO_DISTANCE = 0.00004f;
+	private static final float FORCE_TO_DISTANCE = 0.00003f;
 	
 	public static int flopBacksPerSecond = 2;
 	public static int flopBackTicks = TheHuntRenderer.TICKS_PER_SECOND/flopBacksPerSecond;
