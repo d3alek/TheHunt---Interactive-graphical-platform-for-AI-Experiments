@@ -36,16 +36,6 @@ public class GoToAndStayPlan extends MoveTowardsPlan {
 			return;
 		}
 		
-//		if (headFromTarget <= SLOW_DOWN_DISTANCE && slowdownCounter > 0) {
-//			slowdownCounter--;
-//			addNextAction(Action.none);
-//			return;
-//		}
-//		else {
-//			slowdownCounter = (int)(SLOW_DOWN_DISTANCE/headFromTarget);
-//			super.update(mWorldModel);
-//		}
-		
 		super.update(mWorldModel);
 		
 		if (getNextAction() == Action.FORWARD_LARGE) {

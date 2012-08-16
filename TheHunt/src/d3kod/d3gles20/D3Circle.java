@@ -9,12 +9,12 @@ public class D3Circle extends D3Shape {
 	private float mRadius;
 
 	public D3Circle(float r, float[] color, int vertices, boolean useDefaultShaders) {
-		super(vertices, makeCircleVerticesBuffer(r, vertices), color, GLES20.GL_LINE_LOOP, useDefaultShaders);
+		super(makeCircleVerticesBuffer(r, vertices), color, GLES20.GL_LINE_LOOP, useDefaultShaders);
 		mRadius = r;
 	}
 
 	private static FloatBuffer makeCircleVerticesBuffer(float r, int vertices) {
-		FloatBuffer buffer = D3GLES20.newFloatBuffer(D3GLES20.circleVerticesData(new float[] {0, 0}, r, vertices));
+		FloatBuffer buffer = D3GLES20.newFloatBuffer(D3GLES20.circleVerticesData(r, vertices));
 		return buffer;
 	}
 

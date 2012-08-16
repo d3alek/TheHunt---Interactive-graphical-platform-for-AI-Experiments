@@ -14,7 +14,7 @@ public class D3Path extends D3Shape {
 	protected ArrayList<Float> mVertexData = new ArrayList<Float>();
 	
 	public D3Path(float[] beingBuiltColor) {
-		super(0, null, beingBuiltColor, drawType, true);
+		super(null, beingBuiltColor, drawType, true);
 	}
 
 	public void makeVertexBuffer() {

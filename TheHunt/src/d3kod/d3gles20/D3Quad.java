@@ -52,7 +52,7 @@ public class D3Quad extends D3Shape {
 	}
 	
 	public D3Quad(FloatBuffer verticesBuffer, float[] drawColor, int drawType, boolean useDefaultShaders) {	
-		super(verticesNum, verticesBuffer, drawColor, drawType, useDefaultShaders);
+		super(verticesBuffer, drawColor, drawType, useDefaultShaders);
 	}
 	
 	public float getRadius() {

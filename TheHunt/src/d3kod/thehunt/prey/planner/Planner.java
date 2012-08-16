@@ -53,7 +53,7 @@ public class Planner {
 			break;
 		case DONOTHING: mPlan = new NoPlan(mWorldModel.getHeadX(), mWorldModel.getHeadY()); break;
 		}
-		makeTarget();
+		if (SHOW_TARGET) makeTarget();
 		mPlan.update(mWorldModel);
 		if (SHOW_TARGET) D3GLES20.setShapePosition(mPlanTarget, mPlan.getTargetX(), mPlan.getTargetY());
 		return mPlan.nextAction();
@@ -81,7 +81,7 @@ public class Planner {
 	}
 
 	private Plan makeHidePlan(WorldModel mWorldModel) {
-//		Log.v(TAG, "Making hide plan");
+//		Log.v(TAG, "Making hide plan because light level is " + mWorldModel.getLightLevel());
 		Plan hidePlan = new GoToAndStayPlan(
 				mWorldModel.getHeadX(), mWorldModel.getHeadY(), 
 				mWorldModel.getBodyX(), mWorldModel.getBodyY(), 

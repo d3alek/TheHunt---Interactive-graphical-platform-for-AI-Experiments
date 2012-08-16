@@ -30,11 +30,12 @@ abstract public class D3Shape {
 	
 	private static final float FADE_SPEED = 0.05f;
 	
-	protected D3Shape(int verticesNum, FloatBuffer vertBuffer, float[] colorData, int drType, boolean useDefaultShaders) {
+	protected D3Shape(FloatBuffer vertBuffer, float[] colorData, int drType, boolean useDefaultShaders) {
 		color = colorData;
 		vertexBuffer = vertBuffer;
 		drawType = drType;
-		VERTICES_NUM = verticesNum;
+		if (vertBuffer != null) VERTICES_NUM = vertBuffer.capacity()/D3GLES20.COORDS_PER_VERTEX;
+		else VERTICES_NUM = 0;
 		mMMatrix = new float[16];
 		mCenterDefault = new float[] {0.0f, 0.0f, 0.0f, 1.0f};
 		mCenter = new float[4];

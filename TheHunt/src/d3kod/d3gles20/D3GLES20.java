@@ -197,7 +197,7 @@ public class D3GLES20 {
 		return vertices;
 	}
 
-	public static float[] circleVerticesData(float[] center, float r, int verticesNum) {
+	public static float[] circleVerticesData(float r, int verticesNum) {
 		float[] vertices = new float[verticesNum*COORDS_PER_VERTEX];
 		float step = 2*3.14f/verticesNum;
 		float angleRad = 0;
@@ -206,7 +206,6 @@ public class D3GLES20 {
 			vertices[i*COORDS_PER_VERTEX + 1] = r * FloatMath.cos(angleRad);
 			vertices[i*COORDS_PER_VERTEX + 2] = 0;
 			angleRad += step;
-//			Log.v(TAG, "Making new circle" + vertices[i*COORDS_PER_VERTEX] + " " + vertices[i*COORDS_PER_VERTEX + 1]);
 		}
 		return vertices;
 	}

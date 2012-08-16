@@ -29,13 +29,6 @@ public class EnvironmentData {
 		1.0f, -0.3f
 	};
 	
-	private static final float[] algaeColor = 
-		{ 0.4f, 0.4f, 0.4f, 0.0f};
-
-	private static final int ALGAE_DETAILS = 100;
-
-	private static final float ALGAE_SIZE = 0.3f;
-	
 	public static float tHeight;
 	public static float tWidth;
 	public static float mScreenWidth;
@@ -148,7 +141,7 @@ public class EnvironmentData {
 		// Fill the buffers for drawing the tiles
 //		Tile.initBuffers();
 	}
-
+//
 	public void addFloatingObject(FloatingObject floatingObject) {
 		mFloatingObjects.add(floatingObject);
 		
@@ -167,17 +160,12 @@ public class EnvironmentData {
 		if (row >= tileRows) row = tileRows - 1;
 		return mTiles[row][col]; 
 	}
-
-//	public void newFood(float x, float y) {
-//		mFoodX = x; mFoodY = y;
-//	}
+	
 	public void removeFood(float x, float y) {
 		for (FloatingObject fo: mFloatingObjects) {
 			if (fo.getType() != Type.FOOD) continue;
 			float foX = fo.getX(), foY = fo.getY();
 			if (D3GLES20.rectContains(x, y, 0.2f, 0.2f, foX, foY)) {
-//				Log.v(TAG, "Removing floating object " + fo.getIndex());
-//				D3GLES20.removeShape(fo.getIndex());
 				fo.clearGraphic();
 				mFloatingObjects.remove(fo);
 				return;
@@ -189,8 +177,9 @@ public class EnvironmentData {
 		float algaeX, algaeY;
 		for (int i = 0; i < ALGAE_NUM; ++i) {
 			algaeX = AlGAE_HARDCODED_POS[i*2]; algaeY = AlGAE_HARDCODED_POS[i*2+1];
-			addFloatingObject(
-					new FloatingObject(D3GLES20.newDefaultCircle(ALGAE_SIZE, algaeColor, ALGAE_DETAILS), algaeX, algaeY, Type.ALGAE));
+			mFloatingObjects.add(new Algae(algaeX, algaeY));
+//			addFloatingObject(
+//					new FloatingObject(D3GLES20.newDefaultCircle(ALGAE_SIZE, algaeColor, ALGAE_DETAILS), algaeX, algaeY, Type.ALGAE));
 		}
 	}
 	

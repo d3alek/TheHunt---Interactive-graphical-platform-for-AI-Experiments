@@ -146,7 +146,7 @@ public class D3CatchNet extends D3Path {
 		}
 		
 		float[] center = {mCenterX, mCenterY, 0};
-		super.setVertexBuffer(D3GLES20.newFloatBuffer(D3GLES20.circleVerticesData(center, mRadius, CLOSED_SHAPE_VERTICES_NUM)));
+		super.setVertexBuffer(D3GLES20.newFloatBuffer(D3GLES20.circleVerticesData(mRadius, CLOSED_SHAPE_VERTICES_NUM)));
 		
 		mModelMatrix = new float[16];
 		Matrix.setIdentityM(mModelMatrix, 0);

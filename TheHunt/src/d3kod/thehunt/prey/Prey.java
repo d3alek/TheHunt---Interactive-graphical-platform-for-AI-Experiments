@@ -346,7 +346,7 @@ public class Prey {
 		mD.headVerticesData = calcHeadVerticesData();
 		mD.leftFinVerticesData = calcLeftFinVerticesData();
 		mD.rightFinVerticesData = calcRightFinVerticesData();
-		mD.eyeVertexData = D3GLES20.circleVerticesData(mD.eyePosition, mD.eyeSize, mD.eyeDetailsLevel);
+		mD.eyeVertexData = D3GLES20.circleVerticesData(mD.eyeSize, mD.eyeDetailsLevel);
 		mD.ribVerticesData = caclRibVerticesData();
 		
 		mD.finVerticesNum = mD.rightFinVerticesData.length / D3GLES20.COORDS_PER_VERTEX;

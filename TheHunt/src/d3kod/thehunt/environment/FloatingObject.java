@@ -10,7 +10,6 @@ class FloatingObject {
 	}
 	
 	private int mKey;
-//	private float[] mModelMatrix;
 	Type mType;
 	private float mX;
 	private float mY;
@@ -18,9 +17,6 @@ class FloatingObject {
 	public FloatingObject(int key, float x, float y, Type type) {
 		mKey = key; 
 		mType = type;
-//		mModelMatrix = new float[16];
-//		Matrix.setIdentityM(mModelMatrix, 0);
-//		Matrix.translateM(mModelMatrix, 0, x, y, 0);
 		D3GLES20.setShapePosition(key, x, y);
 		mX = x; mY = y;
 	}
@@ -28,11 +24,7 @@ class FloatingObject {
 	public int getKey() {
 		return mKey;
 	}
-//
-//	public float[] getModelMatrix() {
-//		return mModelMatrix;
-//	}
-//	
+	
 	public Type getType() {
 		return mType;
 	}
