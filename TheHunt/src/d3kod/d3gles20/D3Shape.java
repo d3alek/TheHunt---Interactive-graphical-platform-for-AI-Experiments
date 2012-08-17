@@ -43,6 +43,7 @@ abstract public class D3Shape {
 		mCenterDefault = new float[] {0.0f, 0.0f, 0.0f, 1.0f};
 		mCenter = new float[4];
 		Matrix.setIdentityM(getMMatrix(), 0);
+        
 		if (useDefaultShaders) {
 			customProgram = false;
 			mProgram = D3GLES20.createProgram(D3GLES20.defaultVertexShader(), D3GLES20.defaultFragmentShader());
@@ -110,7 +111,10 @@ abstract public class D3Shape {
 	
 	protected void setProgram(int program) {
 		mProgram = program;
-		GLES20.glUseProgram(program);
+//		GLES20.glUseProgram(program);
+		mMVPMatrixHandle = GLES20.glGetUniformLocation(mProgram, "u_MVPMatrix"); 
+        mPositionHandle = GLES20.glGetAttribLocation(mProgram, "a_Position");
+        mColorHandle = GLES20.glGetUniformLocation(mProgram, "u_Color");
 	}
 	
 	public void setDrawType(int drawType) {

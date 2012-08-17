@@ -28,7 +28,7 @@ public class Environment {
 	}
 	
 	public void initGraphics(Context context) {
-		mTextureDataHandle = TextureHelper.loadTexture(context, R.drawable.bumpy_bricks_public_domain);
+		mTextureDataHandle = TextureHelper.loadTexture(context, R.drawable.zebra);
 		data.makeAlgae(mTextureDataHandle);
 		Tile.initBuffers();
 		
@@ -43,12 +43,6 @@ public class Environment {
 //		Log.v(TAG, "Putting food at " + x +  " " + y);
 		data.addFloatingObject(new FloatingObject(x, y, Type.FOOD), D3GLES20.newDefaultCircle(0.01f, foodColor , 20));
 	}
-//	public void draw(float[] mVMatrix, float[] mProjMatrix, float interpolation) {
-////		data.logFloatingObjects();
-//		for (FloatingObject fo: data.getFloatingObjects()) {
-//			D3GLES20.draw(fo.getIndex(), fo.getModelMatrix(), mVMatrix, mProjMatrix);
-//		}
-//	}
 	public Event senseCurrent(float x, float y) {
 		Tile tile = data.getTileFromPos(new PointF(x, y));
 		return new EventNone();
