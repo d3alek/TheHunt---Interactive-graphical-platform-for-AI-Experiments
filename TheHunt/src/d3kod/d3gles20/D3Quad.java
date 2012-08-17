@@ -58,5 +58,4 @@ public class D3Quad extends D3Shape {
 	public float getRadius() {
 		return mRadius;
 	}
-	
 }

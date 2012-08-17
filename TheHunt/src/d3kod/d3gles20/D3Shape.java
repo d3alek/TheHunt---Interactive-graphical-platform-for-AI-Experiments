@@ -24,6 +24,7 @@ abstract public class D3Shape {
 	private float[] mMMatrix;
 	private float[] mCenter;
 	private float[] mCenterDefault;
+	protected boolean customProgram;
 	
 //	private static final int SEC_TO_FADE = 1;
 //	private static final int FADE_TICKS = TheHuntRenderer.TICKS_PER_SECOND*SEC_TO_FADE;
@@ -31,35 +32,50 @@ abstract public class D3Shape {
 	private static final float FADE_SPEED = 0.05f;
 	
 	protected D3Shape(FloatBuffer vertBuffer, float[] colorData, int drType, boolean useDefaultShaders) {
+		this(colorData, drType, useDefaultShaders);
+		setVertexBuffer(vertBuffer); //TODO: make this the default constructor without the vertBuffer argument and ssetVertexBuffer abstract
+	}
+	
+	protected D3Shape(float[] colorData, int drType, boolean useDefaultShaders) {
 		color = colorData;
-		vertexBuffer = vertBuffer;
 		drawType = drType;
-		if (vertBuffer != null) VERTICES_NUM = vertBuffer.capacity()/D3GLES20.COORDS_PER_VERTEX;
-		else VERTICES_NUM = 0;
-		mMMatrix = new float[16];
+		setMMatrix(new float[16]);
 		mCenterDefault = new float[] {0.0f, 0.0f, 0.0f, 1.0f};
 		mCenter = new float[4];
-		Matrix.setIdentityM(mMMatrix, 0);
+		Matrix.setIdentityM(getMMatrix(), 0);
 		if (useDefaultShaders) {
+			customProgram = false;
 			mProgram = D3GLES20.createProgram(D3GLES20.defaultVertexShader(), D3GLES20.defaultFragmentShader());
 			mMVPMatrixHandle = GLES20.glGetUniformLocation(mProgram, "u_MVPMatrix"); 
 	        mPositionHandle = GLES20.glGetAttribLocation(mProgram, "a_Position");
 	        mColorHandle = GLES20.glGetUniformLocation(mProgram, "u_Color");
 		}
 		else {
+			customProgram = true;
 			mProgram = mMVPMatrixHandle = mPositionHandle = mColorHandle = -1;
 		}
 	}
 	
+//	public void setShaders(int program, int mMVPMa) {
+	
+	public void setVertexBuffer(FloatBuffer vertBuffer) {
+		vertexBuffer = vertBuffer;
+		if (vertBuffer != null) VERTICES_NUM = vertBuffer.capacity()/D3GLES20.COORDS_PER_VERTEX;
+		else {
+			VERTICES_NUM = 0;
+			Log.v(TAG, "Vertex buffer is null!");
+		}
+	}
+	
 	public void setModelMatrix(float[] modelMatrix) {
-		mMMatrix = modelMatrix;
-		Matrix.multiplyMV(mCenter, 0, mMMatrix, 0, mCenterDefault, 0);
+		setMMatrix(modelMatrix);
+		Matrix.multiplyMV(mCenter, 0, getMMatrix(), 0, mCenterDefault, 0);
 	}
 	
 	public void draw(float[] mVMatrix, float[] mProjMatrix) {
 		//float[] mMMatrix, 
 		// Add program to OpenGL ES environment
-        GLES20.glUseProgram(mProgram);
+        if (!customProgram) GLES20.glUseProgram(mProgram);
         
 //        Log.v(TAG, "Vertex buffer size: " + vertexBuffer.capacity());
         // Pass in the position information
@@ -74,7 +90,7 @@ abstract public class D3Shape {
         
         GLES20.glEnableVertexAttribArray(mColorHandle);
         
-        Matrix.multiplyMM(mMVPMatrix  , 0, mVMatrix, 0, mMMatrix, 0);
+        Matrix.multiplyMM(mMVPMatrix  , 0, mVMatrix, 0, getMMatrix(), 0);
         Matrix.multiplyMM(mMVPMatrix, 0, mProjMatrix, 0, mMVPMatrix, 0);
         
         GLES20.glUniformMatrix4fv(mMVPMatrixHandle, 1, false, mMVPMatrix, 0);
@@ -92,13 +108,9 @@ abstract public class D3Shape {
 	
 	abstract public float getRadius();
 	
-	protected void setProgram() {
-		GLES20.glUseProgram(mProgram);
-	}
-	
-	public void setVertexBuffer(FloatBuffer vertexBuffer) {
-		this.vertexBuffer = vertexBuffer;
-		VERTICES_NUM = vertexBuffer.capacity()/D3GLES20.COORDS_PER_VERTEX;
+	protected void setProgram(int program) {
+		mProgram = program;
+		GLES20.glUseProgram(program);
 	}
 	
 	public void setDrawType(int drawType) {
@@ -129,8 +141,23 @@ abstract public class D3Shape {
 	}
 
 	public void setPosition(float x, float y) {
-		Matrix.setIdentityM(mMMatrix, 0);
-		Matrix.translateM(mMMatrix, 0, x, y, 0);
-		Matrix.multiplyMV(mCenter, 0, mMMatrix, 0, mCenterDefault, 0);
+		Matrix.setIdentityM(getMMatrix(), 0);
+		Matrix.translateM(getMMatrix(), 0, x, y, 0);
+		Matrix.multiplyMV(mCenter, 0, getMMatrix(), 0, mCenterDefault, 0);
+	}
+	public void useProgram() {
+		GLES20.glUseProgram(mProgram);
+	}
+
+	public float[] getMMatrix() {
+		return mMMatrix;
+	}
+
+	public void setMMatrix(float[] mMMatrix) {
+		this.mMMatrix = mMMatrix;
+	}
+
+	public FloatBuffer getVertexBuffer() {
+		return vertexBuffer;
 	}
 }

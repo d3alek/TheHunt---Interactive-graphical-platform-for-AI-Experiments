@@ -46,6 +46,7 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 	private int smoothingCount;
 	private int mCaughtCounter;
 	private TempCircle tempCircle;
+	private boolean mGraphicsInitialized = false;
 	public static float[] bgColor = {
 			0.8f, 0.8f, 0.8f, 1.0f};
 
@@ -86,7 +87,9 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 	 */
 	public void onSurfaceCreated(GL10 unused, EGLConfig config) {
 		GLES20.glClearColor(bgColor[0], bgColor[1], bgColor[2], bgColor[3]);
-		D3GLES20.clean();
+//		GLES20.glEnable(GLES20.GL_CULL_FACE);
+//		GLES20.glEnable(GLES20.GL_DEPTH_TEST);
+//		GLES20.glEnable(GLES20.GL_TEXTURE_2D);
 	    Matrix.orthoM(mVMatrix, 0, -1, 1, -1, 1, 0.1f, 100f);
 	}
 	/**
@@ -98,10 +101,12 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 		if (mEnv == null) mEnv = new Environment(width, height);
 	    if (mPrey == null) mPrey = new Prey(EnvironmentData.mScreenWidth, EnvironmentData.mScreenHeight, mEnv);
 	    if (mNet == null) mNet = new CatchNet(mEnv);
-	    mEnv.initGraphics();
-		mPrey.initGraphics();
-//		mNet.initGraphics();
-		
+	    if (!mGraphicsInitialized ) {
+	    	mEnv.initGraphics(mContext);
+	    	mPrey.initGraphics();
+	    	mGraphicsInitialized = true;
+	    }
+	    
 	    float ratio = (float) width / height;
 	    
 	    if (width > height) Matrix.frustumM(mProjMatrix, 0, -ratio, ratio, -1, 1, 1, 10);
@@ -167,6 +172,7 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 		}
 		
 		mNet.update();
+		mEnv.update();
 	}
 
 	private void drawWorld(float interpolation) {
@@ -217,5 +223,10 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 		if (NET_WITH_TOUCH) {
 			mNet.finish(x, y);
 		}
+	}
+
+	public void pause() {
+//		mEnv.clean();
+    	D3GLES20.clean();
 	}
 }

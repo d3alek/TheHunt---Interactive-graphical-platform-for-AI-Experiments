@@ -2,27 +2,34 @@ package d3kod.thehunt.environment;
 
 import java.util.ArrayList;
 
+import android.content.Context;
 import android.graphics.PointF;
-import android.opengl.Matrix;
-import android.util.Log;
 import d3kod.d3gles20.D3GLES20;
+import d3kod.d3gles20.TextureHelper;
+import d3kod.thehunt.R;
 import d3kod.thehunt.environment.FloatingObject.Type;
 import d3kod.thehunt.events.Event;
 import d3kod.thehunt.events.EventAlgae;
 import d3kod.thehunt.events.EventFood;
 import d3kod.thehunt.events.EventLight;
 import d3kod.thehunt.events.EventNone;
-import d3kod.thehunt.events.Event.EventType;
 public class Environment {
 	private static final String TAG = "Environment";
 	public EnvironmentData data;
 	private float[] foodColor = {0.5f, 0.5f, 0.5f};
+	public int mTextureDataHandle;
 	
 	public Environment(int width, int height) {
 		data = new EnvironmentData(width, height);
 	}
-	public void initGraphics() {
-		data.makeAlgae();
+	
+	public void update() {
+		data.updateFloatingObjects();
+	}
+	
+	public void initGraphics(Context context) {
+		mTextureDataHandle = TextureHelper.loadTexture(context, R.drawable.bumpy_bricks_public_domain);
+		data.makeAlgae(mTextureDataHandle);
 		Tile.initBuffers();
 		
 	}
@@ -34,7 +41,7 @@ public class Environment {
 	}
 	public void putFood(float x, float y) {
 //		Log.v(TAG, "Putting food at " + x +  " " + y);
-		data.addFloatingObject(new FloatingObject(D3GLES20.newDefaultCircle(0.01f, foodColor , 20), x, y, Type.FOOD));
+		data.addFloatingObject(new FloatingObject(x, y, Type.FOOD), D3GLES20.newDefaultCircle(0.01f, foodColor , 20));
 	}
 //	public void draw(float[] mVMatrix, float[] mProjMatrix, float interpolation) {
 ////		data.logFloatingObjects();
@@ -77,4 +84,8 @@ public class Environment {
 		}
 		return false;
 	}
+
+//	public void clean() {
+//		data.clear();
+//	}
 }

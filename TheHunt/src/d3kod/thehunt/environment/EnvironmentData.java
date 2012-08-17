@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import android.graphics.PointF;
 import android.util.Log;
 import d3kod.d3gles20.D3GLES20;
+import d3kod.d3gles20.D3Shape;
 import d3kod.thehunt.environment.FloatingObject.Type;
 import d3kod.thehunt.events.Event;
 import d3kod.thehunt.events.EventFood;
@@ -22,11 +23,18 @@ public class EnvironmentData {
 
 	public static final float currentStep = 0.002f;
 
-	private static final int ALGAE_NUM = 2;
+	private static final int ALGAE_NUM = 1;
+	
+//	private static final float[] AlGAE_HARDCODED_POS = {
+//		-0.5f, 0.5f,
+//		1.0f, -0.3f,
+//		0.3f, 0.11f,
+//		-0.8f, -0.5f,
+//		1.2f, 0.7f
+//	};
 	
 	private static final float[] AlGAE_HARDCODED_POS = {
-		-0.5f, 0.5f,
-		1.0f, -0.3f
+		0f, 0f
 	};
 	
 	public static float tHeight;
@@ -35,7 +43,7 @@ public class EnvironmentData {
 	public static float mScreenHeight;
 	
 	
-	private ArrayList<FloatingObject> mFloatingObjects = new ArrayList<FloatingObject>();
+	private ArrayList<FloatingObject> mFloatingObjects;
 	public static Tile[][] mTiles;
 //	public Currents currents;
 
@@ -57,6 +65,7 @@ public class EnvironmentData {
 //		currents = new Currents(this);
 //		currents.initialize();
 		mFoodX = -1; mFoodY = -1;
+		mFloatingObjects = new ArrayList<FloatingObject>();
 	}
 	
 	public void setSize(int width, int height) {
@@ -142,7 +151,8 @@ public class EnvironmentData {
 //		Tile.initBuffers();
 	}
 //
-	public void addFloatingObject(FloatingObject floatingObject) {
+	public void addFloatingObject(FloatingObject floatingObject, int graphicKey) {
+		floatingObject.setGraphic(graphicKey);
 		mFloatingObjects.add(floatingObject);
 		
 	}
@@ -173,11 +183,11 @@ public class EnvironmentData {
 		}
 	}
 
-	public void makeAlgae() {
+	public void makeAlgae(int textureDataHandle) {
 		float algaeX, algaeY;
 		for (int i = 0; i < ALGAE_NUM; ++i) {
 			algaeX = AlGAE_HARDCODED_POS[i*2]; algaeY = AlGAE_HARDCODED_POS[i*2+1];
-			mFloatingObjects.add(new Algae(algaeX, algaeY));
+			mFloatingObjects.add(new Algae(algaeX, algaeY, textureDataHandle));
 //			addFloatingObject(
 //					new FloatingObject(D3GLES20.newDefaultCircle(ALGAE_SIZE, algaeColor, ALGAE_DETAILS), algaeX, algaeY, Type.ALGAE));
 		}
@@ -189,5 +199,11 @@ public class EnvironmentData {
 			log += fo.getType() + " " + fo.getKey() + " ";
 		}
 		Log.v(TAG, log);
+	}
+
+	public void updateFloatingObjects() {
+		for (FloatingObject fo: mFloatingObjects) {
+			fo.update();
+		}
 	}
 }

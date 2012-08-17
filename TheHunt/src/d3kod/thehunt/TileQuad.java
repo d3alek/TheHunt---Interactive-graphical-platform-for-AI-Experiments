@@ -54,7 +54,7 @@ public class TileQuad extends D3Quad {
 		
         super.setModelMatrix(mMMatrix);
         if (showTiles) super.draw(mVMatrix, mProjMatrix);
-        else super.setProgram();
+        else super.useProgram();
         
 		if (showCurrents) {
         	currentBuffer.position(0);

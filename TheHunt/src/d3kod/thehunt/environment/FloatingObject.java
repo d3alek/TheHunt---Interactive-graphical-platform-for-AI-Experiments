@@ -1,26 +1,38 @@
 package d3kod.thehunt.environment;
 
+import android.util.Log;
 import d3kod.d3gles20.D3GLES20;
-import android.opengl.Matrix;
 
 class FloatingObject {
 
 	public enum Type {
 		FOOD, ALGAE;
 	}
+
+	private static final String TAG = "FloatingObject";
 	
 	private int mKey;
 	Type mType;
 	private float mX;
 	private float mY;
-
-	public FloatingObject(int key, float x, float y, Type type) {
-		mKey = key; 
+	private boolean mGraphicSet = false;
+	
+	
+	public FloatingObject(float x, float y, Type type) {
 		mType = type;
-		D3GLES20.setShapePosition(key, x, y);
 		mX = x; mY = y;
 	}
+	
+	public void setGraphic(int key) {
+		mGraphicSet = true;
+		mKey = key;
+		D3GLES20.setShapePosition(key, mX, mY);
+	}
 
+	public void update() {
+		
+	}
+	
 	public int getKey() {
 		return mKey;
 	}
@@ -37,6 +49,7 @@ class FloatingObject {
 	}
 
 	public void clearGraphic() {
+		if (!mGraphicSet) Log.v(TAG, "Graphic not set, can't clear!");
 		D3GLES20.removeShape(mKey);		
 	}
 	

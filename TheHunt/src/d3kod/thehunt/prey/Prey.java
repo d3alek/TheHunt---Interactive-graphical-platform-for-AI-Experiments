@@ -664,6 +664,7 @@ public class Prey {
 		calcPosHead();
 		mWorldModel.update(mSensor.sense(mD.mPosHeadX, mD.mPosHeadY, mD.mPosX, mD.mPosY));
 		mWorldModel.recalcNearestFood();
+//		mWorldModel.recalcNearestAlgae();
 	}
 
 	private void randomizePos() {

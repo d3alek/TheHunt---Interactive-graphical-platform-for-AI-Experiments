@@ -64,4 +64,9 @@ class MyGLSurfaceView extends GLSurfaceView {
     	mRenderer.resume();
     	super.onResume();
     }
+    @Override
+    public void onPause() {
+    	mRenderer.pause();
+    	super.onPause();
+    }
 }

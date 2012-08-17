@@ -4,8 +4,16 @@ import d3kod.d3gles20.D3GLES20;
 
 class Algae extends FloatingObject {
 
-	public Algae(float x, float y) {
-		super(D3GLES20.putShape(new D3Algae()), x, y, Type.ALGAE);
+	private D3Algae mGraphic;
+
+	public Algae(float x, float y, int textureDataHandle) {
+		super(x, y, Type.ALGAE);
+		mGraphic = new D3Algae(textureDataHandle);
+		setGraphic(D3GLES20.putShape(mGraphic));
+	}
+	
+	public void update() {
+//		mGraphic.wiggle();
 	}
 	
 }

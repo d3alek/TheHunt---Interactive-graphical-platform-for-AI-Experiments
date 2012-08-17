@@ -46,7 +46,7 @@ public class D3GLES20 {
 	
 //	ArrayList<D3Shape> shapes;
 	//private static ArrayList<D3Shape> shapes = new ArrayList<D3Shape>();
-	private static HashMap<Integer, D3Shape> shapes = new HashMap<Integer, D3Shape>();
+	private static HashMap<Integer, D3Shape> shapes;
 	private static int shapesNum = 0;
 	
 	public static int createProgram(int vertexShaderHandle, int fragmentShaderHandle) {
@@ -100,6 +100,41 @@ public class D3GLES20 {
 		return defFragmentShaderHandle;
 	}
 	
+	public static int loadShader(int type, String shaderCode){
+
+        // create a vertex shader type (GLES20.GL_VERTEX_SHADER)
+        // or a fragment shader type (GLES20.GL_FRAGMENT_SHADER)
+    	
+        int shaderHandle = GLES20.glCreateShader(type);
+         
+        if (shaderHandle != 0)
+        {
+            // Pass in the shader source.
+            GLES20.glShaderSource(shaderHandle, shaderCode);
+         
+            // Compile the shader.
+            GLES20.glCompileShader(shaderHandle);
+         
+            // Get the compilation status.
+            final int[] compileStatus = new int[1];
+            GLES20.glGetShaderiv(shaderHandle, GLES20.GL_COMPILE_STATUS, compileStatus, 0);
+         
+            // If the compilation failed, delete the shader.
+            if (compileStatus[0] == 0)
+            {
+                GLES20.glDeleteShader(shaderHandle);
+                shaderHandle = 0;
+            }
+        }
+        
+         
+        if (shaderHandle == 0)
+        {
+            throw new RuntimeException("Error creating vertex shader.");
+        }
+        return shaderHandle;
+    }
+	
 	public static int newDefaultQuad(float width, float height, float[] color) {
 		return putShape(new D3Quad(width, height, color, true));
 	}
@@ -111,6 +146,11 @@ public class D3GLES20 {
 //	public static int newPath(float[] beingBuiltColor) {
 //		return putShape(new D3Path(beingBuiltColor));
 //	}
+	
+	public static void init() {
+		shapes = new HashMap<Integer, D3Shape>();
+		shapesNum = 0;
+	}
 	
 	public static int putShape(D3Shape shape) {
 		while (shapes.containsKey(shapesNum)) {
@@ -131,8 +171,11 @@ public class D3GLES20 {
 	}
 	
 	public static void clean() {
+		GLES20.glDeleteShader(defVertexShaderHandle);
+		GLES20.glDeleteShader(defFragmentShaderHandle);
 		defVertexShaderHandle = -1;
 		defFragmentShaderHandle = -1;
+//		shapes.clear();
 	}
 
 	public static boolean rectContains(float rX, float rY,
@@ -243,41 +286,6 @@ public class D3GLES20 {
 		return new TempCircle(shapes.get(key).getCenterX(), shapes.get(key).getCenterY(), shapes.get(key).getRadius(), TEMP_CIRCLE_TICKS);
 //		return newTempCircle(shapes.get(key).getCenterX(), shapes.get(key).getCenterY(), shapes.get(key).getRadius());
 	}
-	
-	public static int loadShader(int type, String shaderCode){
-
-        // create a vertex shader type (GLES20.GL_VERTEX_SHADER)
-        // or a fragment shader type (GLES20.GL_FRAGMENT_SHADER)
-    	
-        int shaderHandle = GLES20.glCreateShader(type);
-         
-        if (shaderHandle != 0)
-        {
-            // Pass in the shader source.
-            GLES20.glShaderSource(shaderHandle, shaderCode);
-         
-            // Compile the shader.
-            GLES20.glCompileShader(shaderHandle);
-         
-            // Get the compilation status.
-            final int[] compileStatus = new int[1];
-            GLES20.glGetShaderiv(shaderHandle, GLES20.GL_COMPILE_STATUS, compileStatus, 0);
-         
-            // If the compilation failed, delete the shader.
-            if (compileStatus[0] == 0)
-            {
-                GLES20.glDeleteShader(shaderHandle);
-                shaderHandle = 0;
-            }
-        }
-        
-         
-        if (shaderHandle == 0)
-        {
-            throw new RuntimeException("Error creating vertex shader.");
-        }
-        return shaderHandle;
-    }
 
 	public static float angleBetweenVectors(float x1, float y1, float x2, float y2, float len1, float len2) {
 		return (float) Math.toDegrees(Math.acos((x1*x2 + y1*y2)/(len1*len2)));
@@ -299,5 +307,11 @@ public class D3GLES20 {
 	public static void setShapePosition(int key, float x,
 			float y) {
 		shapes.get(key).setPosition(x, y);
+	}
+
+	public static void clearGraphics() {
+		// TODO Auto-generated method stub
+		shapes.clear();
+		shapes = null;
 	}
 }

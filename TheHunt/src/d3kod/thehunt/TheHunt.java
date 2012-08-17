@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.Window;
 import android.widget.TextView;
 import android.widget.ToggleButton;
+import d3kod.d3gles20.D3GLES20;
 import d3kod.thehunt.prey.Prey;
 import d3kod.thehunt.prey.PreyData;
 import d3kod.thehunt.prey.TurnAngle;
@@ -41,11 +42,12 @@ public class TheHunt extends Activity {
         mCaughtCounter = (TextView)findViewById(R.id.caughtCounter);
 
         mGLView = (MyGLSurfaceView)findViewById(R.id.glSurfaceView);
+        D3GLES20.init();
     }
     
     @Override
     protected void onPause() {
-    	Log.v(TAG, "Pausing activity");
+//    	Log.v(TAG, "Pausing activity");
     	mGLView.onPause();
     	super.onPause();
     }
@@ -64,6 +66,12 @@ public class TheHunt extends Activity {
     	
     	mGLView.onResume();
     	super.onResume();
+    }
+    
+    @Override
+    protected void onStop() {
+    	D3GLES20.clearGraphics();
+    	super.onStop();
     }
     
     public void onToggleClicked(View view) {
