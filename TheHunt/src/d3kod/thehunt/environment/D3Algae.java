@@ -41,7 +41,7 @@ public class D3Algae extends D3Shape {
 			+ "void main()                    \n"     // The entry point for our fragment shader.
 			+ "{                              \n"
 			+ "   gl_FragColor = u_Color  \n"   
-			+  "      * texture2D(u_Texture, v_TexCoordinate) + 0.2;\n"     // Pass the color directly through the pipeline.
+			+  "      * texture2D(u_Texture, v_TexCoordinate) + 0.3;\n"     // Pass the color directly through the pipeline.
 			+ "}                             \n";
 	
 	private static final String TAG = "D3Algae";
@@ -113,6 +113,12 @@ public class D3Algae extends D3Shape {
 				1.0f, 1.0f, 0f,
 				1.0f, -1.0f, 0f
 		};
+
+
+	private float textureSizeY;
+
+
+	private float textureSizeX;
 	
 	protected D3Algae(int textureDataHandle) {
 		super(algaeColor, GLES20.GL_TRIANGLE_FAN, false);
@@ -161,15 +167,22 @@ public class D3Algae extends D3Shape {
 	}
 	
 	private FloatBuffer[] makeVerticesBuffer() {
+		
+		float textureWidth = 128;
+		textureSizeX = textureWidth * EnvironmentData.mScreenWidth/EnvironmentData.realWidth;
+        float textureHeight = 128;
+		textureSizeY = textureHeight * EnvironmentData.mScreenHeight/EnvironmentData.realHeight;
+		Log.v(TAG, "Texture size: " + textureSizeX + " " + textureSizeY + " " + EnvironmentData.mScreenHeight + " " + EnvironmentData.realHeight);
+		
 		if (controlPointsData == null) {
-//			controPointsData = algaeControlPointsGenerator();
-			controlPointsData = toTwoDimCoordinateArray(D3GLES20.circleVerticesData(ALGAE_SIZE, controlPointsNum));
+			controlPointsData = algaeControlPointsGenerator();
+//			controlPointsData = toTwoDimCoordinateArray(D3GLES20.circleVerticesData(ALGAE_SIZE, controlPointsNum));
 			
 		}
 		
-//		int coordsPerPart = ALGAE_DETAILS_PER_PART*D3GLES20.COORDS_PER_VERTEX;
-		int coordsPerPart = controlPointsPerPart*D3GLES20.COORDS_PER_VERTEX;
-		int coordsPerPartTexture = controlPointsPerPart*mTextureCoordinateDataSize;
+		int coordsPerPart = ALGAE_DETAILS_PER_PART*D3GLES20.COORDS_PER_VERTEX;
+//		int coordsPerPart = controlPointsPerPart*D3GLES20.COORDS_PER_VERTEX;
+		int coordsPerPartTexture = ALGAE_DETAILS_PER_PART*mTextureCoordinateDataSize;
 		float[] verticesData = new float[coordsPerPart*curvePartsNum+2*D3GLES20.COORDS_PER_VERTEX]; 
 		verticesData[0] = verticesData[1] = verticesData[2] = 0; //+D3GLES20.COORDS_PER_VERTEX for the center
 		
@@ -181,16 +194,16 @@ public class D3Algae extends D3Shape {
 		int controlPointStart = 0;
 		int textureInd;
 		for (int i = 0; i < curvePartsNum; ++i) {
-//			curPart = D3GLES20.quadBezierCurveVertices(
-//					controlPointsData[controlPointStart], 
-//					controlPointsData[controlPointStart+1], 
-//					controlPointsData[controlPointStart+2], 
-//					controlPointsData[(controlPointStart+3)%controlPointsNum], ALGAE_DETAILS_STEP, 1f);
-			for (int j = 0, k = controlPointStart; j < controlPointsPerPart; ++j, ++k) {
-				curPart[j*D3GLES20.COORDS_PER_VERTEX] = controlPointsData[k%controlPointsNum][0];
-				curPart[j*D3GLES20.COORDS_PER_VERTEX+1] = controlPointsData[k%controlPointsNum][1];
-				curPart[j*D3GLES20.COORDS_PER_VERTEX+2] = controlPointsData[k%controlPointsNum][2];
-			}
+			curPart = D3GLES20.quadBezierCurveVertices(
+					controlPointsData[controlPointStart], 
+					controlPointsData[controlPointStart+1], 
+					controlPointsData[controlPointStart+2], 
+					controlPointsData[(controlPointStart+3)%controlPointsNum], ALGAE_DETAILS_STEP, 1f);
+//			for (int j = 0, k = controlPointStart; j < controlPointsPerPart; ++j, ++k) {
+//				curPart[j*D3GLES20.COORDS_PER_VERTEX] = controlPointsData[k%controlPointsNum][0];
+//				curPart[j*D3GLES20.COORDS_PER_VERTEX+1] = controlPointsData[k%controlPointsNum][1];
+//				curPart[j*D3GLES20.COORDS_PER_VERTEX+2] = controlPointsData[k%controlPointsNum][2];
+//			}
 			controlPointStart = controlPointStart+3;
 			textureInd = 0;
 			for (int j = 0; j < coordsPerPart; ++j) {
@@ -198,12 +211,12 @@ public class D3Algae extends D3Shape {
 				if (j%D3GLES20.COORDS_PER_VERTEX == 0) {
 					//X coordinate
 //					Log.v(TAG, j + " is X coordinate");
-					textureVertexData[i*coordsPerPartTexture + textureInd++ + mTextureCoordinateDataSize] = 0.5f*(1f + curPart[j]);
+					textureVertexData[i*coordsPerPartTexture + textureInd++ + mTextureCoordinateDataSize] = 0.5f*(2*ALGAE_SIZE + curPart[j]);//textureSizeX;
 				}
 				else if (j%D3GLES20.COORDS_PER_VERTEX == 1) {
 					//Y coordinate
 //					Log.v(TAG, j + " is Y coordinate");
-					textureVertexData[i*coordsPerPartTexture + textureInd++ + mTextureCoordinateDataSize] = 0.5f*(1f - curPart[j]);
+					textureVertexData[i*coordsPerPartTexture + textureInd++ + mTextureCoordinateDataSize] = 0.5f*(2*ALGAE_SIZE - curPart[j]);//textureSizeY;
 				}
 				else {
 					// should be 0
