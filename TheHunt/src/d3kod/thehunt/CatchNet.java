@@ -13,12 +13,14 @@ public class CatchNet {
 //	private int mGraphicIndex;
 
 	private static final String TAG = "CatchNet";
+	private static final float MIN_LENGTH = 0.1f;
 	
 	private boolean beingBuilt;
 	private boolean isBuilt;
 	private Prey mCaughtPrey;
 	private Environment mEnv;
 //	private boolean isInvalid;
+	private boolean notShown;
 
 	public CatchNet(Environment env) {
 		mEnv = env;
@@ -50,6 +52,7 @@ public class CatchNet {
 //		beingBuilt = true;
 //		isBuilt = false;
 //		isInvalid = false;
+		notShown = false;
 		
 		mGraphic = new D3CatchNet(); //beingBuiltColor
 		mGraphicIndex = D3GLES20.putShape(mGraphic);
@@ -71,7 +74,15 @@ public class CatchNet {
 		if (mGraphic == null || mGraphic.isInvalid() || mGraphic.isFinished()) return;
 //		Log.v(TAG, "Finishing " + x + " " + y);
 		if (mGraphic.isCloseEnoughToStart(x, y)) {
-			mGraphic.setFinished();
+//			Log.v(TAG, "Net lenght is " + mGraphic.getLength());
+			if (mGraphic.getLength() < MIN_LENGTH) {
+				// assume food placement was meant
+				mGraphic = null;
+				D3GLES20.removeShape(mGraphicIndex);
+				notShown = true;
+				return;
+			}
+			else mGraphic.setFinished();
 		}
 		else {
 			mGraphic.setInvalid();
@@ -94,4 +105,8 @@ public class CatchNet {
 		return mGraphic != null && mGraphic.fadeDone();
 	}
 
+	public boolean notShown() {
+		return notShown;
+	}
+	
 }

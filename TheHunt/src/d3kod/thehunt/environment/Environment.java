@@ -28,7 +28,7 @@ public class Environment {
 	}
 	
 	public void initGraphics(Context context) {
-		mTextureDataHandle = TextureHelper.loadTexture(context, R.drawable.crosshatching);
+		mTextureDataHandle = TextureHelper.loadTexture(context, R.drawable.hatching_cross);
 		data.makeAlgae(mTextureDataHandle);
 		Tile.initBuffers();
 		

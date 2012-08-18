@@ -57,7 +57,7 @@ public class TheHunt extends Activity {
     	Log.v(TAG, "Resuming activity");
     	
     	((ToggleButton)findViewById(R.id.aiToggle)).setChecked(PreyData.AI);
-    	((ToggleButton)findViewById(R.id.foodToggle)).setChecked(TheHuntRenderer.FEED_WITH_TOUCH);
+//    	((ToggleButton)findViewById(R.id.foodToggle)).setChecked(TheHuntRenderer.FEED_WITH_TOUCH);
 //    	((ToggleButton)findViewById(R.id.netToggle)).setChecked(TheHuntRenderer.NET_WITH_TOUCH);
     	if (mBodyBendDelay != null) mBodyBendDelay.setText(PreyData.BODY_BENDS_PER_SECOND+"");
     	if (mActionDelay != null) mActionDelay.setText(PreyData.ACTIONS_PER_SECOND+"");
@@ -81,10 +81,10 @@ public class TheHunt extends Activity {
     	case R.id.aiToggle:
     		PreyData.AI = checked;
     		break;
-    	case R.id.foodToggle:
-    		TheHuntRenderer.FEED_WITH_TOUCH = checked;
-    		TheHuntRenderer.NET_WITH_TOUCH = !checked;
-    		break;
+//    	case R.id.foodToggle:
+//    		TheHuntRenderer.FEED_WITH_TOUCH = checked;
+//    		TheHuntRenderer.NET_WITH_TOUCH = !checked;
+//    		break;
 //    	case R.id.netToggle:
 //    		TheHuntRenderer.NET_WITH_TOUCH = checked;
 //    	case R.id.angleInterpolationToggle:

@@ -9,12 +9,13 @@ public class D3Path extends D3Shape {
 
 	private static final String TAG = "D3Path";
 	private static final int drawType = GLES20.GL_LINE_STRIP;
-
 	
 	protected ArrayList<Float> mVertexData = new ArrayList<Float>();
+	private float mLength;
 	
 	public D3Path(float[] beingBuiltColor) {
 		super(null, beingBuiltColor, drawType, true);
+		mLength = 0;
 	}
 
 	public void makeVertexBuffer() {
@@ -48,8 +49,16 @@ public class D3Path extends D3Shape {
 	}
 	
 	public void addVertex(float x, float y) {
+		int lastXIndex = mVertexData.size()-3, lastYIndex = lastXIndex+1;
+		if (lastYIndex > 0) {
+			mLength += D3GLES20.distance(x, y, mVertexData.get(lastXIndex), mVertexData.get(lastYIndex));
+		}
+		
 		mVertexData.add(x);
 		mVertexData.add(y);
 		mVertexData.add(0f);
+	}
+	public float getLength() {		
+		return mLength;
 	}
 }

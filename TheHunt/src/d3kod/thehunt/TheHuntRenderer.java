@@ -201,28 +201,32 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 	public void handleTouchDown(float x, float y) {
 		x = D3GLES20.fromWorldWidth(x);
 		y = D3GLES20.fromWorldHeight(y);
-		if (FEED_WITH_TOUCH) {
-			mEnv.putFood(x, y);
-		}
-		else if (NET_WITH_TOUCH) {
+//		if (FEED_WITH_TOUCH) {
+//			mEnv.putFood(x, y);
+//		}
+//		if (NET_WITH_TOUCH) {
 			mNet.start(x, y);
-		}
+//		}
 	}
 
 	public void handleTouchMove(float x, float y) {
 		x = D3GLES20.fromWorldWidth(x);
 		y = D3GLES20.fromWorldHeight(y);
-		if (NET_WITH_TOUCH) {
+//		if (NET_WITH_TOUCH) {
 			mNet.next(x, y);
-		}
+//		}
 	}
 
 	public void handleTouchUp(float x, float y) {
 		x = D3GLES20.fromWorldWidth(x);
 		y = D3GLES20.fromWorldHeight(y);
-		if (NET_WITH_TOUCH) {
-			mNet.finish(x, y);
+//		if (NET_WITH_TOUCH) {
+		mNet.finish(x, y);
+		if (mNet.notShown()) {
+			mEnv.putFood(x, y);
 		}
+//			if (!mNet.isBuilt())
+//		}
 	}
 
 	public void pause() {
