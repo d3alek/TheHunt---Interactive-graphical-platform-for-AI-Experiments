@@ -24,6 +24,7 @@ public class D3Path extends D3Shape {
 		for (int i = 0; i < mVertexData.size(); ++i) {
 			vertexData[i] = mVertexData.get(i);
 		}
+//		Log.v(TAG, "Setting vertex buffer");
 		super.setVertexBuffer(D3GLES20.newFloatBuffer(vertexData));
 	}
 

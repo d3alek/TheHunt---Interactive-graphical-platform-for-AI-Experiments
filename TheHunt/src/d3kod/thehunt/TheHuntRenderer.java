@@ -1,5 +1,7 @@
 package d3kod.thehunt;
 
+import java.util.HashMap;
+
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
@@ -11,6 +13,7 @@ import android.opengl.GLSurfaceView;
 import android.opengl.Matrix;
 import android.util.Log;
 import d3kod.d3gles20.D3GLES20;
+import d3kod.d3gles20.D3Shape;
 import d3kod.d3gles20.TempCircle;
 import d3kod.thehunt.environment.Environment;
 import d3kod.thehunt.environment.EnvironmentData;
@@ -47,6 +50,7 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 	private int mCaughtCounter;
 	private TempCircle tempCircle;
 	private boolean mGraphicsInitialized = false;
+	private HashMap<Integer, D3Shape> mShapes;
 	public static float[] bgColor = {
 			0.8f, 0.8f, 0.8f, 1.0f};
 
@@ -63,23 +67,7 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 	    mNet = null;
 	    mCaughtCounter = 0;
 //	    mManuControl.setSize();
-		
-	}
-	
-	public void resume() {
-		next_game_tick = System.currentTimeMillis();
-		mslf = next_game_tick;
-		smoothMspf = 0;
-		smoothingCount = 0;
-		((TheHunt) mContext).runOnUiThread(new Runnable() {
-			public void run() {
-				((TheHunt) mContext).mCaughtCounter.setText(mCaughtCounter + "");
-			}
-		});
-	}
-	
-	public void release() {
-		// TODO stuff to release	
+	    mShapes = null;
 	}
 
 	/**
@@ -232,5 +220,29 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 	public void pause() {
 //		mEnv.clean();
     	D3GLES20.clean();
+    	//TODO: use sparseArray
+    	mShapes = new HashMap<Integer, D3Shape>();
+    	mShapes.putAll(D3GLES20.getShapes());
+    	D3GLES20.clearGraphics();
+	}
+	public void resume() {
+		next_game_tick = System.currentTimeMillis();
+		mslf = next_game_tick;
+		smoothMspf = 0;
+		smoothingCount = 0;
+		((TheHunt) mContext).runOnUiThread(new Runnable() {
+			public void run() {
+				((TheHunt) mContext).mCaughtCounter.setText(mCaughtCounter + "");
+			}
+		});
+		D3GLES20.init();
+		if (mShapes != null) {
+			D3GLES20.setShapes(mShapes);
+			mShapes = null;
+		}
+	}
+	
+	public void release() {
+		// TODO stuff to release	
 	}
 }

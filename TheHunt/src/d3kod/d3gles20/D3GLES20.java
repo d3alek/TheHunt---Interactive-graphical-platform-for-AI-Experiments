@@ -169,14 +169,6 @@ public class D3GLES20 {
 	public static void removeShape(int key) {
 		shapes.remove(key);
 	}
-	
-	public static void clean() {
-		GLES20.glDeleteShader(defVertexShaderHandle);
-		GLES20.glDeleteShader(defFragmentShaderHandle);
-		defVertexShaderHandle = -1;
-		defFragmentShaderHandle = -1;
-//		shapes.clear();
-	}
 
 	public static boolean rectContains(float rX, float rY,
 			float rWidth, float rHeight, float x, float y) {
@@ -299,6 +291,10 @@ public class D3GLES20 {
 
 	public static void drawAll(float[] mVMatrix, float[] mProjMatrix,
 			float interpolation) {
+		if (shapes == null) {
+			Log.v(TAG, "Shapes are null!");
+			return;
+		}
 		for (D3Shape shape: shapes.values()) {
 			shape.draw(mVMatrix, mProjMatrix);
 		}
@@ -313,5 +309,21 @@ public class D3GLES20 {
 		// TODO Auto-generated method stub
 		shapes.clear();
 		shapes = null;
+	}
+	public static void clean() {
+		GLES20.glDeleteShader(defVertexShaderHandle);
+		GLES20.glDeleteShader(defFragmentShaderHandle);
+		defVertexShaderHandle = -1;
+		defFragmentShaderHandle = -1;
+//		shapes.clear();
+	}
+
+	public static HashMap<Integer, D3Shape> getShapes() {
+		return shapes;
+	}
+
+	public static void setShapes(HashMap<Integer, D3Shape> savedShapes) {
+		shapes.clear(); // maybe unnecessary
+		shapes.putAll(savedShapes);
 	}
 }

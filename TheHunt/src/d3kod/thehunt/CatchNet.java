@@ -72,9 +72,7 @@ public class CatchNet {
 
 	public void finish(float x, float y) {
 		if (mGraphic == null || mGraphic.isInvalid() || mGraphic.isFinished()) return;
-//		Log.v(TAG, "Finishing " + x + " " + y);
 		if (mGraphic.isCloseEnoughToStart(x, y)) {
-//			Log.v(TAG, "Net lenght is " + mGraphic.getLength());
 			if (mGraphic.getLength() < MIN_LENGTH) {
 				// assume food placement was meant
 				mGraphic = null;
