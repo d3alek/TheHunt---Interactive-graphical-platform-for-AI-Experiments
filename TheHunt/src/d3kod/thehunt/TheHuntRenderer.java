@@ -12,6 +12,7 @@ import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 import android.opengl.Matrix;
 import android.util.Log;
+import android.util.SparseArray;
 import d3kod.d3gles20.D3GLES20;
 import d3kod.d3gles20.shapes.D3Shape;
 import d3kod.d3gles20.shapes.D3TempCircle;
@@ -50,7 +51,7 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 	private int mCaughtCounter;
 	private D3TempCircle tempCircle;
 	private boolean mGraphicsInitialized = false;
-	private HashMap<Integer, D3Shape> mShapes;
+	private SparseArray<D3Shape> mShapes;
 	public static float[] bgColor = {
 			0.8f, 0.8f, 0.8f, 1.0f};
 
@@ -221,8 +222,14 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 //		mEnv.clean();
     	D3GLES20.clean();
     	//TODO: use sparseArray
-    	mShapes = new HashMap<Integer, D3Shape>();
-    	mShapes.putAll(D3GLES20.getShapes());
+    	mShapes = D3GLES20.getShapes();
+//    	mShapes.putAll(D3GLES20.getShapes());
+//		int key = 0;
+//		for(int i = 0; i < savedShapes.size(); i++) {
+//		   key = savedShapes.keyAt(i);
+//		   D3Shape shape = savedShapes.valueAt(i);
+//		   shapes.put(key, shape);
+//		}
     	D3GLES20.clearGraphics();
 	}
 	public void resume() {
