@@ -9,7 +9,6 @@ import d3kod.d3gles20.shapes.D3TempCircle;
 
 import android.opengl.GLES20;
 import android.util.Log;
-import android.util.SparseArray;
 
 public class D3GLES20 {
 	public static final int COORDS_PER_VERTEX = 3;
@@ -41,12 +40,11 @@ public class D3GLES20 {
 	private static int defVertexShaderHandle = -1;
 	private static int defFragmentShaderHandle = -1;
 	
-//	private static HashMap<Integer, D3Shape> shapes;
-	private static SparseArray<D3Shape> shapes;
+	private static HashMap<Integer, D3Shape> shapes;
 	private static int shapesNum = 0;
 	
 	public static void init() {
-		shapes = new SparseArray<D3Shape>();
+		shapes = new HashMap<Integer, D3Shape>();
 		shapesNum = 0;
 	}
 
@@ -61,19 +59,13 @@ public class D3GLES20 {
 			Log.v(TAG, "Shapes are null!");
 			return;
 		}
-//		for (D3Shape shape: shapes.) {
-//			shape.draw(mVMatrix, mProjMatrix);
-//		}
-		int key = 0;
-		for(int i = 0; i < shapes.size(); i++) {
-		   key = shapes.keyAt(i);
-		   D3Shape shape = shapes.valueAt(i);
-		   shape.draw(mVMatrix, mProjMatrix);
+		for (D3Shape shape: shapes.values()) {
+			shape.draw(mVMatrix, mProjMatrix);
 		}
 	}
 	
 	public static int putShape(D3Shape shape) {
-		while (shapes.indexOfKey(shapesNum)>0) {
+		while (shapes.containsKey(shapesNum)) {
 			shapesNum++;
 		}
 		shapes.put(shapesNum, shape);
@@ -100,20 +92,13 @@ public class D3GLES20 {
 		defFragmentShaderHandle = -1;
 	}
 
-	public static SparseArray<D3Shape> getShapes() {
-		return shapes.clone();
+	public static HashMap<Integer, D3Shape> getShapes() {
+		return shapes;
 	}
 
-	public static void setShapes(SparseArray<D3Shape> savedShapes) {
+	public static void setShapes(HashMap<Integer, D3Shape> savedShapes) {
 		shapes.clear(); // maybe unnecessary
-//		shapes.putAll(savedShapes);
-		int key = 0;
-		for(int i = 0; i < savedShapes.size(); i++) {
-		   key = savedShapes.keyAt(i);
-		   D3Shape shape = savedShapes.valueAt(i);
-		   shapes.put(key, shape);
-		}
-		
+		shapes.putAll(savedShapes);
 	}
 	
 	public static boolean contains(int key, float hX, float hY) {
