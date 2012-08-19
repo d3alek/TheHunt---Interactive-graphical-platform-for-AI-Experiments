@@ -8,6 +8,8 @@ import android.opengl.Matrix;
 import android.util.FloatMath;
 import android.util.Log;
 import d3kod.d3gles20.D3GLES20;
+import d3kod.d3gles20.D3Maths;
+import d3kod.d3gles20.Utilities;
 import d3kod.thehunt.TheHuntRenderer;
 import d3kod.thehunt.environment.Environment;
 import d3kod.thehunt.environment.EnvironmentData;
@@ -346,7 +348,7 @@ public class Prey {
 		mD.headVerticesData = calcHeadVerticesData();
 		mD.leftFinVerticesData = calcLeftFinVerticesData();
 		mD.rightFinVerticesData = calcRightFinVerticesData();
-		mD.eyeVertexData = D3GLES20.circleVerticesData(mD.eyeSize, mD.eyeDetailsLevel);
+		mD.eyeVertexData = D3Maths.circleVerticesData(mD.eyeSize, mD.eyeDetailsLevel);
 		mD.ribVerticesData = caclRibVerticesData();
 		
 		mD.finVerticesNum = mD.rightFinVerticesData.length / D3GLES20.COORDS_PER_VERTEX;
@@ -361,26 +363,26 @@ public class Prey {
 	}
 	
 	private float[] caclRibVerticesData() {
-		return D3GLES20.quadBezierCurveVertices(
+		return D3Maths.quadBezierCurveVertices(
 				mD.ribA, mD.ribB, mD.ribC, mD.ribD, mD.detailsStep, mD.ribSize);
 	}
 
 	private float[] calcRightFinVerticesData() {
-		return D3GLES20.quadBezierCurveVertices(
+		return D3Maths.quadBezierCurveVertices(
 				mD.rightFinStart, mD.rightFinB, mD.rightFinC, mD.rightFinEnd, mD.detailsStep, mD.finSize);
 	}
 
 	private float[] calcLeftFinVerticesData() {
-		return D3GLES20.quadBezierCurveVertices(
+		return D3Maths.quadBezierCurveVertices(
 				mD.leftFinStart, mD.leftFinB, mD.leftFinC, mD.leftFinEnd, mD.detailsStep, mD.finSize);
 	}
 
 	private float[] calcHeadVerticesData() {
-		float[] part1 = D3GLES20.quadBezierCurveVertices(
+		float[] part1 = D3Maths.quadBezierCurveVertices(
 				mD.headPart1Start, mD.headPart1B, mD.headPart1C, mD.headPart2Start, mD.detailsStep, mD.headSize);
-		float[] part2 = D3GLES20.quadBezierCurveVertices(
+		float[] part2 = D3Maths.quadBezierCurveVertices(
 				mD.headPart2Start, mD.headPart2B, mD.headPart2C, mD.headPart3Start, mD.detailsStep, mD.headSize);
-		float[] part3 = D3GLES20.quadBezierCurveVertices(
+		float[] part3 = D3Maths.quadBezierCurveVertices(
 				mD.headPart3Start, mD.headPart3B, mD.headPart3C, mD.headPart1Start, mD.detailsStep, mD.headSize);
 		float[] headVerticesData = new float[part1.length + part2.length + part3.length];
 		for (int i = 0; i < part1.length; ++i) {
@@ -397,16 +399,16 @@ public class Prey {
 	}
 
 	public void initGraphics() {
-		mD.leftFinVertexBuffer = D3GLES20.newFloatBuffer(mD.leftFinVerticesData);
-		mD.rightFinVertexBuffer = D3GLES20.newFloatBuffer(mD.rightFinVerticesData);
-		mD.headVertexBuffer = D3GLES20.newFloatBuffer(mD.headVerticesData);
-		mD.eyeVertexBuffer = D3GLES20.newFloatBuffer(mD.eyeVertexData);
-		mD.ribVertexBuffer = D3GLES20.newFloatBuffer(mD.ribVerticesData);
+		mD.leftFinVertexBuffer = Utilities.newFloatBuffer(mD.leftFinVerticesData);
+		mD.rightFinVertexBuffer = Utilities.newFloatBuffer(mD.rightFinVerticesData);
+		mD.headVertexBuffer = Utilities.newFloatBuffer(mD.headVerticesData);
+		mD.eyeVertexBuffer = Utilities.newFloatBuffer(mD.eyeVertexData);
+		mD.ribVertexBuffer = Utilities.newFloatBuffer(mD.ribVerticesData);
 		
-		int vertexShaderHandle = D3GLES20.loadShader(GLES20.GL_VERTEX_SHADER, mD.vertexShaderCode);
-        int fragmentShaderHandle = D3GLES20.loadShader(GLES20.GL_FRAGMENT_SHADER, mD.fragmentShaderCode);
+		int vertexShaderHandle = Utilities.loadShader(GLES20.GL_VERTEX_SHADER, mD.vertexShaderCode);
+        int fragmentShaderHandle = Utilities.loadShader(GLES20.GL_FRAGMENT_SHADER, mD.fragmentShaderCode);
         
-        mD.mProgram = D3GLES20.createProgram(vertexShaderHandle, fragmentShaderHandle);
+        mD.mProgram = Utilities.createProgram(vertexShaderHandle, fragmentShaderHandle);
         
         mD.mMVPMatrixHandle = GLES20.glGetUniformLocation(mD.mProgram, "u_MVPMatrix"); 
         mD.mPositionHandle = GLES20.glGetAttribLocation(mD.mProgram, "a_Position");
@@ -586,7 +588,7 @@ public class Prey {
 	
 	private boolean colorIsBgColor() {
 		for (int i = 0; i < 3; ++i) {
-			if (D3GLES20.compareFloats(mD.preyColor[i], TheHuntRenderer.bgColor[i]) != 0) {
+			if (D3Maths.compareFloats(mD.preyColor[i], TheHuntRenderer.bgColor[i]) != 0) {
 				return false;
 			}
 		}
@@ -604,13 +606,13 @@ public class Prey {
 		Matrix.multiplyMV(mD.bodyBRot, 0, mD.mBodyBRMatrix, 0, mD.bodyB4, 0);
 		Matrix.multiplyMV(mD.bodyCRot, 0, mD.mBodyCRMatrix, 0, mD.bodyC4, 0);
 		Matrix.multiplyMV(mD.bodyEndRot, 0, mD.mBodyEndRMatrix, 0, mD.bodyEnd4, 0);
-		mD.bodyVerticesData = D3GLES20.quadBezierCurveVertices(mD.bodyStartRot, mD.bodyBRot, mD.bodyCRot, mD.bodyEndRot, mD.detailsStep, mD.bodyLength);
+		mD.bodyVerticesData = D3Maths.quadBezierCurveVertices(mD.bodyStartRot, mD.bodyBRot, mD.bodyCRot, mD.bodyEndRot, mD.detailsStep, mD.bodyLength);
 		mD.bodyVerticesNum = mD.bodyVerticesData.length/D3GLES20.COORDS_PER_VERTEX;
-		mD.bodyVertexBuffer = D3GLES20.newFloatBuffer(mD.bodyVerticesData);
+		mD.bodyVertexBuffer = Utilities.newFloatBuffer(mD.bodyVerticesData);
 	}
 
 	public PointF getWorldPosition() {
-		return new PointF(D3GLES20.toWorldWidth(mD.mPosX), D3GLES20.toWorldHeight(mD.mPosY));
+		return new PointF(EnvironmentData.toWorldWidth(mD.mPosX), EnvironmentData.toWorldHeight(mD.mPosY));
 	}
 
 	public PointF getPosition() {

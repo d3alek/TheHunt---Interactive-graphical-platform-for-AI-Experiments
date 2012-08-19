@@ -10,7 +10,7 @@ import android.util.Log;
 
 abstract public class D3Shape {
 	private int VERTICES_NUM;
-	protected static final int STRIDE_BYTES = D3GLES20.COORDS_PER_VERTEX * D3GLES20.BYTES_PER_FLOAT;
+	protected static final int STRIDE_BYTES = D3GLES20.COORDS_PER_VERTEX * Utilities.BYTES_PER_FLOAT;
 	private static final String TAG = "D3Shape";
 	private float[] color = new float[4];
 	private int mProgram;
@@ -46,7 +46,7 @@ abstract public class D3Shape {
         
 		if (useDefaultShaders) {
 			customProgram = false;
-			mProgram = D3GLES20.createProgram(D3GLES20.defaultVertexShader(), D3GLES20.defaultFragmentShader());
+			mProgram = Utilities.createProgram(D3GLES20.defaultVertexShader(), D3GLES20.defaultFragmentShader());
 			mMVPMatrixHandle = GLES20.glGetUniformLocation(mProgram, "u_MVPMatrix"); 
 	        mPositionHandle = GLES20.glGetAttribLocation(mProgram, "a_Position");
 	        mColorHandle = GLES20.glGetUniformLocation(mProgram, "u_Color");
@@ -129,7 +129,7 @@ abstract public class D3Shape {
 	}
 	public boolean fadeDone() {
 		for (int i = 0; i < 3; ++i) {
-			if (D3GLES20.compareFloats(color[i], TheHuntRenderer.bgColor[i]) != 0) {
+			if (D3Maths.compareFloats(color[i], TheHuntRenderer.bgColor[i]) != 0) {
 				return false;
 			}
 		}
@@ -138,7 +138,7 @@ abstract public class D3Shape {
 
 	public void fade() {
 		for (int i = 0; i < color.length; ++i) {
-			int compare = D3GLES20.compareFloats(color[i], TheHuntRenderer.bgColor[i]);
+			int compare = D3Maths.compareFloats(color[i], TheHuntRenderer.bgColor[i]);
 			if (compare < 0) color[i] += FADE_SPEED;
 			else if (compare > 0) color[i] -= FADE_SPEED;
 		}

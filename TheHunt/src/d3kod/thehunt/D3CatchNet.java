@@ -4,7 +4,9 @@ import android.opengl.GLES20;
 import android.opengl.Matrix;
 import android.util.Log;
 import d3kod.d3gles20.D3GLES20;
+import d3kod.d3gles20.D3Maths;
 import d3kod.d3gles20.D3Path;
+import d3kod.d3gles20.Utilities;
 
 public class D3CatchNet extends D3Path {
 	
@@ -74,14 +76,14 @@ public class D3CatchNet extends D3Path {
 	}
 	
 	boolean isCloseEnoughToStart(float x, float y) {
-		return (D3GLES20.distance(
+		return (D3Maths.distance(
 				mVertexData.get(0), mVertexData.get(1), x, y)
 					< DISTANCE_FINISH_ENOUGH);
 	}
 
 	public boolean isFarEnoughFromLast(float x, float y) {
 		int lastYIndex = mVertexData.size() - 2, lastXIndex = lastYIndex - 1;
-		return (D3GLES20.distance(
+		return (D3Maths.distance(
 				mVertexData.get(lastXIndex), mVertexData.get(lastYIndex), x, y) 
 					> DISTANCE_FAR_ENOUGH);
 	}
@@ -139,14 +141,14 @@ public class D3CatchNet extends D3Path {
 		
 		for (int i = 0; i < verticesNum; ++i) {
 			vertexInd = i*D3GLES20.COORDS_PER_VERTEX;
-			minRadius = D3GLES20.distance(mCenterX, mCenterY, mVertexData.get(vertexInd), mVertexData.get(vertexInd+1));
+			minRadius = D3Maths.distance(mCenterX, mCenterY, mVertexData.get(vertexInd), mVertexData.get(vertexInd+1));
 			if (minRadius > mRadius) {
 				mRadius = minRadius;
 			}
 		}
 		
 		float[] center = {mCenterX, mCenterY, 0};
-		super.setVertexBuffer(D3GLES20.newFloatBuffer(D3GLES20.circleVerticesData(mRadius, CLOSED_SHAPE_VERTICES_NUM)));
+		super.setVertexBuffer(Utilities.newFloatBuffer(D3Maths.circleVerticesData(mRadius, CLOSED_SHAPE_VERTICES_NUM)));
 		mVertexData.clear();
 		mModelMatrix = new float[16];
 		Matrix.setIdentityM(mModelMatrix, 0);

@@ -25,7 +25,7 @@ public class D3Path extends D3Shape {
 			vertexData[i] = mVertexData.get(i);
 		}
 //		Log.v(TAG, "Setting vertex buffer");
-		super.setVertexBuffer(D3GLES20.newFloatBuffer(vertexData));
+		super.setVertexBuffer(Utilities.newFloatBuffer(vertexData));
 	}
 
 	@Override
@@ -52,7 +52,7 @@ public class D3Path extends D3Shape {
 	public void addVertex(float x, float y) {
 		int lastXIndex = mVertexData.size()-3, lastYIndex = lastXIndex+1;
 		if (lastYIndex > 0) {
-			mLength += D3GLES20.distance(x, y, mVertexData.get(lastXIndex), mVertexData.get(lastYIndex));
+			mLength += D3Maths.distance(x, y, mVertexData.get(lastXIndex), mVertexData.get(lastYIndex));
 		}
 		
 		mVertexData.add(x);

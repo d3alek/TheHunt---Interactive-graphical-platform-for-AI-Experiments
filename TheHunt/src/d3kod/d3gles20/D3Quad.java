@@ -25,7 +25,7 @@ public class D3Quad extends D3Shape {
 	
 	private static FloatBuffer makeVerticesBuffer(float width, float height, float[] verticesDefault) {
 		float[] quadVertices = new float[verticesNum * D3GLES20.COORDS_PER_VERTEX];
-		FloatBuffer buffer = ByteBuffer.allocateDirect(quadVertices.length * D3GLES20.BYTES_PER_FLOAT)
+		FloatBuffer buffer = ByteBuffer.allocateDirect(quadVertices.length * Utilities.BYTES_PER_FLOAT)
 				.order(ByteOrder.nativeOrder()).asFloatBuffer();
 		for (int i = 0; i < verticesNum; ++i) {
 			quadVertices[i*3] = verticesDefault[i * 3] * width;

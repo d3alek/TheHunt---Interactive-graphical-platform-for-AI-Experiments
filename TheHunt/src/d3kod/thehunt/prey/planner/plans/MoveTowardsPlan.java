@@ -1,7 +1,7 @@
 package d3kod.thehunt.prey.planner.plans;
 
 import android.util.Log;
-import d3kod.d3gles20.D3GLES20;
+import d3kod.d3gles20.D3Maths;
 import d3kod.thehunt.prey.Action;
 import d3kod.thehunt.prey.Prey;
 import d3kod.thehunt.prey.PreyData;
@@ -22,11 +22,11 @@ public class MoveTowardsPlan extends Plan {
 	public void update(WorldModel mWorldModel) {
 		float hX = mWorldModel.getHeadX(), hY = mWorldModel.getHeadY(),
 				bX = mWorldModel.getBodyX(), bY = mWorldModel.getBodyY();
-		float headFromTarget = D3GLES20.distance(hX, hY, tX, tY),
-				bodyFromTarget = D3GLES20.distance(bX, bY, tX, tY);
+		float headFromTarget = D3Maths.distance(hX, hY, tX, tY),
+				bodyFromTarget = D3Maths.distance(bX, bY, tX, tY);
 //				headFromBody = D3GLES20.distance(bX, bY, hX, hY);
-		float bht = D3GLES20.det(bX, bY, hX, hY, tX, tY);
-		float angleToTarget = D3GLES20.angleBetweenVectors(
+		float bht = D3Maths.det(bX, bY, hX, hY, tX, tY);
+		float angleToTarget = D3Maths.angleBetweenVectors(
 				bX - hX, bY - hY, //bodyToHead
 				bX - tX, bY - tY, //bodyToTarget
 				Prey.bodyToHeadLength, bodyFromTarget);

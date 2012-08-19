@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import android.graphics.PointF;
 import android.util.Log;
-import d3kod.d3gles20.D3GLES20;
+import d3kod.d3gles20.D3Maths;
 import d3kod.d3gles20.D3Shape;
 import d3kod.thehunt.environment.FloatingObject.Type;
 import d3kod.thehunt.events.Event;
@@ -175,7 +175,7 @@ public class EnvironmentData {
 		for (FloatingObject fo: mFloatingObjects) {
 			if (fo.getType() != Type.FOOD) continue;
 			float foX = fo.getX(), foY = fo.getY();
-			if (D3GLES20.rectContains(x, y, 0.2f, 0.2f, foX, foY)) {
+			if (D3Maths.rectContains(x, y, 0.2f, 0.2f, foX, foY)) {
 				fo.clearGraphic();
 				mFloatingObjects.remove(fo);
 				return;
@@ -205,5 +205,21 @@ public class EnvironmentData {
 		for (FloatingObject fo: mFloatingObjects) {
 			fo.update();
 		}
+	}
+
+	public static float toWorldHeight(float y) {
+		return -(y - mScreenHeight/2)*realHeight/mScreenHeight;
+	}
+
+	public static float toWorldWidth(float x) {
+		return (x + mScreenWidth/2)*realWidth/mScreenWidth;
+	}
+
+	public static float fromWorldHeight(float y) {;
+		return -mScreenHeight*(y/realHeight) + mScreenHeight/2;
+	}
+
+	public static float fromWorldWidth(float x) {
+		return mScreenWidth*(x/realWidth) - mScreenWidth/2;
 	}
 }

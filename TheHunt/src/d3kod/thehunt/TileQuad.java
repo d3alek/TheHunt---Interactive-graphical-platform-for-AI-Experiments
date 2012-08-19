@@ -9,6 +9,7 @@ import android.opengl.Matrix;
 import android.util.Log;
 import d3kod.d3gles20.D3GLES20;
 import d3kod.d3gles20.D3Quad;
+import d3kod.d3gles20.Utilities;
 import d3kod.thehunt.environment.EnvironmentData;
 import d3kod.thehunt.environment.EnvironmentData.Dir;
 
@@ -41,7 +42,7 @@ public class TileQuad extends D3Quad {
 			currentN[i*3] = currentNDefault[i*3] * width;
 			currentN[i*3+1] = currentNDefault[i*3+1] * height;
 		}
-		currentBuffer = ByteBuffer.allocateDirect(currentN.length * D3GLES20.BYTES_PER_FLOAT)
+		currentBuffer = ByteBuffer.allocateDirect(currentN.length * Utilities.BYTES_PER_FLOAT)
 				.order(ByteOrder.nativeOrder()).asFloatBuffer();
 		currentBuffer.put(currentN).position(0);
 	}

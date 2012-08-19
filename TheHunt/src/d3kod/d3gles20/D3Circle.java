@@ -14,7 +14,7 @@ public class D3Circle extends D3Shape {
 	}
 
 	private static FloatBuffer makeCircleVerticesBuffer(float r, int vertices) {
-		FloatBuffer buffer = D3GLES20.newFloatBuffer(D3GLES20.circleVerticesData(r, vertices));
+		FloatBuffer buffer = Utilities.newFloatBuffer(D3Maths.circleVerticesData(r, vertices));
 		return buffer;
 	}
 

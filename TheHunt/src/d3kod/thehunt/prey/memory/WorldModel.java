@@ -3,7 +3,7 @@ package d3kod.thehunt.prey.memory;
 import java.util.ArrayList;
 
 import android.util.Log;
-import d3kod.d3gles20.D3GLES20;
+import d3kod.d3gles20.D3Maths;
 import d3kod.thehunt.events.Event;
 import d3kod.thehunt.events.EventAlgae;
 import d3kod.thehunt.events.EventAt;
@@ -58,8 +58,8 @@ private static final float INF = 100;
 			float foodX = food.getFoodX();
 			float foodY = food.getFoodY();
 			if (!knowFoodLocation() ||
-					D3GLES20.distance(mHeadX, mHeadY, mNearestFood.getFoodX(), mNearestFood.getFoodY()) > 
-					D3GLES20.distance(mHeadX, mHeadY, foodX, foodY)) {
+					D3Maths.distance(mHeadX, mHeadY, mNearestFood.getFoodX(), mNearestFood.getFoodY()) > 
+					D3Maths.distance(mHeadX, mHeadY, foodX, foodY)) {
 				mNearestFood = food;
 				//TODO cache current food distance
 			}
@@ -125,8 +125,8 @@ private static final float INF = 100;
 				EventFood ef = (EventFood)e;
 				float foodX = ef.getFoodX();
 				float foodY = ef.getFoodY();
-				if (D3GLES20.distance(mHeadX, mHeadY, foodX, foodY) <
-						D3GLES20.distance(mHeadX, mHeadY, closestX, closestY)) {
+				if (D3Maths.distance(mHeadX, mHeadY, foodX, foodY) <
+						D3Maths.distance(mHeadX, mHeadY, closestX, closestY)) {
 					closestFood = ef;
 					closestX = foodX; 
 					closestY = foodY;
@@ -146,8 +146,8 @@ private static final float INF = 100;
 				EventAlgae ea = (EventAlgae)e;
 				float foodX = ea.getAlgaeX();
 				float foodY = ea.getAlgaeY();
-				if (D3GLES20.distance(mHeadX, mHeadY, foodX, foodY) <
-						D3GLES20.distance(mHeadX, mHeadY, closestX, closestY)) {
+				if (D3Maths.distance(mHeadX, mHeadY, foodX, foodY) <
+						D3Maths.distance(mHeadX, mHeadY, closestX, closestY)) {
 					closestAlgae = ea;
 					closestX = foodX; 
 					closestY = foodY;

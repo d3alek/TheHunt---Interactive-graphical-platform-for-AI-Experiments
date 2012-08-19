@@ -7,7 +7,9 @@ import java.util.Random;
 import android.opengl.GLES20;
 import android.util.Log;
 import d3kod.d3gles20.D3GLES20;
+import d3kod.d3gles20.D3Maths;
 import d3kod.d3gles20.D3Shape;
+import d3kod.d3gles20.Utilities;
 
 public class D3AlgaeHatching extends D3Shape {
 	
@@ -125,8 +127,8 @@ public class D3AlgaeHatching extends D3Shape {
 		controlPointsData = null;
 		FloatBuffer[] vertAndTexBuffers = makeVerticesBuffer();
 		super.setVertexBuffer(vertAndTexBuffers[0]);
-		mProgram = D3GLES20.createProgram(D3GLES20.loadShader(GLES20.GL_VERTEX_SHADER, vertexShaderCode), 
-				D3GLES20.loadShader(GLES20.GL_FRAGMENT_SHADER, fragmentShaderCode));
+		mProgram = Utilities.createProgram(Utilities.loadShader(GLES20.GL_VERTEX_SHADER, vertexShaderCode), 
+				Utilities.loadShader(GLES20.GL_FRAGMENT_SHADER, fragmentShaderCode));
         mTextureCoordinateHandle = GLES20.glGetAttribLocation(mProgram, "a_TexCoordinate");
         mTextureUniformHandle = GLES20.glGetUniformLocation(mProgram, "u_Texture");
         mTextureDataHandle = textureDataHandle;
@@ -194,7 +196,7 @@ public class D3AlgaeHatching extends D3Shape {
 		int controlPointStart = 0;
 		int textureInd;
 		for (int i = 0; i < curvePartsNum; ++i) {
-			curPart = D3GLES20.quadBezierCurveVertices(
+			curPart = D3Maths.quadBezierCurveVertices(
 					controlPointsData[controlPointStart], 
 					controlPointsData[controlPointStart+1], 
 					controlPointsData[controlPointStart+2], 
@@ -233,8 +235,8 @@ public class D3AlgaeHatching extends D3Shape {
 		Log.v(TAG, "verticesData is: " + Arrays.toString(verticesData));
 		Log.v(TAG, "textureVertexData is: " + Arrays.toString(textureVertexData));
 		FloatBuffer[] ret = new FloatBuffer[2];
-		ret[0] = D3GLES20.newFloatBuffer(verticesData);
-		ret[1] = D3GLES20.newFloatBuffer(textureVertexData);
+		ret[0] = Utilities.newFloatBuffer(verticesData);
+		ret[1] = Utilities.newFloatBuffer(textureVertexData);
 		return ret;
 	}
 
@@ -243,7 +245,7 @@ public class D3AlgaeHatching extends D3Shape {
 	private float[][] algaeControlPointsGenerator() {
 		Random rand = new Random();
 		float[][] controlPoints = new float[controlPointsNum][D3GLES20.COORDS_PER_VERTEX];
-		controlPoints = toTwoDimCoordinateArray(D3GLES20.circleVerticesData(ALGAE_SIZE, controlPointsNum));
+		controlPoints = toTwoDimCoordinateArray(D3Maths.circleVerticesData(ALGAE_SIZE, controlPointsNum));
 		float displacementX = (1-2*rand.nextFloat())*GENERATOR_MAX_DISPLACEMENT;
 		float displacementY = (1-2*rand.nextFloat())*GENERATOR_MAX_DISPLACEMENT;
 //		float displacementXDelta;
@@ -261,7 +263,7 @@ public class D3AlgaeHatching extends D3Shape {
 			controlPoints[i][1] += displacementY;
 			displacementX += displacementXDelta;
 			displacementY += displacementYDelta;
-			flipProb = Math.abs(D3GLES20.distance(0, 0, displacementX, displacementY)-GENERATOR_MAX_DISPLACEMENT)/GENERATOR_MAX_DISPLACEMENT;
+			flipProb = Math.abs(D3Maths.distance(0, 0, displacementX, displacementY)-GENERATOR_MAX_DISPLACEMENT)/GENERATOR_MAX_DISPLACEMENT;
 //			Log.v(TAG, "FlipProb is "  + flipProb + " distance is " + D3GLES20.distance(0, 0, displacementX, displacementY) + " GENERATOR_MAX_DISPLACEMENT is " + GENERATOR_MAX_DISPLACEMENT);
 			if (noFlip <= 0 && rand.nextFloat() < flipProb) {
 //				Log.v(TAG, "Do flip!");

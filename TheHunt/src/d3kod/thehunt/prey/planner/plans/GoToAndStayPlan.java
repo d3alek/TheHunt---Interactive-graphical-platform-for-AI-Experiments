@@ -1,6 +1,6 @@
 package d3kod.thehunt.prey.planner.plans;
 
-import d3kod.d3gles20.D3GLES20;
+import d3kod.d3gles20.D3Maths;
 import d3kod.thehunt.prey.Action;
 import d3kod.thehunt.prey.memory.WorldModel;
 
@@ -26,7 +26,7 @@ public class GoToAndStayPlan extends MoveTowardsPlan {
 	public void update(WorldModel mWorldModel) {
 		
 		float hX = mWorldModel.getHeadX(), hY = mWorldModel.getHeadY();
-		float headFromTarget = D3GLES20.distance(hX, hY, tX, tY);
+		float headFromTarget = D3Maths.distance(hX, hY, tX, tY);
 		
 		if (headFromTarget <= DISTANCE_ENOUGH) keepDistanceCounter++;
 		else keepDistanceCounter = 0;

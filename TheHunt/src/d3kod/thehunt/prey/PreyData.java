@@ -3,6 +3,7 @@ package d3kod.thehunt.prey;
 import java.nio.FloatBuffer;
 
 import d3kod.d3gles20.D3GLES20;
+import d3kod.d3gles20.Utilities;
 import d3kod.thehunt.TheHuntRenderer;
 
 public class PreyData {
@@ -44,7 +45,7 @@ public class PreyData {
 	public static float rotateSpeedBackMedium = 4*angleFlopBackMedium/MEDIUM_TICKS_BACK_PER_TURN;
 	public static float rotateSpeedBackLarge = 4*angleFlopBackLarge/LARGE_TICKS_BACK_PER_TURN;
 	
-	protected final int STRIDE_BYTES = D3GLES20.COORDS_PER_VERTEX * D3GLES20.BYTES_PER_FLOAT;
+	protected final int STRIDE_BYTES = D3GLES20.COORDS_PER_VERTEX * Utilities.BYTES_PER_FLOAT;
 	protected float[] preyColor = {
 		0.0f, 0.0f, 0.0f, 0.0f };
 	protected final float[] preyColorDefault = {

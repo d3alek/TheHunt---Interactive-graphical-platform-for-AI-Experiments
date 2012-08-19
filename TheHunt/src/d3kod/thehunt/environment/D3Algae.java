@@ -5,7 +5,9 @@ import java.util.Random;
 
 import android.opengl.GLES20;
 import d3kod.d3gles20.D3GLES20;
+import d3kod.d3gles20.D3Maths;
 import d3kod.d3gles20.D3Shape;
+import d3kod.d3gles20.Utilities;
 
 public class D3Algae extends D3Shape {
 	
@@ -57,7 +59,7 @@ public class D3Algae extends D3Shape {
 		float[] curPart;
 		int controlPointStart = 0;
 		for (int i = 0; i < curvePartsNum; ++i) {
-			curPart = D3GLES20.quadBezierCurveVertices(
+			curPart = D3Maths.quadBezierCurveVertices(
 					controPointsData[controlPointStart], 
 					controPointsData[controlPointStart+1], 
 					controPointsData[controlPointStart+2], 
@@ -68,13 +70,13 @@ public class D3Algae extends D3Shape {
 			}
 		}
 //		Log.v(TAG, "verticesData is: " + Arrays.toString(verticesData));
-		return D3GLES20.newFloatBuffer(verticesData);
+		return Utilities.newFloatBuffer(verticesData);
 	}
 
 	private float[][] algaeControlPointsGenerator() {
 		Random rand = new Random();
 		float[][] controlPoints = new float[controlPointsNum][D3GLES20.COORDS_PER_VERTEX];
-		controlPoints = toTwoDimCoordinateArray(D3GLES20.circleVerticesData(ALGAE_SIZE, controlPointsNum));
+		controlPoints = toTwoDimCoordinateArray(D3Maths.circleVerticesData(ALGAE_SIZE, controlPointsNum));
 		float displacementX = (1-2*rand.nextFloat())*GENERATOR_MAX_DISPLACEMENT;
 		float displacementY = (1-2*rand.nextFloat())*GENERATOR_MAX_DISPLACEMENT;
 //		float displacementXDelta;
@@ -92,7 +94,7 @@ public class D3Algae extends D3Shape {
 			controlPoints[i][1] += displacementY;
 			displacementX += displacementXDelta;
 			displacementY += displacementYDelta;
-			flipProb = Math.abs(D3GLES20.distance(0, 0, displacementX, displacementY)-GENERATOR_MAX_DISPLACEMENT)/GENERATOR_MAX_DISPLACEMENT;
+			flipProb = Math.abs(D3Maths.distance(0, 0, displacementX, displacementY)-GENERATOR_MAX_DISPLACEMENT)/GENERATOR_MAX_DISPLACEMENT;
 //			Log.v(TAG, "FlipProb is "  + flipProb + " distance is " + D3GLES20.distance(0, 0, displacementX, displacementY) + " GENERATOR_MAX_DISPLACEMENT is " + GENERATOR_MAX_DISPLACEMENT);
 			if (noFlip <= 0 && rand.nextFloat() < flipProb) {
 //				Log.v(TAG, "Do flip!");
