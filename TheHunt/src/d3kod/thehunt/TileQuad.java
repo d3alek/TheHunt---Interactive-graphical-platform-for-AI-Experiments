@@ -8,8 +8,8 @@ import android.opengl.GLES20;
 import android.opengl.Matrix;
 import android.util.Log;
 import d3kod.d3gles20.D3GLES20;
-import d3kod.d3gles20.D3Quad;
 import d3kod.d3gles20.Utilities;
+import d3kod.d3gles20.shapes.D3Quad;
 import d3kod.thehunt.environment.EnvironmentData;
 import d3kod.thehunt.environment.EnvironmentData.Dir;
 

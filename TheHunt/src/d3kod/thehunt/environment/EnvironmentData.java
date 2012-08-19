@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import android.graphics.PointF;
 import android.util.Log;
 import d3kod.d3gles20.D3Maths;
-import d3kod.d3gles20.D3Shape;
+import d3kod.d3gles20.shapes.D3Shape;
 import d3kod.thehunt.environment.FloatingObject.Type;
 import d3kod.thehunt.events.Event;
 import d3kod.thehunt.events.EventFood;

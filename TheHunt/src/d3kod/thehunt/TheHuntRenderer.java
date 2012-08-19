@@ -13,8 +13,8 @@ import android.opengl.GLSurfaceView;
 import android.opengl.Matrix;
 import android.util.Log;
 import d3kod.d3gles20.D3GLES20;
-import d3kod.d3gles20.D3Shape;
-import d3kod.d3gles20.TempCircle;
+import d3kod.d3gles20.shapes.D3Shape;
+import d3kod.d3gles20.shapes.D3TempCircle;
 import d3kod.thehunt.environment.Environment;
 import d3kod.thehunt.environment.EnvironmentData;
 import d3kod.thehunt.prey.Prey;
@@ -48,7 +48,7 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 	private long smoothMspf;
 	private int smoothingCount;
 	private int mCaughtCounter;
-	private TempCircle tempCircle;
+	private D3TempCircle tempCircle;
 	private boolean mGraphicsInitialized = false;
 	private HashMap<Integer, D3Shape> mShapes;
 	public static float[] bgColor = {
@@ -143,9 +143,9 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 				curDirDelta.y * EnvironmentData.currentStep);
 		
 		PointF preyPos = mPrey.getPosition();
-//		if (SHOW_CIRCLE_CONTAINS_CHECKS && !mPrey.getCaught() && mNet.isBuilt()) {
-//			tempCircle = D3GLES20.newContainsCheckCircle(mNet.getGraphicIndex(), preyPos.x, preyPos.y);
-//		}
+		if (SHOW_CIRCLE_CONTAINS_CHECKS && !mPrey.getCaught() && mNet.isBuilt()) {
+			tempCircle = D3GLES20.newContainsCheckCircle(mNet.getGraphicIndex(), preyPos.x, preyPos.y);
+		}
 //		if (!mPrey.getCaught() && mNet.isBuilt() && D3GLES20.contains(mNet.getGraphicIndex(), preyPos.x, preyPos.y)) {
 		if (!mPrey.getCaught() && mNet.tryToCatch() && D3GLES20.contains(mNet.getGraphicIndex(), preyPos.x, preyPos.y)) {
 			Log.v(TAG, "Prey is caught!");

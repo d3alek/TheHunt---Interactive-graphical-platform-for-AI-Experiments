@@ -2,6 +2,11 @@ package d3kod.d3gles20;
 
 import java.util.HashMap;
 
+import d3kod.d3gles20.shapes.D3Circle;
+import d3kod.d3gles20.shapes.D3Quad;
+import d3kod.d3gles20.shapes.D3Shape;
+import d3kod.d3gles20.shapes.D3TempCircle;
+
 import android.opengl.GLES20;
 import android.util.Log;
 
@@ -101,8 +106,8 @@ public class D3GLES20 {
 				shapes.get(key).getRadius(), hX, hY);
 	}
 
-	public static TempCircle newContainsCheckCircle(int key, float hX, float hY) {
-		return new TempCircle(shapes.get(key).getCenterX(), shapes.get(key).getCenterY(), 
+	public static D3TempCircle newContainsCheckCircle(int key, float hX, float hY) {
+		return new D3TempCircle(shapes.get(key).getCenterX(), shapes.get(key).getCenterY(), 
 				shapes.get(key).getRadius(), TEMP_CIRCLE_TICKS);
 	}
 	

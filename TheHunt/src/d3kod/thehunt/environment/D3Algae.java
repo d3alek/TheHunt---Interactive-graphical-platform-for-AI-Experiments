@@ -6,8 +6,8 @@ import java.util.Random;
 import android.opengl.GLES20;
 import d3kod.d3gles20.D3GLES20;
 import d3kod.d3gles20.D3Maths;
-import d3kod.d3gles20.D3Shape;
 import d3kod.d3gles20.Utilities;
+import d3kod.d3gles20.shapes.D3Shape;
 
 public class D3Algae extends D3Shape {
 	

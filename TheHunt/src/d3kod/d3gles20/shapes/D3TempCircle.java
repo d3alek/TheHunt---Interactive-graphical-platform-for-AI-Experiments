@@ -1,8 +1,8 @@
-package d3kod.d3gles20;
+package d3kod.d3gles20.shapes;
 
 import android.opengl.Matrix;
 
-public class TempCircle extends D3Circle {
+public class D3TempCircle extends D3Circle {
 	
 	private static float[] colorData = {
 		0.0f, 0.5f, 0.0f, 0.0f };
@@ -10,7 +10,7 @@ public class TempCircle extends D3Circle {
 	private int mTicks;
 	private boolean mExpired;
 
-	protected TempCircle(float x, float y, float r, int ticks) {
+	public D3TempCircle(float x, float y, float r, int ticks) {
 		super(r, colorData, verticesNum , true);
 		// TODO Auto-generated constructor stub
 		float[] modelMatrix = new float[16];

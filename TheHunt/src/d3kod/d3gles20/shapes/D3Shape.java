@@ -1,7 +1,10 @@
-package d3kod.d3gles20;
+package d3kod.d3gles20.shapes;
 
 import java.nio.FloatBuffer;
 
+import d3kod.d3gles20.D3GLES20;
+import d3kod.d3gles20.D3Maths;
+import d3kod.d3gles20.Utilities;
 import d3kod.thehunt.TheHuntRenderer;
 
 import android.opengl.GLES20;
