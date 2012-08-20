@@ -81,12 +81,10 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 	 */
 	public void onSurfaceCreated(GL10 unused, EGLConfig config) {
 		GLES20.glClearColor(bgColor[0], bgColor[1], bgColor[2], bgColor[3]);
-//		GLES20.glEnable(GLES20.GL_CULL_FACE);
-//		GLES20.glEnable(GLES20.GL_DEPTH_TEST);
-//		GLES20.glEnable(GLES20.GL_TEXTURE_2D);
 		GLES20.glEnable(GLES20.GL_BLEND);
 		GLES20.glBlendFunc(GLES20.GL_ONE, GL10.GL_ONE_MINUS_SRC_ALPHA);
 	    Matrix.orthoM(mVMatrix, 0, -1, 1, -1, 1, 0.1f, 100f);
+//		Matrix.orthoM(mVMatrix, 0, -0.5f, 0.5f, -0.5f, 0.5f, 0.1f, 100f);
 	}
 	/**
 	 * If the surface changes, reset the view
