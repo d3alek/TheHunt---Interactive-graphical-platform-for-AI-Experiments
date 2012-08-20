@@ -29,10 +29,11 @@ abstract public class D3Shape {
 	private float[] mCenterDefault;
 	protected boolean customProgram;
 	
-//	private static final int SEC_TO_FADE = 1;
+//	private static final int SEC_TфO_FADE = 1;
 //	private static final int FADE_TICKS = TheHuntRenderer.TICKS_PER_SECOND*SEC_TO_FADE;
 	
-	private static final float FADE_SPEED = 0.05f;
+	private static final float FADE_SPEED = 0.01f;
+	private static final float MIN_ALPHA = 0.1f;
 	
 	protected D3Shape(FloatBuffer vertBuffer, float[] colorData, int drType, boolean useDefaultShaders) {
 		this(colorData, drType, useDefaultShaders);
@@ -131,26 +132,38 @@ abstract public class D3Shape {
 		return VERTICES_NUM;
 	}
 	public boolean fadeDone() {
-		for (int i = 0; i < 3; ++i) {
-			if (D3Maths.compareFloats(color[i], TheHuntRenderer.bgColor[i]) != 0) {
-				return false;
-			}
-		}
-		return true;
+//		for (int i = 0; i < 3; ++i) {
+//			if (D3Maths.compareFloats(color[i], TheHuntRenderer.bgColor[i]) != 0) {
+//				return false;
+//			}
+//		}
+//		return D3Maths.compareFloats(color[3], MIN_ALPHA) <= 0;
+		return fadeDone(MIN_ALPHA);
+//		return false;
+	}
+	public boolean fadeDone(float minAlpha) {
+		return D3Maths.compareFloats(color[3], minAlpha) <= 0;
 	}
 
-	public void fade() {
-		for (int i = 0; i < color.length; ++i) {
-			int compare = D3Maths.compareFloats(color[i], TheHuntRenderer.bgColor[i]);
-			if (compare < 0) color[i] += FADE_SPEED;
-			else if (compare > 0) color[i] -= FADE_SPEED;
+	public void fade(float fadeSpeed) {
+//		for (int i = 0; i < color.length; ++i) {
+//			int compare = D3Maths.compareFloats(color[i], TheHuntRenderer.bgColor[i]);
+//			if (compare < 0) color[i] += FADE_SPEED;
+//			else if (compare > 0) color[i] -= FADE_SPEED;
+//		}
+		if (color[3] > 0) {
+			color[3] -= fadeSpeed;
 		}
 	}
 
 	public void setPosition(float x, float y) {
-		Matrix.setIdentityM(getMMatrix(), 0);
-		Matrix.translateM(getMMatrix(), 0, x, y, 0);
-		Matrix.multiplyMV(mCenter, 0, getMMatrix(), 0, mCenterDefault, 0);
+		Matrix.setIdentityM(mMMatrix, 0);
+		Matrix.translateM(mMMatrix, 0, x, y, 0);
+		Matrix.multiplyMV(mCenter, 0, mMMatrix, 0, mCenterDefault, 0);
+	}
+	public void setPosition(float x, float y, float angleDeg) {
+		setPosition(x, y);
+		Matrix.rotateM(mMMatrix, 0, angleDeg, 0, 0, 1);
 	}
 	public void useProgram() {
 		GLES20.glUseProgram(mProgram);

@@ -15,7 +15,7 @@ public class D3Algae extends D3Shape {
 
 	private static int drawType = GLES20.GL_LINE_LOOP;
 	private static final float[] algaeColor = 
-		{ 0.4f, 0.4f, 0.4f, 0.0f};
+		{ 0.4f, 0.4f, 0.4f, 1.0f};
 
 	private static final int ALGAE_DETAILS_PER_PART = 10;
 	private static final float ALGAE_DETAILS_STEP = 1f/ALGAE_DETAILS_PER_PART;

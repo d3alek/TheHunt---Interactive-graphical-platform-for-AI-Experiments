@@ -16,7 +16,7 @@ import d3kod.thehunt.events.EventNone;
 public class Environment {
 	private static final String TAG = "Environment";
 	public EnvironmentData data;
-	private float[] foodColor = {0.5f, 0.5f, 0.5f};
+	private float[] foodColor = {0.5f, 0.5f, 0.5f, 1.0f};
 	public int mTextureDataHandle;
 	
 	public Environment(int width, int height) {

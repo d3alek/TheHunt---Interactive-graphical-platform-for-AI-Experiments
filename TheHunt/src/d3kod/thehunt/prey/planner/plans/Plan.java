@@ -20,7 +20,7 @@ public class Plan {
 	private float[] mTargetColor;
 	private float mTargetSize;
 	private int mCurrentActionTicks;
-	private final static float[] targetColorDefault = {1.0f, 0.0f, 0.0f};
+	private final static float[] targetColorDefault = {1.0f, 0.0f, 0.0f, 1.0f};
 	private final static float targetSizeDefault = 0.005f;
 	private static float[] modelMatrix;
 	

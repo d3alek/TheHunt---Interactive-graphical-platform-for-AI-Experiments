@@ -13,6 +13,7 @@ import android.opengl.GLSurfaceView;
 import android.opengl.Matrix;
 import android.util.Log;
 import d3kod.d3gles20.D3GLES20;
+import d3kod.d3gles20.TextureManager;
 import d3kod.d3gles20.shapes.D3Shape;
 import d3kod.d3gles20.shapes.D3TempCircle;
 import d3kod.thehunt.environment.Environment;
@@ -51,6 +52,7 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 	private D3TempCircle tempCircle;
 	private boolean mGraphicsInitialized = false;
 	private HashMap<Integer, D3Shape> mShapes;
+	private TextureManager tm;
 	public static float[] bgColor = {
 			0.8f, 0.8f, 0.8f, 1.0f};
 
@@ -68,6 +70,7 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 	    mCaughtCounter = 0;
 //	    mManuControl.setSize();
 	    mShapes = null;
+	    tm = new TextureManager(mContext);
 	}
 
 	/**
@@ -78,6 +81,8 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 //		GLES20.glEnable(GLES20.GL_CULL_FACE);
 //		GLES20.glEnable(GLES20.GL_DEPTH_TEST);
 //		GLES20.glEnable(GLES20.GL_TEXTURE_2D);
+		GLES20.glEnable(GLES20.GL_BLEND);
+		GLES20.glBlendFunc(GLES20.GL_ONE, GL10.GL_ONE_MINUS_SRC_ALPHA);
 	    Matrix.orthoM(mVMatrix, 0, -1, 1, -1, 1, 0.1f, 100f);
 	}
 	/**
@@ -87,7 +92,7 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 		GLES20.glViewport(0, 0, width, height);
 		
 		if (mEnv == null) mEnv = new Environment(width, height);
-	    if (mPrey == null) mPrey = new Prey(EnvironmentData.mScreenWidth, EnvironmentData.mScreenHeight, mEnv);
+	    if (mPrey == null) mPrey = new Prey(EnvironmentData.mScreenWidth, EnvironmentData.mScreenHeight, mEnv, tm);
 	    if (mNet == null) mNet = new CatchNet(mEnv);
 	    if (!mGraphicsInitialized ) {
 	    	mEnv.initGraphics(mContext);

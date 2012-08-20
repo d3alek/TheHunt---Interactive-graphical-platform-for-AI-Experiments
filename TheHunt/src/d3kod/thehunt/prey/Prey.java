@@ -9,6 +9,7 @@ import android.util.FloatMath;
 import android.util.Log;
 import d3kod.d3gles20.D3GLES20;
 import d3kod.d3gles20.D3Maths;
+import d3kod.d3gles20.TextureManager;
 import d3kod.d3gles20.Utilities;
 import d3kod.thehunt.TheHuntRenderer;
 import d3kod.thehunt.environment.Environment;
@@ -63,9 +64,9 @@ public class Prey {
 	private boolean floppedThird;
 	private boolean mIsCaught;
 
-	private int sMovementAdj = 5;
+	private TextureManager tm;
 
-//	private float bodyEndAngleRotated;
+//	private int sMovementAdj = 5;
 	
 	public void update(float dx, float dy) {
 		if (mIsCaught) return;
@@ -186,6 +187,7 @@ public class Prey {
 				floppedFirst = true;
 				moveForward(Math.abs(backFinAngle*flopBackSpeed)); // F = ma
 //				Log.v(TAG, "Flopped First done " + flopBackAngle);
+				putFlopText(flopBackAngle + mD.bodyCAngle);
 			}
 			bodyEndAngleRot = mD.bodyCAngle + flopBackAngle-mD.bodyEndAngle;
 			mD.bodyEndAngle = mD.bodyCAngle + flopBackAngle;
@@ -198,6 +200,7 @@ public class Prey {
 				flopBackAngle = flopBackTargetSecond;
 				floppedSecond = true;
 				moveForward(Math.abs(2*backFinAngle*flopBackSpeed)); // F = ma
+				putFlopText(flopBackAngle + mD.bodyCAngle);
 //				Log.v(TAG, "Flopped Second done " + flopBackAngle);
 			}
 			bodyEndAngleRot = mD.bodyCAngle + flopBackAngle-mD.bodyEndAngle;
@@ -239,6 +242,12 @@ public class Prey {
 			}
 		}
 	}
+	private void putFlopText(float angle) {
+		float radAngle = (float)Math.toRadians(angle);
+		D3GLES20.putExpiringShape(new FlopText(mD.mPosX + FloatMath.sin(radAngle)*mD.finSize*2, 
+				mD.mPosY - FloatMath.cos(radAngle)*mD.finSize*2, angle, tm));
+	}
+
 	public void turn(TurnAngle angle) {
 		
 		int value = angle.getValue();
@@ -248,16 +257,7 @@ public class Prey {
 			Log.v(TAG, "Can't bend that much!");
 			return;
 		}
-			
-//		switch(angle) {
-//		case LEFT_SMALL: 
-//		case RIGHT_SMALL: mD.rotateSpeedHead = mD.rotateSpeedSmall; break;
-//		case LEFT_MEDIUM: 
-//		case RIGHT_MEDIUM: mD.rotateSpeedHead = mD.rotateSpeedMedium; break;
-//		case LEFT_LARGE: 
-//		case RIGHT_LARGE: mD.rotateSpeedHead = mD.rotateSpeedLarge; break;
-//		default: Log.v(TAG, "Turning to unknown angle");
-//		}
+
 		mD.rotateSpeedHead = angle.getRotateSpeed();
 //		mD.rotateSpeedBody = mD.rotateSpeedHead/2;
 //		if (mD.rotateSpeedBody < 1) mD.rotateSpeedBody = 1;
@@ -317,17 +317,14 @@ public class Prey {
 		mD.vy -= EnvironmentData.frictionCoeff*mD.vy;
 	}
 	
-	public Prey(float screenWidth, float screenHeight, Environment env) {
+	public Prey(float screenWidth, float screenHeight, Environment env, TextureManager texMan) {
 		mD = new PreyData();
 		
-//		mD.delayV = new float[mD.delayVLength][2];
-		
+		tm = texMan;
 		mWorldModel = new WorldModel(screenWidth, screenHeight);
 		mPlanner = new Planner();
 		mEnv = env;
 		mSensor = new Sensor(mEnv);
-		
-//		backAngleToggle = 1;
 		
 		Matrix.setIdentityM(mD.mModelMatrix, 0);
 		mD.mPosX = mD.mPosY = 0;
@@ -355,70 +352,97 @@ public class Prey {
 		mD.ribVerticesNum = mD.ribVerticesData.length / D3GLES20.COORDS_PER_VERTEX;
 		
 		mD.rotateSpeedHead = mD.rotateSpeedSmall;//Math.abs(TurnAngle.LEFT_SMALL.getValue())/SMALL_TICKS_PER_TURN;
-//		mD.rotateSpeedBody = mD.rotateSpeedHead/2;
-//		if (mD.rotateSpeedBody < 1) mD.rotateSpeedBody = 1;
-		
+
 		mIsCaught = false;
-//		bodyEndAngleRotated = 0;
 	}
 	
-	private float[] caclRibVerticesData() {
-		return D3Maths.quadBezierCurveVertices(
-				mD.ribA, mD.ribB, mD.ribC, mD.ribD, mD.detailsStep, mD.ribSize);
+	private boolean colorIsBgColor() {
+		for (int i = 0; i < 3; ++i) {
+			if (D3Maths.compareFloats(mD.preyColor[i], TheHuntRenderer.bgColor[i]) != 0) {
+				return false;
+			}
+		}
+		return true;
 	}
 
-	private float[] calcRightFinVerticesData() {
-		return D3Maths.quadBezierCurveVertices(
-				mD.rightFinStart, mD.rightFinB, mD.rightFinC, mD.rightFinEnd, mD.detailsStep, mD.finSize);
+	private void fadeColor() {
+		for (int i = 0; i < mD.preyColor.length; ++i) {
+			mD.preyColor[i] += colorFadeSpeed ;
+		}
 	}
 
-	private float[] calcLeftFinVerticesData() {
-		return D3Maths.quadBezierCurveVertices(
-				mD.leftFinStart, mD.leftFinB, mD.leftFinC, mD.leftFinEnd, mD.detailsStep, mD.finSize);
+	private void updateBodyVertexBuffer() {
+		Matrix.multiplyMV(mD.bodyStartRot, 0, mD.mBodyStartRMatrix, 0, mD.bodyStart4, 0);
+		Matrix.multiplyMV(mD.bodyBRot, 0, mD.mBodyBRMatrix, 0, mD.bodyB4, 0);
+		Matrix.multiplyMV(mD.bodyCRot, 0, mD.mBodyCRMatrix, 0, mD.bodyC4, 0);
+		Matrix.multiplyMV(mD.bodyEndRot, 0, mD.mBodyEndRMatrix, 0, mD.bodyEnd4, 0);
+		mD.bodyVerticesData = D3Maths.quadBezierCurveVertices(mD.bodyStartRot, mD.bodyBRot, mD.bodyCRot, mD.bodyEndRot, mD.detailsStep, mD.bodyLength);
+		mD.bodyVerticesNum = mD.bodyVerticesData.length/D3GLES20.COORDS_PER_VERTEX;
+		mD.bodyVertexBuffer = Utilities.newFloatBuffer(mD.bodyVerticesData);
 	}
 
-	private float[] calcHeadVerticesData() {
-		float[] part1 = D3Maths.quadBezierCurveVertices(
-				mD.headPart1Start, mD.headPart1B, mD.headPart1C, mD.headPart2Start, mD.detailsStep, mD.headSize);
-		float[] part2 = D3Maths.quadBezierCurveVertices(
-				mD.headPart2Start, mD.headPart2B, mD.headPart2C, mD.headPart3Start, mD.detailsStep, mD.headSize);
-		float[] part3 = D3Maths.quadBezierCurveVertices(
-				mD.headPart3Start, mD.headPart3B, mD.headPart3C, mD.headPart1Start, mD.detailsStep, mD.headSize);
-		float[] headVerticesData = new float[part1.length + part2.length + part3.length];
-		for (int i = 0; i < part1.length; ++i) {
-			headVerticesData[i] = part1[i];
-		}
-		for (int i = 0; i < part2.length; ++i) {
-			headVerticesData[part1.length + i] = part2[i];
-		}
-		for (int i = 0; i < part3.length; ++i) {
-			headVerticesData[part1.length + part2.length + i] = part3[i];
-		}
-		mD.headVerticesNum = headVerticesData.length / D3GLES20.COORDS_PER_VERTEX;
-		return headVerticesData;
+	public PointF getWorldPosition() {
+		return new PointF(EnvironmentData.toWorldWidth(mD.mPosX), EnvironmentData.toWorldHeight(mD.mPosY));
 	}
 
-	public void initGraphics() {
-		mD.leftFinVertexBuffer = Utilities.newFloatBuffer(mD.leftFinVerticesData);
-		mD.rightFinVertexBuffer = Utilities.newFloatBuffer(mD.rightFinVerticesData);
-		mD.headVertexBuffer = Utilities.newFloatBuffer(mD.headVerticesData);
-		mD.eyeVertexBuffer = Utilities.newFloatBuffer(mD.eyeVertexData);
-		mD.ribVertexBuffer = Utilities.newFloatBuffer(mD.ribVerticesData);
-		
-		int vertexShaderHandle = Utilities.loadShader(GLES20.GL_VERTEX_SHADER, mD.vertexShaderCode);
-        int fragmentShaderHandle = Utilities.loadShader(GLES20.GL_FRAGMENT_SHADER, mD.fragmentShaderCode);
-        
-        mD.mProgram = Utilities.createProgram(vertexShaderHandle, fragmentShaderHandle);
-        
-        mD.mMVPMatrixHandle = GLES20.glGetUniformLocation(mD.mProgram, "u_MVPMatrix"); 
-        mD.mPositionHandle = GLES20.glGetAttribLocation(mD.mProgram, "a_Position");
-        mD.mColorHandle = GLES20.glGetUniformLocation(mD.mProgram, "u_Color");
-        
-		if (Planner.SHOW_TARGET) {
-			mPlanner.makeTarget();
+	public PointF getPosition() {
+		return new PointF(mD.mPosX, mD.mPosY);
+	}
+
+	private void doAction(Action nextAction) {
+		if (nextAction == null) return;
+		switch(nextAction) {
+		case TURN_LEFT_SMALL: turn(TurnAngle.LEFT_SMALL);break;//flopLeft(); break;
+		case TURN_LEFT_MEDIUM: turn(TurnAngle.LEFT_MEDIUM);break;
+		case TURN_LEFT_LARGE: turn(TurnAngle.LEFT_LARGE);break;
+		case TURN_RIGHT_SMALL: turn(TurnAngle.RIGHT_SMALL);break;//flopRight(); break;
+		case TURN_RIGHT_MEDIUM: turn(TurnAngle.RIGHT_MEDIUM);break;
+		case TURN_RIGHT_LARGE: turn(TurnAngle.RIGHT_LARGE);break;
+		case FORWARD_SMALL: backFinMotion(TurnAngle.BACK_SMALL); break;
+		case FORWARD_MEDIUM: backFinMotion(TurnAngle.BACK_MEDIUM); break;
+		case FORWARD_LARGE: backFinMotion(TurnAngle.BACK_LARGE); break;
+		case eat: eat(); break; 
+		case none: break;
+		default: Log.v(TAG, "Could not process action!");
 		}
-		
+	}
+
+	private void eat() {
+//		Log.v(TAG, "Eating food at " + mD.mPosHeadX + " " + mD.mPosHeadY);
+		mEnv.eatFood(mD.mPosHeadX, mD.mPosHeadY);
+		mWorldModel.eatFood(mD.mPosHeadX, mD.mPosHeadY);
+	}
+
+	public void setCaught(boolean caught) {
+		mIsCaught = caught;
+		if (caught) {
+			mD.vx = mD.vy = bodyEndAngleRot =
+				bodyStartAngleRot = bodyBAngleRot 
+				= bodyCAngleRot = 0;
+		}
+	}
+
+	public boolean getCaught() {
+		return mIsCaught;
+	}
+
+	public void release() {
+		mD.preyColor = mD.preyColorDefault.clone();
+		mIsCaught = false;
+//		mD.mPosX = mD.mPosY = 0;
 		randomizePos();
+//		mD.bodyStartAngle = mD.bodyBAngle = mD.bodyCAngle = mD.bodyEndAngle = 0;
+		mPlanner.clear();
+		calcPosHead();
+		mWorldModel.update(mSensor.sense(mD.mPosHeadX, mD.mPosHeadY, mD.mPosX, mD.mPosY));
+		mWorldModel.recalcNearestFood();
+//		mWorldModel.recalcNearestAlgae();
+	}
+
+	private void randomizePos() {
+		Random rand = new Random();
+		mD.mPosX = -EnvironmentData.mScreenWidth/2+rand.nextFloat()*EnvironmentData.mScreenWidth;
+		mD.mPosY = -EnvironmentData.mScreenHeight/2+rand.nextFloat()*EnvironmentData.mScreenHeight;
 	}
 	
 	public void draw(float[] mVMatrix, float[] mProjMatrix, float interpolation) {
@@ -586,92 +610,62 @@ public class Prey {
 		GLES20.glDrawArrays(GLES20.GL_LINE_LOOP, 0, mD.eyeDetailsLevel);
 	}
 	
-	private boolean colorIsBgColor() {
-		for (int i = 0; i < 3; ++i) {
-			if (D3Maths.compareFloats(mD.preyColor[i], TheHuntRenderer.bgColor[i]) != 0) {
-				return false;
-			}
+	public void initGraphics() {
+		mD.leftFinVertexBuffer = Utilities.newFloatBuffer(mD.leftFinVerticesData);
+		mD.rightFinVertexBuffer = Utilities.newFloatBuffer(mD.rightFinVerticesData);
+		mD.headVertexBuffer = Utilities.newFloatBuffer(mD.headVerticesData);
+		mD.eyeVertexBuffer = Utilities.newFloatBuffer(mD.eyeVertexData);
+		mD.ribVertexBuffer = Utilities.newFloatBuffer(mD.ribVerticesData);
+		
+		int vertexShaderHandle = Utilities.loadShader(GLES20.GL_VERTEX_SHADER, mD.vertexShaderCode);
+        int fragmentShaderHandle = Utilities.loadShader(GLES20.GL_FRAGMENT_SHADER, mD.fragmentShaderCode);
+        
+        mD.mProgram = Utilities.createProgram(vertexShaderHandle, fragmentShaderHandle);
+        
+        mD.mMVPMatrixHandle = GLES20.glGetUniformLocation(mD.mProgram, "u_MVPMatrix"); 
+        mD.mPositionHandle = GLES20.glGetAttribLocation(mD.mProgram, "a_Position");
+        mD.mColorHandle = GLES20.glGetUniformLocation(mD.mProgram, "u_Color");
+        
+		if (Planner.SHOW_TARGET) {
+			mPlanner.makeTarget();
 		}
-		return true;
-	}
-
-	private void fadeColor() {
-		for (int i = 0; i < mD.preyColor.length; ++i) {
-			mD.preyColor[i] += colorFadeSpeed ;
-		}
-	}
-
-	private void updateBodyVertexBuffer() {
-		Matrix.multiplyMV(mD.bodyStartRot, 0, mD.mBodyStartRMatrix, 0, mD.bodyStart4, 0);
-		Matrix.multiplyMV(mD.bodyBRot, 0, mD.mBodyBRMatrix, 0, mD.bodyB4, 0);
-		Matrix.multiplyMV(mD.bodyCRot, 0, mD.mBodyCRMatrix, 0, mD.bodyC4, 0);
-		Matrix.multiplyMV(mD.bodyEndRot, 0, mD.mBodyEndRMatrix, 0, mD.bodyEnd4, 0);
-		mD.bodyVerticesData = D3Maths.quadBezierCurveVertices(mD.bodyStartRot, mD.bodyBRot, mD.bodyCRot, mD.bodyEndRot, mD.detailsStep, mD.bodyLength);
-		mD.bodyVerticesNum = mD.bodyVerticesData.length/D3GLES20.COORDS_PER_VERTEX;
-		mD.bodyVertexBuffer = Utilities.newFloatBuffer(mD.bodyVerticesData);
-	}
-
-	public PointF getWorldPosition() {
-		return new PointF(EnvironmentData.toWorldWidth(mD.mPosX), EnvironmentData.toWorldHeight(mD.mPosY));
-	}
-
-	public PointF getPosition() {
-		return new PointF(mD.mPosX, mD.mPosY);
-	}
-
-	private void doAction(Action nextAction) {
-		if (nextAction == null) return;
-		switch(nextAction) {
-		case TURN_LEFT_SMALL: turn(TurnAngle.LEFT_SMALL);break;//flopLeft(); break;
-		case TURN_LEFT_MEDIUM: turn(TurnAngle.LEFT_MEDIUM);break;
-		case TURN_LEFT_LARGE: turn(TurnAngle.LEFT_LARGE);break;
-		case TURN_RIGHT_SMALL: turn(TurnAngle.RIGHT_SMALL);break;//flopRight(); break;
-		case TURN_RIGHT_MEDIUM: turn(TurnAngle.RIGHT_MEDIUM);break;
-		case TURN_RIGHT_LARGE: turn(TurnAngle.RIGHT_LARGE);break;
-		case FORWARD_SMALL: backFinMotion(TurnAngle.BACK_SMALL); break;
-		case FORWARD_MEDIUM: backFinMotion(TurnAngle.BACK_MEDIUM); break;
-		case FORWARD_LARGE: backFinMotion(TurnAngle.BACK_LARGE); break;
-		case eat: eat(); break; 
-		case none: break;
-		default: Log.v(TAG, "Could not process action!");
-		}
-	}
-
-	private void eat() {
-//		Log.v(TAG, "Eating food at " + mD.mPosHeadX + " " + mD.mPosHeadY);
-		mEnv.eatFood(mD.mPosHeadX, mD.mPosHeadY);
-		mWorldModel.eatFood(mD.mPosHeadX, mD.mPosHeadY);
-	}
-
-	public void setCaught(boolean caught) {
-		mIsCaught = caught;
-		if (caught) {
-			mD.vx = mD.vy = bodyEndAngleRot =
-				bodyStartAngleRot = bodyBAngleRot 
-				= bodyCAngleRot = 0;
-		}
-	}
-
-	public boolean getCaught() {
-		return mIsCaught;
-	}
-
-	public void release() {
-		mD.preyColor = mD.preyColorDefault.clone();
-		mIsCaught = false;
-//		mD.mPosX = mD.mPosY = 0;
+		
 		randomizePos();
-//		mD.bodyStartAngle = mD.bodyBAngle = mD.bodyCAngle = mD.bodyEndAngle = 0;
-		mPlanner.clear();
-		calcPosHead();
-		mWorldModel.update(mSensor.sense(mD.mPosHeadX, mD.mPosHeadY, mD.mPosX, mD.mPosY));
-		mWorldModel.recalcNearestFood();
-//		mWorldModel.recalcNearestAlgae();
+	}
+	
+	private float[] caclRibVerticesData() {
+		return D3Maths.quadBezierCurveVertices(
+				mD.ribA, mD.ribB, mD.ribC, mD.ribD, mD.detailsStep, mD.ribSize);
 	}
 
-	private void randomizePos() {
-		Random rand = new Random();
-		mD.mPosX = -EnvironmentData.mScreenWidth/2+rand.nextFloat()*EnvironmentData.mScreenWidth;
-		mD.mPosY = -EnvironmentData.mScreenHeight/2+rand.nextFloat()*EnvironmentData.mScreenHeight;
+	private float[] calcRightFinVerticesData() {
+		return D3Maths.quadBezierCurveVertices(
+				mD.rightFinStart, mD.rightFinB, mD.rightFinC, mD.rightFinEnd, mD.detailsStep, mD.finSize);
+	}
+
+	private float[] calcLeftFinVerticesData() {
+		return D3Maths.quadBezierCurveVertices(
+				mD.leftFinStart, mD.leftFinB, mD.leftFinC, mD.leftFinEnd, mD.detailsStep, mD.finSize);
+	}
+
+	private float[] calcHeadVerticesData() {
+		float[] part1 = D3Maths.quadBezierCurveVertices(
+				mD.headPart1Start, mD.headPart1B, mD.headPart1C, mD.headPart2Start, mD.detailsStep, mD.headSize);
+		float[] part2 = D3Maths.quadBezierCurveVertices(
+				mD.headPart2Start, mD.headPart2B, mD.headPart2C, mD.headPart3Start, mD.detailsStep, mD.headSize);
+		float[] part3 = D3Maths.quadBezierCurveVertices(
+				mD.headPart3Start, mD.headPart3B, mD.headPart3C, mD.headPart1Start, mD.detailsStep, mD.headSize);
+		float[] headVerticesData = new float[part1.length + part2.length + part3.length];
+		for (int i = 0; i < part1.length; ++i) {
+			headVerticesData[i] = part1[i];
+		}
+		for (int i = 0; i < part2.length; ++i) {
+			headVerticesData[part1.length + i] = part2[i];
+		}
+		for (int i = 0; i < part3.length; ++i) {
+			headVerticesData[part1.length + part2.length + i] = part3[i];
+		}
+		mD.headVerticesNum = headVerticesData.length / D3GLES20.COORDS_PER_VERTEX;
+		return headVerticesData;
 	}
 }

@@ -15,15 +15,15 @@ public class D3CatchNet extends D3Path {
 //	private static int closedShapeVerticesNum = 100;
 	
 	private static float[] beingBuiltColor = {
-		0.6f, 0.6f, 0.6f, 0.0f
+		0.6f, 0.6f, 0.6f, 1.0f
 	};
 
 	private static float[] isBuiltColor = {
-		0.0f, 0.0f, 0.0f, 0.0f
+		0.0f, 0.0f, 0.0f, 1.0f
 	};
 	
 	private static float[] isNotBuiltColor = {
-		1.0f, 0.0f, 0.0f, 0.0f
+		1.0f, 0.0f, 0.0f, 1.0f
 	};
 	
 	private static final float DISTANCE_FAR_ENOUGH = 0.01f;
@@ -36,6 +36,8 @@ public class D3CatchNet extends D3Path {
 	private static final float mShrinkSpeed = 0.05f;
 
 	private static final int CLOSED_SHAPE_VERTICES_NUM = 100;
+
+	private static final float FADE_SPEED = 0.05f;
 	
 	private float mScale;
 	
@@ -52,7 +54,7 @@ public class D3CatchNet extends D3Path {
 	private boolean mIsInvalid;
 	
 	public D3CatchNet() {
-		super(beingBuiltColor);
+		super(beingBuiltColor.clone());
 		mIsClosed = mIsInvalid = false;
 		mCenterX = -100; mCenterY = -100; mRadius = 0;
 	}
@@ -65,13 +67,13 @@ public class D3CatchNet extends D3Path {
 	
 	public void setInvalid() {
 		mIsInvalid = true;
-		setColor(isNotBuiltColor);
+		setColor(isNotBuiltColor.clone());
 	}
 	
 	public void setFinished() {
 		mIsClosed = true;
 		transformToClosedShape();
-		setColor(isBuiltColor);
+		setColor(isBuiltColor.clone());
 		super.setDrawType(isBuiltType);
 	}
 	
@@ -184,12 +186,12 @@ public class D3CatchNet extends D3Path {
 	public void draw(float[] mVMatrix, float[] mProjMatrix) {
 		if (mIsClosed) {
 			if (getRadius() < MIN_RADIUS) {
-				fade();
+				fade(FADE_SPEED);
 			}
 			else shrink();
 		}
 		else if (mIsInvalid) {
-			fade();
+			fade(FADE_SPEED);
 		}
 		
 		super.draw(mVMatrix, mProjMatrix);

@@ -55,6 +55,7 @@ public class Utilities {
 	        // If the compilation failed, delete the shader.
 	        if (compileStatus[0] == 0)
 	        {
+	        	Log.v(TAG, "Shader fail info: " + GLES20.glGetShaderInfoLog(shaderHandle));
 	            GLES20.glDeleteShader(shaderHandle);
 	            shaderHandle = 0;
 	        }
@@ -63,7 +64,7 @@ public class Utilities {
 	     
 	    if (shaderHandle == 0)
 	    {
-	        throw new RuntimeException("Error creating vertex shader.");
+	        throw new RuntimeException("Error creating shader " + type);
 	    }
 	    return shaderHandle;
 	}

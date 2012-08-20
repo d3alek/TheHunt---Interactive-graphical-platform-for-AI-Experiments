@@ -47,9 +47,9 @@ public class PreyData {
 	
 	protected final int STRIDE_BYTES = D3GLES20.COORDS_PER_VERTEX * Utilities.BYTES_PER_FLOAT;
 	protected float[] preyColor = {
-		0.0f, 0.0f, 0.0f, 0.0f };
+		0.0f, 0.0f, 0.0f, 1.0f };
 	protected final float[] preyColorDefault = {
-		0.0f, 0.0f, 0.0f, 0.0f };
+		0.0f, 0.0f, 0.0f, 1.0f };
 	protected static final float preySize = 1.0f;
 	protected final float bodyLength = 0.1f * preySize;
 	

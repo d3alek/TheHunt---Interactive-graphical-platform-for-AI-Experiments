@@ -23,7 +23,7 @@ public class D3Quad extends D3Shape {
 		0.5f, 0.5f, 0.0f,
 	};
 	
-	protected static final float[] colorDefault = {0.0f, 1.0f, 0.0f, 0.0f};
+	protected static final float[] colorDefault = {0.0f, 1.0f, 0.0f, 1.0f};
 	private static final String TAG = "D3Quad";
 	
 	private static FloatBuffer makeVerticesBuffer(float width, float height, float[] verticesDefault) {

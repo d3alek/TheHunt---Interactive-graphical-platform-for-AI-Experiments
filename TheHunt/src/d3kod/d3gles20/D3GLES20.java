@@ -1,11 +1,15 @@
 package d3kod.d3gles20;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map.Entry;
 
 import d3kod.d3gles20.shapes.D3Circle;
 import d3kod.d3gles20.shapes.D3Quad;
 import d3kod.d3gles20.shapes.D3Shape;
 import d3kod.d3gles20.shapes.D3TempCircle;
+import d3kod.thehunt.prey.D3ExpiringShape;
+import d3kod.thehunt.prey.FlopText;
 
 import android.opengl.GLES20;
 import android.util.Log;
@@ -41,10 +45,12 @@ public class D3GLES20 {
 	private static int defFragmentShaderHandle = -1;
 	
 	private static HashMap<Integer, D3Shape> shapes;
+	private static HashMap<Integer, D3ExpiringShape> expiringShapes;
 	private static int shapesNum = 0;
 	
 	public static void init() {
 		shapes = new HashMap<Integer, D3Shape>();
+		expiringShapes = new HashMap<Integer, D3ExpiringShape>();
 		shapesNum = 0;
 	}
 
@@ -62,6 +68,17 @@ public class D3GLES20 {
 		for (D3Shape shape: shapes.values()) {
 			shape.draw(mVMatrix, mProjMatrix);
 		}
+		
+		D3ExpiringShape shape;
+		ArrayList<Integer> toRemove = new ArrayList<Integer>();
+		for (Entry<Integer, D3ExpiringShape> shapeEntry: expiringShapes.entrySet()) {
+			shape = shapeEntry.getValue();
+			shape.draw(mVMatrix, mProjMatrix);
+			if (shape.isExpired()) toRemove.add(shapeEntry.getKey());
+		}
+		for (Integer key: toRemove) {
+			expiringShapes.remove(key);
+		}
 	}
 	
 	public static int putShape(D3Shape shape) {
@@ -70,6 +87,14 @@ public class D3GLES20 {
 		}
 		shapes.put(shapesNum, shape);
 		return shapesNum++;
+	}
+	
+	public static void putExpiringShape(D3ExpiringShape shape) {
+		int key = 0;
+		while (expiringShapes.containsKey(key)) {
+			key++;
+		}
+		expiringShapes.put(key, shape);
 	}
 	
 	public static void removeShape(int key) {
@@ -83,7 +108,9 @@ public class D3GLES20 {
 
 	public static void clearGraphics() {
 		shapes.clear();
+		expiringShapes.clear();
 		shapes = null;
+		expiringShapes = null;
 	}
 	public static void clean() {
 		GLES20.glDeleteShader(defVertexShaderHandle);
