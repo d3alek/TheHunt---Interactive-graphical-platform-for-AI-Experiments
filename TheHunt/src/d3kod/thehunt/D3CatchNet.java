@@ -2,9 +2,9 @@ package d3kod.thehunt;
 
 import android.opengl.GLES20;
 import android.opengl.Matrix;
-import android.util.Log;
 import d3kod.d3gles20.D3GLES20;
 import d3kod.d3gles20.D3Maths;
+import d3kod.d3gles20.TextureManager;
 import d3kod.d3gles20.Utilities;
 import d3kod.d3gles20.shapes.D3Path;
 
@@ -52,10 +52,15 @@ public class D3CatchNet extends D3Path {
 	private float[] mModelMatrix;
 
 	private boolean mIsInvalid;
+
+	private TextureManager tm;
+
+	private boolean snatched;
 	
-	public D3CatchNet() {
+	public D3CatchNet(TextureManager tm) {
 		super(beingBuiltColor.clone());
-		mIsClosed = mIsInvalid = false;
+		this.tm = tm;
+		mIsClosed = mIsInvalid = snatched = false;
 		mCenterX = -100; mCenterY = -100; mRadius = 0;
 	}
 
@@ -63,6 +68,9 @@ public class D3CatchNet extends D3Path {
 		if (!mIsClosed) return;
 		mScale = mScale*(1-mShrinkSpeed);
 		Matrix.scaleM(mModelMatrix, 0, (1-mShrinkSpeed), (1-mShrinkSpeed), 0);
+//		if (getRadius() <= MIN_RADIUS) {
+//			D3GLES20.putExpiringShape(new SnatchText(mCenterX, mCenterY, tm));
+//		}
 	}
 	
 	public void setInvalid() {
@@ -185,8 +193,12 @@ public class D3CatchNet extends D3Path {
 	
 	public void draw(float[] mVMatrix, float[] mProjMatrix) {
 		if (mIsClosed) {
-			if (getRadius() < MIN_RADIUS) {
+			if (getRadius() <= MIN_RADIUS) {
 				fade(FADE_SPEED);
+				if (!snatched) {
+					D3GLES20.putExpiringShape(new SnatchText(mCenterX, mCenterY, tm));
+					snatched = true;
+				}
 			}
 			else shrink();
 		}

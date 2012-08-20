@@ -9,7 +9,9 @@ import d3kod.thehunt.R;
 public class TextureManager {
 	public enum Texture {
 		FLOP_TEXT(R.drawable.flop_text_small),
-		PLOK_TEXT(R.drawable.plok_text);
+		PLOK_TEXT(R.drawable.plok_text),
+		SNATCH_TEXT(R.drawable.snatch_text), 
+		CATCH_TEXT(R.drawable.catch_text);
 		
 		private int mId;
 
@@ -33,7 +35,7 @@ public class TextureManager {
 	
 	public int getTextureHandle(Texture texture) {
 		if (mLoadedTextures.containsKey(texture)) {
-			Log.v(TAG, "Texture already loaded, get it from cache " + texture);
+//			Log.v(TAG, "Texture already loaded, get it from cache " + texture);
 			
 		}
 		else {
@@ -41,5 +43,9 @@ public class TextureManager {
 			mLoadedTextures.put(texture, TextureHelper.loadTexture(mContext, texture.getId()));
 		}
 		return mLoadedTextures.get(texture);
+	}
+
+	public void clear() {
+		mLoadedTextures.clear();
 	}
 }

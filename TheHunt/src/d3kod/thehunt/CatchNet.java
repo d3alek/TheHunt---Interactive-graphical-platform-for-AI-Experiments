@@ -2,6 +2,7 @@ package d3kod.thehunt;
 
 import android.util.Log;
 import d3kod.d3gles20.D3GLES20;
+import d3kod.d3gles20.TextureManager;
 import d3kod.thehunt.environment.Environment;
 import d3kod.thehunt.prey.Prey;
 
@@ -21,21 +22,24 @@ public class CatchNet {
 	private Environment mEnv;
 //	private boolean isInvalid;
 	private boolean notShown;
+	private TextureManager tm;
 
-	public CatchNet(Environment env) {
+	public CatchNet(Environment env, TextureManager tm) {
 		mEnv = env;
+		this.tm = tm;
 	}
 	
 	public void update() {
 		if (mGraphic == null) return;
 		if (mGraphic.fadeDone()) {
+			
 			mGraphic = null;
 			D3GLES20.removeShape(mGraphicIndex);
 			
 			if (mCaughtPrey != null) {
 				Log.v(TAG, "Prey is in net!!! YAY");
 				Log.v(TAG, "Let it go now...");
-				mCaughtPrey.release();
+//				mCaughtPrey.release();
 			}
 		}
 		
@@ -54,7 +58,7 @@ public class CatchNet {
 //		isInvalid = false;
 		notShown = false;
 		
-		mGraphic = new D3CatchNet(); //beingBuiltColor
+		mGraphic = new D3CatchNet(tm); //beingBuiltColor
 		mGraphicIndex = D3GLES20.putShape(mGraphic);
 		mCaughtPrey = null;
 		

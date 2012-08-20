@@ -62,12 +62,15 @@ public class D3GLES20 {
 	public static void drawAll(float[] mVMatrix, float[] mProjMatrix,
 			float interpolation) {
 		if (shapes == null) {
-			Log.v(TAG, "Shapes are null!");
+			Log.w(TAG, "Shapes are null in drawAll!");
 			return;
 		}
-		for (D3Shape shape: shapes.values()) {
-			shape.draw(mVMatrix, mProjMatrix);
+		synchronized (shapes) {
+			for (D3Shape shape: shapes.values()) {
+				shape.draw(mVMatrix, mProjMatrix);
+			}
 		}
+		
 		
 		D3FadingShape shape;
 		ArrayList<Integer> toRemove = new ArrayList<Integer>();
@@ -82,6 +85,10 @@ public class D3GLES20 {
 	}
 	
 	public static int putShape(D3Shape shape) {
+		if (shapes == null) {
+			Log.w(TAG, "Shapes are null in putShape!");
+			return 0;
+		}
 		while (shapes.containsKey(shapesNum)) {
 			shapesNum++;
 		}
@@ -90,6 +97,11 @@ public class D3GLES20 {
 	}
 	
 	public static void putExpiringShape(D3FadingShape shape) {
+		if (expiringShapes == null) {
+			Log.w(TAG, "expiringShapes are null in putExpiringShape!");
+			return;
+		}
+		
 		int key = 0;
 		while (expiringShapes.containsKey(key)) {
 			key++;
@@ -98,11 +110,19 @@ public class D3GLES20 {
 	}
 	
 	public static void removeShape(int key) {
+		if (shapes == null) {
+			Log.w(TAG, "Shapes are null in removeShape!");
+			return;
+		}
 		shapes.remove(key);
 	}
 
 	public static void setShapePosition(int key, float x,
 			float y) {
+		if (shapes == null) {
+			Log.w(TAG, "Shapes are null in setShapePosition!");
+			return;
+		}
 		shapes.get(key).setPosition(x, y);
 	}
 
@@ -129,6 +149,10 @@ public class D3GLES20 {
 	}
 	
 	public static boolean contains(int key, float hX, float hY) {
+		if (shapes == null) {
+			Log.w(TAG, "Shapes are null in contains!");
+			return false;
+		}
 		return D3Maths.circleContains(shapes.get(key).getCenterX(), shapes.get(key).getCenterY(), 
 				shapes.get(key).getRadius(), hX, hY);
 	}

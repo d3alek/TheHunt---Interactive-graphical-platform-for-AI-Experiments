@@ -41,6 +41,8 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 	private CatchNet mNet;
 	
     public static final int TICKS_PER_SECOND = 30;
+    private static final int RELEASE_DELAY = 1; // in seconds
+	private static final int RELEASE_TICKS = RELEASE_DELAY*TICKS_PER_SECOND;
     private final int MILLISEC_PER_TICK = 1000 / TICKS_PER_SECOND;
     private final int MAX_FRAMESKIP = 5;
 	private long next_game_tick;
@@ -53,6 +55,7 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 	private boolean mGraphicsInitialized = false;
 	private HashMap<Integer, D3Shape> mShapes;
 	private TextureManager tm;
+	private int releaseCountdown;
 	public static float[] bgColor = {
 			0.8f, 0.8f, 0.8f, 1.0f};
 
@@ -93,7 +96,7 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 		
 		if (mEnv == null) mEnv = new Environment(width, height);
 	    if (mPrey == null) mPrey = new Prey(EnvironmentData.mScreenWidth, EnvironmentData.mScreenHeight, mEnv, tm);
-	    if (mNet == null) mNet = new CatchNet(mEnv);
+	    if (mNet == null) mNet = new CatchNet(mEnv, tm);
 	    if (!mGraphicsInitialized ) {
 	    	mEnv.initGraphics(mContext);
 	    	mPrey.initGraphics();
@@ -151,6 +154,10 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 		if (SHOW_CIRCLE_CONTAINS_CHECKS && !mPrey.getCaught() && mNet.isBuilt()) {
 			tempCircle = D3GLES20.newContainsCheckCircle(mNet.getGraphicIndex(), preyPos.x, preyPos.y);
 		}
+		if (mPrey.getCaught()) {
+			releaseCountdown--;
+			if (releaseCountdown <= 0) mPrey.release();
+		}
 //		if (!mPrey.getCaught() && mNet.isBuilt() && D3GLES20.contains(mNet.getGraphicIndex(), preyPos.x, preyPos.y)) {
 		if (!mPrey.getCaught() && mNet.tryToCatch() && D3GLES20.contains(mNet.getGraphicIndex(), preyPos.x, preyPos.y)) {
 			Log.v(TAG, "Prey is caught!");
@@ -162,6 +169,8 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 					((TheHunt) mContext).mCaughtCounter.setText(mCaughtCounter + "");
 				}
 			});
+			D3GLES20.putExpiringShape(new CatchText(preyPos.x, preyPos.y, tm));
+			releaseCountdown = RELEASE_TICKS;
 		}
 		
 		mNet.update();
@@ -224,7 +233,9 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
     	//TODO: use sparseArray
     	mShapes = new HashMap<Integer, D3Shape>();
     	mShapes.putAll(D3GLES20.getShapes());
+    	Log.v(TAG, "Clearing graphics!");
     	D3GLES20.clearGraphics();
+    	tm.clear();
 	}
 	public void resume() {
 		next_game_tick = System.currentTimeMillis();
