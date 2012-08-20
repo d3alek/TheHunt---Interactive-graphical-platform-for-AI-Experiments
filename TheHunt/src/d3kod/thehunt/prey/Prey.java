@@ -11,6 +11,7 @@ import d3kod.d3gles20.D3GLES20;
 import d3kod.d3gles20.D3Maths;
 import d3kod.d3gles20.TextureManager;
 import d3kod.d3gles20.Utilities;
+import d3kod.thehunt.PlokText;
 import d3kod.thehunt.TheHuntRenderer;
 import d3kod.thehunt.environment.Environment;
 import d3kod.thehunt.environment.EnvironmentData;
@@ -436,6 +437,9 @@ public class Prey {
 		calcPosHead();
 		mWorldModel.update(mSensor.sense(mD.mPosHeadX, mD.mPosHeadY, mD.mPosX, mD.mPosY));
 		mWorldModel.recalcNearestFood();
+		
+		D3GLES20.putExpiringShape(new PlokText(mD.mPosX, mD.mPosY, tm));
+		
 //		mWorldModel.recalcNearestAlgae();
 	}
 

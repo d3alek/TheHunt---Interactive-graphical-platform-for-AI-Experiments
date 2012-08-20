@@ -5,10 +5,10 @@ import java.util.HashMap;
 import java.util.Map.Entry;
 
 import d3kod.d3gles20.shapes.D3Circle;
+import d3kod.d3gles20.shapes.D3FadingShape;
 import d3kod.d3gles20.shapes.D3Quad;
 import d3kod.d3gles20.shapes.D3Shape;
 import d3kod.d3gles20.shapes.D3TempCircle;
-import d3kod.thehunt.prey.D3ExpiringShape;
 import d3kod.thehunt.prey.FlopText;
 
 import android.opengl.GLES20;
@@ -45,12 +45,12 @@ public class D3GLES20 {
 	private static int defFragmentShaderHandle = -1;
 	
 	private static HashMap<Integer, D3Shape> shapes;
-	private static HashMap<Integer, D3ExpiringShape> expiringShapes;
+	private static HashMap<Integer, D3FadingShape> expiringShapes;
 	private static int shapesNum = 0;
 	
 	public static void init() {
 		shapes = new HashMap<Integer, D3Shape>();
-		expiringShapes = new HashMap<Integer, D3ExpiringShape>();
+		expiringShapes = new HashMap<Integer, D3FadingShape>();
 		shapesNum = 0;
 	}
 
@@ -69,9 +69,9 @@ public class D3GLES20 {
 			shape.draw(mVMatrix, mProjMatrix);
 		}
 		
-		D3ExpiringShape shape;
+		D3FadingShape shape;
 		ArrayList<Integer> toRemove = new ArrayList<Integer>();
-		for (Entry<Integer, D3ExpiringShape> shapeEntry: expiringShapes.entrySet()) {
+		for (Entry<Integer, D3FadingShape> shapeEntry: expiringShapes.entrySet()) {
 			shape = shapeEntry.getValue();
 			shape.draw(mVMatrix, mProjMatrix);
 			if (shape.isExpired()) toRemove.add(shapeEntry.getKey());
@@ -89,7 +89,7 @@ public class D3GLES20 {
 		return shapesNum++;
 	}
 	
-	public static void putExpiringShape(D3ExpiringShape shape) {
+	public static void putExpiringShape(D3FadingShape shape) {
 		int key = 0;
 		while (expiringShapes.containsKey(key)) {
 			key++;

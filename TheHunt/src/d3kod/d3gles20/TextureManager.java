@@ -8,7 +8,8 @@ import d3kod.thehunt.R;
 
 public class TextureManager {
 	public enum Texture {
-		FLOP_TEXT(R.drawable.flop_text_small);
+		FLOP_TEXT(R.drawable.flop_text_small),
+		PLOK_TEXT(R.drawable.plok_text);
 		
 		private int mId;
 

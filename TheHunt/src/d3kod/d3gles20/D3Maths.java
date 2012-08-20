@@ -6,6 +6,7 @@ public class D3Maths {
 	
 	public static final String TAG = "D3Maths";
 	public static final float EPSILON = 0.00001f;
+	public static final float PI = 3.14f;
 	
 	public static float angleBetweenVectors(float x1, float y1, float x2, float y2, float len1, float len2) {
 		return (float) Math.toDegrees(Math.acos((x1*x2 + y1*y2)/(len1*len2)));
