@@ -6,6 +6,7 @@ import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
 import android.content.Context;
+import android.graphics.Point;
 import android.graphics.PointF;
 import android.hardware.SensorEvent;
 import android.opengl.GLES20;
@@ -13,7 +14,9 @@ import android.opengl.GLSurfaceView;
 import android.opengl.Matrix;
 import android.util.Log;
 import d3kod.d3gles20.D3GLES20;
+import d3kod.d3gles20.D3Maths;
 import d3kod.d3gles20.TextureManager;
+import d3kod.d3gles20.Utilities;
 import d3kod.d3gles20.shapes.D3Shape;
 import d3kod.d3gles20.shapes.D3TempCircle;
 import d3kod.thehunt.environment.Environment;
@@ -56,13 +59,26 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 	private HashMap<Integer, D3Shape> mShapes;
 	private TextureManager tm;
 	private int releaseCountdown;
+	private static float mScreenToWorldRatioWidth;
+	private float mScreenToWorldRatioHeight;
+	private Point prev;
+	private static float mViewLeft;
+	private static float mViewBottom;
+	private static float mViewWidth;
+	private static float mViewHeight;
+	private static int mScreenWidthPx;
+	private static int mScreenHeightPx;
 	public static float[] bgColor = {
 			0.8f, 0.8f, 0.8f, 1.0f};
 
+	private final static int worldWidthPx = 1500;
+	private final static int worldHeightPx = 900;
+	
 	public void onSensorChanged(SensorEvent event) {
 		
 	}
 	
+//	@SuppressLint("NewApi")
 	public TheHuntRenderer(Context context) {
 		mContext = context;
 //		next_game_tick = System.currentTimeMillis();
@@ -74,6 +90,18 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 //	    mManuControl.setSize();
 	    mShapes = null;
 	    tm = new TextureManager(mContext);
+	    mCameraCenterX = mCameraCenterY = 0;
+//	    Display display = ((Activity) context).getWindowManager().getDefaultDisplay();
+//	    Point size = new Point();
+//	    if (android.os.Build.VERSION.SDK_INT >= 13) {
+//		    display.getSize(size);
+//		    mScreenWidthPx = size.x;
+//		    mScreenHeightPx = size.y;
+//	    }
+//	    else {
+//	    	mScreenWidthPx = display.getWidth();
+//	    	mScreenHeightPx = display.getHeight();
+//	    }
 	}
 
 	/**
@@ -83,8 +111,7 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 		GLES20.glClearColor(bgColor[0], bgColor[1], bgColor[2], bgColor[3]);
 		GLES20.glEnable(GLES20.GL_BLEND);
 		GLES20.glBlendFunc(GLES20.GL_ONE, GL10.GL_ONE_MINUS_SRC_ALPHA);
-	    Matrix.orthoM(mVMatrix, 0, -1, 1, -1, 1, 0.1f, 100f);
-//		Matrix.orthoM(mVMatrix, 0, -0.5f, 0.5f, -0.5f, 0.5f, 0.1f, 100f);
+//	    Matrix.orthoM(mVMatrix, 0, -1, 1, -1, 1, 0.1f, 100f);
 	}
 	/**
 	 * If the surface changes, reset the view
@@ -92,7 +119,23 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 	public void onSurfaceChanged(GL10 unused, int width, int height) {
 		GLES20.glViewport(0, 0, width, height);
 		
-		if (mEnv == null) mEnv = new Environment(width, height);
+		mScreenWidthPx = width;
+		mScreenHeightPx = height;
+		
+		mScreenToWorldRatioWidth = mScreenWidthPx/(float)worldWidthPx;
+		mScreenToWorldRatioHeight = mScreenHeightPx/(float)worldHeightPx;
+		
+	    mViewWidth = 2*mScreenToWorldRatioWidth*mScreenWidthPx/(float)mScreenHeightPx;
+	    mViewHeight = 2*mScreenToWorldRatioHeight;
+	    
+	    Log.v(TAG, "mScreenWidth " + mScreenWidthPx + " mScreenHeight " + mScreenHeightPx);
+		
+	    Matrix.orthoM(mVMatrix, 0, -mScreenToWorldRatioWidth,
+	    		mScreenToWorldRatioWidth, 
+	    		-mScreenToWorldRatioHeight, 
+	    		mScreenToWorldRatioHeight, 0.1f, 100f);
+	    
+		if (mEnv == null) mEnv = new Environment(worldWidthPx, worldHeightPx);
 	    if (mPrey == null) mPrey = new Prey(EnvironmentData.mScreenWidth, EnvironmentData.mScreenHeight, mEnv, tm);
 	    if (mNet == null) mNet = new CatchNet(mEnv, tm);
 	    if (!mGraphicsInitialized ) {
@@ -101,7 +144,7 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 	    	mGraphicsInitialized = true;
 	    }
 	    
-	    float ratio = (float) width / height;
+	    float ratio = (float) worldWidthPx / worldHeightPx;
 	    
 	    if (width > height) Matrix.frustumM(mProjMatrix, 0, -ratio, ratio, -1, 1, 1, 10);
 	    else Matrix.frustumM(mProjMatrix, 0, -1, 1, -1/ratio, 1/ratio, 1, 10);
@@ -176,6 +219,16 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 	}
 
 	private void drawWorld(float interpolation) {
+//		mViewLeft = -mScreenToWorldRatioWidth + mPrey.getPosition().x;
+//		mViewBottom = -mScreenToWorldRatioHeight + mPrey.getPosition().y;
+//		Matrix.orthoM(mVMatrix, 0, mViewLeft,
+//				mViewLeft+2*mScreenToWorldRatioWidth, 
+//				mViewBottom, 
+//				mViewBottom+mViewHeight, 0.1f, 100f);
+		
+		
+//		setViewMatrixCenter(mPrey.getPosition().x, mPrey.getPosition().y);
+		
 		int clearMask = GLES20.GL_COLOR_BUFFER_BIT;
 		
 		if (MultisampleConfigChooser.usesCoverageAa()) {
@@ -198,31 +251,49 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 		}
 	}
 
-	public void handleTouchDown(float x, float y) {
-		x = EnvironmentData.fromWorldWidth(x);
-		y = EnvironmentData.fromWorldHeight(y);
-
-		D3GLES20.putExpiringShape(new PlokText(x, y, tm));
-		
-		mNet.start(x, y);
+	private void setViewMatrixCenter(float x, float y) {
+		mViewLeft = -mScreenToWorldRatioWidth + x;
+		mViewBottom = -mScreenToWorldRatioHeight + y;
+		Matrix.orthoM(mVMatrix, 0, mViewLeft,
+				mViewLeft+2*mScreenToWorldRatioWidth, 
+				mViewBottom, 
+				mViewBottom+mViewHeight, 0.1f, 100f);
 	}
 
-	public void handleTouchMove(float x, float y) {
-		x = EnvironmentData.fromWorldWidth(x);
-		y = EnvironmentData.fromWorldHeight(y);
-		mNet.next(x, y);
+	public void handleTouchDown(float x, float y) {
+		PointF converted = fromScreenToWorld(x, y);
+		
+		mNet.start(converted.x, converted.y);
+	}
+
+	public void handleTouchMove(float x, float y, boolean doubleFingerSwipe) {
+		PointF converted = fromScreenToWorld(x, y);
+		if (doubleFingerSwipe) {
+			if (prev == null) {
+				prev = new Point((int)x, (int)y);
+				mNet.finish(converted.x, converted.y);
+			}
+			else {
+//				converted = fromScreenToWorld(Math.abs(), Math.abs());
+				
+				moveCamera(-(x - prev.x)/(float)mScreenWidthPx, (y - prev.y)/(float)mScreenHeightPx);
+			}
+			prev.set((int)x, (int)y);
+		}
+		else mNet.next(converted.x, converted.y);
 	}
 
 	public void handleTouchUp(float x, float y) {
-		x = EnvironmentData.fromWorldWidth(x);
-		y = EnvironmentData.fromWorldHeight(y);
-//		if (NET_WITH_TOUCH) {
-		mNet.finish(x, y);
-		if (mNet.notShown()) {
-			mEnv.putFood(x, y);
+		PointF converted = fromScreenToWorld(x, y);
+		if (prev != null) {
+			prev = null;
+			return;
 		}
-//			if (!mNet.isBuilt())
-//		}
+		mNet.finish(converted.x, converted.y);
+		if (mNet.notShown()) {
+			D3GLES20.putExpiringShape(new PlokText(converted.x, converted.y, tm));
+			mEnv.putFood(converted.x, converted.y);
+		}
 	}
 
 	public void pause() {
@@ -254,5 +325,39 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 	
 	public void release() {
 		// TODO stuff to release	
+	}
+
+	float[] normalizedInPoint = new float[4];
+	float[] outPoint = new float[4];
+	float[] mPVMatrix = new float[16];
+	private float mCameraCenterX;
+	private float mCameraCenterY;
+	
+	public PointF fromScreenToWorld(float touchX, float touchY) {
+		normalizedInPoint[0] = 2f*touchX/mScreenWidthPx - 1;
+		normalizedInPoint[1] = 2f*(mScreenHeightPx - touchY)/mScreenHeightPx - 1;
+		normalizedInPoint[2] = -1f;
+		normalizedInPoint[3] = 1f;
+		
+		Matrix.multiplyMM(mPVMatrix, 0, mProjMatrix, 0, mVMatrix, 0);
+		Matrix.invertM(mPVMatrix, 0, mPVMatrix, 0);
+		Matrix.multiplyMV(outPoint, 0, mPVMatrix, 0, normalizedInPoint, 0);
+		return new PointF(outPoint[0], outPoint[1]);
+	}
+
+	public void moveCamera(float dx, float dy) {
+		//TODO fix width bug, too narrow now
+		if (D3Maths.rectContains(0, 0, EnvironmentData.mScreenWidth-mViewWidth, 
+				EnvironmentData.mScreenHeight - mViewHeight, 
+				mCameraCenterX+dx, mCameraCenterY)) {
+			mCameraCenterX += dx;
+		}
+		if (D3Maths.rectContains(0, 0, EnvironmentData.mScreenWidth-mViewWidth, 
+				EnvironmentData.mScreenHeight - mViewHeight, 
+				mCameraCenterX, mCameraCenterY+dy)) {
+			Log.v(TAG, "Moving camera with " + dx + " " + dy);
+			mCameraCenterY += dy;
+		}
+		setViewMatrixCenter(mCameraCenterX, mCameraCenterY);
 	}
 }

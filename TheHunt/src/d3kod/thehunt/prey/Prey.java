@@ -2,6 +2,7 @@ package d3kod.thehunt.prey;
 
 import java.util.Random;
 
+import android.graphics.Point;
 import android.graphics.PointF;
 import android.opengl.GLES20;
 import android.opengl.Matrix;
@@ -382,9 +383,9 @@ public class Prey {
 		mD.bodyVertexBuffer = Utilities.newFloatBuffer(mD.bodyVerticesData);
 	}
 
-	public PointF getWorldPosition() {
-		return new PointF(EnvironmentData.toWorldWidth(mD.mPosX), EnvironmentData.toWorldHeight(mD.mPosY));
-	}
+//	public Point getWorldPosition() {
+//		return new Point(TheHuntRenderer.toScreenWidth(mD.mPosX), TheHuntRenderer.toScreenHeight(mD.mPosY));
+//	}
 
 	public PointF getPosition() {
 		return new PointF(mD.mPosX, mD.mPosY);

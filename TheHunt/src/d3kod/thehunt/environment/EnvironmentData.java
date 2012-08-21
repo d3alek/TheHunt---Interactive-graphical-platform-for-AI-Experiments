@@ -206,20 +206,4 @@ public class EnvironmentData {
 			fo.update();
 		}
 	}
-
-	public static float toWorldHeight(float y) {
-		return -(y - mScreenHeight/2)*realHeight/mScreenHeight;
-	}
-
-	public static float toWorldWidth(float x) {
-		return (x + mScreenWidth/2)*realWidth/mScreenWidth;
-	}
-
-	public static float fromWorldHeight(float y) {;
-		return -mScreenHeight*(y/realHeight) + mScreenHeight/2;
-	}
-
-	public static float fromWorldWidth(float x) {
-		return mScreenWidth*(x/realWidth) - mScreenWidth/2;
-	}
 }

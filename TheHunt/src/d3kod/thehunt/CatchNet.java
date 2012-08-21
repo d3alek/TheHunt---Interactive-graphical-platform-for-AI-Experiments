@@ -23,6 +23,9 @@ public class CatchNet {
 //	private boolean isInvalid;
 	private boolean notShown;
 	private TextureManager tm;
+	private float firstY;
+	private float firstX;
+	private boolean ploked;
 
 	public CatchNet(Environment env, TextureManager tm) {
 		mEnv = env;
@@ -61,7 +64,8 @@ public class CatchNet {
 		mGraphic = new D3CatchNet(tm); //beingBuiltColor
 		mGraphicIndex = D3GLES20.putShape(mGraphic);
 		mCaughtPrey = null;
-		
+		firstX = x; firstY = y;
+		ploked = false;
 		mGraphic.addVertex(x, y);
 	}
 
@@ -72,6 +76,10 @@ public class CatchNet {
 			mGraphic.setInvalid();
 		}
 		mGraphic.addVertex(x, y);
+		if (!ploked && mGraphic.getLength() >= MIN_LENGTH) {
+			D3GLES20.putExpiringShape(new PlokText(firstX, firstY, tm));
+			ploked = true;
+		}
 	}
 
 	public void finish(float x, float y) {
