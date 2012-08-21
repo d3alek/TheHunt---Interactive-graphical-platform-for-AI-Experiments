@@ -38,7 +38,7 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 	
 	private float[] mProjMatrix = new float[16]; 
 	private float[] mVMatrix = new float[16];
-	private long timePreviousNS;
+//	private long timePreviousNS;
 	private Environment mEnv;
 	public Prey mPrey;
 	private CatchNet mNet;
@@ -59,19 +59,20 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 	private HashMap<Integer, D3Shape> mShapes;
 	private TextureManager tm;
 	private int releaseCountdown;
-	private static float mScreenToWorldRatioWidth;
+	private float mScreenToWorldRatioWidth;
 	private float mScreenToWorldRatioHeight;
 	private Point prev;
-	private static float mViewLeft;
-	private static float mViewBottom;
-	private static float mViewWidth;
-	private static float mViewHeight;
+	private Camera mCamera;
+//	private static float mViewLeft;
+//	private static float mViewBottom;
+//	private static float mViewWidth;
+//	private static float mViewHeight;
 	private static int mScreenWidthPx;
 	private static int mScreenHeightPx;
 	public static float[] bgColor = {
 			0.8f, 0.8f, 0.8f, 1.0f};
 
-	private final static int worldWidthPx = 1500;
+	private final static int worldWidthPx = 1400;
 	private final static int worldHeightPx = 900;
 	
 	public void onSensorChanged(SensorEvent event) {
@@ -81,27 +82,12 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 //	@SuppressLint("NewApi")
 	public TheHuntRenderer(Context context) {
 		mContext = context;
-//		next_game_tick = System.currentTimeMillis();
-//		mslf = 0;
 	    mEnv = null;
 	    mPrey = null;
 	    mNet = null;
 	    mCaughtCounter = 0;
-//	    mManuControl.setSize();
 	    mShapes = null;
 	    tm = new TextureManager(mContext);
-	    mCameraCenterX = mCameraCenterY = 0;
-//	    Display display = ((Activity) context).getWindowManager().getDefaultDisplay();
-//	    Point size = new Point();
-//	    if (android.os.Build.VERSION.SDK_INT >= 13) {
-//		    display.getSize(size);
-//		    mScreenWidthPx = size.x;
-//		    mScreenHeightPx = size.y;
-//	    }
-//	    else {
-//	    	mScreenWidthPx = display.getWidth();
-//	    	mScreenHeightPx = display.getHeight();
-//	    }
 	}
 
 	/**
@@ -111,7 +97,6 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 		GLES20.glClearColor(bgColor[0], bgColor[1], bgColor[2], bgColor[3]);
 		GLES20.glEnable(GLES20.GL_BLEND);
 		GLES20.glBlendFunc(GLES20.GL_ONE, GL10.GL_ONE_MINUS_SRC_ALPHA);
-//	    Matrix.orthoM(mVMatrix, 0, -1, 1, -1, 1, 0.1f, 100f);
 	}
 	/**
 	 * If the surface changes, reset the view
@@ -124,16 +109,10 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 		
 		mScreenToWorldRatioWidth = mScreenWidthPx/(float)worldWidthPx;
 		mScreenToWorldRatioHeight = mScreenHeightPx/(float)worldHeightPx;
+		mCamera = new Camera(mScreenToWorldRatioWidth, 
+				mScreenToWorldRatioHeight, worldWidthPx/(float)worldHeightPx);
 		
-	    mViewWidth = 2*mScreenToWorldRatioWidth*mScreenWidthPx/(float)mScreenHeightPx;
-	    mViewHeight = 2*mScreenToWorldRatioHeight;
-	    
 	    Log.v(TAG, "mScreenWidth " + mScreenWidthPx + " mScreenHeight " + mScreenHeightPx);
-		
-	    Matrix.orthoM(mVMatrix, 0, -mScreenToWorldRatioWidth,
-	    		mScreenToWorldRatioWidth, 
-	    		-mScreenToWorldRatioHeight, 
-	    		mScreenToWorldRatioHeight, 0.1f, 100f);
 	    
 		if (mEnv == null) mEnv = new Environment(worldWidthPx, worldHeightPx);
 	    if (mPrey == null) mPrey = new Prey(EnvironmentData.mScreenWidth, EnvironmentData.mScreenHeight, mEnv, tm);
@@ -219,16 +198,6 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 	}
 
 	private void drawWorld(float interpolation) {
-//		mViewLeft = -mScreenToWorldRatioWidth + mPrey.getPosition().x;
-//		mViewBottom = -mScreenToWorldRatioHeight + mPrey.getPosition().y;
-//		Matrix.orthoM(mVMatrix, 0, mViewLeft,
-//				mViewLeft+2*mScreenToWorldRatioWidth, 
-//				mViewBottom, 
-//				mViewBottom+mViewHeight, 0.1f, 100f);
-		
-		
-//		setViewMatrixCenter(mPrey.getPosition().x, mPrey.getPosition().y);
-		
 		int clearMask = GLES20.GL_COLOR_BUFFER_BIT;
 		
 		if (MultisampleConfigChooser.usesCoverageAa()) {
@@ -238,26 +207,17 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 		
 		GLES20.glClear(clearMask);
 		
+		mVMatrix = mCamera.toViewMatrix();
+				
 		D3GLES20.drawAll(mVMatrix, mProjMatrix, interpolation);
-		
-//		mEnv.draw(mVMatrix, mProjMatrix, interpolation);
 		mPrey.draw(mVMatrix, mProjMatrix, interpolation);
-//		if (mNet.show()) mNet.draw(mVMatrix, mProjMatrix);
+		
 		if (SHOW_CIRCLE_CONTAINS_CHECKS) {
 			if (tempCircle != null) {
 				if (tempCircle.isExpired()) tempCircle = null;
 				else tempCircle.draw(mVMatrix, mProjMatrix);
 			}
 		}
-	}
-
-	private void setViewMatrixCenter(float x, float y) {
-		mViewLeft = -mScreenToWorldRatioWidth + x;
-		mViewBottom = -mScreenToWorldRatioHeight + y;
-		Matrix.orthoM(mVMatrix, 0, mViewLeft,
-				mViewLeft+2*mScreenToWorldRatioWidth, 
-				mViewBottom, 
-				mViewBottom+mViewHeight, 0.1f, 100f);
 	}
 
 	public void handleTouchDown(float x, float y) {
@@ -274,8 +234,6 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 				mNet.finish(converted.x, converted.y);
 			}
 			else {
-//				converted = fromScreenToWorld(Math.abs(), Math.abs());
-				
 				moveCamera(-(x - prev.x)/(float)mScreenWidthPx, (y - prev.y)/(float)mScreenHeightPx);
 			}
 			prev.set((int)x, (int)y);
@@ -330,8 +288,6 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 	float[] normalizedInPoint = new float[4];
 	float[] outPoint = new float[4];
 	float[] mPVMatrix = new float[16];
-	private float mCameraCenterX;
-	private float mCameraCenterY;
 	
 	public PointF fromScreenToWorld(float touchX, float touchY) {
 		normalizedInPoint[0] = 2f*touchX/mScreenWidthPx - 1;
@@ -346,18 +302,6 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 	}
 
 	public void moveCamera(float dx, float dy) {
-		//TODO fix width bug, too narrow now
-		if (D3Maths.rectContains(0, 0, EnvironmentData.mScreenWidth-mViewWidth, 
-				EnvironmentData.mScreenHeight - mViewHeight, 
-				mCameraCenterX+dx, mCameraCenterY)) {
-			mCameraCenterX += dx;
-		}
-		if (D3Maths.rectContains(0, 0, EnvironmentData.mScreenWidth-mViewWidth, 
-				EnvironmentData.mScreenHeight - mViewHeight, 
-				mCameraCenterX, mCameraCenterY+dy)) {
-			Log.v(TAG, "Moving camera with " + dx + " " + dy);
-			mCameraCenterY += dy;
-		}
-		setViewMatrixCenter(mCameraCenterX, mCameraCenterY);
+		mCamera.move(dx, dy);
 	}
 }
