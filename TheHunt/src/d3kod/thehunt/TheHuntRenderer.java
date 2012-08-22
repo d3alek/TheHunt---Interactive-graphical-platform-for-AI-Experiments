@@ -158,19 +158,12 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 	}		
 
 	private void updateWorld() {
+		PointF preyPos = mPrey.getPosition();
 		
-		//TODO: fix all these static shits
-//		((TheHunt) mContext).runOnUiThread(new Runnable() {
-//			public void run() {
-//				((TheHunt) mContext).mPreyState.setText(Planner.mState.toString());
-//			}
-//		});
-//		
-		PointF curDirDelta = mEnv.data.getTileFromPos(mPrey.getPosition()).getDir().getDelta();
+		PointF curDirDelta = mEnv.data.getTileFromPos(preyPos).getDir().getDelta();
 		mPrey.update(curDirDelta.x * EnvironmentData.currentStep, 
 				curDirDelta.y * EnvironmentData.currentStep);
 		
-		PointF preyPos = mPrey.getPosition();
 		if (SHOW_CIRCLE_CONTAINS_CHECKS && !mPrey.getCaught() && mNet.isBuilt()) {
 			tempCircle = D3GLES20.newContainsCheckCircle(mNet.getGraphicIndex(), preyPos.x, preyPos.y);
 		}
