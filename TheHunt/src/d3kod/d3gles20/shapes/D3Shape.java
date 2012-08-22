@@ -21,6 +21,8 @@ abstract public class D3Shape {
 	protected int mPositionHandle;
 	private int mColorHandle;
 	protected float[] mMVPMatrix = new float[16];
+	private float[] mProjMatrix = new float[16];
+	private float[] mVMatrix = new float[16];
 	
 	private FloatBuffer vertexBuffer;
 	private int drawType;
@@ -136,25 +138,13 @@ abstract public class D3Shape {
 		return VERTICES_NUM;
 	}
 	public boolean fadeDone() {
-//		for (int i = 0; i < 3; ++i) {
-//			if (D3Maths.compareFloats(color[i], TheHuntRenderer.bgColor[i]) != 0) {
-//				return false;
-//			}
-//		}
-//		return D3Maths.compareFloats(color[3], MIN_ALPHA) <= 0;
 		return fadeDone(MIN_ALPHA);
-//		return false;
 	}
 	public boolean fadeDone(float minAlpha) {
 		return D3Maths.compareFloats(color[3], minAlpha) <= 0;
 	}
 
 	public void fade(float fadeSpeed) {
-//		for (int i = 0; i < color.length; ++i) {
-//			int compare = D3Maths.compareFloats(color[i], TheHuntRenderer.bgColor[i]);
-//			if (compare < 0) color[i] += FADE_SPEED;
-//			else if (compare > 0) color[i] -= FADE_SPEED;
-//		}
 		if (color[3] > 0) {
 			color[3] -= fadeSpeed;
 		}
@@ -183,5 +173,28 @@ abstract public class D3Shape {
 
 	public FloatBuffer getVertexBuffer() {
 		return vertexBuffer;
+	}
+	public float[] getColor() {
+		return color;
+	}
+
+	public void drawBuffer(FloatBuffer vertexBuffer, float[] modelMatrix) {
+        Matrix.multiplyMM(mMVPMatrix, 0, mVMatrix, 0, modelMatrix, 0);
+        Matrix.multiplyMM(mMVPMatrix, 0, mProjMatrix, 0, mMVPMatrix, 0);
+		
+		GLES20.glVertexAttribPointer(mPositionHandle, D3GLES20.COORDS_PER_VERTEX, 
+        		GLES20.GL_FLOAT, false, STRIDE_BYTES, vertexBuffer);
+        GLES20.glEnableVertexAttribArray(mPositionHandle);
+        
+        GLES20.glUniformMatrix4fv(mMVPMatrixHandle, 1, false, mMVPMatrix, 0);
+        GLES20.glDrawArrays(drawType, 0, vertexBuffer.capacity()/D3GLES20.COORDS_PER_VERTEX);
+	}
+
+	public void setDrawProjMatrix(float[] projMatrix) {
+		mProjMatrix = projMatrix;
+	}
+
+	public void setDrawVMatrix(float[] vMatrix) {
+		mVMatrix = vMatrix;
 	}
 }

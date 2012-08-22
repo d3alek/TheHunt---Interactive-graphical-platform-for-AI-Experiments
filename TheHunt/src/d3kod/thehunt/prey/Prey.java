@@ -352,6 +352,8 @@ public class Prey {
 		mWorldModel.update(mSensor.sense(mD.mPosHeadX, mD.mPosHeadY, mD.mPosX, mD.mPosY));
 		mWorldModel.recalcNearestFood();
 		
+		mGraphic.reset();
+		
 		D3GLES20.putExpiringShape(new PlokText(mD.mPosX, mD.mPosY, tm));
 	}
 

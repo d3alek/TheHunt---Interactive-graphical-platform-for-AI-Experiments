@@ -4,15 +4,16 @@ import java.nio.FloatBuffer;
 
 import android.opengl.GLES20;
 import android.opengl.Matrix;
+import android.util.Log;
 import d3kod.d3gles20.D3GLES20;
 import d3kod.d3gles20.D3Maths;
 import d3kod.d3gles20.Utilities;
 import d3kod.d3gles20.shapes.D3Shape;
 import d3kod.thehunt.TheHuntRenderer;
-import d3kod.thehunt.prey.planner.Planner;
 
 public class D3Prey extends D3Shape {
-
+	private static final String TAG = "D3Prey";
+	
 	protected static float[] preyColor = {
 			0.0f, 0.0f, 0.0f, 1.0f };
 	protected final static float[] preyColorDefault = {
@@ -144,12 +145,15 @@ public class D3Prey extends D3Shape {
 	protected int mLeftFootAngle = 0;
 	protected int mRightFootAngle = 0;
 	
+    int rib1PosIndex;
+    int rib2PosIndex;
+	
 	private PreyData mD;
 	
 	protected D3Prey(PreyData data) {
-		super(preyColor, GLES20.GL_LINE_STRIP, false);
+		super(null, GLES20.GL_LINE_STRIP, false);
+		super.setColor(preyColor);
 		mD = data;
-//		mModelMatrix = new float[16];
 		Matrix.setIdentityM(mModelMatrix, 0);
 		
 		headVerticesData = calcHeadVerticesData();
@@ -166,6 +170,13 @@ public class D3Prey extends D3Shape {
 		headVertexBuffer = Utilities.newFloatBuffer(headVerticesData);
 		eyeVertexBuffer = Utilities.newFloatBuffer(eyeVertexData);
 		ribVertexBuffer = Utilities.newFloatBuffer(ribVerticesData);
+		
+		bodyVerticesData = D3Maths.quadBezierCurveVertices(bodyStart4, bodyB4, bodyC4, bodyEnd4, detailsStep, bodyLength);
+		bodyVerticesNum = bodyVerticesData.length/D3GLES20.COORDS_PER_VERTEX;
+		bodyVertexBuffer = Utilities.newFloatBuffer(bodyVerticesData);
+		
+        rib1PosIndex = (1*bodyVerticesNum/4)*D3GLES20.COORDS_PER_VERTEX;
+        rib2PosIndex = (3*bodyVerticesNum/4-2)*D3GLES20.COORDS_PER_VERTEX;
 		
 		int vertexShaderHandle = Utilities.loadShader(GLES20.GL_VERTEX_SHADER, vertexShaderCode);
         int fragmentShaderHandle = Utilities.loadShader(GLES20.GL_FRAGMENT_SHADER, fragmentShaderCode);
@@ -213,17 +224,78 @@ public class D3Prey extends D3Shape {
 		headVerticesNum = headVerticesData.length / D3GLES20.COORDS_PER_VERTEX;
 		return headVerticesData;
 	}
-	
+
+	float bodyStartAnglePredicted, bodyBAnglePredicted, bodyCAnglePredicted, bodyEndAnglePredicted;
+    float mPredictedPosX, mPredictedPosY;
+
+	private float[] rib1Pos = new float[3];
+	private float[] rib2Pos = new float[3];
+    
 	@Override
 	public void draw(float[] mVMatrix, float[] mProjMatrix, float interpolation) {
-		
 		if (mD.mIsCaught) {
-			if (colorIsBgColor()) return;
-			fadeColor();
+			if (fadeDone()) return;
+			fade(colorFadeSpeed);
 		}
 		
-        // Interpolate
-		float bodyStartAnglePredicted, bodyBAnglePredicted, bodyCAnglePredicted, bodyEndAnglePredicted;
+		calcPredicted(interpolation);
+        
+        updateBodyVertexBuffer();
+        
+        // Start Drawing
+        super.setDrawType(GLES20.GL_LINE_STRIP);
+        super.setDrawVMatrix(mVMatrix);
+        super.setDrawProjMatrix(mProjMatrix);
+        
+		GLES20.glUseProgram(mProgram);
+		
+        GLES20.glUniform4fv(mColorHandle, 1, super.getColor(), 0);
+        GLES20.glEnableVertexAttribArray(mColorHandle);
+        
+        // Calculate Model Matrix
+        Matrix.setIdentityM(mModelMatrix, 0);
+        Matrix.translateM(mModelMatrix , 0, mPredictedPosX, mPredictedPosY, 0);
+        
+		// Body
+        super.drawBuffer(bodyVertexBuffer, mModelMatrix);
+        
+        rib1Pos[0] = bodyVerticesData[rib1PosIndex];
+        rib1Pos[1] = bodyVerticesData[rib1PosIndex + 1];
+        
+        rib2Pos[0] = bodyVerticesData[rib2PosIndex];
+        rib2Pos[1] = bodyVerticesData[rib2PosIndex + 1];
+        
+        Matrix.translateM(mRibsModelMatrix, 0, mModelMatrix, 0, rib1Pos[0], rib1Pos[1], rib1Pos[2]);
+        Matrix.rotateM(mRibsModelMatrix, 0, bodyBAnglePredicted, 0, 0, 1);
+        super.drawBuffer(ribVertexBuffer, mRibsModelMatrix);
+        
+        Matrix.translateM(mRibsModelMatrix, 0, mModelMatrix, 0, rib2Pos[0], rib2Pos[1], rib2Pos[2]);
+        Matrix.rotateM(mRibsModelMatrix, 0, bodyCAnglePredicted, 0, 0, 1);
+        super.drawBuffer(ribVertexBuffer, mRibsModelMatrix);
+        
+        Matrix.rotateM(mFeetModelMatrix, 0, mModelMatrix, 0, bodyEndAnglePredicted, 0, 0, 1);
+        Matrix.translateM(mFeetModelMatrix, 0, 
+        		leftFootPosition[0], leftFootPosition[1], 0);
+        Matrix.rotateM(mFeetModelMatrix, 0, mLeftFootAngle, 0, 0, 1);
+        super.drawBuffer(leftFinVertexBuffer, mFeetModelMatrix);
+        
+        Matrix.rotateM(mFeetModelMatrix, 0, mModelMatrix, 0, bodyEndAnglePredicted, 0, 0, 1);
+        Matrix.translateM(mFeetModelMatrix, 0, 
+        		leftFootPosition[0], leftFootPosition[1], 0);
+        Matrix.rotateM(mFeetModelMatrix, 0, mRightFootAngle, 0, 0, 1);
+        super.drawBuffer(rightFinVertexBuffer, mFeetModelMatrix);
+        
+        Matrix.rotateM(mHeadModelMatrix, 0, mModelMatrix, 0, bodyStartAnglePredicted, 0, 0, 1);
+        Matrix.translateM(mHeadModelMatrix , 0, 
+        		headPosition[0], headPosition[1], 0);
+        super.drawBuffer(headVertexBuffer, mHeadModelMatrix);
+        
+        Matrix.translateM(mHeadModelMatrix , 0, eyePosition[0], eyePosition[1], 0);
+        super.setDrawType(GLES20.GL_LINE_LOOP);
+        super.drawBuffer(eyeVertexBuffer, mHeadModelMatrix);
+	}
+	
+	private void calcPredicted(float interpolation) {
 		if (angleInterpolation) {
 			bodyStartAnglePredicted = mD.bodyStartAngle + mD.bodyStartAngleRot * interpolation;
 			bodyBAnglePredicted = mD.bodyBAngle + mD.bodyBAngleRot * interpolation;
@@ -236,6 +308,17 @@ public class D3Prey extends D3Shape {
 			bodyCAnglePredicted = mD.bodyCAngle;
 			bodyEndAnglePredicted = mD.bodyEndAngle;
 		}
+		
+        if (posInterpolation) {
+        	mPredictedPosX = mD.mPosX + mD.vx*interpolation; 
+        	mPredictedPosY = mD.mPosY + mD.vy*interpolation;
+        }
+        else {
+        	mPredictedPosX = mD.mPosX; mPredictedPosY = mD.mPosY;
+        }
+	}
+
+	private void updateBodyVertexBuffer() {
         Matrix.setIdentityM(mBodyStartRMatrix, 0);
         Matrix.setIdentityM(mBodyBRMatrix, 0);
         Matrix.setIdentityM(mBodyCRMatrix, 0);
@@ -244,171 +327,22 @@ public class D3Prey extends D3Shape {
         Matrix.rotateM(mBodyBRMatrix, 0, bodyBAnglePredicted, 0, 0, 1);
         Matrix.rotateM(mBodyCRMatrix, 0, bodyCAnglePredicted, 0, 0, 1);
         Matrix.rotateM(mBodyEndRMatrix, 0, bodyEndAnglePredicted, 0, 0, 1);
-		
-        float mPredictedPosX, mPredictedPosY;
-        if (posInterpolation) {
-        	mPredictedPosX = mD.mPosX + mD.vx*interpolation; 
-        	mPredictedPosY = mD.mPosY + mD.vy*interpolation;
-        }
-        else {
-        	mPredictedPosX = mD.mPosX; mPredictedPosY = mD.mPosY;
-        }
         
-        // Rotate the body vertices
-        
-        updateBodyVertexBuffer();
-        
-        // Start Drawing
-        
-		GLES20.glUseProgram(mProgram);
-		
-        GLES20.glUniform4fv(mColorHandle, 1, preyColor , 0);
-        GLES20.glEnableVertexAttribArray(mColorHandle);
-        
-		// Body
-        
-        Matrix.setIdentityM(mModelMatrix, 0);
-        Matrix.translateM(mModelMatrix , 0, mPredictedPosX, mPredictedPosY, 0);
-        Matrix.multiplyMM(mMVPMatrix, 0, mVMatrix, 0, mModelMatrix, 0);
-        Matrix.multiplyMM(mMVPMatrix, 0, mProjMatrix, 0, mMVPMatrix, 0);
-        
-        GLES20.glVertexAttribPointer(mPositionHandle, D3GLES20.COORDS_PER_VERTEX, 
-        		GLES20.GL_FLOAT, false, STRIDE_BYTES, bodyVertexBuffer);
-        GLES20.glEnableVertexAttribArray(mPositionHandle);
-        
-        GLES20.glUniformMatrix4fv(mMVPMatrixHandle, 1, false, mMVPMatrix, 0);
-        GLES20.glDrawArrays(GLES20.GL_LINE_STRIP, 0, bodyVerticesNum);
-        
-        // Ribs
-  
-//        mD.mRibsModelMatrix = mD.mModelMatrix.clone();
-        int rib1PosIndex = (1*bodyVerticesNum/4)*D3GLES20.COORDS_PER_VERTEX;
-        int rib2PosIndex = (3*bodyVerticesNum/4-2)*D3GLES20.COORDS_PER_VERTEX;
-        float[] rib1Pos = {bodyVerticesData[rib1PosIndex], 
-        		bodyVerticesData[rib1PosIndex + 1],
-        		bodyVerticesData[rib1PosIndex + 2]
-        };
-        float[] rib2Pos = {bodyVerticesData[rib2PosIndex], 
-        		bodyVerticesData[rib2PosIndex + 1],
-        		bodyVerticesData[rib2PosIndex + 2]
-        };
-        mRibsModelMatrix = mModelMatrix.clone();
-        Matrix.translateM(mRibsModelMatrix, 0, rib1Pos[0], rib1Pos[1], rib1Pos[2]);
-//        Matrix.rotateM(mD.mRibsModelMatrix, 0, mD.mRibsModelMatrix, 0, bodyBAnglePredicted, 0, 0, 1);
-        Matrix.rotateM(mRibsModelMatrix, 0, bodyBAnglePredicted, 0, 0, 1);
-        Matrix.multiplyMM(mMVPMatrix, 0, mVMatrix, 0, mRibsModelMatrix, 0);
-        Matrix.multiplyMM(mMVPMatrix, 0, mProjMatrix, 0, mMVPMatrix, 0);
-        
-        GLES20.glUniformMatrix4fv(mMVPMatrixHandle, 1, false, mMVPMatrix, 0);
-        
-        GLES20.glVertexAttribPointer(mPositionHandle, D3GLES20.COORDS_PER_VERTEX, 
-        		GLES20.GL_FLOAT, false, STRIDE_BYTES, ribVertexBuffer);
-        GLES20.glEnableVertexAttribArray(mPositionHandle);
-        GLES20.glDrawArrays(GLES20.GL_LINE_STRIP, 0, ribVerticesNum);
-        
-        
-        mRibsModelMatrix = mModelMatrix.clone();
-        Matrix.translateM(mRibsModelMatrix, 0, rib2Pos[0], rib2Pos[1], rib2Pos[2]);
-//        Matrix.rotateM(mD.mRibsModelMatrix, 0, mD.mRibsModelMatrix, 0, bodyCAnglePredicted, 0, 0, 1);
-        Matrix.rotateM(mRibsModelMatrix, 0, bodyCAnglePredicted, 0, 0, 1);
-        Matrix.multiplyMM(mMVPMatrix, 0, mVMatrix, 0, mRibsModelMatrix, 0);
-        Matrix.multiplyMM(mMVPMatrix, 0, mProjMatrix, 0, mMVPMatrix, 0);
-        
-        GLES20.glUniformMatrix4fv(mMVPMatrixHandle, 1, false, mMVPMatrix, 0);
-        
-        GLES20.glVertexAttribPointer(mPositionHandle, D3GLES20.COORDS_PER_VERTEX, 
-        		GLES20.GL_FLOAT, false, STRIDE_BYTES, ribVertexBuffer);
-        GLES20.glEnableVertexAttribArray(mPositionHandle);
-        GLES20.glDrawArrays(GLES20.GL_LINE_STRIP, 0, ribVerticesNum);
-        
-        // Feet
-        
-        Matrix.rotateM(mFeetModelMatrix, 0, mModelMatrix, 0, bodyEndAnglePredicted, 0, 0, 1);
-        Matrix.translateM(mFeetModelMatrix, 0, 
-        		leftFootPosition[0], leftFootPosition[1], 0);
-        Matrix.rotateM(mFeetModelMatrix, 0, mLeftFootAngle, 0, 0, 1);
-        Matrix.multiplyMM(mMVPMatrix, 0, mVMatrix, 0, mFeetModelMatrix, 0);
-        Matrix.multiplyMM(mMVPMatrix, 0, mProjMatrix, 0, mMVPMatrix, 0);
-        
-        GLES20.glUniformMatrix4fv(mMVPMatrixHandle, 1, false, mMVPMatrix, 0);
-        
-        GLES20.glVertexAttribPointer(mPositionHandle, D3GLES20.COORDS_PER_VERTEX, 
-        		GLES20.GL_FLOAT, false, STRIDE_BYTES, leftFinVertexBuffer);
-        GLES20.glEnableVertexAttribArray(mPositionHandle);
-        GLES20.glDrawArrays(GLES20.GL_LINE_STRIP, 0, finVerticesNum);
-        
-        Matrix.rotateM(mFeetModelMatrix, 0, mModelMatrix, 0, bodyEndAnglePredicted, 0, 0, 1);
-        Matrix.translateM(mFeetModelMatrix, 0, 
-        		leftFootPosition[0], leftFootPosition[1], 0);
-        Matrix.rotateM(mFeetModelMatrix, 0, mRightFootAngle, 0, 0, 1);
-        Matrix.multiplyMM(mMVPMatrix, 0, mVMatrix, 0, mFeetModelMatrix, 0);
-        Matrix.multiplyMM(mMVPMatrix, 0, mProjMatrix, 0, mMVPMatrix, 0);
-        
-        GLES20.glUniformMatrix4fv(mMVPMatrixHandle, 1, false, mMVPMatrix, 0);
-        
-        GLES20.glVertexAttribPointer(mPositionHandle, D3GLES20.COORDS_PER_VERTEX, 
-        		GLES20.GL_FLOAT, false, STRIDE_BYTES, rightFinVertexBuffer);
-        GLES20.glEnableVertexAttribArray(mPositionHandle);
-        GLES20.glDrawArrays(GLES20.GL_LINE_STRIP, 0, finVerticesNum);
-        
-        // Head
-        Matrix.rotateM(mHeadModelMatrix, 0, mModelMatrix, 0, bodyStartAnglePredicted, 0, 0, 1);
-        Matrix.translateM(mHeadModelMatrix , 0, 
-        		headPosition[0], headPosition[1], 0);
-        Matrix.multiplyMM(mMVPMatrix, 0, mVMatrix, 0, mHeadModelMatrix, 0);
-        Matrix.multiplyMM(mMVPMatrix, 0, mProjMatrix, 0, mMVPMatrix, 0);
-        
-        GLES20.glUniformMatrix4fv(mMVPMatrixHandle, 1, false, mMVPMatrix, 0);
-        
-        GLES20.glVertexAttribPointer(mPositionHandle, D3GLES20.COORDS_PER_VERTEX, 
-        		GLES20.GL_FLOAT, false, STRIDE_BYTES, headVertexBuffer);
-        GLES20.glEnableVertexAttribArray(mPositionHandle);
-		GLES20.glDrawArrays(GLES20.GL_LINE_STRIP, 0, headVerticesNum );
-		
-		//EYE
-//        mHeadModelMatrix = mModelMatrix.clone();
-       
-        Matrix.translateM(mHeadModelMatrix , 0, 
-        		eyePosition[0], eyePosition[1], 0);
-        Matrix.multiplyMM(mMVPMatrix, 0, mVMatrix, 0, mHeadModelMatrix, 0);
-        Matrix.multiplyMM(mMVPMatrix, 0, mProjMatrix, 0, mMVPMatrix, 0);
-        
-        GLES20.glUniformMatrix4fv(mMVPMatrixHandle, 1, false, mMVPMatrix, 0);
-        
-		GLES20.glVertexAttribPointer(mPositionHandle, D3GLES20.COORDS_PER_VERTEX, 
-        		GLES20.GL_FLOAT, false, STRIDE_BYTES, eyeVertexBuffer);
-		GLES20.glEnableVertexAttribArray(mPositionHandle);
-		GLES20.glDrawArrays(GLES20.GL_LINE_LOOP, 0, eyeDetailsLevel);
-	}
-	
-	private void updateBodyVertexBuffer() {
 		Matrix.multiplyMV(bodyStartRot, 0, mBodyStartRMatrix, 0, bodyStart4, 0);
 		Matrix.multiplyMV(bodyBRot, 0, mBodyBRMatrix, 0, bodyB4, 0);
 		Matrix.multiplyMV(bodyCRot, 0, mBodyCRMatrix, 0, bodyC4, 0);
 		Matrix.multiplyMV(bodyEndRot, 0, mBodyEndRMatrix, 0, bodyEnd4, 0);
 		bodyVerticesData = D3Maths.quadBezierCurveVertices(bodyStartRot, bodyBRot, bodyCRot, bodyEndRot, detailsStep, bodyLength);
-		bodyVerticesNum = bodyVerticesData.length/D3GLES20.COORDS_PER_VERTEX;
-		bodyVertexBuffer = Utilities.newFloatBuffer(bodyVerticesData);
-	}
-	
-	private boolean colorIsBgColor() {
-		for (int i = 0; i < 3; ++i) {
-			if (D3Maths.compareFloats(preyColor[i], TheHuntRenderer.bgColor[i]) != 0) {
-				return false;
-			}
-		}
-		return true;
-	}
-
-	private void fadeColor() {
-		for (int i = 0; i < preyColor.length; ++i) {
-			preyColor[i] += colorFadeSpeed ;
-		}
+		bodyVertexBuffer.put(bodyVerticesData).position(0);
 	}
 	
 	@Override
 	public float getRadius() {
 		throw(new UnsupportedOperationException());
+	}
+
+	public void reset() {
+		super.setColor(preyColor);
 	}
 
 }
