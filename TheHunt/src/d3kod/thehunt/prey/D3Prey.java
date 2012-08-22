@@ -140,6 +140,7 @@ public class D3Prey extends D3Shape {
 	private float[] mModelMatrix = new float[16];
 	private float[] mMVPMatrix = new float[16];
 	private float[] mHeadModelMatrix = new float[16];
+	private float[] mEyeModelMatrix = new float[16];
 	
 	// depreciated 
 	protected int mLeftFootAngle = 0;
@@ -290,9 +291,9 @@ public class D3Prey extends D3Shape {
         		headPosition[0], headPosition[1], 0);
         super.drawBuffer(headVertexBuffer, mHeadModelMatrix);
         
-        Matrix.translateM(mHeadModelMatrix , 0, eyePosition[0], eyePosition[1], 0);
+        Matrix.translateM(mEyeModelMatrix, 0, mHeadModelMatrix , 0, eyePosition[0], eyePosition[1], 0);
         super.setDrawType(GLES20.GL_LINE_LOOP);
-        super.drawBuffer(eyeVertexBuffer, mHeadModelMatrix);
+        super.drawBuffer(eyeVertexBuffer, mEyeModelMatrix);
 	}
 	
 	private void calcPredicted(float interpolation) {
@@ -343,6 +344,10 @@ public class D3Prey extends D3Shape {
 
 	public void reset() {
 		super.setColor(preyColor);
+	}
+
+	public float[] getHeadModelMatrix() {
+		return mHeadModelMatrix;
 	}
 
 }

@@ -20,8 +20,8 @@ public class TheHunt extends Activity {
 	private TextView mActionDelay;
 	public TextView mPreyState;
 	protected TextView mMSperFrame;
-	private ToggleButton mPosInterpolation;
-	private ToggleButton mAngleInterpolation;
+//	private ToggleButton mPosInterpolation;
+//	private ToggleButton mAngleInterpolation;
 	protected TextView mCaughtCounter;
 
     @Override

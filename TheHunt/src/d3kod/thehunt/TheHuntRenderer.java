@@ -65,10 +65,6 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 	private float mScreenToWorldRatioHeight;
 	private Point prev;
 	private Camera mCamera;
-//	private static float mViewLeft;
-//	private static float mViewBottom;
-//	private static float mViewWidth;
-//	private static float mViewHeight;
 	private static int mScreenWidthPx;
 	private static int mScreenHeightPx;
 	public static float[] bgColor = {
@@ -136,13 +132,17 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 	public void onDrawFrame(GL10 unused) {
 
 		int loops = 0;
+		mslf = System.currentTimeMillis();
+		
 		while (next_game_tick < System.currentTimeMillis() && loops < MAX_FRAMESKIP) {
 			updateWorld();
 			next_game_tick += MILLISEC_PER_TICK;
 			loops++;
 		}
+		if (loops >= MAX_FRAMESKIP) {
+			Log.w(TAG, "Skipping " + loops + " frames!");
+		}
 		
-		mslf = System.currentTimeMillis();
 		float interpolation = (System.currentTimeMillis() + MILLISEC_PER_TICK - next_game_tick) / (float) MILLISEC_PER_TICK;
 		drawWorld(interpolation);
 		long mspf = System.currentTimeMillis() - mslf;

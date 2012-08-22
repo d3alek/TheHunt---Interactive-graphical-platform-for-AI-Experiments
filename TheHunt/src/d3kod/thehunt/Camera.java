@@ -29,13 +29,13 @@ public class Camera {
 	}
 
 	public void move(float dx, float dy) {
-		Log.v(TAG, "Moving " + dx + " " + dy + " "
-				+ EnvironmentData.mScreenWidth + " "
-				+ mWidth + " "
-				+ mWidth * mWidthToHeightRatio + " " 
-				+ EnvironmentData.mScreenHeight + " "
-				+ mHeight + " " + mCenterX + " " +
-				mCenterY);
+//		Log.v(TAG, "Moving " + dx + " " + dy + " "
+//				+ EnvironmentData.mScreenWidth + " "
+//				+ mWidth + " "
+//				+ mWidth * mWidthToHeightRatio + " " 
+//				+ EnvironmentData.mScreenHeight + " "
+//				+ mHeight + " " + mCenterX + " " +
+//				mCenterY);
 		recalcViewMatrix = false;
 		if (D3Maths.rectContains(0, 0, 
 				EnvironmentData.mScreenWidth - mWidth * mWidthToHeightRatio, 

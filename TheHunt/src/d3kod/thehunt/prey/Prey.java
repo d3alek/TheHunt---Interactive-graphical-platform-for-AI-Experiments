@@ -31,7 +31,6 @@ public class Prey {
 	private Environment mEnv;
 	private PreyData mD;
 	
-	
 	private int bodyBendCounter;
 	private int backFinAngle;
 	private boolean flopBack;
@@ -61,10 +60,9 @@ public class Prey {
 		if (mD.mIsCaught) return;
 		
 		calcPosHead();
-		
-		mWorldModel.update(mSensor.sense(mD.mPosHeadX, mD.mPosHeadY, mD.mPosX, mD.mPosY));
 
 		if (PreyData.AI) {
+			mWorldModel.update(mSensor.sense(mD.mPosHeadX, mD.mPosHeadY, mD.mPosX, mD.mPosY));
 			doAction(mPlanner.nextAction(mWorldModel));
 		}
 		move(dx, dy);
@@ -73,10 +71,10 @@ public class Prey {
 	private void calcPosHead() {
 		float[] posTemp = { 0.0f, bodyToHeadLength, 0.0f, 1.0f };
 		
-		Matrix.setIdentityM(mD.mHeadModelMatrix, 0);
-		Matrix.translateM(mD.mHeadModelMatrix, 0, mD.mPosX, mD.mPosY, 0);
-		Matrix.rotateM(mD.mHeadModelMatrix, 0, mD.bodyStartAngle, 0, 0, 1);
-		Matrix.multiplyMV(posTemp, 0, mD.mHeadModelMatrix, 0, posTemp, 0);
+		Matrix.setIdentityM(mD.mHeadPosMatrix, 0);
+		Matrix.translateM(mD.mHeadPosMatrix, 0, mD.mPosX, mD.mPosY, 0);
+		Matrix.rotateM(mD.mHeadPosMatrix, 0, mD.bodyStartAngle, 0, 0, 1);
+		Matrix.multiplyMV(posTemp, 0, mD.mHeadPosMatrix, 0, posTemp, 0);
 		
 		mD.mPosHeadX = posTemp[0]; 
 		mD.mPosHeadY = posTemp[1];

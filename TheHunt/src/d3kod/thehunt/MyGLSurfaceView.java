@@ -10,13 +10,10 @@ class MyGLSurfaceView extends GLSurfaceView {
 
     private static final String TAG = null;
 	public TheHuntRenderer mRenderer;
-	private float prevDoubleTapX;
-	private float prevDoubleTapY;
+//	private float prevDoubleTapX;
+//	private float prevDoubleTapY;
 	private boolean doubleFingerSwipe;
-//    public MyGLSurfaceView(Context context, )
-//    {
-//       
-//    }
+	
 	public MyGLSurfaceView(Context context, AttributeSet attrs){
 		super(context, attrs);
 
@@ -26,7 +23,7 @@ class MyGLSurfaceView extends GLSurfaceView {
         setEGLConfigChooser(new MultisampleConfigChooser());
         setRenderer(mRenderer = new TheHuntRenderer(context));
         setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
-        prevDoubleTapX = prevDoubleTapY = -1;
+//        prevDoubleTapX = prevDoubleTapY = -1;
         doubleFingerSwipe = false;
     }
     @Override
@@ -52,7 +49,7 @@ class MyGLSurfaceView extends GLSurfaceView {
 //    		Log.v(TAG, "Pointer Count up: " + count);
     		if (count == 2) {
     			doubleFingerSwipe = false;
-    			prevDoubleTapX = prevDoubleTapY = -1;
+//    			prevDoubleTapX = prevDoubleTapY = -1;
     		}
     		break;
     	}

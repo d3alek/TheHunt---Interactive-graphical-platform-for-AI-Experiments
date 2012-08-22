@@ -54,30 +54,30 @@ public class PreyData {
 	protected float vTailRight;
 	protected float forwardAngleSpeed;
 
-	protected int mMVPMatrixHandle;
-	protected int mPositionHandle;
+//	protected int mMVPMatrixHandle;
+//	protected int mPositionHandle;
 
 	protected float vx;
 	protected float vy;
 	protected float mPosY;
 	protected float mPosX;
 
-	protected float[] mModelMatrix = new float[16];
-//	protected float[] mRModelMatrix = new float[16];
-	protected float[] mMVPMatrix = new float[16];
-	protected float mPredictedPosX;
-	protected float mPredictedPosY;
-//	protected int headDelay;
-	protected float[] bodyStart4 = new float[4];
-	protected float[] bodyB4 = new float[4];
-	protected float[] bodyC4 = new float[4];
-	protected float[] bodyEnd4 = new float[4];
+//	protected float[] mModelMatrix = new float[16];
+////	protected float[] mRModelMatrix = new float[16];
+//	protected float[] mMVPMatrix = new float[16];
+//	protected float mPredictedPosX;
+//	protected float mPredictedPosY;
+////	protected int headDelay;
+//	protected float[] bodyStart4 = new float[4];
+//	protected float[] bodyB4 = new float[4];
+//	protected float[] bodyC4 = new float[4];
+//	protected float[] bodyEnd4 = new float[4];
 	
 	protected float mPosHeadX;
 	protected float mPosHeadY;
 	
-	protected float[] mHeadModelMatrix = new float[16];
-	protected int bodyVerticesNum;
+//	protected float[] mHeadModelMatrix = new float[16];
+//	protected int bodyVerticesNum;
 //	public float[][] delayV;
 //	public float targetAngleHead;
 	
@@ -90,9 +90,9 @@ public class PreyData {
 	public int bodyCAngleTarget;
 	public int bodyBAngleTarget;
 	public int bodyStartAngleTarget;
-	public float[] ribVerticesData;
-	public float[] mRibsModelMatrix = new float[16];
-	public float[] bodyVerticesData;
+//	public float[] ribVerticesData;
+//	public float[] mRibsModelMatrix = new float[16];
+//	public float[] bodyVerticesData;
 	public float rotateSpeedHead;
 //	public float rotateSpeedBody;
 	public float bodyBSpeed;
@@ -109,4 +109,6 @@ public class PreyData {
 	protected float bodyBAngleRot;
 	protected float bodyCAngleRot;
 	protected float bodyEndAngleRot;
+	
+	protected float[] mHeadPosMatrix = new float[16];
 }
