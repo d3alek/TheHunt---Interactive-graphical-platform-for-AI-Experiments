@@ -1,4 +1,4 @@
-package d3kod.thehunt;
+package d3kod.thehunt.floating_text;
 
 import java.util.Random;
 

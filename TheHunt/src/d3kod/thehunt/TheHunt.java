@@ -5,9 +5,9 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
+import android.view.WindowManager;
 import android.widget.TextView;
 import android.widget.ToggleButton;
-import d3kod.d3gles20.D3GLES20;
 import d3kod.thehunt.prey.Prey;
 import d3kod.thehunt.prey.PreyData;
 import d3kod.thehunt.prey.TurnAngle;
@@ -28,15 +28,13 @@ public class TheHunt extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
-        
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+
         setContentView(R.layout.clean_main);
-//        mBodyBendDelay = (TextView)findViewById(R.id.bodyBendDelay);
-//        mPreyState = (TextView)findViewById(R.id.preyState);
         mMSperFrame = (TextView)findViewById(R.id.msPerFrame);
         mCaughtCounter = (TextView)findViewById(R.id.caughtCounter);
 
         mGLView = (MyGLSurfaceView)findViewById(R.id.glSurfaceView);
-//        D3GLES20.init();
     }
     
     @Override

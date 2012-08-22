@@ -4,6 +4,7 @@ import android.util.Log;
 import d3kod.d3gles20.D3GLES20;
 import d3kod.d3gles20.TextureManager;
 import d3kod.thehunt.environment.Environment;
+import d3kod.thehunt.floating_text.PlokText;
 import d3kod.thehunt.prey.Prey;
 
 public class CatchNet {

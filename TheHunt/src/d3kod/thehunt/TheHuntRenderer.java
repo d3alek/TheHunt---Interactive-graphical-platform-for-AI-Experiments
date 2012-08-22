@@ -21,6 +21,8 @@ import d3kod.d3gles20.shapes.D3Shape;
 import d3kod.d3gles20.shapes.D3TempCircle;
 import d3kod.thehunt.environment.Environment;
 import d3kod.thehunt.environment.EnvironmentData;
+import d3kod.thehunt.floating_text.CatchText;
+import d3kod.thehunt.floating_text.PlokText;
 import d3kod.thehunt.prey.Prey;
 
 public class TheHuntRenderer implements GLSurfaceView.Renderer {

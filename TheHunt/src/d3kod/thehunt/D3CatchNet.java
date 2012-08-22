@@ -7,6 +7,7 @@ import d3kod.d3gles20.D3Maths;
 import d3kod.d3gles20.TextureManager;
 import d3kod.d3gles20.Utilities;
 import d3kod.d3gles20.shapes.D3Path;
+import d3kod.thehunt.floating_text.SnatchText;
 
 public class D3CatchNet extends D3Path {
 	

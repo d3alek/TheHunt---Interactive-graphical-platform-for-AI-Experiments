@@ -9,7 +9,7 @@ import d3kod.d3gles20.shapes.D3FadingShape;
 import d3kod.d3gles20.shapes.D3Quad;
 import d3kod.d3gles20.shapes.D3Shape;
 import d3kod.d3gles20.shapes.D3TempCircle;
-import d3kod.thehunt.prey.FlopText;
+import d3kod.thehunt.floating_text.FlopText;
 
 import android.opengl.GLES20;
 import android.util.Log;

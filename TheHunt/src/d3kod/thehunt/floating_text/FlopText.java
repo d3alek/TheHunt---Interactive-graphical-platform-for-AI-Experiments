@@ -1,7 +1,8 @@
-package d3kod.thehunt.prey;
+package d3kod.thehunt.floating_text;
 
 import d3kod.d3gles20.TextureManager;
 import d3kod.d3gles20.TextureManager.Texture;
+import d3kod.thehunt.prey.D3FadingText;
 
 public class FlopText extends D3FadingText {
 
