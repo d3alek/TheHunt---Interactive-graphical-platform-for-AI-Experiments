@@ -51,9 +51,9 @@ public class TheHunt extends Activity {
     	((ToggleButton)findViewById(R.id.aiToggle)).setChecked(PreyData.AI);
     	if (mBodyBendDelay != null) mBodyBendDelay.setText(PreyData.BODY_BENDS_PER_SECOND+"");
     	if (mActionDelay != null) mActionDelay.setText(PreyData.ACTIONS_PER_SECOND+"");
-    	if (mPosInterpolation != null) mPosInterpolation.setChecked(Prey.posInterpolation);//mPosInterpolation = (ToggleButton)findViewById(R.id.posInterpolationToggle);
-        if (mAngleInterpolation != null) mAngleInterpolation.setChecked(Prey.angleInterpolation);
-    	
+//    	if (mPosInterpolation != null) mPosInterpolation.setChecked(Prey.posInterpolation);//mPosInterpolation = (ToggleButton)findViewById(R.id.posInterpolationToggle);
+//        if (mAngleInterpolation != null) mAngleInterpolation.setChecked(Prey.angleInterpolation);
+//    	
     	mGLView.onResume();
     	super.onResume();
     }

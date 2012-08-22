@@ -77,6 +77,10 @@ abstract public class D3Shape {
 		Matrix.multiplyMV(mCenter, 0, getMMatrix(), 0, mCenterDefault, 0);
 	}
 	
+	public void draw(float[] mVMatrix, float[] mProjMatrix, float interpolation) {
+		draw(mVMatrix, mProjMatrix);
+	}
+	
 	public void draw(float[] mVMatrix, float[] mProjMatrix) {
 		//float[] mMMatrix, 
 		// Add program to OpenGL ES environment

@@ -67,7 +67,7 @@ public class D3GLES20 {
 		}
 		synchronized (shapes) {
 			for (D3Shape shape: shapes.values()) {
-				shape.draw(mVMatrix, mProjMatrix);
+				shape.draw(mVMatrix, mProjMatrix, interpolation);
 			}
 		}
 		

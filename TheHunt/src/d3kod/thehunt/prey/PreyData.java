@@ -45,119 +45,17 @@ public class PreyData {
 	public static float rotateSpeedBackMedium = 4*angleFlopBackMedium/MEDIUM_TICKS_BACK_PER_TURN;
 	public static float rotateSpeedBackLarge = 4*angleFlopBackLarge/LARGE_TICKS_BACK_PER_TURN;
 	
-	protected final int STRIDE_BYTES = D3GLES20.COORDS_PER_VERTEX * Utilities.BYTES_PER_FLOAT;
-	protected float[] preyColor = {
-		0.0f, 0.0f, 0.0f, 1.0f };
-	protected final float[] preyColorDefault = {
-		0.0f, 0.0f, 0.0f, 1.0f };
-	protected static final float preySize = 1.0f;
-	protected final float bodyLength = 0.1f * preySize;
-	
 	protected final int maxAngle = 60;
 	protected final int minAngle = 0;
-	protected int mLeftFootAngle = minAngle;
-	protected int mRightFootAngle = minAngle;
+	
 	protected float vHeadLeft;
 	protected float vHeadRight;
 	protected float vTailLeft;
 	protected float vTailRight;
 	protected float forwardAngleSpeed;
-	
-	//Head
-	protected final float headSize = 0.04f * preySize;
-//	protected float headScale = 0.04f * preySize;
-	protected final float[] headPosition = {
-			0, bodyLength/2 + headSize*0.4f, 0
-	};
-	
-	protected final float[] eyePosition = { -0.40f * headSize, 0.25f * headSize, 0.0f };
-	protected final float eyeSize = 0.25f*headSize;
-			
-	protected final float[] headPart1Start = { 0.0f, 1.0f, 0.0f };
-	protected final float[] headPart1B = { -0.5f, 0.75f, 0.0f };
-	protected final float[] headPart1C = { -1.0f, 0.5f, 0.0f };
-	protected final float[] headPart2Start = { -1.0f, -0.5f, 0.0f };
-	protected final float[] headPart2B = { -0.2f, -0.3f, 0.0f };
-	protected final float[] headPart2C = { 0.2f, -0.3f, 0.0f };
-	protected final float[] headPart3Start = { 1.0f, -0.5f, 0.0f };
-	protected final float[] headPart3B = { 1.0f, 0.5f, 0.0f };
-	protected final float[] headPart3C = { 0.5f, 0.75f, 0.0f };
-	protected final float detailsStep = 0.1f;
-	
-	// Body
 
-	protected final float[] bodyStart = { 0, 0.5f, 0};
-	protected final float[] bodyB = {0, 0.2f, 0};
-	protected final float[] bodyC = {0, -0.2f, 0};
-	protected final float[] bodyEnd = { 0, -0.5f, 0};
-	
-	// Ribs
-	
-	protected final float[] ribA = { -0.5f, -0.2f , 0 };
-	protected final float[] ribB = { -0.25f, 0 , 0 };
-	protected final float[] ribC = { 0.25f, 0 , 0 };
-	protected final float[] ribD = { 0.5f, -0.2f , 0 };
-	
-//	protected static final float[] rib1Pos = {
-//		bodyB[0]*bodyLength, bodyB[1]*bodyLength, bodyB[2]*bodyLength
-//	};
-//	protected static final float[] rib2Pos = {
-//		bodyC[0]*bodyLength, bodyC[1]*bodyLength, bodyC[2]*bodyLength
-//	};
-	
-	protected final float ribSize = 0.07f * preySize;
-	// Fins
-	protected final float finSize = 0.05f * preySize;
-	
-	protected final float[] rightFinStart = { 0.0f, 0.0f, 0.0f };
-	protected final float[] rightFinB = { 0.55f, -0.4f, 0.0f };
-	protected final float[] rightFinC = { 0.7f, -0.6f, 0.0f };
-	protected final float[] rightFinEnd = { 0.8f, -1.0f, 0.0f };
-	
-	protected final float[] leftFinStart = { rightFinStart[0], rightFinStart[1], 0.0f };
-	protected final float[] leftFinB = { -rightFinB[0], rightFinB[1], 0.0f };
-	protected final float[] leftFinC = { -rightFinC[0], rightFinC[1], 0.0f };
-	protected final float[] leftFinEnd = { -rightFinEnd[0], rightFinEnd[1], 0.0f };
-	
-	protected int finVerticesNum;
-	
-	protected float[] headVerticesData;
-	protected float[] leftFinVerticesData;
-	protected float[] rightFinVerticesData;
-	
-	protected final float[] leftFootPosition = {
-			0, -bodyLength/2, 0
-	};
-	
-	// Shaders
-	
-	protected final String vertexShaderCode =
-			"uniform mat4 u_MVPMatrix;      \n"
-		 
-		  + "attribute vec4 a_Position;     \n"
-		 
-		  + "void main()                    \n"
-		  + "{                              \n"
-		  + "   gl_Position = u_MVPMatrix   \n"
-		  + "               * a_Position;   \n"
-		  + "}                              \n";
-
-
-	protected final String fragmentShaderCode =
-			  "precision mediump float;       \n"
-			+ "uniform vec4 u_Color;          \n"
-			+ "void main()                    \n"
-			+ "{                              \n"
-			+ "   gl_FragColor = u_Color;     \n"
-			+ "}                              \n";
-//	public static final int delayVLength = 10;
-	
-//	protected float mAngleFins; // 0 for up, 90 for right, kept in range 0..360
-//	protected float mAngleHead;
-	protected int mProgram;
 	protected int mMVPMatrixHandle;
 	protected int mPositionHandle;
-	protected int mColorHandle;
 
 	protected float vx;
 	protected float vy;
@@ -169,30 +67,17 @@ public class PreyData {
 	protected float[] mMVPMatrix = new float[16];
 	protected float mPredictedPosX;
 	protected float mPredictedPosY;
-	protected float[] mFeetModelMatrix = new float[16];
-	protected FloatBuffer eyeVertexBuffer;
 //	protected int headDelay;
 	protected float[] bodyStart4 = new float[4];
 	protected float[] bodyB4 = new float[4];
 	protected float[] bodyC4 = new float[4];
 	protected float[] bodyEnd4 = new float[4];
-	protected float[] bodyStartRot = new float[4];
-	protected float[] bodyBRot = new float[4];
-	protected float[] bodyCRot = new float[4];
-	protected float[] bodyEndRot = new float[4];
 	
 	protected float mPosHeadX;
 	protected float mPosHeadY;
 	
-	protected float[] eyeVertexData;
-	protected int headVerticesNum;
-	protected FloatBuffer headVertexBuffer;
 	protected float[] mHeadModelMatrix = new float[16];
 	protected int bodyVerticesNum;
-	protected FloatBuffer bodyVertexBuffer;
-	protected FloatBuffer rightFinVertexBuffer;
-	protected FloatBuffer leftFinVertexBuffer;
-	protected final int eyeDetailsLevel = 10;
 //	public float[][] delayV;
 //	public float targetAngleHead;
 	
@@ -201,22 +86,27 @@ public class PreyData {
 	public float bodyCAngle;
 	public float bodyEndAngle;
 	
-	float[] mBodyStartRMatrix = new float[16];
-	float[] mBodyBRMatrix = new float[16];
-	float[] mBodyCRMatrix = new float[16];
-	float[] mBodyEndRMatrix = new float[16];
 	public int bodyEndAngleTarget;
 	public int bodyCAngleTarget;
 	public int bodyBAngleTarget;
 	public int bodyStartAngleTarget;
 	public float[] ribVerticesData;
-	public FloatBuffer ribVertexBuffer;
 	public float[] mRibsModelMatrix = new float[16];
-	public int ribVerticesNum;
 	public float[] bodyVerticesData;
 	public float rotateSpeedHead;
 //	public float rotateSpeedBody;
 	public float bodyBSpeed;
 	public float bodyCSpeed;
 	public float bodyEndSpeed;
+	
+	protected boolean mIsCaught;
+	//	private float bodyStartAnglePredicted;
+	//	private float bodyBAnglePredicted;
+	//	private float bodyCAnglePredicted;
+	//	private float bodyEndAnglePredicted;
+	
+	protected float bodyStartAngleRot;
+	protected float bodyBAngleRot;
+	protected float bodyCAngleRot;
+	protected float bodyEndAngleRot;
 }

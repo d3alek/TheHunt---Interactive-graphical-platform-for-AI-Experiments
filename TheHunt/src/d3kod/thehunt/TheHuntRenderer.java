@@ -205,7 +205,7 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 		mVMatrix = mCamera.toViewMatrix();
 				
 		D3GLES20.drawAll(mVMatrix, mProjMatrix, interpolation);
-		mPrey.draw(mVMatrix, mProjMatrix, interpolation);
+//		mPrey.draw(mVMatrix, mProjMatrix, interpolation);
 		
 		if (SHOW_CIRCLE_CONTAINS_CHECKS) {
 			if (tempCircle != null) {
