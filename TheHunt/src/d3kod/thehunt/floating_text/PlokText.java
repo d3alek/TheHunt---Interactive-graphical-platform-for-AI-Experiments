@@ -3,11 +3,10 @@ package d3kod.thehunt.floating_text;
 import java.util.Random;
 
 import android.util.FloatMath;
-
 import d3kod.d3gles20.D3Maths;
 import d3kod.d3gles20.TextureManager;
 import d3kod.d3gles20.TextureManager.Texture;
-import d3kod.thehunt.prey.D3FadingText;
+import d3kod.d3gles20.shapes.D3FadingText;
 
 public class PlokText extends D3FadingText {
 

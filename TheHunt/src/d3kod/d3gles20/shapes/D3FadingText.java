@@ -1,12 +1,9 @@
-package d3kod.thehunt.prey;
+package d3kod.d3gles20.shapes;
 
 import java.nio.FloatBuffer;
-import java.util.Arrays;
 
 import android.opengl.GLES20;
 import d3kod.d3gles20.Utilities;
-import d3kod.d3gles20.TextureManager.Texture;
-import d3kod.d3gles20.shapes.D3FadingShape;
 
 public class D3FadingText extends D3FadingShape {
 
