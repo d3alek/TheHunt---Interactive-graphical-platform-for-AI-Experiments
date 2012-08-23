@@ -3,6 +3,7 @@ package d3kod.d3gles20;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
 
 import d3kod.d3gles20.shapes.D3Circle;
 import d3kod.d3gles20.shapes.D3FadingShape;
@@ -65,10 +66,8 @@ public class D3GLES20 {
 			Log.w(TAG, "Shapes are null in drawAll!");
 			return;
 		}
-		synchronized (shapes) {
-			for (D3Shape shape: shapes.values()) {
-				shape.draw(mVMatrix, mProjMatrix, interpolation);
-			}
+		for (D3Shape shape: shapes.values()) {
+			shape.draw(mVMatrix, mProjMatrix, interpolation);
 		}
 		
 		

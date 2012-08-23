@@ -1,9 +1,5 @@
 package d3kod.thehunt.prey;
 
-import java.nio.FloatBuffer;
-
-import d3kod.d3gles20.D3GLES20;
-import d3kod.d3gles20.Utilities;
 import d3kod.thehunt.TheHuntRenderer;
 
 public class PreyData {
@@ -54,32 +50,13 @@ public class PreyData {
 	protected float vTailRight;
 	protected float forwardAngleSpeed;
 
-//	protected int mMVPMatrixHandle;
-//	protected int mPositionHandle;
-
 	protected float vx;
 	protected float vy;
 	protected float mPosY;
 	protected float mPosX;
 
-//	protected float[] mModelMatrix = new float[16];
-////	protected float[] mRModelMatrix = new float[16];
-//	protected float[] mMVPMatrix = new float[16];
-//	protected float mPredictedPosX;
-//	protected float mPredictedPosY;
-////	protected int headDelay;
-//	protected float[] bodyStart4 = new float[4];
-//	protected float[] bodyB4 = new float[4];
-//	protected float[] bodyC4 = new float[4];
-//	protected float[] bodyEnd4 = new float[4];
-	
 	protected float mPosHeadX;
 	protected float mPosHeadY;
-	
-//	protected float[] mHeadModelMatrix = new float[16];
-//	protected int bodyVerticesNum;
-//	public float[][] delayV;
-//	public float targetAngleHead;
 	
 	public float bodyStartAngle;
 	public float bodyBAngle;
@@ -90,20 +67,12 @@ public class PreyData {
 	public int bodyCAngleTarget;
 	public int bodyBAngleTarget;
 	public int bodyStartAngleTarget;
-//	public float[] ribVerticesData;
-//	public float[] mRibsModelMatrix = new float[16];
-//	public float[] bodyVerticesData;
 	public float rotateSpeedHead;
-//	public float rotateSpeedBody;
 	public float bodyBSpeed;
 	public float bodyCSpeed;
 	public float bodyEndSpeed;
 	
 	protected boolean mIsCaught;
-	//	private float bodyStartAnglePredicted;
-	//	private float bodyBAnglePredicted;
-	//	private float bodyCAnglePredicted;
-	//	private float bodyEndAnglePredicted;
 	
 	protected float bodyStartAngleRot;
 	protected float bodyBAngleRot;
@@ -111,4 +80,15 @@ public class PreyData {
 	protected float bodyEndAngleRot;
 	
 	protected float[] mHeadPosMatrix = new float[16];
+	protected int bodyBendCounter;
+	protected int backFinAngle;
+	
+	protected boolean flopBack;
+	protected int flopBackTargetFirst;
+	protected int flopBackTargetSecond;
+	protected boolean floppedFirst;
+	protected boolean floppedSecond;
+	protected boolean turningBackFinMotion;
+	protected float flopBackAngle;
+	protected TurnAngle turningBackFinAngle;
 }
