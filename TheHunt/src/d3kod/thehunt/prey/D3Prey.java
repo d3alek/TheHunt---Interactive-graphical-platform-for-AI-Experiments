@@ -24,7 +24,7 @@ public class D3Prey extends D3Shape {
 	public static boolean posInterpolation = true;
 	protected final float detailsStep = 0.1f;
 	protected final int STRIDE_BYTES = D3GLES20.COORDS_PER_VERTEX * Utilities.BYTES_PER_FLOAT;
-	protected static final float preySize = 1.0f;
+	protected static final float preySize = 0.8f;
 	protected final float bodyLength = 0.1f * preySize;
 	protected final int eyeDetailsLevel = 10;
 	
