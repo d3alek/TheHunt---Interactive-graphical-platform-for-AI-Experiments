@@ -58,7 +58,7 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 	private int mCaughtCounter;
 	private D3TempCircle tempCircle;
 	private boolean mGraphicsInitialized = false;
-	private HashMap<Integer, D3Shape> mShapes;
+//	private HashMap<Integer, D3Shape> mShapes;
 	private TextureManager tm;
 	private int releaseCountdown;
 	private float mScreenToWorldRatioWidth;
@@ -67,13 +67,14 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 	private Camera mCamera;
 	
 	private State mState;
+	private D3GLES20 mD3GLES20;
 	
 	private static int mScreenWidthPx;
 	private static int mScreenHeightPx;
 	public static float[] bgColor = {
 			0.8f, 0.8f, 0.8f, 1.0f};
 
-	private final static int worldWidthPx = 1400;
+	private final static int worldWidthPx = 1500;
 	private final static int worldHeightPx = 900;
 	
 	public void onSensorChanged(SensorEvent event) {
@@ -87,7 +88,7 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 	    mPrey = null;
 	    mNet = null;
 	    mCaughtCounter = 0;
-	    mShapes = null;
+//	    mShapes = null;
 	    tm = new TextureManager(mContext);
 	}
 
@@ -115,12 +116,14 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 		
 	    Log.v(TAG, "mScreenWidth " + mScreenWidthPx + " mScreenHeight " + mScreenHeightPx);
 	    
+	    D3Shape.initDefaultShaders();
+	    
 		if (mEnv == null) mEnv = new Environment(worldWidthPx, worldHeightPx);
 	    if (mPrey == null) mPrey = new Prey(EnvironmentData.mScreenWidth, EnvironmentData.mScreenHeight, mEnv, tm);
-	    if (mNet == null) mNet = new CatchNet(mEnv, tm);
+	    if (mNet == null) mNet = new CatchNet(mEnv, tm, mD3GLES20);
 	    if (!mGraphicsInitialized ) {
-	    	mEnv.initGraphics(mContext);
-	    	mPrey.initGraphics();
+	    	mEnv.initGraphics(mContext, mD3GLES20);
+	    	mPrey.initGraphics(mD3GLES20);
 	    	mGraphicsInitialized = true;
 	    }
 	    
@@ -170,14 +173,16 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 				curDirDelta.y * EnvironmentData.currentStep);
 		
 		if (SHOW_CIRCLE_CONTAINS_CHECKS && !mPrey.getCaught() && mNet.isBuilt()) {
-			tempCircle = D3GLES20.newContainsCheckCircle(mNet.getGraphicIndex(), preyPos.x, preyPos.y);
+			tempCircle = mD3GLES20.newContainsCheckCircle(mNet.getGraphicIndex(), preyPos.x, preyPos.y);
 		}
 		if (mPrey.getCaught()) {
 			releaseCountdown--;
-			if (releaseCountdown <= 0) mPrey.release();
+			if (releaseCountdown <= 0) {
+				mPrey.release();
+			}
 		}
 //		if (!mPrey.getCaught() && mNet.isBuilt() && D3GLES20.contains(mNet.getGraphicIndex(), preyPos.x, preyPos.y)) {
-		if (!mPrey.getCaught() && mNet.tryToCatch() && D3GLES20.contains(mNet.getGraphicIndex(), preyPos.x, preyPos.y)) {
+		if (!mPrey.getCaught() && mNet.tryToCatch() && mD3GLES20.contains(mNet.getGraphicIndex(), preyPos.x, preyPos.y)) {
 			Log.v(TAG, "Prey is caught!");
 			mPrey.setCaught(true);
 			mNet.caughtPrey(mPrey);
@@ -187,7 +192,7 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 					((TheHunt) mContext).mCaughtCounter.setText(mCaughtCounter + "");
 				}
 			});
-			D3GLES20.putExpiringShape(new CatchText(preyPos.x, preyPos.y, tm));
+			mD3GLES20.putExpiringShape(new CatchText(preyPos.x, preyPos.y, tm));
 			releaseCountdown = RELEASE_TICKS;
 		}
 		
@@ -197,7 +202,7 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 
 	private void drawWorld(float interpolation) {
 		if (mState != State.PLAY) return;
-		Log.v(TAG, "Drawing");
+//		Log.v(TAG, "Drawing");
 		int clearMask = GLES20.GL_COLOR_BUFFER_BIT;
 		
 		if (MultisampleConfigChooser.usesCoverageAa()) {
@@ -209,7 +214,7 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 		
 		mVMatrix = mCamera.toViewMatrix();
 				
-		D3GLES20.drawAll(mVMatrix, mProjMatrix, interpolation);
+		mD3GLES20.drawAll(mVMatrix, mProjMatrix, interpolation);
 //		mPrey.draw(mVMatrix, mProjMatrix, interpolation);
 		
 		if (SHOW_CIRCLE_CONTAINS_CHECKS) {
@@ -218,7 +223,7 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 				else tempCircle.draw(mVMatrix, mProjMatrix);
 			}
 		}
-		Log.v(TAG, "End drawing");
+//		Log.v(TAG, "End drawing");
 	}
 
 	public void handleTouchDown(float x, float y) {
@@ -250,7 +255,7 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 		}
 		mNet.finish(converted.x, converted.y);
 		if (mNet.notShown()) {
-			D3GLES20.putExpiringShape(new PlokText(converted.x, converted.y, tm));
+			mD3GLES20.putExpiringShape(new PlokText(converted.x, converted.y, tm));
 			mEnv.putFood(converted.x, converted.y);
 		}
 	}
@@ -259,12 +264,12 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
     	mState = State.PAUSE;
     	Log.v(TAG, "State is " + mState);
 //		mEnv.clean();
-    	D3GLES20.clean();
     	//TODO: use sparseArray
-    	mShapes = new HashMap<Integer, D3Shape>();
-    	mShapes.putAll(D3GLES20.getShapes());
-    	Log.v(TAG, "Clearing graphics!");
-    	D3GLES20.clearGraphics();
+//    	mShapes = new HashMap<Integer, D3Shape>();
+//    	mShapes.putAll(D3GLES20.getShapes());
+//    	Log.v(TAG, "Clearing graphics!");
+//    	D3GLES20.clearGraphics();
+//    	mD3GLES20.clean();
     	tm.clear();
 	}
 	public void resume() {
@@ -279,10 +284,15 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 				((TheHunt) mContext).mCaughtCounter.setText(mCaughtCounter + "");
 			}
 		});
-		D3GLES20.init();
-		if (mShapes != null) {
-			D3GLES20.setShapes(mShapes);
-			mShapes = null;
+		
+		
+//		D3GLES20.init();
+//		if (mShapes != null) {
+//			D3GLES20.setShapes(mShapes);
+//			mShapes = null;
+//		}
+		if (mD3GLES20 == null) {
+			mD3GLES20 = new D3GLES20();
 		}
 		mState = State.PLAY;
 		Log.v(TAG, "State is " + mState);

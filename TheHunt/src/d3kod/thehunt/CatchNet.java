@@ -5,14 +5,15 @@ import d3kod.d3gles20.D3GLES20;
 import d3kod.d3gles20.TextureManager;
 import d3kod.thehunt.environment.Environment;
 import d3kod.thehunt.floating_text.PlokText;
+import d3kod.thehunt.floating_text.SnatchText;
 import d3kod.thehunt.prey.Prey;
 
 public class CatchNet {
 	
 	D3CatchNet mGraphic;
-	int mGraphicIndex = -1;
+//	int mGraphicIndex = -1;
 	
-//	private int mGraphicIndex;
+	private int mGraphicIndex;
 
 	private static final String TAG = "CatchNet";
 	private static final float MIN_LENGTH = 0.1f;
@@ -28,7 +29,12 @@ public class CatchNet {
 	private float firstX;
 	private boolean ploked;
 
-	public CatchNet(Environment env, TextureManager tm) {
+	private D3GLES20 mD3GLES20;
+
+	private boolean showSnatchText;
+
+	public CatchNet(Environment env, TextureManager tm, D3GLES20 d3GLES20) {
+		mD3GLES20 = d3GLES20;
 		mEnv = env;
 		this.tm = tm;
 	}
@@ -38,13 +44,20 @@ public class CatchNet {
 		if (mGraphic.fadeDone()) {
 			
 			mGraphic = null;
-			D3GLES20.removeShape(mGraphicIndex);
+			mD3GLES20.removeShape(mGraphicIndex);
 			
 			if (mCaughtPrey != null) {
 				Log.v(TAG, "Prey is in net!!! YAY");
 				Log.v(TAG, "Let it go now...");
 //				mCaughtPrey.release();
 			}
+			
+			return;
+		}
+		
+		if (!showSnatchText && mGraphic.isFinished()) {
+			mD3GLES20.putExpiringShape(new SnatchText(mGraphic.getCenterX(), mGraphic.getCenterY(), tm));
+			showSnatchText = true;
 		}
 		
 		return;
@@ -61,9 +74,10 @@ public class CatchNet {
 //		isBuilt = false;
 //		isInvalid = false;
 		notShown = false;
+		showSnatchText = false;
 		
-		mGraphic = new D3CatchNet(tm); //beingBuiltColor
-		mGraphicIndex = D3GLES20.putShape(mGraphic);
+		mGraphic = new D3CatchNet(tm);
+		mGraphicIndex = mD3GLES20.putShape(mGraphic);
 		mCaughtPrey = null;
 		firstX = x; firstY = y;
 		ploked = false;
@@ -78,7 +92,7 @@ public class CatchNet {
 		}
 		mGraphic.addVertex(x, y);
 		if (!ploked && mGraphic.getLength() >= MIN_LENGTH) {
-			D3GLES20.putExpiringShape(new PlokText(firstX, firstY, tm));
+			mD3GLES20.putExpiringShape(new PlokText(firstX, firstY, tm));
 			ploked = true;
 		}
 	}
@@ -89,7 +103,7 @@ public class CatchNet {
 			if (mGraphic.getLength() < MIN_LENGTH) {
 				// assume food placement was meant
 				mGraphic = null;
-				D3GLES20.removeShape(mGraphicIndex);
+				mD3GLES20.removeShape(mGraphicIndex);
 				notShown = true;
 				return;
 			}

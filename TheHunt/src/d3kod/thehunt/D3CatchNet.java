@@ -56,12 +56,13 @@ public class D3CatchNet extends D3Path {
 
 	private TextureManager tm;
 
-	private boolean snatched;
+//	private boolean snatched;
 	
 	public D3CatchNet(TextureManager tm) {
 		super(beingBuiltColor.clone());
 		this.tm = tm;
-		mIsClosed = mIsInvalid = snatched = false;
+		mIsClosed = mIsInvalid = false;
+//		snatched = false;
 		mCenterX = -100; mCenterY = -100; mRadius = 0;
 	}
 
@@ -196,10 +197,6 @@ public class D3CatchNet extends D3Path {
 		if (mIsClosed) {
 			if (getRadius() <= MIN_RADIUS) {
 				fade(FADE_SPEED);
-				if (!snatched) {
-					D3GLES20.putExpiringShape(new SnatchText(mCenterX, mCenterY, tm));
-					snatched = true;
-				}
 			}
 			else shrink();
 		}

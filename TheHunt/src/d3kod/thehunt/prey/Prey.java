@@ -44,6 +44,8 @@ public class Prey {
 	private TextureManager tm;
 
 	private D3Prey mGraphic;
+
+	private D3GLES20 mD3GLES20;
 	
 	public void update(float dx, float dy) {
 		if (mD.mIsCaught) return;
@@ -207,7 +209,7 @@ public class Prey {
 	}
 	private void putFlopText(float angle) {
 		float radAngle = (float)Math.toRadians(angle);
-		D3GLES20.putExpiringShape(new FlopText(mD.mPosX + FloatMath.sin(radAngle)*D3Prey.finSize*2, 
+		mD3GLES20.putExpiringShape(new FlopText(mD.mPosX + FloatMath.sin(radAngle)*D3Prey.finSize*2, 
 				mD.mPosY - FloatMath.cos(radAngle)*D3Prey.finSize*2, angle, tm));
 	}
 
@@ -270,7 +272,6 @@ public class Prey {
 		
 		tm = texMan;
 		mWorldModel = new WorldModel(screenWidth, screenHeight);
-		mPlanner = new Planner();
 		mEnv = env;
 		mSensor = new Sensor(mEnv);
 		mD.mPosX = mD.mPosY = 0;
@@ -328,10 +329,8 @@ public class Prey {
 		calcPosHead();
 		mWorldModel.update(mSensor.sense(mD.mPosHeadX, mD.mPosHeadY, mD.mPosX, mD.mPosY));
 		mWorldModel.recalcNearestFood();
-		
+		mD3GLES20.putExpiringShape(new PlokText(mD.mPosX, mD.mPosY, tm));
 		mGraphic.reset();
-		
-		D3GLES20.putExpiringShape(new PlokText(mD.mPosX, mD.mPosY, tm));
 	}
 
 	private void randomizePos() {
@@ -339,9 +338,11 @@ public class Prey {
 		mD.mPosX = -EnvironmentData.mScreenWidth/2+rand.nextFloat()*EnvironmentData.mScreenWidth;
 		mD.mPosY = -EnvironmentData.mScreenHeight/2+rand.nextFloat()*EnvironmentData.mScreenHeight;
 	}
-	public void initGraphics() {
+	public void initGraphics(D3GLES20 d3GLES20) {
         mGraphic = new D3Prey(mD);
-        D3GLES20.putShape(mGraphic);
+        mD3GLES20 = d3GLES20;
+		mPlanner = new Planner(mD3GLES20);
+        mD3GLES20.putShape(mGraphic);
 		if (Planner.SHOW_TARGET) {
 			mPlanner.makeTarget();
 		}

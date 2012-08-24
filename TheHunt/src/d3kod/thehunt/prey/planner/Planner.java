@@ -20,8 +20,10 @@ public class Planner {
 	private Random mRandom;
 	private Plan mPlan;
 	private int mPlanTarget;
+	private D3GLES20 mD3GLES20;
 
-	public Planner() {
+	public Planner(D3GLES20 d3GLES20) {
+		mD3GLES20 = d3GLES20;
 		allActions = Action.values();
 		numActions = allActions.length;
 		mRandom = new Random();
@@ -38,10 +40,10 @@ public class Planner {
 		mPlan.update(mWorldModel);
 		if (!mPlan.isFinished()) {
 //			Log.v(TAG, "Doing next action!");
-			if (SHOW_TARGET) D3GLES20.setShapePosition(mPlanTarget, mPlan.getTargetX(), mPlan.getTargetY());
+			if (SHOW_TARGET) mD3GLES20.setShapePosition(mPlanTarget, mPlan.getTargetX(), mPlan.getTargetY());
 			return mPlan.nextAction();
 		}
-		else if (SHOW_TARGET) D3GLES20.removeShape(mPlanTarget);
+		else if (SHOW_TARGET) mD3GLES20.removeShape(mPlanTarget);
 		
 		mState = checkForSomethingInteresting(mWorldModel);
 		switch(mState) {
@@ -55,7 +57,7 @@ public class Planner {
 		}
 		if (SHOW_TARGET) makeTarget();
 		mPlan.update(mWorldModel);
-		if (SHOW_TARGET) D3GLES20.setShapePosition(mPlanTarget, mPlan.getTargetX(), mPlan.getTargetY());
+		if (SHOW_TARGET) mD3GLES20.setShapePosition(mPlanTarget, mPlan.getTargetX(), mPlan.getTargetY());
 		return mPlan.nextAction();
 	}
 
@@ -95,7 +97,7 @@ public class Planner {
 	}
 
 	public void makeTarget() {
-		mPlanTarget = D3GLES20.newDefaultCircle(mPlan.getTargetSize(), mPlan.getTargetColor(), 10);
+		mPlanTarget = mD3GLES20.newDefaultCircle(mPlan.getTargetSize(), mPlan.getTargetColor(), 10);
 	}
 
 	public int getTarget() {

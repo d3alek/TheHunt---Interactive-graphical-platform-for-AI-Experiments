@@ -18,6 +18,7 @@ public class Environment {
 	public EnvironmentData data;
 	private float[] foodColor = {0.5f, 0.5f, 0.5f, 1.0f};
 	public int mTextureDataHandle;
+	private D3GLES20 mD3GLES20;
 	
 	public Environment(int width, int height) {
 		data = new EnvironmentData(width, height);
@@ -27,9 +28,10 @@ public class Environment {
 		data.updateFloatingObjects();
 	}
 	
-	public void initGraphics(Context context) {
+	public void initGraphics(Context context, D3GLES20 d3GLES20) {
+		mD3GLES20 = d3GLES20;
 		mTextureDataHandle = TextureHelper.loadTexture(context, R.drawable.hatching_cross);
-		data.makeAlgae(mTextureDataHandle);
+		data.makeAlgae(mTextureDataHandle, mD3GLES20);
 		Tile.initBuffers();
 		
 	}
@@ -41,7 +43,7 @@ public class Environment {
 	}
 	public void putFood(float x, float y) {
 //		Log.v(TAG, "Putting food at " + x +  " " + y);
-		data.addFloatingObject(new FloatingObject(x, y, Type.FOOD), D3GLES20.newDefaultCircle(0.01f, foodColor , 20));
+		data.addFloatingObject(new FloatingObject(x, y, Type.FOOD, mD3GLES20), mD3GLES20.newDefaultCircle(0.01f, foodColor , 20));
 	}
 	public Event senseCurrent(float x, float y) {
 		Tile tile = data.getTileFromPos(new PointF(x, y));
@@ -66,14 +68,14 @@ public class Environment {
 	}
 	public Event senseLight(float hX, float hY) {
 		for (FloatingObject fo: data.getFloatingObjects()) {
-			if (fo.getType() == Type.ALGAE && D3GLES20.contains(fo.getKey(), hX, hY)) 
+			if (fo.getType() == Type.ALGAE && mD3GLES20.contains(fo.getKey(), hX, hY)) 
 				return new EventLight(0);
 		}
 		return new EventLight(1);
 	}
 	public boolean netObstacle(float x, float y) {
 		for (FloatingObject fo: data.getFloatingObjects()) {
-			if (fo.getType() == Type.ALGAE && D3GLES20.contains(fo.getKey(), x, y)) 
+			if (fo.getType() == Type.ALGAE && mD3GLES20.contains(fo.getKey(), x, y)) 
 				return true;
 		}
 		return false;

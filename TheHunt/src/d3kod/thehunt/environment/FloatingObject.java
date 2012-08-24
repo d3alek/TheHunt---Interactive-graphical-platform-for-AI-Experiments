@@ -16,9 +16,12 @@ class FloatingObject {
 	private float mX;
 	private float mY;
 	private boolean mGraphicSet = false;
+
+	private D3GLES20 mD3GLES20;
 	
 	
-	public FloatingObject(float x, float y, Type type) {
+	public FloatingObject(float x, float y, Type type, D3GLES20 d3GLES20) {
+		mD3GLES20 =  d3GLES20;
 		mType = type;
 		mX = x; mY = y;
 	}
@@ -26,7 +29,7 @@ class FloatingObject {
 	public void setGraphic(int key) {
 		mGraphicSet = true;
 		mKey = key;
-		D3GLES20.setShapePosition(key, mX, mY);
+		mD3GLES20.setShapePosition(key, mX, mY);
 	}
 
 	public void update() {
@@ -50,7 +53,7 @@ class FloatingObject {
 
 	public void clearGraphic() {
 		if (!mGraphicSet) Log.v(TAG, "Graphic not set, can't clear!");
-		D3GLES20.removeShape(mKey);		
+		mD3GLES20.removeShape(mKey);		
 	}
 	
 }
