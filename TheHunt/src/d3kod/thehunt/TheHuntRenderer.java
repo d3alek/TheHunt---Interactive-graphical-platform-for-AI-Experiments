@@ -65,6 +65,9 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 	private float mScreenToWorldRatioHeight;
 	private Point prev;
 	private Camera mCamera;
+	
+	private State mState;
+	
 	private static int mScreenWidthPx;
 	private static int mScreenHeightPx;
 	public static float[] bgColor = {
@@ -193,6 +196,8 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 	}
 
 	private void drawWorld(float interpolation) {
+		if (mState != State.PLAY) return;
+		Log.v(TAG, "Drawing");
 		int clearMask = GLES20.GL_COLOR_BUFFER_BIT;
 		
 		if (MultisampleConfigChooser.usesCoverageAa()) {
@@ -213,6 +218,7 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 				else tempCircle.draw(mVMatrix, mProjMatrix);
 			}
 		}
+		Log.v(TAG, "End drawing");
 	}
 
 	public void handleTouchDown(float x, float y) {
@@ -250,6 +256,8 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 	}
 
 	public void pause() {
+    	mState = State.PAUSE;
+    	Log.v(TAG, "State is " + mState);
 //		mEnv.clean();
     	D3GLES20.clean();
     	//TODO: use sparseArray
@@ -260,6 +268,8 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
     	tm.clear();
 	}
 	public void resume() {
+		mState = State.RESUME;
+		Log.v(TAG, "State is " + mState);
 		next_game_tick = System.currentTimeMillis();
 		mslf = next_game_tick;
 		smoothMspf = 0;
@@ -274,6 +284,8 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 			D3GLES20.setShapes(mShapes);
 			mShapes = null;
 		}
+		mState = State.PLAY;
+		Log.v(TAG, "State is " + mState);
 	}
 	
 	public void release() {
