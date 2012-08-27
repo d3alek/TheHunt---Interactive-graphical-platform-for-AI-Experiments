@@ -15,6 +15,7 @@ import android.opengl.Matrix;
 import android.util.Log;
 import d3kod.d3gles20.D3GLES20;
 import d3kod.d3gles20.D3Maths;
+import d3kod.d3gles20.ShaderManager;
 import d3kod.d3gles20.TextureManager;
 import d3kod.d3gles20.Utilities;
 import d3kod.d3gles20.shapes.D3Shape;
@@ -68,6 +69,7 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 	
 	private State mState;
 	private D3GLES20 mD3GLES20;
+	private ShaderManager sm;
 	
 	private static int mScreenWidthPx;
 	private static int mScreenHeightPx;
@@ -116,7 +118,7 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 		
 	    Log.v(TAG, "mScreenWidth " + mScreenWidthPx + " mScreenHeight " + mScreenHeightPx);
 	    
-	    D3Shape.initDefaultShaders();
+	    // D3Shape.initDefaultShaders();
 	    
 		if (mEnv == null) mEnv = new Environment(worldWidthPx, worldHeightPx);
 	    if (mPrey == null) mPrey = new Prey(EnvironmentData.mScreenWidth, EnvironmentData.mScreenHeight, mEnv, tm);
@@ -192,7 +194,7 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 					((TheHunt) mContext).mCaughtCounter.setText(mCaughtCounter + "");
 				}
 			});
-			mD3GLES20.putExpiringShape(new CatchText(preyPos.x, preyPos.y, tm));
+			mD3GLES20.putExpiringShape(new CatchText(preyPos.x, preyPos.y, tm, sm));
 			releaseCountdown = RELEASE_TICKS;
 		}
 		
@@ -255,7 +257,7 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 		}
 		mNet.finish(converted.x, converted.y);
 		if (mNet.notShown()) {
-			mD3GLES20.putExpiringShape(new PlokText(converted.x, converted.y, tm));
+			mD3GLES20.putExpiringShape(new PlokText(converted.x, converted.y, tm, mD3GLES20.getShaderManager()));
 			mEnv.putFood(converted.x, converted.y);
 		}
 	}
@@ -271,6 +273,7 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 //    	D3GLES20.clearGraphics();
 //    	mD3GLES20.clean();
     	tm.clear();
+    	sm.clear();
 	}
 	public void resume() {
 		mState = State.RESUME;
@@ -291,8 +294,11 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 //			D3GLES20.setShapes(mShapes);
 //			mShapes = null;
 //		}
+		if (sm == null) {
+			sm = new ShaderManager();
+		}
 		if (mD3GLES20 == null) {
-			mD3GLES20 = new D3GLES20();
+			mD3GLES20 = new D3GLES20(sm);
 		}
 		mState = State.PLAY;
 		Log.v(TAG, "State is " + mState);

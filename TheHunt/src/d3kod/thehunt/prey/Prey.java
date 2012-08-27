@@ -210,7 +210,7 @@ public class Prey {
 	private void putFlopText(float angle) {
 		float radAngle = (float)Math.toRadians(angle);
 		mD3GLES20.putExpiringShape(new FlopText(mD.mPosX + FloatMath.sin(radAngle)*D3Prey.finSize*2, 
-				mD.mPosY - FloatMath.cos(radAngle)*D3Prey.finSize*2, angle, tm));
+				mD.mPosY - FloatMath.cos(radAngle)*D3Prey.finSize*2, angle, tm, mD3GLES20.getShaderManager()));
 	}
 
 	public void turn(TurnAngle angle) {
@@ -329,7 +329,7 @@ public class Prey {
 		calcPosHead();
 		mWorldModel.update(mSensor.sense(mD.mPosHeadX, mD.mPosHeadY, mD.mPosX, mD.mPosY));
 		mWorldModel.recalcNearestFood();
-		mD3GLES20.putExpiringShape(new PlokText(mD.mPosX, mD.mPosY, tm));
+		mD3GLES20.putExpiringShape(new PlokText(mD.mPosX, mD.mPosY, tm, mD3GLES20.getShaderManager()));
 		mGraphic.reset();
 	}
 
@@ -339,7 +339,7 @@ public class Prey {
 		mD.mPosY = -EnvironmentData.mScreenHeight/2+rand.nextFloat()*EnvironmentData.mScreenHeight;
 	}
 	public void initGraphics(D3GLES20 d3GLES20) {
-        mGraphic = new D3Prey(mD);
+        mGraphic = new D3Prey(mD, d3GLES20.getShaderManager());
         mD3GLES20 = d3GLES20;
 		mPlanner = new Planner(mD3GLES20);
         mD3GLES20.putShape(mGraphic);

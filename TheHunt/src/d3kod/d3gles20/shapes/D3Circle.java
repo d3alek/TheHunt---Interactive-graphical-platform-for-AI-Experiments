@@ -11,8 +11,8 @@ public class D3Circle extends D3Shape {
 
 	private float mRadius;
 
-	public D3Circle(float r, float[] color, int vertices, boolean useDefaultShaders) {
-		super(makeCircleVerticesBuffer(r, vertices), color, GLES20.GL_LINE_LOOP, useDefaultShaders);
+	public D3Circle(float r, float[] color, int vertices, int programHandle) {
+		super(makeCircleVerticesBuffer(r, vertices), color, GLES20.GL_LINE_LOOP, programHandle);
 		mRadius = r;
 	}
 

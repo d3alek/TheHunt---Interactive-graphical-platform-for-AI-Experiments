@@ -6,6 +6,7 @@ import java.util.Random;
 import android.opengl.GLES20;
 import d3kod.d3gles20.D3GLES20;
 import d3kod.d3gles20.D3Maths;
+import d3kod.d3gles20.ShaderManager;
 import d3kod.d3gles20.Utilities;
 import d3kod.d3gles20.shapes.D3Shape;
 
@@ -42,8 +43,8 @@ public class D3Algae extends D3Shape {
 
 	private int noFlip; 
 
-	protected D3Algae() {
-		super(algaeColor, drawType, true);
+	protected D3Algae(ShaderManager sm) {
+		super(algaeColor, drawType, sm.getDefaultProgramHandle());
 		controPointsData = null;
 		setVertexBuffer(makeVerticesBuffer());
 	}
@@ -51,7 +52,6 @@ public class D3Algae extends D3Shape {
 	private FloatBuffer makeVerticesBuffer() {
 		if (controPointsData == null) {
 			controPointsData = algaeControlPointsGenerator();
-			
 		}
 		
 		int coordsPerPart = ALGAE_DETAILS_PER_PART*D3GLES20.COORDS_PER_VERTEX;

@@ -58,8 +58,8 @@ public class D3CatchNet extends D3Path {
 
 //	private boolean snatched;
 	
-	public D3CatchNet(TextureManager tm) {
-		super(beingBuiltColor.clone());
+	public D3CatchNet(TextureManager tm, int programHandle) {
+		super(beingBuiltColor.clone(), programHandle);
 		this.tm = tm;
 		mIsClosed = mIsInvalid = false;
 //		snatched = false;

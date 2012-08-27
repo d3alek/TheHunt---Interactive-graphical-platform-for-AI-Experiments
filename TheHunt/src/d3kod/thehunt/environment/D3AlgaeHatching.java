@@ -122,13 +122,14 @@ public class D3AlgaeHatching extends D3Shape {
 
 	private float textureSizeX;
 	
-	protected D3AlgaeHatching(int textureDataHandle) {
-		super(algaeColor, GLES20.GL_TRIANGLE_FAN, false);
+	protected D3AlgaeHatching(int textureDataHandle, int programHandle) {
+		super(algaeColor, GLES20.GL_TRIANGLE_FAN, programHandle);
 		controlPointsData = null;
 		FloatBuffer[] vertAndTexBuffers = makeVerticesBuffer();
 		super.setVertexBuffer(vertAndTexBuffers[0]);
-		mProgram = Utilities.createProgram(Utilities.loadShader(GLES20.GL_VERTEX_SHADER, vertexShaderCode), 
-				Utilities.loadShader(GLES20.GL_FRAGMENT_SHADER, fragmentShaderCode));
+//		mProgram = Utilities.createProgram(Utilities.loadShader(GLES20.GL_VERTEX_SHADER, vertexShaderCode), 
+//				Utilities.loadShader(GLES20.GL_FRAGMENT_SHADER, fragmentShaderCode));
+		mProgram = programHandle;
         mTextureCoordinateHandle = GLES20.glGetAttribLocation(mProgram, "a_TexCoordinate");
         mTextureUniformHandle = GLES20.glGetUniformLocation(mProgram, "u_Texture");
         mTextureDataHandle = textureDataHandle;

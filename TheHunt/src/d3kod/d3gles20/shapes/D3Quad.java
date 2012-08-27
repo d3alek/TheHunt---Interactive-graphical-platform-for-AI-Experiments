@@ -39,23 +39,23 @@ public class D3Quad extends D3Shape {
 		return buffer;
 	}
 	
-	public D3Quad(float width, float height, float[] verticesDefault, float[] drawColor, int drawType, boolean useDefaultShaders) {
-		this(makeVerticesBuffer(width, height, verticesDefault), drawColor, drawType, useDefaultShaders);
+	public D3Quad(float width, float height, float[] verticesDefault, float[] drawColor, int drawType, int programHandle) {
+		this(makeVerticesBuffer(width, height, verticesDefault), drawColor, drawType, programHandle);
 		mRadius = 0.5f*(width>height?width:height);
 	}
 	
-	public D3Quad(float width, float height, boolean useDefaultShaders) {
-		this(makeVerticesBuffer(width, height, quadVerticesDefault), colorDefault, GLES20.GL_TRIANGLE_STRIP, useDefaultShaders);
+	public D3Quad(float width, float height, int programHandle) {
+		this(makeVerticesBuffer(width, height, quadVerticesDefault), colorDefault, GLES20.GL_TRIANGLE_STRIP, programHandle);
 		mRadius = 0.5f*(width>height?width:height);
 	}
 	
-	public D3Quad(float width, float height, float[] drawColor, boolean useDefaultShaders) {
-		this(makeVerticesBuffer(width, height, quadVerticesDefault), drawColor, GLES20.GL_TRIANGLE_STRIP, useDefaultShaders);
+	public D3Quad(float width, float height, float[] drawColor, int programHandle) {
+		this(makeVerticesBuffer(width, height, quadVerticesDefault), drawColor, GLES20.GL_TRIANGLE_STRIP, programHandle);
 		mRadius = 0.5f*(width>height?width:height);
 	}
 	
-	public D3Quad(FloatBuffer verticesBuffer, float[] drawColor, int drawType, boolean useDefaultShaders) {	
-		super(verticesBuffer, drawColor, drawType, useDefaultShaders);
+	public D3Quad(FloatBuffer verticesBuffer, float[] drawColor, int drawType, int programHandle) {	
+		super(verticesBuffer, drawColor, drawType, programHandle);
 	}
 	
 	public float getRadius() {

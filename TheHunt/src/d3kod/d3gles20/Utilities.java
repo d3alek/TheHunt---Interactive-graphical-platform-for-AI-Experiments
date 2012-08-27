@@ -6,6 +6,7 @@ import java.nio.FloatBuffer;
 
 import android.opengl.GLES20;
 import android.util.Log;
+import d3kod.d3gles20.shapes.AttribVariable;
 
 public class Utilities {
 
@@ -13,13 +14,17 @@ public class Utilities {
 	public static final int BYTES_PER_SHORT = 2;
 	private static final String TAG = "Utilities";
 	
-	public static int createProgram(int vertexShaderHandle, int fragmentShaderHandle) {
+	public static int createProgram(int vertexShaderHandle, int fragmentShaderHandle, AttribVariable[] variables) {
 		int  mProgram = GLES20.glCreateProgram();
 		
 		if (mProgram != 0) {
 	        GLES20.glAttachShader(mProgram, vertexShaderHandle);
 	        GLES20.glAttachShader(mProgram, fragmentShaderHandle);
 	
+	        for (AttribVariable var: variables) {
+	        	GLES20.glBindAttribLocation(mProgram, var.getHandle(), var.getName());
+	        }   
+	        
 	        GLES20.glLinkProgram(mProgram);
 	     
 	        final int[] linkStatus = new int[1];

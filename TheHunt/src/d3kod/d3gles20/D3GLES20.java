@@ -24,11 +24,14 @@ public class D3GLES20 {
 	private HashMap<Integer, D3Shape> shapes;
 	private HashMap<Integer, D3FadingShape> expiringShapes;
 	private int shapesNum = 0;
+
+	private ShaderManager sm;
 	
-	public D3GLES20() {
+	public D3GLES20(ShaderManager shaderManager) {
 		shapes = new HashMap<Integer, D3Shape>();
 		expiringShapes = new HashMap<Integer, D3FadingShape>();
 		shapesNum = 0;
+		sm = shaderManager;
 	}
 	
 //	public static void init() {
@@ -140,14 +143,18 @@ public class D3GLES20 {
 
 	public D3TempCircle newContainsCheckCircle(int key, float hX, float hY) {
 		return new D3TempCircle(shapes.get(key).getCenterX(), shapes.get(key).getCenterY(), 
-				shapes.get(key).getRadius(), TEMP_CIRCLE_TICKS);
+				shapes.get(key).getRadius(), TEMP_CIRCLE_TICKS, sm.getDefaultProgramHandle());
 	}
 	
 	public int newDefaultQuad(float width, float height, float[] color) {
-		return putShape(new D3Quad(width, height, color, true));
+		return putShape(new D3Quad(width, height, color, sm.getDefaultProgramHandle()));
 	}
 
 	public int newDefaultCircle(float r, float[] color, int vertices) {
-		return putShape(new D3Circle(r, color, vertices, true));
+		return putShape(new D3Circle(r, color, vertices, sm.getDefaultProgramHandle()));
+	}
+
+	public ShaderManager getShaderManager() {
+		return sm;
 	}
 }

@@ -7,6 +7,7 @@ import android.opengl.Matrix;
 import android.util.Log;
 import d3kod.d3gles20.D3GLES20;
 import d3kod.d3gles20.D3Maths;
+import d3kod.d3gles20.ShaderManager;
 import d3kod.d3gles20.Utilities;
 import d3kod.d3gles20.shapes.D3Shape;
 import d3kod.thehunt.TheHuntRenderer;
@@ -151,8 +152,8 @@ public class D3Prey extends D3Shape {
 	
 	private PreyData mD;
 	
-	protected D3Prey(PreyData data) {
-		super(null, GLES20.GL_LINE_STRIP, false);
+	protected D3Prey(PreyData data, ShaderManager sm) {
+		super(null, GLES20.GL_LINE_STRIP, sm.getDefaultProgramHandle());
 		super.setColor(preyColor);
 		mD = data;
 		Matrix.setIdentityM(mModelMatrix, 0);
@@ -179,10 +180,10 @@ public class D3Prey extends D3Shape {
         rib1PosIndex = (1*bodyVerticesNum/4)*D3GLES20.COORDS_PER_VERTEX;
         rib2PosIndex = (3*bodyVerticesNum/4-2)*D3GLES20.COORDS_PER_VERTEX;
 		
-		int vertexShaderHandle = Utilities.loadShader(GLES20.GL_VERTEX_SHADER, vertexShaderCode);
-        int fragmentShaderHandle = Utilities.loadShader(GLES20.GL_FRAGMENT_SHADER, fragmentShaderCode);
-        
-        mProgram = Utilities.createProgram(vertexShaderHandle, fragmentShaderHandle);
+//		int vertexShaderHandle = Utilities.loadShader(GLES20.GL_VERTEX_SHADER, vertexShaderCode);
+//        int fragmentShaderHandle = Utilities.loadShader(GLES20.GL_FRAGMENT_SHADER, fragmentShaderCode);
+//        
+        mProgram = sm.getDefaultProgramHandle();//Utilities.createProgram(vertexShaderHandle, fragmentShaderHandle);
         
         mMVPMatrixHandle = GLES20.glGetUniformLocation(mProgram, "u_MVPMatrix");
         //TODO: fix visibility

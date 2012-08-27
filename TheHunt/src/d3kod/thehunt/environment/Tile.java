@@ -7,11 +7,11 @@ public class Tile {
 	private Dir dir;
 	private int r, c;
 
-	private static TileQuad mTileQuad;
+	private static TileQuad mTileQuad; //TODO: init mTileQuad
 
-	public static void initBuffers() {
-		mTileQuad = new TileQuad(EnvironmentData.tWidth, EnvironmentData.tHeight);
-	}
+//	public static void initBuffers() {
+//		mTileQuad = new TileQuad(EnvironmentData.tWidth, EnvironmentData.tHeight);
+//	}
 	
 	public Tile(int row, int col) {
 		this(row, col, Dir.UNDEFINED);

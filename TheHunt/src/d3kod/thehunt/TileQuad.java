@@ -35,8 +35,8 @@ public class TileQuad extends D3Quad {
 	};
 	private static final String TAG = "TileQuad";
 	
-	public TileQuad(float width, float height) {
-		super(width, height, tileVerticesDefault, colorDefault, GLES20.GL_LINE_LOOP, true);
+	public TileQuad(float width, float height, int programHandle) {
+		super(width, height, tileVerticesDefault, colorDefault, GLES20.GL_LINE_LOOP, programHandle);
 		
 		for (int i = 0; i < NUM_CURRENT_DATA; ++i) {
 			currentN[i*3] = currentNDefault[i*3] * width;

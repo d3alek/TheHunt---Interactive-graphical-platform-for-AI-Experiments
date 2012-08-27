@@ -33,10 +33,13 @@ public class CatchNet {
 
 	private boolean showSnatchText;
 
+	private int mProgramHandle;
+
 	public CatchNet(Environment env, TextureManager tm, D3GLES20 d3GLES20) {
 		mD3GLES20 = d3GLES20;
 		mEnv = env;
 		this.tm = tm;
+		mProgramHandle = d3GLES20.getShaderManager().getDefaultProgramHandle();
 	}
 	
 	public void update() {
@@ -56,7 +59,7 @@ public class CatchNet {
 		}
 		
 		if (!showSnatchText && mGraphic.isFinished()) {
-			mD3GLES20.putExpiringShape(new SnatchText(mGraphic.getCenterX(), mGraphic.getCenterY(), tm));
+			mD3GLES20.putExpiringShape(new SnatchText(mGraphic.getCenterX(), mGraphic.getCenterY(), tm, mD3GLES20.getShaderManager()));
 			showSnatchText = true;
 		}
 		
@@ -76,7 +79,7 @@ public class CatchNet {
 		notShown = false;
 		showSnatchText = false;
 		
-		mGraphic = new D3CatchNet(tm);
+		mGraphic = new D3CatchNet(tm, mProgramHandle);
 		mGraphicIndex = mD3GLES20.putShape(mGraphic);
 		mCaughtPrey = null;
 		firstX = x; firstY = y;
@@ -92,7 +95,7 @@ public class CatchNet {
 		}
 		mGraphic.addVertex(x, y);
 		if (!ploked && mGraphic.getLength() >= MIN_LENGTH) {
-			mD3GLES20.putExpiringShape(new PlokText(firstX, firstY, tm));
+			mD3GLES20.putExpiringShape(new PlokText(firstX, firstY, tm, mD3GLES20.getShaderManager()));
 			ploked = true;
 		}
 	}

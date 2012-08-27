@@ -8,7 +8,7 @@ class Algae extends FloatingObject {
 
 	public Algae(float x, float y, int textureDataHandle, D3GLES20 d3GLES20) {
 		super(x, y, Type.ALGAE, d3GLES20);
-		mGraphic = new D3Algae();
+		mGraphic = new D3Algae(d3GLES20.getShaderManager());
 //		mGraphic = new D3AlgaeHatching(textureDataHandle);
 		setGraphic(d3GLES20.putShape(mGraphic));
 	}

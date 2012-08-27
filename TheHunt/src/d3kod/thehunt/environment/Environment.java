@@ -32,7 +32,7 @@ public class Environment {
 		mD3GLES20 = d3GLES20;
 		mTextureDataHandle = TextureHelper.loadTexture(context, R.drawable.hatching_cross);
 		data.makeAlgae(mTextureDataHandle, mD3GLES20);
-		Tile.initBuffers();
+//		Tile.initBuffers();
 		
 	}
 	public void recalculateCurrents() {
