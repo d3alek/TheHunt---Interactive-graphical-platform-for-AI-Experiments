@@ -2,6 +2,7 @@ package d3kod.thehunt;
 
 import android.util.Log;
 import d3kod.d3gles20.D3GLES20;
+import d3kod.d3gles20.Program;
 import d3kod.d3gles20.TextureManager;
 import d3kod.thehunt.environment.Environment;
 import d3kod.thehunt.floating_text.PlokText;
@@ -33,13 +34,13 @@ public class CatchNet {
 
 	private boolean showSnatchText;
 
-	private int mProgramHandle;
+	private Program mProgram;
 
 	public CatchNet(Environment env, TextureManager tm, D3GLES20 d3GLES20) {
 		mD3GLES20 = d3GLES20;
 		mEnv = env;
 		this.tm = tm;
-		mProgramHandle = d3GLES20.getShaderManager().getDefaultProgramHandle();
+		mProgram = d3GLES20.getShaderManager().getDefaultProgram();
 	}
 	
 	public void update() {
@@ -79,7 +80,7 @@ public class CatchNet {
 		notShown = false;
 		showSnatchText = false;
 		
-		mGraphic = new D3CatchNet(tm, mProgramHandle);
+		mGraphic = new D3CatchNet(tm, mProgram);
 		mGraphicIndex = mD3GLES20.putShape(mGraphic);
 		mCaughtPrey = null;
 		firstX = x; firstY = y;

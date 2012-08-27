@@ -6,8 +6,8 @@ import java.nio.FloatBuffer;
 
 import android.opengl.GLES20;
 import android.opengl.Matrix;
-import android.util.Log;
 import d3kod.d3gles20.D3GLES20;
+import d3kod.d3gles20.Program;
 import d3kod.d3gles20.Utilities;
 import d3kod.d3gles20.shapes.D3Quad;
 import d3kod.thehunt.environment.EnvironmentData;
@@ -35,8 +35,8 @@ public class TileQuad extends D3Quad {
 	};
 	private static final String TAG = "TileQuad";
 	
-	public TileQuad(float width, float height, int programHandle) {
-		super(width, height, tileVerticesDefault, colorDefault, GLES20.GL_LINE_LOOP, programHandle);
+	public TileQuad(float width, float height, Program program) {
+		super(width, height, tileVerticesDefault, colorDefault, GLES20.GL_LINE_LOOP, program);
 		
 		for (int i = 0; i < NUM_CURRENT_DATA; ++i) {
 			currentN[i*3] = currentNDefault[i*3] * width;

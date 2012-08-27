@@ -1,8 +1,5 @@
 package d3kod.d3gles20;
 
-import d3kod.d3gles20.shapes.AttribVariable;
-import android.opengl.GLES20;
-
 public class ShaderManager {
 	
 	private DefaultProgram defaultProgram;
@@ -10,25 +7,25 @@ public class ShaderManager {
 	
 	public ShaderManager() {
 //		defaultProgramHandle = defVertexShaderHandle = defFragmentShaderHandle = 0;
+		defaultProgram = new DefaultProgram();
+		textProgram = new TextProgram();
 	}
 
-	public int getDefaultProgramHandle() {
-		if (defaultProgram == null) {
-			defaultProgram = new DefaultProgram();
+	public Program getDefaultProgram() {
+		if (!defaultProgram.initialized()) {
+			defaultProgram.init();
 		}
-		return defaultProgram.getHandle();
+		return defaultProgram;
 	}
 
 	public void clear() {
-//		GLES20.glDeleteShader(defVertexShaderHandle);
-//		GLES20.glDeleteShader(defFragmentShaderHandle);
-//		defaultProgramHandle = defVertexShaderHandle = defFragmentShaderHandle = 0;
+		defaultProgram.delete(); textProgram.delete();
 	}
 
-	public int getTextProgramHandle() {
-		if (textProgram == null) {
-			textProgram = new TextProgram();
+	public Program getTextProgram() {
+		if (!textProgram.initialized()) {
+			textProgram.init();
 		}
-		return textProgram.getHandle();
+		return textProgram;
 	}
 }

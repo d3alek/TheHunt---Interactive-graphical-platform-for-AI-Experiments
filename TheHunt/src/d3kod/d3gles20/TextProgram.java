@@ -42,8 +42,13 @@ public class TextProgram extends Program {
 			+ "}                             \n";
 	
 	public TextProgram() {
-		super(vertexShaderCode, fragmentShaderCode, programVariables);
+//		super(vertexShaderCode, fragmentShaderCode, programVariables);
 		// TODO Auto-generated constructor stub
 	}
 
+	@Override
+	public void init() {
+		super.init(vertexShaderCode, fragmentShaderCode, programVariables);
+	}
+	
 }

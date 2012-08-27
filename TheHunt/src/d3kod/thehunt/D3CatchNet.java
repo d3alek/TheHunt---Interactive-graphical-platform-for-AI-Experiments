@@ -4,10 +4,10 @@ import android.opengl.GLES20;
 import android.opengl.Matrix;
 import d3kod.d3gles20.D3GLES20;
 import d3kod.d3gles20.D3Maths;
+import d3kod.d3gles20.Program;
 import d3kod.d3gles20.TextureManager;
 import d3kod.d3gles20.Utilities;
 import d3kod.d3gles20.shapes.D3Path;
-import d3kod.thehunt.floating_text.SnatchText;
 
 public class D3CatchNet extends D3Path {
 	
@@ -58,8 +58,8 @@ public class D3CatchNet extends D3Path {
 
 //	private boolean snatched;
 	
-	public D3CatchNet(TextureManager tm, int programHandle) {
-		super(beingBuiltColor.clone(), programHandle);
+	public D3CatchNet(TextureManager tm, Program program) {
+		super(beingBuiltColor.clone(), program);
 		this.tm = tm;
 		mIsClosed = mIsInvalid = false;
 //		snatched = false;

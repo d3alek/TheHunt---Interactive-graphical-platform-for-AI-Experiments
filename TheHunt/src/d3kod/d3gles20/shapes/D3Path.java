@@ -2,12 +2,11 @@ package d3kod.d3gles20.shapes;
 
 import java.util.ArrayList;
 
+import android.opengl.GLES20;
 import d3kod.d3gles20.D3GLES20;
 import d3kod.d3gles20.D3Maths;
+import d3kod.d3gles20.Program;
 import d3kod.d3gles20.Utilities;
-
-import android.opengl.GLES20;
-import android.util.Log;
 
 public class D3Path extends D3Shape {
 
@@ -17,8 +16,8 @@ public class D3Path extends D3Shape {
 	protected ArrayList<Float> mVertexData = new ArrayList<Float>();
 	private float mLength;
 	
-	public D3Path(float[] beingBuiltColor, int programHandle) {
-		super(null, beingBuiltColor, drawType, programHandle);
+	public D3Path(float[] beingBuiltColor, Program program) {
+		super(null, beingBuiltColor, drawType, program);
 		mLength = 0;
 	}
 

@@ -33,7 +33,12 @@ public class DefaultProgram extends Program {
 	
 	
 	public DefaultProgram() {
-		super(vertexShaderCode, fragmentShaderCode, programVariables);
+//		super(vertexShaderCode, fragmentShaderCode, programVariables);
+	}
+	
+	@Override
+	public void init() {
+		super.init(vertexShaderCode, fragmentShaderCode, programVariables);
 	}
 
 }

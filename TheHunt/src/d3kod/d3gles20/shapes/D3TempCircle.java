@@ -1,6 +1,7 @@
 package d3kod.d3gles20.shapes;
 
 import android.opengl.Matrix;
+import d3kod.d3gles20.Program;
 
 public class D3TempCircle extends D3Circle {
 	
@@ -10,8 +11,8 @@ public class D3TempCircle extends D3Circle {
 	private int mTicks;
 	private boolean mExpired;
 
-	public D3TempCircle(float x, float y, float r, int ticks, int programHandle) {
-		super(r, colorData, verticesNum , programHandle);
+	public D3TempCircle(float x, float y, float r, int ticks, Program program) {
+		super(r, colorData, verticesNum , program);
 		float[] modelMatrix = new float[16];
 		Matrix.setIdentityM(modelMatrix, 0);
 		Matrix.translateM(modelMatrix, 0, x, y, 0);

@@ -39,12 +39,12 @@ public class D3FadingText extends D3FadingShape {
 	
 	protected D3FadingText(float textSize, float fadeSpeed, int textureHandle, ShaderManager sm, float maxFade) {
 //		super(colorData, drType, useDefaultShaders, fadeSpeed);
-		super(colorData.clone(), drawType, sm.getTextProgramHandle(), fadeSpeed, maxFade);
+		super(colorData.clone(), drawType, sm.getTextProgram(), fadeSpeed, maxFade);
 		super.setVertexBuffer(makeVertexBuffer(textSize));
 		mTextureDataHandle = textureHandle;
 		mTextureCoordinates = Utilities.newFloatBuffer(squareTextureCoordinateData);
         mTextureCoordinateHandle = AttribVariable.A_TexCoordinate.getHandle();//GLES20.glGetAttribLocation(mProgram, "a_TexCoordinate");
-        mTextureUniformHandle = GLES20.glGetUniformLocation(super.getProgram(), "u_Texture");
+        mTextureUniformHandle = GLES20.glGetUniformLocation(super.getProgram().getHandle(), "u_Texture");
 //        super.setProgram(mProgram);
 	}
 
@@ -63,7 +63,8 @@ public class D3FadingText extends D3FadingShape {
 	@Override
 	public void draw(float[] mVMatrix, float[] mProjMatrix) {
 //		GLES20.glUseProgram(mProgram);
-		GLES20.glUseProgram(super.getProgram());
+//		GLES20.glUseProgram(super.getProgram());
+		super.useProgram();
 		
 	     // Set the active texture unit to texture unit 0.
 	    GLES20.glActiveTexture(GLES20.GL_TEXTURE0);

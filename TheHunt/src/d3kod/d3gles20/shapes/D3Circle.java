@@ -2,17 +2,17 @@ package d3kod.d3gles20.shapes;
 
 import java.nio.FloatBuffer;
 
-import d3kod.d3gles20.D3Maths;
-import d3kod.d3gles20.Utilities;
-
 import android.opengl.GLES20;
+import d3kod.d3gles20.D3Maths;
+import d3kod.d3gles20.Program;
+import d3kod.d3gles20.Utilities;
 
 public class D3Circle extends D3Shape {
 
 	private float mRadius;
 
-	public D3Circle(float r, float[] color, int vertices, int programHandle) {
-		super(makeCircleVerticesBuffer(r, vertices), color, GLES20.GL_LINE_LOOP, programHandle);
+	public D3Circle(float r, float[] color, int vertices, Program program) {
+		super(makeCircleVerticesBuffer(r, vertices), color, GLES20.GL_LINE_LOOP, program);
 		mRadius = r;
 	}
 

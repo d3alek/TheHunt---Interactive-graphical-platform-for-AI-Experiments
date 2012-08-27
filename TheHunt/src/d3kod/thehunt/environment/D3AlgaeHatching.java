@@ -8,6 +8,7 @@ import android.opengl.GLES20;
 import android.util.Log;
 import d3kod.d3gles20.D3GLES20;
 import d3kod.d3gles20.D3Maths;
+import d3kod.d3gles20.Program;
 import d3kod.d3gles20.Utilities;
 import d3kod.d3gles20.shapes.D3Shape;
 
@@ -102,7 +103,7 @@ public class D3AlgaeHatching extends D3Shape {
 	/** Store our model data in a float buffer. */
 	private final FloatBuffer mTextureCoordinates;
 
-	private int mProgram;
+	private Program mProgram;
 
 
 	private int mColorHandle;
@@ -122,16 +123,16 @@ public class D3AlgaeHatching extends D3Shape {
 
 	private float textureSizeX;
 	
-	protected D3AlgaeHatching(int textureDataHandle, int programHandle) {
-		super(algaeColor, GLES20.GL_TRIANGLE_FAN, programHandle);
+	protected D3AlgaeHatching(int textureDataHandle, Program program) {
+		super(algaeColor, GLES20.GL_TRIANGLE_FAN, program);
 		controlPointsData = null;
 		FloatBuffer[] vertAndTexBuffers = makeVerticesBuffer();
 		super.setVertexBuffer(vertAndTexBuffers[0]);
 //		mProgram = Utilities.createProgram(Utilities.loadShader(GLES20.GL_VERTEX_SHADER, vertexShaderCode), 
 //				Utilities.loadShader(GLES20.GL_FRAGMENT_SHADER, fragmentShaderCode));
-		mProgram = programHandle;
-        mTextureCoordinateHandle = GLES20.glGetAttribLocation(mProgram, "a_TexCoordinate");
-        mTextureUniformHandle = GLES20.glGetUniformLocation(mProgram, "u_Texture");
+		mProgram = program;
+        mTextureCoordinateHandle = GLES20.glGetAttribLocation(mProgram.getHandle(), "a_TexCoordinate");
+        mTextureUniformHandle = GLES20.glGetUniformLocation(mProgram.getHandle(), "u_Texture");
         mTextureDataHandle = textureDataHandle;
 //        mTextureCoordinates = D3GLES20.newFloatBuffer(cubeTextureCoordinateData);
         mTextureCoordinates = vertAndTexBuffers[1];
@@ -144,7 +145,7 @@ public class D3AlgaeHatching extends D3Shape {
 
 	@Override
 	public void draw(float[] mVMatrix, float[] mProjMatrix) {
-		GLES20.glUseProgram(mProgram);
+		GLES20.glUseProgram(mProgram.getHandle());
 		
 	     // Set the active texture unit to texture unit 0.
 	    GLES20.glActiveTexture(GLES20.GL_TEXTURE0);

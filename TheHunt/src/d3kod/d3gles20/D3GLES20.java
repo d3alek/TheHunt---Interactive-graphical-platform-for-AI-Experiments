@@ -143,15 +143,15 @@ public class D3GLES20 {
 
 	public D3TempCircle newContainsCheckCircle(int key, float hX, float hY) {
 		return new D3TempCircle(shapes.get(key).getCenterX(), shapes.get(key).getCenterY(), 
-				shapes.get(key).getRadius(), TEMP_CIRCLE_TICKS, sm.getDefaultProgramHandle());
+				shapes.get(key).getRadius(), TEMP_CIRCLE_TICKS, sm.getDefaultProgram());
 	}
 	
 	public int newDefaultQuad(float width, float height, float[] color) {
-		return putShape(new D3Quad(width, height, color, sm.getDefaultProgramHandle()));
+		return putShape(new D3Quad(width, height, color, sm.getDefaultProgram()));
 	}
 
 	public int newDefaultCircle(float r, float[] color, int vertices) {
-		return putShape(new D3Circle(r, color, vertices, sm.getDefaultProgramHandle()));
+		return putShape(new D3Circle(r, color, vertices, sm.getDefaultProgram()));
 	}
 
 	public ShaderManager getShaderManager() {

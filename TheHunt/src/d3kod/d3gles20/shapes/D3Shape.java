@@ -2,21 +2,20 @@ package d3kod.d3gles20.shapes;
 
 import java.nio.FloatBuffer;
 
-import d3kod.d3gles20.D3GLES20;
-import d3kod.d3gles20.D3Maths;
-import d3kod.d3gles20.Utilities;
-import d3kod.thehunt.TheHuntRenderer;
-
 import android.opengl.GLES20;
 import android.opengl.Matrix;
 import android.util.Log;
+import d3kod.d3gles20.D3GLES20;
+import d3kod.d3gles20.D3Maths;
+import d3kod.d3gles20.Program;
+import d3kod.d3gles20.Utilities;
 
 abstract public class D3Shape {
 	private int VERTICES_NUM;
 	protected static final int STRIDE_BYTES = D3GLES20.COORDS_PER_VERTEX * Utilities.BYTES_PER_FLOAT;
 	private static final String TAG = "D3Shape";
 	private float[] color = new float[4];
-	private int mProgram;
+	private Program mProgram;
 	protected int mMVPMatrixHandle;
 	protected int mPositionHandle;
 	private int mColorHandle;
@@ -37,12 +36,12 @@ abstract public class D3Shape {
 	private static final float FADE_SPEED = 0.01f;
 	private static final float MIN_ALPHA = 0.1f;
 	
-	protected D3Shape(FloatBuffer vertBuffer, float[] colorData, int drType, int programHandle) {
-		this(colorData, drType, programHandle);
+	protected D3Shape(FloatBuffer vertBuffer, float[] colorData, int drType, Program program) {
+		this(colorData, drType, program);
 		setVertexBuffer(vertBuffer); //TODO: make this the default constructor without the vertBuffer argument and ssetVertexBuffer abstract
 	}
 	
-	protected D3Shape(float[] colorData, int drawType, int programHandle) {
+	protected D3Shape(float[] colorData, int drawType, Program program) {
 		color = colorData;
 		this.drawType = drawType;
 		setMMatrix(new float[16]);
@@ -54,10 +53,10 @@ abstract public class D3Shape {
 //			customProgram = false;
 			//TODO: create program and handles just once
 //			mProgram = Utilities.createProgram(defaultVertexShader(), defaultFragmentShader());
-			mProgram = programHandle;
-			mMVPMatrixHandle = GLES20.glGetUniformLocation(mProgram, "u_MVPMatrix"); 
+			mProgram = program;
+			mMVPMatrixHandle = GLES20.glGetUniformLocation(mProgram.getHandle(), "u_MVPMatrix"); 
 	        mPositionHandle = AttribVariable.A_Position.getHandle();
-	        mColorHandle = GLES20.glGetUniformLocation(mProgram, "u_Color");
+	        mColorHandle = GLES20.glGetUniformLocation(mProgram.getHandle(), "u_Color");
 //		}
 //		else {
 //			customProgram = true;
@@ -89,7 +88,7 @@ abstract public class D3Shape {
 		//float[] mMMatrix, 
 		// Add program to OpenGL ES environment
 //        if (!customProgram) GLES20.glUseProgram(mProgram);
-		GLES20.glUseProgram(mProgram);
+		GLES20.glUseProgram(mProgram.getHandle());
 //        Log.v(TAG, "Vertex buffer size: " + vertexBuffer.capacity());
         // Pass in the position information
         vertexBuffer.position(0);
@@ -121,12 +120,12 @@ abstract public class D3Shape {
 	
 	abstract public float getRadius();
 	
-	protected void setProgram(int program) {
+	protected void setProgram(Program program) {
 		mProgram = program;
 //		GLES20.glUseProgram(program);
-		mMVPMatrixHandle = GLES20.glGetUniformLocation(mProgram, "u_MVPMatrix"); 
-        mPositionHandle = GLES20.glGetAttribLocation(mProgram, "a_Position");
-        mColorHandle = GLES20.glGetUniformLocation(mProgram, "u_Color");
+		mMVPMatrixHandle = GLES20.glGetUniformLocation(mProgram.getHandle(), "u_MVPMatrix"); 
+//        mPositionHandle = GLES20.glGetAttribLocation(mProgram, "a_Position");
+        mColorHandle = GLES20.glGetUniformLocation(mProgram.getHandle(), "u_Color");
 	}
 	
 	public void setDrawType(int drawType) {
@@ -162,7 +161,7 @@ abstract public class D3Shape {
 		Matrix.rotateM(mMMatrix, 0, angleDeg, 0, 0, 1);
 	}
 	public void useProgram() {
-		GLES20.glUseProgram(mProgram);
+		GLES20.glUseProgram(mProgram.getHandle());
 	}
 
 	public float[] getMMatrix() {
@@ -200,60 +199,7 @@ abstract public class D3Shape {
 		mVMatrix = vMatrix;
 	}
 	
-	public int getProgram() {
+	public Program getProgram() {
 		return mProgram;
 	}
-	
-
-//	private static int defVertexShaderHandle = -1;
-//	private static int defFragmentShaderHandle = -1;
-//	private static final String vertexShaderCode =
-//			"uniform mat4 u_MVPMatrix;      \n"     // A constant representing the combined model/view/projection matrix.
-//		 
-//		  + "attribute vec4 a_Position;     \n"     // Per-vertex position information we will pass in.
-//		 
-//		  + "void main()                    \n"     // The entry point for our vertex shader.
-//		  + "{                              \n"
-//		  + "   gl_Position = u_MVPMatrix   \n"     // gl_Position is a special variable used to store the final position.
-//		  + "               * a_Position;   \n"     // Multiply the vertex by the matrix to get the final point in
-//		  + "}                              \n";    // normalized screen coordinates.
-//
-//
-//	private static final String fragmentShaderCode =
-//				"precision mediump float;       \n"     // Set the default precision to medium. We don't need as high of a
-//	        // precision in the fragment shader.
-//			+ "uniform vec4 u_Color;          \n"
-//	        // triangle per fragment.
-//			+ "void main()                    \n"     // The entry point for our fragment shader.
-//			+ "{                              \n"
-//			+ "   gl_FragColor = u_Color;     \n"     // Pass the color directly through the pipeline.
-//			+ "}                              \n";
-	
-	
-//	public int defaultVertexShader() {
-////		if (defVertexShaderHandle == -1) 
-////		if (!GLES20.glIsShader(defVertexShaderHandle)) {
-////			Log.v(TAG, "Creating new default vertex shader");
-////			defVertexShaderHandle = Utilities.loadShader(GLES20.GL_VERTEX_SHADER, vertexShaderCode);
-////		}
-//		return defVertexShaderHandle;
-//	}
-//	
-//	public int defaultFragmentShader() {
-////		if (defFragmentShaderHandle == -1)
-////		if (!GLES20.glIsShader(defFragmentShaderHandle)) {
-////			Log.v(TAG, "Creating new default fragment shader");
-////			defFragmentShaderHandle = Utilities.loadShader(GLES20.GL_FRAGMENT_SHADER, fragmentShaderCode);
-////		}
-//		return defFragmentShaderHandle;
-//	}
-//	public static void initDefaultShaders() {
-//		defVertexShaderHandle = Utilities.loadShader(GLES20.GL_VERTEX_SHADER, vertexShaderCode);
-//		defFragmentShaderHandle = Utilities.loadShader(GLES20.GL_FRAGMENT_SHADER, fragmentShaderCode);
-//	}
-//	public static void cleanDefaultShaders() {
-//		// TODO: use this function somewhere...
-//		GLES20.glDeleteShader(defVertexShaderHandle);
-//		GLES20.glDeleteShader(defFragmentShaderHandle);
-//	}
 }

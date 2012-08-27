@@ -4,11 +4,10 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 
-import d3kod.d3gles20.D3GLES20;
-import d3kod.d3gles20.Utilities;
-
 import android.opengl.GLES20;
-import android.util.Log;
+import d3kod.d3gles20.D3GLES20;
+import d3kod.d3gles20.Program;
+import d3kod.d3gles20.Utilities;
 
 public class D3Quad extends D3Shape {
 
@@ -39,23 +38,23 @@ public class D3Quad extends D3Shape {
 		return buffer;
 	}
 	
-	public D3Quad(float width, float height, float[] verticesDefault, float[] drawColor, int drawType, int programHandle) {
-		this(makeVerticesBuffer(width, height, verticesDefault), drawColor, drawType, programHandle);
+	public D3Quad(float width, float height, float[] verticesDefault, float[] drawColor, int drawType, Program program) {
+		this(makeVerticesBuffer(width, height, verticesDefault), drawColor, drawType, program);
 		mRadius = 0.5f*(width>height?width:height);
 	}
 	
-	public D3Quad(float width, float height, int programHandle) {
-		this(makeVerticesBuffer(width, height, quadVerticesDefault), colorDefault, GLES20.GL_TRIANGLE_STRIP, programHandle);
+	public D3Quad(float width, float height, Program program) {
+		this(makeVerticesBuffer(width, height, quadVerticesDefault), colorDefault, GLES20.GL_TRIANGLE_STRIP, program);
 		mRadius = 0.5f*(width>height?width:height);
 	}
 	
-	public D3Quad(float width, float height, float[] drawColor, int programHandle) {
-		this(makeVerticesBuffer(width, height, quadVerticesDefault), drawColor, GLES20.GL_TRIANGLE_STRIP, programHandle);
+	public D3Quad(float width, float height, float[] drawColor, Program program) {
+		this(makeVerticesBuffer(width, height, quadVerticesDefault), drawColor, GLES20.GL_TRIANGLE_STRIP, program);
 		mRadius = 0.5f*(width>height?width:height);
 	}
 	
-	public D3Quad(FloatBuffer verticesBuffer, float[] drawColor, int drawType, int programHandle) {	
-		super(verticesBuffer, drawColor, drawType, programHandle);
+	public D3Quad(FloatBuffer verticesBuffer, float[] drawColor, int drawType, Program program) {	
+		super(verticesBuffer, drawColor, drawType, program);
 	}
 	
 	public float getRadius() {

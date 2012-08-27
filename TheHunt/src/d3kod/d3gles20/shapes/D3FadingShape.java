@@ -1,5 +1,7 @@
 package d3kod.d3gles20.shapes;
 
+import d3kod.d3gles20.Program;
+
 
 abstract public class D3FadingShape extends D3Shape {
 
@@ -9,8 +11,8 @@ abstract public class D3FadingShape extends D3Shape {
 	private float mMaxFade;
 
 	protected D3FadingShape(float[] colorData, int drType,
-			int programHandle, float fadeSpeed, float maxFade) {
-		super(colorData, drType, programHandle);
+			Program program, float fadeSpeed, float maxFade) {
+		super(colorData, drType, program);
 		mExpired = false;
 		mFadeSpeed = fadeSpeed;
 		mMaxFade = maxFade;
