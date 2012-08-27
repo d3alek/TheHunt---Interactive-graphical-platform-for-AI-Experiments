@@ -1,7 +1,7 @@
 package d3kod.d3gles20.shapes;
 
 import android.opengl.Matrix;
-import d3kod.d3gles20.Program;
+import d3kod.d3gles20.programs.Program;
 
 public class D3TempCircle extends D3Circle {
 	

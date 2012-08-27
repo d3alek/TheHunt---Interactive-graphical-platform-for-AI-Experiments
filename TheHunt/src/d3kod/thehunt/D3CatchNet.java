@@ -4,9 +4,9 @@ import android.opengl.GLES20;
 import android.opengl.Matrix;
 import d3kod.d3gles20.D3GLES20;
 import d3kod.d3gles20.D3Maths;
-import d3kod.d3gles20.Program;
 import d3kod.d3gles20.TextureManager;
 import d3kod.d3gles20.Utilities;
+import d3kod.d3gles20.programs.Program;
 import d3kod.d3gles20.shapes.D3Path;
 
 public class D3CatchNet extends D3Path {

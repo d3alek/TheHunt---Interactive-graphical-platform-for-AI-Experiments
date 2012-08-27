@@ -1,6 +1,6 @@
 package d3kod.d3gles20.shapes;
 
-import d3kod.d3gles20.Program;
+import d3kod.d3gles20.programs.Program;
 
 
 abstract public class D3FadingShape extends D3Shape {

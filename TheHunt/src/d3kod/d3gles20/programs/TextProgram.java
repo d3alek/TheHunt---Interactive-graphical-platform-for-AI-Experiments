@@ -1,6 +1,5 @@
-package d3kod.d3gles20;
+package d3kod.d3gles20.programs;
 
-import d3kod.d3gles20.shapes.AttribVariable;
 
 public class TextProgram extends Program {
 

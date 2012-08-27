@@ -6,7 +6,7 @@ import java.nio.FloatBuffer;
 
 import android.opengl.GLES20;
 import android.util.Log;
-import d3kod.d3gles20.shapes.AttribVariable;
+import d3kod.d3gles20.programs.AttribVariable;
 
 public class Utilities {
 

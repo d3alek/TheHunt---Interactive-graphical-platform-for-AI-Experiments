@@ -6,9 +6,10 @@ import android.opengl.GLES20;
 import android.opengl.Matrix;
 import d3kod.d3gles20.D3GLES20;
 import d3kod.d3gles20.D3Maths;
-import d3kod.d3gles20.Program;
 import d3kod.d3gles20.ShaderManager;
 import d3kod.d3gles20.Utilities;
+import d3kod.d3gles20.programs.AttribVariable;
+import d3kod.d3gles20.programs.Program;
 import d3kod.d3gles20.shapes.D3Shape;
 
 public class D3Prey extends D3Shape {
@@ -122,7 +123,7 @@ public class D3Prey extends D3Shape {
 			+ "   gl_FragColor = u_Color;     \n"
 			+ "}                              \n";
 	
-	private Program mProgram;
+	private int mProgramHandle;
 	private int mColorHandle;
 	
 	float[] mBodyStartRMatrix = new float[16];
@@ -152,8 +153,7 @@ public class D3Prey extends D3Shape {
 	private PreyData mD;
 	
 	protected D3Prey(PreyData data, ShaderManager sm) {
-		super(null, GLES20.GL_LINE_STRIP, sm.getDefaultProgram());
-		super.setColor(preyColor);
+		super(preyColor, GLES20.GL_LINE_STRIP, sm.getDefaultProgram());
 		mD = data;
 		Matrix.setIdentityM(mModelMatrix, 0);
 		
@@ -179,16 +179,12 @@ public class D3Prey extends D3Shape {
         rib1PosIndex = (1*bodyVerticesNum/4)*D3GLES20.COORDS_PER_VERTEX;
         rib2PosIndex = (3*bodyVerticesNum/4-2)*D3GLES20.COORDS_PER_VERTEX;
 		
-//		int vertexShaderHandle = Utilities.loadShader(GLES20.GL_VERTEX_SHADER, vertexShaderCode);
-//        int fragmentShaderHandle = Utilities.loadShader(GLES20.GL_FRAGMENT_SHADER, fragmentShaderCode);
-//        
-        mProgram = sm.getDefaultProgram();//Utilities.createProgram(vertexShaderHandle, fragmentShaderHandle);
+        mProgramHandle = sm.getDefaultProgram().getHandle();
         
-        mMVPMatrixHandle = GLES20.glGetUniformLocation(mProgram.getHandle(), "u_MVPMatrix");
+//        mMVPMatrixHandle = GLES20.glGetUniformLocation(mProgramHandle, "u_MVPMatrix");
         //TODO: fix visibility
-        //TODO: fix attrib handle location getter
-        mPositionHandle = GLES20.glGetAttribLocation(mProgram.getHandle(), "a_Position");
-        mColorHandle = GLES20.glGetUniformLocation(mProgram.getHandle(), "u_Color");
+//        mPositionHandle = AttribVariable.A_Position.getHandle();
+//        mColorHandle = GLES20.glGetUniformLocation(mProgramHandle, "u_Color");
 	}
 
 	private float[] caclRibVerticesData() {
@@ -249,10 +245,12 @@ public class D3Prey extends D3Shape {
         super.setDrawVMatrix(mVMatrix);
         super.setDrawProjMatrix(mProjMatrix);
         
-		GLES20.glUseProgram(mProgram.getHandle());
+//		GLES20.glUseProgram(mProgramHandle);
+		super.useProgram();
 		
-        GLES20.glUniform4fv(mColorHandle, 1, super.getColor(), 0);
-        GLES20.glEnableVertexAttribArray(mColorHandle);
+		super.useColor();
+//        GLES20.glUniform4fv(mColorHandle, 1, super.getColor(), 0);
+//        GLES20.glEnableVertexAttribArray(mColorHandle);
         
         // Calculate Model Matrix
         Matrix.setIdentityM(mModelMatrix, 0);

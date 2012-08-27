@@ -5,6 +5,7 @@ import java.nio.FloatBuffer;
 import android.opengl.GLES20;
 import d3kod.d3gles20.ShaderManager;
 import d3kod.d3gles20.Utilities;
+import d3kod.d3gles20.programs.AttribVariable;
 
 public class D3FadingText extends D3FadingShape {
 

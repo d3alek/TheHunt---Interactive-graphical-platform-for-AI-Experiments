@@ -1,6 +1,5 @@
-package d3kod.d3gles20;
+package d3kod.d3gles20.programs;
 
-import d3kod.d3gles20.shapes.AttribVariable;
 import android.opengl.GLES20;
 
 public class DefaultProgram extends Program {

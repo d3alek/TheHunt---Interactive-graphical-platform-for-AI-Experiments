@@ -1,12 +1,15 @@
 package d3kod.d3gles20;
 
+import d3kod.d3gles20.programs.DefaultProgram;
+import d3kod.d3gles20.programs.Program;
+import d3kod.d3gles20.programs.TextProgram;
+
 public class ShaderManager {
 	
 	private DefaultProgram defaultProgram;
 	private TextProgram textProgram;
 	
 	public ShaderManager() {
-//		defaultProgramHandle = defVertexShaderHandle = defFragmentShaderHandle = 0;
 		defaultProgram = new DefaultProgram();
 		textProgram = new TextProgram();
 	}

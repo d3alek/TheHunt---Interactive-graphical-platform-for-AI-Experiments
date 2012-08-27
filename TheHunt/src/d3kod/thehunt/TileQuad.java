@@ -7,8 +7,8 @@ import java.nio.FloatBuffer;
 import android.opengl.GLES20;
 import android.opengl.Matrix;
 import d3kod.d3gles20.D3GLES20;
-import d3kod.d3gles20.Program;
 import d3kod.d3gles20.Utilities;
+import d3kod.d3gles20.programs.Program;
 import d3kod.d3gles20.shapes.D3Quad;
 import d3kod.thehunt.environment.EnvironmentData;
 import d3kod.thehunt.environment.EnvironmentData.Dir;
@@ -58,11 +58,6 @@ public class TileQuad extends D3Quad {
         else super.useProgram();
         
 		if (showCurrents) {
-        	currentBuffer.position(0);
-        	GLES20.glVertexAttribPointer(mPositionHandle, D3GLES20.COORDS_PER_VERTEX, 
-            		GLES20.GL_FLOAT, false, STRIDE_BYTES, currentBuffer);
-            
-            GLES20.glEnableVertexAttribArray(mPositionHandle);
             
         	switch(dir) {
         	case N: break;
@@ -76,11 +71,7 @@ public class TileQuad extends D3Quad {
         	default: return;
         	}
         	
-        	Matrix.multiplyMM(mMVPMatrix , 0, mVMatrix, 0, mMMatrix, 0);
-        	Matrix.multiplyMM(mMVPMatrix, 0, mProjMatrix, 0, mMVPMatrix, 0);
-        	GLES20.glUniformMatrix4fv(mMVPMatrixHandle, 1, false, mMVPMatrix, 0);
-        	
-        	GLES20.glDrawArrays(GLES20.GL_LINE_LOOP, 0, 3);
+        	super.drawBuffer(currentBuffer, mMMatrix);
         }
 	}
 

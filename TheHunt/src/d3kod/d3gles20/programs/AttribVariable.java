@@ -1,4 +1,4 @@
-package d3kod.d3gles20.shapes;
+package d3kod.d3gles20.programs;
 
 public enum AttribVariable {
 //	U_MVPMatrix(1, "u_MVPMatrix", VarType.UNIFORM),
