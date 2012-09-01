@@ -3,7 +3,7 @@ package d3kod.thehunt.environment;
 import android.util.Log;
 import d3kod.d3gles20.D3GLES20;
 
-class FloatingObject {
+public class FloatingObject {
 
 	public enum Type {
 		FOOD, ALGAE;

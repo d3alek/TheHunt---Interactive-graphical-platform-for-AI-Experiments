@@ -6,14 +6,7 @@ import java.util.LinkedList;
 import java.util.Random;
 
 import android.graphics.Color;
-import android.graphics.Matrix;
-import android.graphics.Paint;
-import android.graphics.Path;
-import android.graphics.Path.Direction;
-import android.graphics.drawable.ShapeDrawable;
-import android.graphics.drawable.shapes.PathShape;
 import android.util.Log;
-import d3kod.thehunt.environment.EnvironmentData.Dir;
 
 public class Currents {
 	public static final String TAG = "TheHuntDebug";

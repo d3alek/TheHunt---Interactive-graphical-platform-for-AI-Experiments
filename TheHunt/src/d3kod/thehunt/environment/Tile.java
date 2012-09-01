@@ -1,7 +1,6 @@
 package d3kod.thehunt.environment;
 
 import d3kod.thehunt.TileQuad;
-import d3kod.thehunt.environment.EnvironmentData.Dir;
 
 public class Tile {
 	private Dir dir;

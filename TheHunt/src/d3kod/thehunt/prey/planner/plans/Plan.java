@@ -66,7 +66,8 @@ public class Plan {
 			return null;
 		}
 		Action nextAction = mActions.get(mCurrentAction++);
-		mCurrentActionTicks = nextAction.getTicks()-1; // we tick once now
+		mCurrentActionTicks = nextAction.getTicks();
+//		tickCurrentAction();
 		return nextAction;
 	}
 	public void addLastAction(Action action) {

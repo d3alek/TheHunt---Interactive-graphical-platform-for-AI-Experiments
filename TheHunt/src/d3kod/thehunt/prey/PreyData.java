@@ -14,10 +14,10 @@ public class PreyData {
 	
 	protected final float MAX_BODY_BEND_ANGLE = 110;
 	
-	private static int SMALL_TURNS_PER_SECOND = 5;
+	private static int SMALL_TURNS_PER_SECOND = 3;
 	private static int MEDIUM_TURNS_PER_SECOND = 4;
 	private static int LARGE_TURNS_PER_SECOND = 3;
-	private static int SMALL_TURNS_BACK_PER_SECOND = 3;
+	private static int SMALL_TURNS_BACK_PER_SECOND = 2;
 	private static int MEDIUM_TURNS_BACK_PER_SECOND = 3;
 	private static int LARGE_TURNS_BACK_PER_SECOND = 2;
 	public static int SMALL_TICKS_PER_TURN = TheHuntRenderer.TICKS_PER_SECOND/SMALL_TURNS_PER_SECOND;
@@ -34,7 +34,7 @@ public class PreyData {
 	public static float rotateSpeedSmall = angleFlopSmall*SMALL_TURNS_PER_SECOND/(TheHuntRenderer.TICKS_PER_SECOND);
 	public static float rotateSpeedMedium = angleFlopMedium*MEDIUM_TURNS_PER_SECOND/(TheHuntRenderer.TICKS_PER_SECOND);
 	public static float rotateSpeedLarge = angleFlopLarge*LARGE_TURNS_PER_SECOND/(TheHuntRenderer.TICKS_PER_SECOND);
-	public static int angleFlopBackSmall = 10;
+	public static int angleFlopBackSmall = 15;
 	public static int angleFlopBackMedium = 20;
 	public static int angleFlopBackLarge = 30;
 	public static float rotateSpeedBackSmall = 4*angleFlopBackSmall/SMALL_TICKS_BACK_PER_TURN;

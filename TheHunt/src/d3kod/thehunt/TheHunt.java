@@ -79,21 +79,21 @@ public class TheHunt extends Activity {
     	case R.id.flopLeft:
     		mGLView.post(new Runnable() {
 				public void run() {
-					mGLView.mRenderer.mPrey.turn(TurnAngle.LEFT_MEDIUM);
+					mGLView.mRenderer.mPrey.turn(TurnAngle.LEFT_SMALL);
 				}
 			});
     		break;
     	case R.id.flopRight:
     		mGLView.post(new Runnable() {
 				public void run() {
-					mGLView.mRenderer.mPrey.turn(TurnAngle.RIGHT_MEDIUM);
+					mGLView.mRenderer.mPrey.turn(TurnAngle.RIGHT_SMALL);
 				}
 			});
     		break;
     	case R.id.flopBack:
     		mGLView.post(new Runnable() {
 				public void run() {
-					mGLView.mRenderer.mPrey.backFinMotion(TurnAngle.BACK_MEDIUM);
+					mGLView.mRenderer.mPrey.backFinMotion(TurnAngle.BACK_SMALL);
 				}
 			});
     		break;

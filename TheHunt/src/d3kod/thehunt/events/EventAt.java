@@ -5,11 +5,13 @@ public class EventAt extends Event {
 	private float headY;
 	private float bodyX;
 	private float bodyY;
+	private float mHeadAngle;
 
-	public EventAt(float hX, float hY, float bX, float bY) {
+	public EventAt(float hX, float hY, float bX, float bY, float headAngle) {
 		super(EventType.AT);
 		headX = hX; headY = hY;
 		bodyX = bX; bodyY = bY;
+		mHeadAngle = headAngle;
 	}
 	
 	public float getHeadX() {
@@ -23,6 +25,10 @@ public class EventAt extends Event {
 	}
 	public float getBodyY() {
 		return bodyY;
+	}
+	
+	public float getHeadAngle() {
+		return mHeadAngle;
 	}
 	
 	@Override

@@ -53,12 +53,16 @@ public class Prey {
 		calcPosHead();
 
 		if (PreyData.AI) {
-			mWorldModel.update(mSensor.sense(mD.mPosHeadX, mD.mPosHeadY, mD.mPosX, mD.mPosY));
+			updateWorldModel();
 			doAction(mPlanner.nextAction(mWorldModel));
 		}
 		move(dx, dy);
 	}
 	
+	private void updateWorldModel() {
+		mWorldModel.update(mSensor.sense(mD.mPosHeadX, mD.mPosHeadY, mD.mPosX, mD.mPosY, mD.bodyStartAngle));
+	}
+
 	private void calcPosHead() {
 		float[] posTemp = { 0.0f, bodyToHeadLength, 0.0f, 1.0f };
 		
@@ -154,7 +158,7 @@ public class Prey {
 				mD.flopBackAngle = mD.flopBackTargetFirst;
 				mD.floppedFirst = true;
 				moveForward(Math.abs(mD.backFinAngle*flopBackSpeed)); // F = ma
-//				Log.v(TAG, "Flopped First done " + flopBackAngle);
+//				Log.v(TAG, "Flopped First done " + mD.flopBackAngle);
 				putFlopText(mD.flopBackAngle + mD.bodyCAngle);
 			}
 			mD.bodyEndAngleRot = mD.bodyCAngle + mD.flopBackAngle-mD.bodyEndAngle;
@@ -169,7 +173,7 @@ public class Prey {
 				mD.floppedSecond = true;
 				moveForward(Math.abs(2*mD.backFinAngle*flopBackSpeed)); // F = ma
 				putFlopText(mD.flopBackAngle + mD.bodyCAngle);
-//				Log.v(TAG, "Flopped Second done " + flopBackAngle);
+//				Log.v(TAG, "Flopped Second done " + mD.flopBackAngle);
 			}
 			mD.bodyEndAngleRot = mD.bodyCAngle + mD.flopBackAngle-mD.bodyEndAngle;
 			mD.bodyEndAngle = mD.bodyCAngle + mD.flopBackAngle;
@@ -184,22 +188,22 @@ public class Prey {
 //				floppedSecond = true;
 				floppedThird = true;
 				moveForward(Math.abs(mD.backFinAngle*flopBackSpeed)); // F = ma
-//				Log.v(TAG, "Flopped Third done " + flopBackAngle);
+//				Log.v(TAG, "Flopped Third done " + mD.flopBackAngle);
 			}
 			mD.bodyEndAngleRot = mD.bodyCAngle + mD.flopBackAngle-mD.bodyEndAngle;
 			mD.bodyEndAngle = mD.bodyCAngle + mD.flopBackAngle;
 		}
 		if (mD.floppedFirst && mD.floppedSecond && floppedThird) {
 			if (mD.turningBackFinMotion) {
-				if (stoppedTurning()) {
+//				if (stoppedTurning()) {
 //					Log.v(TAG, "Stopped turning flop");
 					mD.turningBackFinMotion = false;
 					mD.flopBack = false;
-				}
-				else {
-//					Log.v(TAG, "Continue turning flop");
-					backFinMotion(mD.turningBackFinAngle);
-				}
+//				}
+//				else {
+////					Log.v(TAG, "Continue turning flop");
+//					backFinMotion(mD.turningBackFinAngle);
+//				}
 			}
 			else {
 //				Log.v(TAG, "Stopping flop");
@@ -214,7 +218,7 @@ public class Prey {
 	}
 
 	public void turn(TurnAngle angle) {
-		
+//		Log.v(TAG, "Turning " + angle);
 		int value = angle.getValue();
 		
 		if (mD.bodyStartAngleTarget + value - mD.bodyCAngle > mD.MAX_BODY_BEND_ANGLE 
@@ -327,7 +331,7 @@ public class Prey {
 		randomizePos();
 		mPlanner.clear();
 		calcPosHead();
-		mWorldModel.update(mSensor.sense(mD.mPosHeadX, mD.mPosHeadY, mD.mPosX, mD.mPosY));
+		updateWorldModel();
 		mWorldModel.recalcNearestFood();
 		mD3GLES20.putExpiringShape(new PlokText(mD.mPosX, mD.mPosY, tm, mD3GLES20.getShaderManager()));
 		mGraphic.reset();

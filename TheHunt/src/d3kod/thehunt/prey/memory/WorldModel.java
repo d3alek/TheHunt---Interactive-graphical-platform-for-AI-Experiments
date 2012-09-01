@@ -4,12 +4,14 @@ import java.util.ArrayList;
 
 import android.util.Log;
 import d3kod.d3gles20.D3Maths;
+import d3kod.thehunt.environment.Dir;
 import d3kod.thehunt.events.Event;
+import d3kod.thehunt.events.Event.EventType;
 import d3kod.thehunt.events.EventAlgae;
 import d3kod.thehunt.events.EventAt;
+import d3kod.thehunt.events.EventCurrent;
 import d3kod.thehunt.events.EventFood;
 import d3kod.thehunt.events.EventLight;
-import d3kod.thehunt.events.Event.EventType;
 
 public class WorldModel {
 private static final String TAG = "WorldModel";
@@ -24,6 +26,8 @@ private static final float INF = 100;
 	private ArrayList<Event> mEventMemory = new ArrayList<Event>();
 	private EventFood mNearestFood;
 	private EventAlgae mNearestAlgae;
+	private Dir mCurrentDir;
+	private float mHeadAngle;
 //	public void updateNode(float posX, float posY, float currentX, float currentY) {
 //		mNodes.getNode(posX, posY).setCurrent(currentX, currentY);
 //	}
@@ -43,14 +47,17 @@ private static final float INF = 100;
 		if (mEventMemory.contains(e)) return;
 		switch(e.type()) { 
 		case AT: 
-			float newBodyX = ((EventAt) e).getBodyX();
-			float newBodyY = ((EventAt) e).getBodyY();
-			float newHeadX = ((EventAt) e).getHeadX();
-			float newHeadY = ((EventAt) e).getHeadY();
+			EventAt eAt = (EventAt) e;
+			float newBodyX = eAt.getBodyX();
+			float newBodyY = eAt.getBodyY();
+			float newHeadX = eAt.getHeadX();
+			float newHeadY = eAt.getHeadY();
 			if (newHeadX != mHeadX || newHeadY != mHeadY) {
 				// TODO: There is a movement! Improve detection?
 				mHeadX = newHeadX; mHeadY = newHeadY;
 				mBodyX = newBodyX; mBodyY = newBodyY;
+				mHeadAngle = eAt.getHeadAngle();
+//				Log.v(TAG, "mHeadAngle is " + mHeadAngle);
 			}
 			break;
 		case FOOD: 
@@ -65,17 +72,12 @@ private static final float INF = 100;
 			}
 			break;
 		case ALGAE:
-//			EventAlgae algae = (EventAlgae)e;
-//			float algaeX = algae.getAlgaeX();
-//			float algaeY = algae.getAlgaeY();
-//			if (!knowAlgaeLocation() || 
-//					D3GLES20.distance(mHeadX, mHeadY, mNearestAlgae.getAlgaeX(), mNearestAlgae.getAlgaeY()) > 
-//					D3GLES20.distance(mHeadX, mHeadY, algaeX, algaeY)) {
-//				mNearestAlgae = algae;
-//			}
 			break;
 		case LIGHT:
 			mLightLevel = ((EventLight) e).getLightLevel();
+			break;
+		case CURRENT:
+			mCurrentDir = ((EventCurrent) e).getDir();
 			break;
 		}
 		if (e.type() == EventType.FOOD || e.type() == EventType.ALGAE) {
@@ -83,8 +85,6 @@ private static final float INF = 100;
 		}
 	}
 	private void rememberEvent(Event e) {
-//		if (eventMemory.contains(e)) return;
-//		Log.v(TAG, "Remembering event " + e);
 		mEventMemory.add(e);
 	}
 	public int getLightLevel() {
@@ -169,5 +169,12 @@ private static final float INF = 100;
 	}
 	public void recalcNearestFood() {
 		mNearestFood = recallNearestFood();
+	}
+	public Dir getCurrentDir() {
+		return mCurrentDir;
+	}
+	
+	public float getHeadAngle() {
+		return mHeadAngle;
 	}
 }
