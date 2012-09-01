@@ -17,8 +17,8 @@ public class Planner {
 	public static final boolean SHOW_TARGET = true;
 	public static PlanState mState;
 	private Action[] allActions;
-	private int numActions; 
-	private Random mRandom;
+//	private int numActions; 
+//	private Random mRandom;
 	private Plan mPlan;
 	private int mPlanTarget;
 	private D3GLES20 mD3GLES20;
@@ -27,8 +27,8 @@ public class Planner {
 	public Planner(D3GLES20 d3GLES20) {
 		mD3GLES20 = d3GLES20;
 		allActions = Action.values();
-		numActions = allActions.length;
-		mRandom = new Random();
+//		numActions = allActions.length;
+//		mRandom = new Random();
 		clear();
 	}
 
@@ -40,10 +40,10 @@ public class Planner {
 		}
 		mPlan.update(mWorldModel);
 		if (!mPlan.isFinished()) {
-			if (SHOW_TARGET) mD3GLES20.setShapePosition(mPlanTarget, mPlan.getTargetX(), mPlan.getTargetY());
+			if (SHOW_TARGET && !(mPlan instanceof ExplorePlan)) mD3GLES20.setShapePosition(mPlanTarget, mPlan.getTargetX(), mPlan.getTargetY());
 			return mPlan.nextAction();
 		}
-		else if (SHOW_TARGET) mD3GLES20.removeShape(mPlanTarget);
+		else if (SHOW_TARGET && !(mPlan instanceof ExplorePlan)) mD3GLES20.removeShape(mPlanTarget);
 		
 		mState = checkForSomethingInteresting(mWorldModel);
 //		Log.v(TAG, "mState is " + mState);
@@ -53,29 +53,25 @@ public class Planner {
 		case HIDE: mPlan = makeHidePlan(mWorldModel); break;
 		case DONOTHING: mPlan = new NoPlan(mWorldModel.getHeadX(), mWorldModel.getHeadY()); break;
 		}
-		if (SHOW_TARGET) makeTarget();
+		if (SHOW_TARGET && !(mPlan instanceof ExplorePlan)) makeTarget();
 		mPlan.update(mWorldModel);
-		if (SHOW_TARGET) mD3GLES20.setShapePosition(mPlanTarget, mPlan.getTargetX(), mPlan.getTargetY());
+		if (SHOW_TARGET && !(mPlan instanceof ExplorePlan)) mD3GLES20.setShapePosition(mPlanTarget, mPlan.getTargetX(), mPlan.getTargetY());
 		return mPlan.nextAction();
 	}
-
+	
+	private PlanState checkForSomethingInteresting(WorldModel mWorldModel) {
+		if (mWorldModel.knowFoodLocation()) {
+			return PlanState.FORAGE;
+		}
+		return PlanState.EXPLORE;
+	
+	}
 	private Plan makeExplorePlan(WorldModel mWorldModel) {
 		if (mExplorePlan == null) mExplorePlan = new ExplorePlan(mWorldModel);
 		return mExplorePlan;
 	}
 
-	private PlanState checkForSomethingInteresting(WorldModel mWorldModel) {
-		if (mWorldModel.knowFoodLocation()) {
-			return PlanState.FORAGE;
-		}
-//		if (mWorldModel.knowAlgaeLocation()) {
-//			return PlanState.HIDE;
-//		}
-		return PlanState.EXPLORE;
-	}
-
 	private Plan makeScavagePlan(WorldModel mWorldModel) {
-//		Log.v(TAG, "Making scavage plan");
 		Plan scvgPlan = new GoToAndEatPlan(
 				mWorldModel.getHeadX(), mWorldModel.getHeadY(), 
 				mWorldModel.getBodyX(), mWorldModel.getBodyY(), 
@@ -86,7 +82,6 @@ public class Planner {
 	private Plan makeHidePlan(WorldModel mWorldModel) {
 
 		if (mWorldModel.getLightLevel() == 0) return new NoPlan(mWorldModel.getHeadX(), mWorldModel.getHeadY());
-//		Log.v(TAG, "Making hide plan because light level is " + mWorldModel.getLightLevel());
 		Plan hidePlan = new GoToAndStayPlan(
 				mWorldModel.getHeadX(), mWorldModel.getHeadY(), 
 				mWorldModel.getBodyX(), mWorldModel.getBodyY(), 
@@ -94,10 +89,10 @@ public class Planner {
 		return hidePlan;
 	}
 	
-	private Action chooseRandomAction() {
-		int actionInd = Math.round((numActions-1) * mRandom.nextFloat());
-		return allActions[actionInd];
-	}
+//	private Action chooseRandomAction() {
+//		int actionInd = Math.round((numActions-1) * mRandom.nextFloat());
+//		return allActions[actionInd];
+//	}
 
 	public void makeTarget() {
 		mPlanTarget = mD3GLES20.newDefaultCircle(mPlan.getTargetSize(), mPlan.getTargetColor(), 10);

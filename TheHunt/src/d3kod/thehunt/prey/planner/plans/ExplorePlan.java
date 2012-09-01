@@ -21,7 +21,7 @@ public class ExplorePlan extends Plan {
 	};
 	
 	public ExplorePlan(WorldModel worldModel) {
-		super(worldModel.getHeadX(), worldModel.getHeadY());
+		super(0, 0, 0, null);
 		mRandom = new Random();
 //		mRotating = true;
 //		mRotStep = 0;

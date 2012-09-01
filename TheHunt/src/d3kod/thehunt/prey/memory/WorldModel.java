@@ -28,6 +28,7 @@ private static final float INF = 100;
 	private EventAlgae mNearestAlgae;
 	private Dir mCurrentDir;
 	private float mHeadAngle;
+	private int mStressLevel;
 //	public void updateNode(float posX, float posY, float currentX, float currentY) {
 //		mNodes.getNode(posX, posY).setCurrent(currentX, currentY);
 //	}
@@ -36,6 +37,7 @@ private static final float INF = 100;
 //		mNearestFoodX = mNearestFoodY = -1;
 		mNearestFood = null;
 		mNearestAlgae = null;
+		mStressLevel = 0;
 	}
 	public void update(ArrayList<Event> sensorEvents) {
 		for (Event e: sensorEvents) {
@@ -176,5 +178,9 @@ private static final float INF = 100;
 	
 	public float getHeadAngle() {
 		return mHeadAngle;
+	}
+	
+	public int getStressLevel() {
+		return mStressLevel;
 	}
 }

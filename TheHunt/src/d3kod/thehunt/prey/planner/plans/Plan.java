@@ -35,12 +35,7 @@ public class Plan {
 		mTargetX = targetX;
 		mTargetY = targetY;
 		mTargetSize = targetSize;
-		mTargetColor = targetColor.clone();
-//		if (Planner.SHOW_TARGET) {
-//			modelMatrix = new float[16];
-//			Matrix.setIdentityM(modelMatrix , 0);
-//			Matrix.translateM(modelMatrix, 0, targetX, targetY, 0);
-//		}
+		mTargetColor = targetColor;
 	}
 	public float getTargetX() {
 		return mTargetX;
@@ -54,9 +49,6 @@ public class Plan {
 	public float[] getTargetColor() {
 		return mTargetColor;
 	}
-//	public float[] getTargetMMatrix() {
-//		return modelMatrix;
-//	}
 	public boolean isFinished() {
 		return mCurrentAction == -1 || mActions.size() <= mCurrentAction || mCurrentAction >= mLastAction;
 	}
