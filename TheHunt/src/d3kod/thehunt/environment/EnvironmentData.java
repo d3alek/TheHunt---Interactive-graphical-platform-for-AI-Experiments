@@ -21,7 +21,7 @@ public class EnvironmentData {
 
 	public static final float currentStep = 0.002f;
 
-	private static final int ALGAE_NUM = 1;
+	private static final int ALGAE_NUM = 5;
 	
 	private static final float[] AlGAE_HARDCODED_POS = {
 		-0.5f, 0.5f,
@@ -117,7 +117,7 @@ public class EnvironmentData {
 	public void addFloatingObject(FloatingObject floatingObject, int graphicKey) {
 		floatingObject.setGraphic(graphicKey);
 		mFloatingObjects.add(floatingObject);
-		
+//		Log.v(TAG, "Floating object type " + floatingObject.getType() + " with key" + graphicKey);
 	}
 
 	public ArrayList<FloatingObject> getFloatingObjects() {

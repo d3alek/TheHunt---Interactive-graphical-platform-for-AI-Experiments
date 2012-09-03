@@ -27,6 +27,7 @@ public class FloatingObject {
 	}
 	
 	public void setGraphic(int key) {
+		Log.v(TAG, "Floating object type " + getType() + " with key" + key);
 		mGraphicSet = true;
 		mKey = key;
 		mD3GLES20.setShapePosition(key, mX, mY);

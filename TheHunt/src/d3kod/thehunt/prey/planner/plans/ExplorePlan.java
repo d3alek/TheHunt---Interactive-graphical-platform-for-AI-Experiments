@@ -50,7 +50,7 @@ public class ExplorePlan extends Plan {
 		else return Action.TURN_LEFT_LARGE;
 	}
 
-	private Action chooseRandomWanderAction() {
+	protected Action chooseRandomWanderAction() {
 		int actionInd = Math.round((wanderActions.length-1) * mRandom.nextFloat());
 		return wanderActions[actionInd];
 	}
@@ -58,6 +58,10 @@ public class ExplorePlan extends Plan {
 	@Override
 	public boolean isFinished() {
 		return true;
+	}
+
+	public Random getRandom() {
+		return mRandom;
 	}
 	
 }

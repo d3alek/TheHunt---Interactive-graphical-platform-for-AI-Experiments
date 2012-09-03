@@ -18,7 +18,7 @@ public class WorldModel {
 private static final String TAG = "WorldModel";
 private static final float INF = 100;
 private static final float LOUD_NOISE = 1f;
-private static final int HIDDEN_FOR_SAFE = 10;
+private static final int HIDDEN_FOR_SAFE = 30;
 	//MemoryGraph mNodes;
 	private float mHeadX;
 	private float mHeadY;
@@ -84,10 +84,11 @@ private static final int HIDDEN_FOR_SAFE = 10;
 		case ALGAE:
 			break;
 		case LIGHT:
-			EventLight light = (EventLight) e;
+//			EventLight light = (EventLight) e;
 			mLightLevel = ((EventLight) e).getLightLevel();
 			if (mLightLevel == 0) {
 				mHiddenFor++;
+//				Log.v(TAG, "mLight level is " + mLightLevel);
 			}
 			else {
 				mHiddenFor = 0;
