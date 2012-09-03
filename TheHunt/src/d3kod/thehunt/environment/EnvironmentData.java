@@ -21,7 +21,7 @@ public class EnvironmentData {
 
 	public static final float currentStep = 0.002f;
 
-	private static final int ALGAE_NUM = 5;
+	private static final int ALGAE_NUM = 1;
 	
 	private static final float[] AlGAE_HARDCODED_POS = {
 		-0.5f, 0.5f,

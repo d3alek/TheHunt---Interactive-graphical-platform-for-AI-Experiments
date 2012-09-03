@@ -174,9 +174,9 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 		mPrey.update(curDirDelta.x * EnvironmentData.currentStep, 
 				curDirDelta.y * EnvironmentData.currentStep);
 		
-		if (SHOW_CIRCLE_CONTAINS_CHECKS && !mPrey.getCaught() && mNet.isBuilt()) {
-			tempCircle = mD3GLES20.newContainsCheckCircle(mNet.getGraphicIndex(), preyPos.x, preyPos.y);
-		}
+//		if (SHOW_CIRCLE_CONTAINS_CHECKS && !mPrey.getCaught() && mNet.isBuilt()) {
+//			tempCircle = mD3GLES20.newContainsCheckCircle(mNet.getGraphicIndex(), preyPos.x, preyPos.y);
+//		}
 		if (mPrey.getCaught()) {
 			releaseCountdown--;
 			if (releaseCountdown <= 0) {
@@ -185,17 +185,23 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 		}
 //		if (!mPrey.getCaught() && mNet.isBuilt() && D3GLES20.contains(mNet.getGraphicIndex(), preyPos.x, preyPos.y)) {
 		if (!mPrey.getCaught() && mNet.tryToCatch() && mD3GLES20.contains(mNet.getGraphicIndex(), preyPos.x, preyPos.y)) {
-			Log.v(TAG, "Prey is caught!");
-			mPrey.setCaught(true);
-			mNet.caughtPrey(mPrey);
-			mCaughtCounter += 1;
-			((TheHunt) mContext).runOnUiThread(new Runnable() {
-				public void run() {
-					((TheHunt) mContext).mCaughtCounter.setText(mCaughtCounter + "");
-				}
-			});
-			mD3GLES20.putExpiringShape(new CatchText(preyPos.x, preyPos.y, tm, sm));
-			releaseCountdown = RELEASE_TICKS;
+			PointF preyHeadPos = mPrey.getHeadPositon();
+			if (!mD3GLES20.contains(mNet.getGraphicIndex(), preyHeadPos.x, preyHeadPos.y)) {
+				Log.v(TAG, "Net contains body but not head, not caught");
+			}
+			else {
+				Log.v(TAG, "Prey is caught!");
+				mPrey.setCaught(true);
+				mNet.caughtPrey(mPrey);
+				mCaughtCounter += 1;
+				((TheHunt) mContext).runOnUiThread(new Runnable() {
+					public void run() {
+						((TheHunt) mContext).mCaughtCounter.setText(mCaughtCounter + "");
+					}
+				});
+				mD3GLES20.putExpiringShape(new CatchText(preyPos.x, preyPos.y, tm, sm));
+				releaseCountdown = RELEASE_TICKS;
+			}
 		}
 		
 		mNet.update();

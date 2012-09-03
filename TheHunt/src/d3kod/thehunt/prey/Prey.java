@@ -289,7 +289,9 @@ public class Prey {
 	public PointF getPosition() {
 		return new PointF(mD.mPosX, mD.mPosY);
 	}
-
+	public PointF getHeadPositon() {
+		return new PointF(mD.mPosHeadX, mD.mPosHeadY);
+	}
 	private void doAction(Action nextAction) {
 		if (nextAction == null) return;
 		switch(nextAction) {
