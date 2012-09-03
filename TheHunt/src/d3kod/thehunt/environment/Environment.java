@@ -12,19 +12,33 @@ import d3kod.thehunt.environment.FloatingObject.Type;
 import d3kod.thehunt.events.Event;
 import d3kod.thehunt.events.EventCurrent;
 import d3kod.thehunt.events.EventLight;
+import d3kod.thehunt.events.EventNoise;
 public class Environment {
 	private static final String TAG = "Environment";
+	public static final float LOUDNESS_PLOK = 1f;
+	private static final int NOISE_EVENTS_CLEAR_FREQUENCY = 10;
 	public EnvironmentData data;
 	private float[] foodColor = {0.5f, 0.5f, 0.5f, 1.0f};
 	public int mTextureDataHandle;
 	private D3GLES20 mD3GLES20;
+	private ArrayList<EventNoise> mNoiseEvents;
+	private int noiseEventsClearCounter;
 	
 	public Environment(int width, int height) {
 		data = new EnvironmentData(width, height);
+		mNoiseEvents = new ArrayList<EventNoise>();
+		noiseEventsClearCounter = 0;
 	}
 	
 	public void update() {
 		data.updateFloatingObjects();
+		if (noiseEventsClearCounter == 0) {
+			mNoiseEvents.clear();
+			noiseEventsClearCounter = NOISE_EVENTS_CLEAR_FREQUENCY;
+		}
+		else {
+			noiseEventsClearCounter--;
+		}
 	}
 	
 	public void initGraphics(Context context, D3GLES20 d3GLES20) {
@@ -54,7 +68,7 @@ public class Environment {
 		data.removeFood(mPosHeadX, mPosHeadY);
 	}
 	
-	public ArrayList<FloatingObject> senseObjects(float x, float y, float sightRadius) {
+	public ArrayList<FloatingObject> seeObjects(float x, float y, float sightRadius) {
 		ArrayList<FloatingObject> sensedObjects = new ArrayList<FloatingObject>();
 		
 		for (FloatingObject fo: data.getFloatingObjects()) {
@@ -81,7 +95,19 @@ public class Environment {
 		return false;
 	}
 
-//	public void clean() {
-//		data.clear();
-//	}
+	public ArrayList<Event> hearEvents(float hX, float hY, float hearRadius) {
+		ArrayList<Event> events = new ArrayList<Event>();
+		for (EventNoise noise: mNoiseEvents) {
+			if (D3Maths.circlesIntersect(hX, hY, hearRadius, 
+					noise.getX(), noise.getY(), noise.getLoudness())) {
+				events.add(noise);
+			}
+		}
+		return events;
+	}
+
+	public void putNoise(float x, float y, float loudness) {
+		mNoiseEvents.add(new EventNoise(x, y, loudness));
+	}
+
 }

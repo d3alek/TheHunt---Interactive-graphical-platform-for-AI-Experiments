@@ -12,11 +12,12 @@ import d3kod.thehunt.events.EventFood;
 public class Sensor {
 	
 	enum Sensors {
-		CURRENT_SENSOR, SIGHT_SENSOR;
+		CURRENT_SENSOR, SIGHT_SENSOR, HEARING_SENSOR;
 	}
 	private ArrayList<Sensors> mSensors;
 	private Environment mEnv;
 	private float mSightRad = 0.5f;
+	private float mHearRad = 1f;
 	private ArrayList<Event> sensedEvents;
 	
 	public Sensor(Environment env) {
@@ -27,6 +28,7 @@ public class Sensor {
 //		mSensors.add(Sensors.ALGAE_SENSOR);
 //		mSensors.add(Sensors.LIGHT_SENSOR);
 		mSensors.add(Sensors.SIGHT_SENSOR);
+		mSensors.add(Sensors.HEARING_SENSOR);
 		sensedEvents = new ArrayList<Event>();
 	}
 	public ArrayList<Event> sense(float hX, float hY, float bX, float bY, float headAngle) {
@@ -37,7 +39,7 @@ public class Sensor {
 			case CURRENT_SENSOR: sensedEvents.add(mEnv.senseCurrent(bX, bY)); break;
 			case SIGHT_SENSOR: 
 				sensedEvents.add(mEnv.senseLight(hX, hY));
-				ArrayList<FloatingObject> sensedObjects = mEnv.senseObjects(hX, hY, mSightRad);
+				ArrayList<FloatingObject> sensedObjects = mEnv.seeObjects(hX, hY, mSightRad);
 				for (FloatingObject fo: sensedObjects) {
 					switch(fo.getType()) {
 					case ALGAE: sensedEvents.add(new EventAlgae(fo.getX(), fo.getY())); break;
@@ -45,7 +47,8 @@ public class Sensor {
 					}
 				}
 				break;
-			
+			case HEARING_SENSOR:
+				sensedEvents.addAll(mEnv.hearEvents(hX, hY, mHearRad));
 			}
 		}
 		return sensedEvents;

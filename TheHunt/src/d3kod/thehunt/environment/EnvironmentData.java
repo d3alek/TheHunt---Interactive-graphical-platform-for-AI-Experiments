@@ -6,11 +6,8 @@ import android.graphics.PointF;
 import android.util.Log;
 import d3kod.d3gles20.D3GLES20;
 import d3kod.d3gles20.D3Maths;
-import d3kod.d3gles20.shapes.D3Shape;
 import d3kod.thehunt.environment.FloatingObject.Type;
-import d3kod.thehunt.events.Event;
-import d3kod.thehunt.events.EventFood;
-import d3kod.thehunt.events.EventNone;
+import d3kod.thehunt.events.EventNoise;
 
 public class EnvironmentData {
 	public static final String TAG = "EnvironmentData";
@@ -45,6 +42,8 @@ public class EnvironmentData {
 	
 	
 	private ArrayList<FloatingObject> mFloatingObjects;
+
+//	private ArrayList<EventNoise> mNoiseEvents;
 	public static Tile[][] mTiles;
 //	public Currents currents;
 
@@ -67,6 +66,7 @@ public class EnvironmentData {
 //		currents.initialize();
 		mFoodX = -1; mFoodY = -1;
 		mFloatingObjects = new ArrayList<FloatingObject>();
+//		mNoiseEvents = new ArrayList<EventNoise>();
 	}
 	
 	public void setSize(int width, int height) {
@@ -169,4 +169,13 @@ public class EnvironmentData {
 			fo.update();
 		}
 	}
+
+//	public ArrayList<EventNoise> getNoiseEvents() {
+//		return mNoiseEvents;
+//	}
+//
+//	public void addNoise(float x, float y) {
+////		Tile noiseTile = getTileFromPos(new PointF(x, y));
+//		mNoiseEvents.add(new EventNoise(x, y));
+//	}
 }

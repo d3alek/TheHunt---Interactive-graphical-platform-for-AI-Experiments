@@ -2,7 +2,7 @@ package d3kod.thehunt.events;
 
 public class Event {
 	public enum EventType {
-		AT, FOOD, CURRENT, ALGAE, LIGHT, NONE;
+		AT, FOOD, CURRENT, ALGAE, LIGHT, NOISE, NONE;
 	}
 	EventType mType;
 	

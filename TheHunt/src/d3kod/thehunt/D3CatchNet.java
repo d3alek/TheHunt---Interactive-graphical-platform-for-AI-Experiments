@@ -159,7 +159,7 @@ public class D3CatchNet extends D3Path {
 			}
 		}
 		
-		float[] center = {mCenterX, mCenterY, 0};
+//		float[] center = {mCenterX, mCenterY, 0};
 		super.setVertexBuffer(Utilities.newFloatBuffer(D3Maths.circleVerticesData(mRadius, CLOSED_SHAPE_VERTICES_NUM)));
 		mVertexData.clear();
 		mModelMatrix = new float[16];

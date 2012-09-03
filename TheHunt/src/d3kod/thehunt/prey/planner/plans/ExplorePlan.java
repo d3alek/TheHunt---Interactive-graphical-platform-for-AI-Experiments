@@ -23,8 +23,6 @@ public class ExplorePlan extends Plan {
 	public ExplorePlan(WorldModel worldModel) {
 		super(0, 0, 0, null);
 		mRandom = new Random();
-//		mRotating = true;
-//		mRotStep = 0;
 	}
 	
 	@Override
@@ -34,20 +32,24 @@ public class ExplorePlan extends Plan {
 			super.addNextAction(chooseRandomWanderAction());
 		}
 		else {
-			PointF currendDirDelta = curDir.getDelta();
-			float headX = worldModel.getHeadX();
-			float headY = worldModel.getHeadY();
-			float headWithCurrentX = headX + currendDirDelta.x;
-			float headWithCurrentY = headY + currendDirDelta.y;
-			float det = D3Maths.det(worldModel.getBodyX(), worldModel.getBodyY(), 
-					headX, headY, headWithCurrentX, headWithCurrentY);
-			if (det < 0) {
-				super.addNextAction(Action.TURN_RIGHT_LARGE);
-			}
-			else super.addNextAction(Action.TURN_LEFT_LARGE);
+			super.addNextAction(
+					getFollowDirAction(
+							curDir, worldModel.getBodyX(), worldModel.getBodyY(), 
+							worldModel.getHeadX(), worldModel.getHeadY()));
 		}
 	}
 	
+	private Action getFollowDirAction(Dir curDir, float bodyX, float bodyY, float headX, float headY) {
+		PointF currendDirDelta = curDir.getDelta();
+		float det = D3Maths.det(bodyX, bodyY, 
+				headX, headY, 
+				headX + currendDirDelta.x, headY + currendDirDelta.y);
+		if (det < 0) {
+			return Action.TURN_RIGHT_LARGE;
+		}
+		else return Action.TURN_LEFT_LARGE;
+	}
+
 	private Action chooseRandomWanderAction() {
 		int actionInd = Math.round((wanderActions.length-1) * mRandom.nextFloat());
 		return wanderActions[actionInd];

@@ -23,6 +23,11 @@ public class D3Maths {
 		return D3Maths.distance(centerX, centerY, x, y) <= radius;
 	}
 
+	public static boolean circlesIntersect(float c1X, float c1Y, 
+			float rad1, float c2X, float c2Y, float rad2) {
+		return D3Maths.distance(c1X, c1Y, c2X, c2Y) <= rad1 + rad2;
+	}
+	
 	public static float distance(float mX, float mY, float fX, float fY) {
 		return FloatMath.sqrt((mX-fX)*(mX-fX)+(mY-fY)*(mY-fY));
 	}

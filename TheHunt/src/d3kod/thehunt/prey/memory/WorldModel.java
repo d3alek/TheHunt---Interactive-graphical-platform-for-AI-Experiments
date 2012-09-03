@@ -12,10 +12,13 @@ import d3kod.thehunt.events.EventAt;
 import d3kod.thehunt.events.EventCurrent;
 import d3kod.thehunt.events.EventFood;
 import d3kod.thehunt.events.EventLight;
+import d3kod.thehunt.events.EventNoise;
 
 public class WorldModel {
 private static final String TAG = "WorldModel";
 private static final float INF = 100;
+private static final float LOUD_NOISE = 1f;
+private static final int HIDDEN_FOR_SAFE = 10;
 	//MemoryGraph mNodes;
 	private float mHeadX;
 	private float mHeadY;
@@ -28,7 +31,9 @@ private static final float INF = 100;
 	private EventAlgae mNearestAlgae;
 	private Dir mCurrentDir;
 	private float mHeadAngle;
-	private int mStressLevel;
+	private StressLevel mStressLevel;
+	private int mHiddenFor;
+//	private boolean mLoudNoiseHeard;
 //	public void updateNode(float posX, float posY, float currentX, float currentY) {
 //		mNodes.getNode(posX, posY).setCurrent(currentX, currentY);
 //	}
@@ -37,9 +42,12 @@ private static final float INF = 100;
 //		mNearestFoodX = mNearestFoodY = -1;
 		mNearestFood = null;
 		mNearestAlgae = null;
-		mStressLevel = 0;
+		mStressLevel = StressLevel.CALM;
+		mHiddenFor = 0;
 	}
 	public void update(ArrayList<Event> sensorEvents) {
+//		mLoudNoiseHeard = false;
+//		Log.v(TAG, "Updating world model");
 		for (Event e: sensorEvents) {
 			processEvent(e);
 		}
@@ -76,11 +84,30 @@ private static final float INF = 100;
 		case ALGAE:
 			break;
 		case LIGHT:
+			EventLight light = (EventLight) e;
 			mLightLevel = ((EventLight) e).getLightLevel();
+			if (mLightLevel == 0) {
+				mHiddenFor++;
+			}
+			else {
+				mHiddenFor = 0;
+			}
+			if (mStressLevel == StressLevel.PLOK_CLOSE && mHiddenFor > HIDDEN_FOR_SAFE) {
+				Log.v(TAG, "Feeling safe, be cautios now");
+				mStressLevel = StressLevel.CAUTIOS;
+			}
 			break;
 		case CURRENT:
 			mCurrentDir = ((EventCurrent) e).getDir();
 			break;
+		case NOISE:
+			EventNoise noise = (EventNoise) e;
+			if (noise.getLoudness() >= LOUD_NOISE) {
+//				mLoudNoiseHeard = true;
+				Log.v(TAG, "Loud noise heard, panic!");
+				mStressLevel = StressLevel.PLOK_CLOSE;
+				mHiddenFor = 0;
+			}
 		}
 		if (e.type() == EventType.FOOD || e.type() == EventType.ALGAE) {
 			rememberEvent(e);
@@ -180,7 +207,7 @@ private static final float INF = 100;
 		return mHeadAngle;
 	}
 	
-	public int getStressLevel() {
+	public StressLevel getStressLevel() {
 		return mStressLevel;
 	}
 }

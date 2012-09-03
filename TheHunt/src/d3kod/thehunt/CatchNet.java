@@ -86,6 +86,7 @@ public class CatchNet {
 		mGraphic.addVertex(x, y);
 		if (!ploked && mGraphic.getLength() >= MIN_LENGTH) {
 			mD3GLES20.putExpiringShape(new PlokText(firstX, firstY, tm, mD3GLES20.getShaderManager()));
+			mEnv.putNoise(x, y, Environment.LOUDNESS_PLOK);
 			ploked = true;
 		}
 	}
@@ -100,7 +101,9 @@ public class CatchNet {
 				notShown = true;
 				return;
 			}
-			else mGraphic.setFinished();
+			else {
+				mGraphic.setFinished();
+			}
 		}
 		else {
 			mGraphic.setInvalid();

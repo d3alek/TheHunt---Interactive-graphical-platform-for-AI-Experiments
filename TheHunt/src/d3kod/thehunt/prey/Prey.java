@@ -61,6 +61,7 @@ public class Prey {
 	
 	private void updateWorldModel() {
 		mWorldModel.update(mSensor.sense(mD.mPosHeadX, mD.mPosHeadY, mD.mPosX, mD.mPosY, mD.bodyStartAngle));
+//		mPlanner.updateState();
 	}
 
 	private void calcPosHead() {

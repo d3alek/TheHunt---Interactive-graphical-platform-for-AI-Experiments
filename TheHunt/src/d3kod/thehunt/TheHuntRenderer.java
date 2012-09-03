@@ -258,6 +258,7 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 		mNet.finish(converted.x, converted.y);
 		if (mNet.notShown()) {
 			mD3GLES20.putExpiringShape(new PlokText(converted.x, converted.y, tm, mD3GLES20.getShaderManager()));
+			mEnv.putNoise(converted.x, converted.y, Environment.LOUDNESS_PLOK);
 			mEnv.putFood(converted.x, converted.y);
 		}
 	}
