@@ -355,4 +355,12 @@ public class Prey {
 		}
 		randomizePos();
 	}
+
+	public int getEnergy() {
+		return mWorldModel.getEnergy();
+	}
+
+	public String getStateString() {
+		return mPlanner.getState().toString();
+	}
 }

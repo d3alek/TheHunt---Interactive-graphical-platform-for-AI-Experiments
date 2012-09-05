@@ -11,8 +11,8 @@ import d3kod.thehunt.prey.memory.WorldModel;
 public class MoveTowardsPlan extends Plan {
 	private static final String TAG = "GoToPlan";
 	private static final float TOLERANCE = 0.005f;
-	protected float tX;
-	protected float tY;
+	private float tX;
+	private float tY;
 	
 	public MoveTowardsPlan(float hX, float hY, float bX, float bY, float tX, float tY) {
 		super(tX, tY);
@@ -68,5 +68,12 @@ public class MoveTowardsPlan extends Plan {
 				addNextAction(Action.TURN_RIGHT_LARGE);
 			}
 		}
+	}
+	
+	public float getTX() {
+		return tX;
+	}
+	public float getTY() {
+		return tY;
 	}
 }

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import android.content.Context;
 import android.graphics.PointF;
+import android.util.Log;
 import d3kod.d3gles20.D3GLES20;
 import d3kod.d3gles20.D3Maths;
 import d3kod.d3gles20.TextureHelper;
@@ -16,7 +17,7 @@ import d3kod.thehunt.events.EventNoise;
 public class Environment {
 	private static final String TAG = "Environment";
 	public static final float LOUDNESS_PLOK = 1f;
-	private static final int NOISE_EVENTS_CLEAR_FREQUENCY = 10;
+	private static final int NOISE_EVENTS_CLEAR_FREQUENCY = 2;
 	public EnvironmentData data;
 	private float[] foodColor = {0.5f, 0.5f, 0.5f, 1.0f};
 	public int mTextureDataHandle;
@@ -82,8 +83,9 @@ public class Environment {
 	
 	public Event senseLight(float hX, float hY) {
 		for (FloatingObject fo: data.getFloatingObjects()) {
-			if (fo.getType() == Type.ALGAE && mD3GLES20.contains(fo.getKey(), hX, hY)) 
+			if (fo.getType() == Type.ALGAE && mD3GLES20.contains(fo.getKey(), hX, hY)) {
 				return new EventLight(0);
+			}
 		}
 		return new EventLight(1);
 	}

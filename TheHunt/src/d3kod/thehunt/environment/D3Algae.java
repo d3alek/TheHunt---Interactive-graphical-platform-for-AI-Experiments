@@ -70,6 +70,7 @@ public class D3Algae extends D3Shape {
 			}
 		}
 //		Log.v(TAG, "verticesData is: " + Arrays.toString(verticesData));
+//		float[] verticesData = D3Maths.circleVerticesData(ALGAE_SIZE, ALGAE_DETAILS_PER_PART*curvePartsNum);
 		return Utilities.newFloatBuffer(verticesData);
 	}
 

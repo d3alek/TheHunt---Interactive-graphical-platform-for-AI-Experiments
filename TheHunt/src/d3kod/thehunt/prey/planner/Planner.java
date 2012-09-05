@@ -6,6 +6,7 @@ import d3kod.thehunt.prey.Action;
 import d3kod.thehunt.prey.memory.WorldModel;
 import d3kod.thehunt.prey.planner.plans.ExplorePlan;
 import d3kod.thehunt.prey.planner.plans.GoToAndEatPlan;
+import d3kod.thehunt.prey.planner.plans.GoToAndStayPlan;
 import d3kod.thehunt.prey.planner.plans.GoToPlan;
 import d3kod.thehunt.prey.planner.plans.NoPlan;
 import d3kod.thehunt.prey.planner.plans.Plan;
@@ -14,7 +15,7 @@ import d3kod.thehunt.prey.planner.plans.RapidExplorePlan;
 public class Planner {
 	private static final String TAG = "Planner";
 	public static final boolean SHOW_TARGET = true;
-	public static PlanState mState;
+	private PlanState mState;
 	private Plan mPlan;
 	private int mPlanTarget;
 	private D3GLES20 mD3GLES20;
@@ -74,11 +75,13 @@ public class Planner {
 		}
 	}
 	private Plan makeExplorePlan(WorldModel mWorldModel) {
+//		Log.v(TAG, "Making explore plan");
 		if (mExplorePlan == null) mExplorePlan = new ExplorePlan(mWorldModel);
 		return mExplorePlan;
 	}
 
 	private Plan makeScavagePlan(WorldModel mWorldModel) {
+//		Log.v(TAG, "Making scavage plan");
 		Plan scvgPlan = new GoToAndEatPlan(
 				mWorldModel.getHeadX(), mWorldModel.getHeadY(), 
 				mWorldModel.getBodyX(), mWorldModel.getBodyY(), 
@@ -87,10 +90,10 @@ public class Planner {
 	}
 
 	private Plan makeHidePlan(WorldModel mWorldModel) {
-//		Log.v(TAG, "Making hide plan " + mWorldModel.getNearestAlgaeX() + " " + mWorldModel.getNearestAlgaeY());
+//		Log.v(TAG, "Making hide plan");
 		Plan hidePlan;
 		if (mWorldModel.knowAlgaeLocation()) {
-			hidePlan = new GoToPlan(
+			hidePlan = new GoToAndStayPlan(
 					mWorldModel.getHeadX(), mWorldModel.getHeadY(), 
 					mWorldModel.getBodyX(), mWorldModel.getBodyY(), 
 					mWorldModel.getNearestAlgaeX(), mWorldModel.getNearestAlgaeY());
@@ -117,6 +120,10 @@ public class Planner {
 	public void clear() {
 		mPlan = new NoPlan(0, 0);
 		mState = PlanState.DONOTHING;
+	}
+
+	public PlanState getState() {
+		return mState;
 	}
 	
 }

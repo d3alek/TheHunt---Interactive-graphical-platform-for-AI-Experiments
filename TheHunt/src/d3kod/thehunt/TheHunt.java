@@ -23,6 +23,7 @@ public class TheHunt extends Activity {
 //	private ToggleButton mPosInterpolation;
 //	private ToggleButton mAngleInterpolation;
 	protected TextView mCaughtCounter;
+	protected TextView mEnergyCounter;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -33,8 +34,9 @@ public class TheHunt extends Activity {
         setContentView(R.layout.clean_main);
         mMSperFrame = (TextView)findViewById(R.id.msPerFrame);
         mCaughtCounter = (TextView)findViewById(R.id.caughtCounter);
-
+        mEnergyCounter = (TextView)findViewById(R.id.preyEnergy);
         mGLView = (MyGLSurfaceView)findViewById(R.id.glSurfaceView);
+        mPreyState = (TextView)findViewById(R.id.preyState);
     }
     
     @Override

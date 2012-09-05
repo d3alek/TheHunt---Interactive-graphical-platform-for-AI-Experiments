@@ -160,20 +160,24 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 			smoothingCount = 0;
 			((TheHunt) mContext).runOnUiThread(new Runnable() {
 				public void run() {
-//					((TheHunt) mContext).mPreyState.setText(Planner.mState.toString());
+					((TheHunt) mContext).mPreyState.setText(mPrey.getStateString());
 					((TheHunt) mContext).mMSperFrame.setText(smoothMspf + "");
+					((TheHunt) mContext).mEnergyCounter.setText(mPrey.getEnergy()+"");
 				}
 			});
 		}
 	}		
 
 	private void updateWorld() {
+		mEnv.update();
+		mNet.update();
 		PointF preyPos = mPrey.getPosition();
 		
 		PointF curDirDelta = mEnv.data.getTileFromPos(preyPos).getDir().getDelta();
 		mPrey.update(curDirDelta.x * EnvironmentData.currentStep, 
 				curDirDelta.y * EnvironmentData.currentStep);
-		
+
+		preyPos = mPrey.getPosition();
 //		if (SHOW_CIRCLE_CONTAINS_CHECKS && !mPrey.getCaught() && mNet.isBuilt()) {
 //			tempCircle = mD3GLES20.newContainsCheckCircle(mNet.getGraphicIndex(), preyPos.x, preyPos.y);
 //		}
@@ -203,9 +207,6 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 				releaseCountdown = RELEASE_TICKS;
 			}
 		}
-		
-		mNet.update();
-		mEnv.update();
 	}
 
 	private void drawWorld(float interpolation) {

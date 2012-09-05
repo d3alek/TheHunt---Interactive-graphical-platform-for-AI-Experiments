@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import android.util.Log;
 import d3kod.d3gles20.D3Maths;
+import d3kod.thehunt.TheHuntRenderer;
 import d3kod.thehunt.environment.Dir;
 import d3kod.thehunt.events.Event;
 import d3kod.thehunt.events.Event.EventType;
@@ -15,10 +16,18 @@ import d3kod.thehunt.events.EventLight;
 import d3kod.thehunt.events.EventNoise;
 
 public class WorldModel {
-private static final String TAG = "WorldModel";
-private static final float INF = 100;
-private static final float LOUD_NOISE = 1f;
-private static final int HIDDEN_FOR_SAFE = 30;
+	private static final String TAG = "WorldModel";
+	private static final float INF = 100;
+	private static final float LOUD_NOISE = 1f;
+	private int hiddenForSafe = 0;
+	private static final int HIDDEN_FOR_SAFE_ADJ = 30;
+	private static final int HIDDEN_FOR_SAFE_MAX = 150;
+	private static final int SECONDS_FOR_ENERGY_LOSS = 1;
+	private static final int ENERGY_DEPLETE_TICKS = TheHuntRenderer.TICKS_PER_SECOND*SECONDS_FOR_ENERGY_LOSS;
+	private static final int ENERGY_DEPLETE_SPEED = 1;
+	private static final int ONE_FOOD_ENERGY = 30;
+	private static final int PANIC_ENERGY = 30;
+	private static final int MAX_ENERGY = 100;
 	//MemoryGraph mNodes;
 	private float mHeadX;
 	private float mHeadY;
@@ -33,10 +42,10 @@ private static final int HIDDEN_FOR_SAFE = 30;
 	private float mHeadAngle;
 	private StressLevel mStressLevel;
 	private int mHiddenFor;
-//	private boolean mLoudNoiseHeard;
-//	public void updateNode(float posX, float posY, float currentX, float currentY) {
-//		mNodes.getNode(posX, posY).setCurrent(currentX, currentY);
-//	}
+	private int mEnergy;
+	private int energyDepleteCounter;
+	
+	
 	public WorldModel(float screenWidth, float screenHeight) {
 //		mNodes = new MemoryGraph(screenWidth, screenHeight);
 //		mNearestFoodX = mNearestFoodY = -1;
@@ -44,6 +53,8 @@ private static final int HIDDEN_FOR_SAFE = 30;
 		mNearestAlgae = null;
 		mStressLevel = StressLevel.CALM;
 		mHiddenFor = 0;
+		mEnergy = MAX_ENERGY;
+		energyDepleteCounter = 0;
 	}
 	public void update(ArrayList<Event> sensorEvents) {
 //		mLoudNoiseHeard = false;
@@ -52,23 +63,28 @@ private static final int HIDDEN_FOR_SAFE = 30;
 			processEvent(e);
 		}
 		mNearestAlgae = recallNearestAlgae();
+		if (energyDepleteCounter >= ENERGY_DEPLETE_TICKS) {
+			energyDepleteCounter = 0;
+			mEnergy -= ENERGY_DEPLETE_SPEED;
+			if (mEnergy < 0) mEnergy = 0;
+			if (mEnergy <= PANIC_ENERGY) {
+				hiddenForSafe -= HIDDEN_FOR_SAFE_ADJ;
+				if (hiddenForSafe < 0) hiddenForSafe = 0;
+				Log.v(TAG, "decr hiddenForSafe is now " + hiddenForSafe);
+			}
+		}
+		else {
+			energyDepleteCounter++;
+		}
 	}
 	private void processEvent(Event e) {
 		if (mEventMemory.contains(e)) return;
 		switch(e.type()) { 
 		case AT: 
 			EventAt eAt = (EventAt) e;
-			float newBodyX = eAt.getBodyX();
-			float newBodyY = eAt.getBodyY();
-			float newHeadX = eAt.getHeadX();
-			float newHeadY = eAt.getHeadY();
-			if (newHeadX != mHeadX || newHeadY != mHeadY) {
-				// TODO: There is a movement! Improve detection?
-				mHeadX = newHeadX; mHeadY = newHeadY;
-				mBodyX = newBodyX; mBodyY = newBodyY;
-				mHeadAngle = eAt.getHeadAngle();
-//				Log.v(TAG, "mHeadAngle is " + mHeadAngle);
-			}
+			mHeadX = eAt.getHeadX(); mHeadY = eAt.getHeadY();
+			mBodyX = eAt.getBodyX(); mBodyY = eAt.getBodyY();
+			mHeadAngle = eAt.getHeadAngle();
 			break;
 		case FOOD: 
 			EventFood food = (EventFood)e;
@@ -84,16 +100,14 @@ private static final int HIDDEN_FOR_SAFE = 30;
 		case ALGAE:
 			break;
 		case LIGHT:
-//			EventLight light = (EventLight) e;
 			mLightLevel = ((EventLight) e).getLightLevel();
 			if (mLightLevel == 0) {
 				mHiddenFor++;
-//				Log.v(TAG, "mLight level is " + mLightLevel);
 			}
 			else {
 				mHiddenFor = 0;
 			}
-			if (mStressLevel == StressLevel.PLOK_CLOSE && mHiddenFor > HIDDEN_FOR_SAFE) {
+			if (mStressLevel == StressLevel.PLOK_CLOSE && mHiddenFor > hiddenForSafe) {
 				Log.v(TAG, "Feeling safe, be cautios now");
 				mStressLevel = StressLevel.CAUTIOS;
 			}
@@ -104,10 +118,11 @@ private static final int HIDDEN_FOR_SAFE = 30;
 		case NOISE:
 			EventNoise noise = (EventNoise) e;
 			if (noise.getLoudness() >= LOUD_NOISE) {
-//				mLoudNoiseHeard = true;
 				Log.v(TAG, "Loud noise heard, panic!");
 				mStressLevel = StressLevel.PLOK_CLOSE;
 				mHiddenFor = 0;
+				if (hiddenForSafe < HIDDEN_FOR_SAFE_MAX) hiddenForSafe += HIDDEN_FOR_SAFE_ADJ;
+				Log.v(TAG, "incr hiddenForSafe is now " + hiddenForSafe);
 			}
 		}
 		if (e.type() == EventType.FOOD || e.type() == EventType.ALGAE) {
@@ -143,6 +158,10 @@ private static final int HIDDEN_FOR_SAFE = 30;
 	}
 	public void eatFood(float mPosHeadX, float mPosHeadY) {
 		//TODO: the food removed is not always the nearest food #BUG
+		mEnergy += ONE_FOOD_ENERGY;
+		if (mEnergy > MAX_ENERGY) {
+			mEnergy = MAX_ENERGY;
+		}
 		mEventMemory.remove(mNearestFood);
 		mNearestFood = recallNearestFood();
 	}
@@ -210,5 +229,9 @@ private static final int HIDDEN_FOR_SAFE = 30;
 	
 	public StressLevel getStressLevel() {
 		return mStressLevel;
+	}
+	
+	public int getEnergy() {
+		return mEnergy;
 	}
 }
