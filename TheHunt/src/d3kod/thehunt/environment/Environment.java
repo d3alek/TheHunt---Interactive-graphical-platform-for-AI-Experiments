@@ -23,23 +23,14 @@ public class Environment {
 	public int mTextureDataHandle;
 	private D3GLES20 mD3GLES20;
 	private ArrayList<EventNoise> mNoiseEvents;
-	private int noiseEventsClearCounter;
 	
 	public Environment(int width, int height) {
 		data = new EnvironmentData(width, height);
 		mNoiseEvents = new ArrayList<EventNoise>();
-		noiseEventsClearCounter = 0;
 	}
 	
 	public void update() {
 		data.updateFloatingObjects();
-		if (noiseEventsClearCounter == 0) {
-			mNoiseEvents.clear();
-			noiseEventsClearCounter = NOISE_EVENTS_CLEAR_FREQUENCY;
-		}
-		else {
-			noiseEventsClearCounter--;
-		}
 	}
 	
 	public void initGraphics(Context context, D3GLES20 d3GLES20) {
@@ -105,6 +96,7 @@ public class Environment {
 				events.add(noise);
 			}
 		}
+		mNoiseEvents.clear();
 		return events;
 	}
 
