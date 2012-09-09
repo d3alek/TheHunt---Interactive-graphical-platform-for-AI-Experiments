@@ -1,6 +1,7 @@
 package d3kod.thehunt.prey;
 
 import d3kod.thehunt.TheHuntRenderer;
+import d3kod.thehunt.floating_text.PanicText;
 
 public class PreyData {
 	
@@ -91,4 +92,6 @@ public class PreyData {
 	protected boolean turningBackFinMotion;
 	protected float flopBackAngle;
 	protected TurnAngle turningBackFinAngle;
+	
+	protected PanicText emotionText;
 }

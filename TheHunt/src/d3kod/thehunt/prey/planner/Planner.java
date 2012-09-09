@@ -3,6 +3,7 @@ package d3kod.thehunt.prey.planner;
 import android.util.Log;
 import d3kod.d3gles20.D3GLES20;
 import d3kod.thehunt.prey.Action;
+import d3kod.thehunt.prey.memory.MoodLevel;
 import d3kod.thehunt.prey.memory.WorldModel;
 import d3kod.thehunt.prey.planner.plans.ExplorePlan;
 import d3kod.thehunt.prey.planner.plans.GoToAndEatPlan;
@@ -76,7 +77,11 @@ public class Planner {
 	}
 	private Plan makeExplorePlan(WorldModel mWorldModel) {
 //		Log.v(TAG, "Making explore plan");
-		if (mExplorePlan == null) mExplorePlan = new ExplorePlan(mWorldModel);
+		if (mWorldModel.getMoodLevel() == MoodLevel.DESPAIR) {
+			if (mExplorePlan == null || mExplorePlan instanceof RapidExplorePlan) return mExplorePlan;
+			else mExplorePlan = new RapidExplorePlan(mWorldModel);
+		}
+		else if (mExplorePlan == null) mExplorePlan = new ExplorePlan(mWorldModel);
 		return mExplorePlan;
 	}
 

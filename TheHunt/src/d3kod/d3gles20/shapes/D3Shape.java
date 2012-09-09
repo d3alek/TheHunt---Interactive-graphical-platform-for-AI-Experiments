@@ -177,4 +177,8 @@ abstract public class D3Shape {
 	public Program getProgram() {
 		return mProgram;
 	}
+	
+	public void noFade() {
+		mColor[3] = 1f;
+	}
 }

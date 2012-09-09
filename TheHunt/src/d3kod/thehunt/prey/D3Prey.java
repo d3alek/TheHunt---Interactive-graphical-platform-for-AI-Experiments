@@ -240,6 +240,10 @@ public class D3Prey extends D3Shape {
         
         updateBodyVertexBuffer();
         
+        if (mD.emotionText != null) {
+			mD.emotionText.setPosition(mPredictedPosX, mPredictedPosY, bodyStartAnglePredicted);
+        }
+        
         // Start Drawing
         super.setDrawType(GLES20.GL_LINE_STRIP);
         super.setDrawVMatrix(mVMatrix);

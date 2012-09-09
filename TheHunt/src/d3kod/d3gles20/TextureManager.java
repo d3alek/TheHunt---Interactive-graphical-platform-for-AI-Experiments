@@ -11,7 +11,8 @@ public class TextureManager {
 		FLOP_TEXT(R.drawable.flop_text_small),
 		PLOK_TEXT(R.drawable.plok_text),
 		SNATCH_TEXT(R.drawable.snatch_text), 
-		CATCH_TEXT(R.drawable.catch_text);
+		CATCH_TEXT(R.drawable.catch_text),
+		PANIC_TEXT(R.drawable.panic_text);
 		
 		private int mId;
 

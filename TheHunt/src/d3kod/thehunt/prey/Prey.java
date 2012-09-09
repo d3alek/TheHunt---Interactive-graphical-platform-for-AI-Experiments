@@ -16,7 +16,9 @@ import d3kod.thehunt.TheHuntRenderer;
 import d3kod.thehunt.environment.Environment;
 import d3kod.thehunt.environment.EnvironmentData;
 import d3kod.thehunt.floating_text.FlopText;
+import d3kod.thehunt.floating_text.PanicText;
 import d3kod.thehunt.floating_text.PlokText;
+import d3kod.thehunt.prey.memory.StressLevel;
 import d3kod.thehunt.prey.memory.WorldModel;
 import d3kod.thehunt.prey.planner.Planner;
 import d3kod.thehunt.prey.sensor.Sensor;
@@ -46,7 +48,7 @@ public class Prey {
 	private D3Prey mGraphic;
 
 	private D3GLES20 mD3GLES20;
-	
+
 	public void update(float dx, float dy) {
 		if (mD.mIsCaught) return;
 		
@@ -61,7 +63,31 @@ public class Prey {
 	
 	private void updateWorldModel() {
 		mWorldModel.update(mSensor.sense(mD.mPosHeadX, mD.mPosHeadY, mD.mPosX, mD.mPosY, mD.bodyStartAngle));
+		expressEmotion();
+		if (mD.emotionText != null) {
+//			emotionText.setPosition(mD.mPosHeadX, mD.mPosHeadY, mD.bodyStartAngle);
+//			if (emotionText.fadeDone()) {
+//				emotionText = null;
+//			}
+			if (mD.emotionText.isExpired()) {
+				mD.emotionText = null;
+			}
+		}
 //		mPlanner.updateState();
+	}
+	
+
+	private void expressEmotion() {
+		if (mWorldModel.getStressLevel().compareTo(StressLevel.CAUTIOS) > 0) {
+			if (mD.emotionText != null) {
+				mD.emotionText.noFade();
+			}
+				
+			else {
+				mD.emotionText = new PanicText(mD.mPosHeadX, mD.mPosHeadY, mD.bodyStartAngle, tm, mD3GLES20.getShaderManager());
+				mD3GLES20.putExpiringShape(mD.emotionText);
+			}
+		}
 	}
 
 	private void calcPosHead() {
@@ -284,6 +310,7 @@ public class Prey {
 		mD.rotateSpeedHead = mD.rotateSpeedSmall;//Math.abs(TurnAngle.LEFT_SMALL.getValue())/SMALL_TICKS_PER_TURN;
 
 		mD.mIsCaught = false;
+		mD.emotionText = null;
 	}
 
 	public PointF getPosition() {

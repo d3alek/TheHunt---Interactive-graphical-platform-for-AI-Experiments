@@ -20,14 +20,22 @@ public class WorldModel {
 	private static final float INF = 100;
 	private static final float LOUD_NOISE = 1f;
 	private int hiddenForSafe = 0;
-	private static final int HIDDEN_FOR_SAFE_ADJ = 30;
-	private static final int HIDDEN_FOR_SAFE_MAX = 150;
+	private static final int HIDDEN_FOR_SAFE_ADJ = 20;
+	private static final int HIDDEN_FOR_SAFE_MAX = 100;
+	
+	private static final int ENERGY_DEPLETE_SPEED = 3;
+	private static final int ONE_FOOD_ENERGY = 30;
+	
+	private static final int DESPAIR_ENERGY = 30;
+	private static final int RISK_ENERGY = 60;
+	private static final int MAX_ENERGY = 100;
+	
 	private static final int SECONDS_FOR_ENERGY_LOSS = 1;
 	private static final int ENERGY_DEPLETE_TICKS = TheHuntRenderer.TICKS_PER_SECOND*SECONDS_FOR_ENERGY_LOSS;
-	private static final int ENERGY_DEPLETE_SPEED = 1;
-	private static final int ONE_FOOD_ENERGY = 30;
-	private static final int PANIC_ENERGY = 30;
-	private static final int MAX_ENERGY = 100;
+	
+	private static final int SECONDS_FOR_INCR_RISK = 2;
+	private static final int INCR_RISK_TICKS = TheHuntRenderer.TICKS_PER_SECOND*SECONDS_FOR_INCR_RISK;
+	
 	//MemoryGraph mNodes;
 	private float mHeadX;
 	private float mHeadY;
@@ -44,6 +52,9 @@ public class WorldModel {
 	private int mHiddenFor;
 	private int mEnergy;
 	private int energyDepleteCounter;
+//	private boolean mPanic;
+	private int incrRiskCounter;
+	private MoodLevel mMoodLevel;
 	
 	
 	public WorldModel(float screenWidth, float screenHeight) {
@@ -55,10 +66,12 @@ public class WorldModel {
 		mHiddenFor = 0;
 		mEnergy = MAX_ENERGY;
 		energyDepleteCounter = 0;
+		incrRiskCounter = 0;
 	}
 	public void update(ArrayList<Event> sensorEvents) {
 //		mLoudNoiseHeard = false;
 //		Log.v(TAG, "Updating world model");
+//		mPanic = false;
 		for (Event e: sensorEvents) {
 			processEvent(e);
 		}
@@ -67,14 +80,27 @@ public class WorldModel {
 			energyDepleteCounter = 0;
 			mEnergy -= ENERGY_DEPLETE_SPEED;
 			if (mEnergy < 0) mEnergy = 0;
-			if (mEnergy <= PANIC_ENERGY) {
-				hiddenForSafe -= HIDDEN_FOR_SAFE_ADJ;
-				if (hiddenForSafe < 0) hiddenForSafe = 0;
-				Log.v(TAG, "decr hiddenForSafe is now " + hiddenForSafe);
-			}
 		}
 		else {
 			energyDepleteCounter++;
+		}
+		
+		if (mEnergy <= DESPAIR_ENERGY) {
+			mMoodLevel = MoodLevel.DESPAIR;
+		}
+		else if (mEnergy <= RISK_ENERGY) {
+			mMoodLevel = MoodLevel.RISK;
+			incrRiskCounter++;
+			if (incrRiskCounter >= INCR_RISK_TICKS) {
+				incrRiskCounter = 0;
+//				hiddenForSafe -= HIDDEN_FOR_SAFE_ADJ;
+//				if (hiddenForSafe < 0) hiddenForSafe = 0;
+//				Log.v(TAG, "decr hiddenForSafe is now " + hiddenForSafe);
+				increaseRisk();
+			}
+		}
+		else {
+			mMoodLevel = MoodLevel.NEUTRAL;
 		}
 	}
 	private void processEvent(Event e) {
@@ -117,17 +143,28 @@ public class WorldModel {
 			break;
 		case NOISE:
 			EventNoise noise = (EventNoise) e;
-			if (noise.getLoudness() >= LOUD_NOISE) {
+			if (mMoodLevel.compareTo(MoodLevel.DESPAIR) < 0 && noise.getLoudness() >= LOUD_NOISE) {
 				Log.v(TAG, "Loud noise heard, panic!");
 				mStressLevel = StressLevel.PLOK_CLOSE;
 				mHiddenFor = 0;
-				if (hiddenForSafe < HIDDEN_FOR_SAFE_MAX) hiddenForSafe += HIDDEN_FOR_SAFE_ADJ;
-				Log.v(TAG, "incr hiddenForSafe is now " + hiddenForSafe);
+//				if (hiddenForSafe < HIDDEN_FOR_SAFE_MAX) hiddenForSafe += HIDDEN_FOR_SAFE_ADJ;
+//				Log.v(TAG, "incr hiddenForSafe is now " + hiddenForSafe);
+				decreaseRisk();
+//				mPanic = true;
 			}
 		}
 		if (e.type() == EventType.FOOD || e.type() == EventType.ALGAE) {
 			rememberEvent(e);
 		}
+	}
+	private void increaseRisk() {
+		hiddenForSafe -= HIDDEN_FOR_SAFE_ADJ;
+		if (hiddenForSafe < 0) hiddenForSafe = 0;
+		Log.v(TAG, "decr hiddenForSafe is now " + hiddenForSafe);
+	}
+	private void decreaseRisk() {
+		if (hiddenForSafe < HIDDEN_FOR_SAFE_MAX) hiddenForSafe += HIDDEN_FOR_SAFE_ADJ;
+		Log.v(TAG, "incr hiddenForSafe is now " + hiddenForSafe);
 	}
 	private void rememberEvent(Event e) {
 		mEventMemory.add(e);
@@ -233,5 +270,11 @@ public class WorldModel {
 	
 	public int getEnergy() {
 		return mEnergy;
+	}
+//	public boolean isPanicked() {
+//		return mPanic;
+//	}
+	public MoodLevel getMoodLevel() {
+		return mMoodLevel;
 	}
 }

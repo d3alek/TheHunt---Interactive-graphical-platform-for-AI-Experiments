@@ -33,5 +33,9 @@ abstract public class D3FadingShape extends D3Shape {
 	public boolean isExpired() {
 		return mExpired;
 	}
+	
+	public void setExpired() {
+		mExpired = true;
+	}
 
 }
