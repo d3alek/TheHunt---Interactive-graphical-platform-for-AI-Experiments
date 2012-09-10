@@ -24,7 +24,7 @@ public class WorldModel {
 	private static final int HIDDEN_FOR_SAFE_MAX = 100;
 	
 	private static final int ENERGY_DEPLETE_SPEED = 3;
-	private static final int ONE_FOOD_ENERGY = 30;
+//	private static final int ONE_FOOD_ENERGY = 30;
 	
 	private static final int DESPAIR_ENERGY = 30;
 	private static final int RISK_ENERGY = 60;
@@ -104,7 +104,15 @@ public class WorldModel {
 		}
 	}
 	private void processEvent(Event e) {
-		if (mEventMemory.contains(e)) return;
+		if (mEventMemory.contains(e)) {
+			//TODO: fix dirty, works only with moving food for now
+			if (mNearestFood != null && mNearestFood.equals(e)) {
+				mNearestFood = (EventFood) e;
+			}
+			mEventMemory.remove(e);
+			mEventMemory.add(e);
+			return;
+		}
 		switch(e.type()) { 
 		case AT: 
 			EventAt eAt = (EventAt) e;
@@ -157,6 +165,11 @@ public class WorldModel {
 			rememberEvent(e);
 		}
 	}
+
+	private void rememberEvent(Event e) {
+		mEventMemory.add(e);
+	}
+	
 	private void increaseRisk() {
 		hiddenForSafe -= HIDDEN_FOR_SAFE_ADJ;
 		if (hiddenForSafe < 0) hiddenForSafe = 0;
@@ -165,9 +178,6 @@ public class WorldModel {
 	private void decreaseRisk() {
 		if (hiddenForSafe < HIDDEN_FOR_SAFE_MAX) hiddenForSafe += HIDDEN_FOR_SAFE_ADJ;
 		Log.v(TAG, "incr hiddenForSafe is now " + hiddenForSafe);
-	}
-	private void rememberEvent(Event e) {
-		mEventMemory.add(e);
 	}
 	public int getLightLevel() {
 		return mLightLevel;

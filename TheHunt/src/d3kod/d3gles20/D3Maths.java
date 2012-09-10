@@ -18,6 +18,12 @@ public class D3Maths {
 		else return 1;
 	}
 
+	public static int compareFloatsTolerance(float f, float g, float tolerance) {
+		if (f < g + tolerance && f > g - tolerance) return 0;
+		if (f < g - tolerance) return -1;
+		else return 1;
+	}
+	
 	public static boolean circleContains(float centerX, float centerY,
 			float radius, float x, float y) {
 		return D3Maths.distance(centerX, centerY, x, y) <= radius;

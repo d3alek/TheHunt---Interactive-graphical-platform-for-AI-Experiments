@@ -6,6 +6,7 @@ import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.PointF;
 import android.hardware.SensorEvent;
@@ -13,6 +14,7 @@ import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 import android.opengl.Matrix;
 import android.util.Log;
+import android.widget.AbsListView;
 import d3kod.d3gles20.D3GLES20;
 import d3kod.d3gles20.D3Maths;
 import d3kod.d3gles20.ShaderManager;
@@ -78,6 +80,9 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 
 	private final static int worldWidthPx = 1500;
 	private final static int worldHeightPx = 900;
+	
+	protected static final int YELLOW_TEXT_ENERGY = 60;
+	protected static final int RED_TEXT_ENERGY = 30;
 	
 	public void onSensorChanged(SensorEvent event) {
 		
@@ -163,6 +168,16 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 					((TheHunt) mContext).mPreyState.setText(mPrey.getStateString());
 					((TheHunt) mContext).mMSperFrame.setText(smoothMspf + "");
 					((TheHunt) mContext).mEnergyCounter.setText(mPrey.getEnergy()+"");
+
+					if (mPrey.getEnergy() < RED_TEXT_ENERGY) {
+						((TheHunt) mContext).mEnergyCounter.setTextColor(Color.RED);
+					}
+					else if (mPrey.getEnergy() < YELLOW_TEXT_ENERGY) {
+						((TheHunt) mContext).mEnergyCounter.setTextColor(Color.YELLOW);
+					}
+					else {
+						((TheHunt) mContext).mEnergyCounter.setTextColor(Color.WHITE);
+					}
 				}
 			});
 		}

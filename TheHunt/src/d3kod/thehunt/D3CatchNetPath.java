@@ -24,15 +24,13 @@ public class D3CatchNetPath extends D3Path {
 	private static final int CLOSED_SHAPE_VERTICES_NUM = 100;
 	private static final float DISTANCE_FAR_ENOUGH = 0.01f;
 	private static final float DISTANCE_FINISH_ENOUGH = 0.1f;
-	
-	private static final float MIN_RADIUS = 0.15f;
 
 	private static int isBuiltType = GLES20.GL_LINE_LOOP;
 	
 
 	private static final float FADE_SPEED = 0.05f;
 
-	private static final float MIN_LENGTH = 0.2f;
+	private static final float MIN_LENGTH = 0.5f;
 	
 	private float mScale;
 	

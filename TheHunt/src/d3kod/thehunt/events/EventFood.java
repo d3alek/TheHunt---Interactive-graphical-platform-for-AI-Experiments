@@ -1,6 +1,9 @@
 package d3kod.thehunt.events;
 
+import d3kod.d3gles20.D3Maths;
+
 public class EventFood extends Event {
+	private static final float EQUALS_TOLERANCE = 0.02f; // FoodAlgae velocity
 	private float foodX;
 	private float foodY;
 	private int mNutri;
@@ -30,7 +33,9 @@ public class EventFood extends Event {
 		
 		EventFood that = (EventFood)o;
 		
-		return that.getFoodX() == foodX && that.getFoodY() == foodY && that.getNutri() == mNutri;
+		return D3Maths.compareFloatsTolerance(that.getFoodX(), foodX, EQUALS_TOLERANCE) == 0 
+				&& D3Maths.compareFloatsTolerance(that.getFoodY(), foodY, EQUALS_TOLERANCE) == 0 
+				&& that.getNutri() == mNutri;
 	}
 	@Override
 	public int hashCode() {

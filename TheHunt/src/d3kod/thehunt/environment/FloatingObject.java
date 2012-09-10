@@ -18,6 +18,9 @@ public class FloatingObject {
 	private boolean mGraphicSet = false;
 
 	private D3GLES20 mD3GLES20;
+
+	private float vX;
+	private float vY;
 	
 	
 	public FloatingObject(float x, float y, Type type, D3GLES20 d3GLES20) {
@@ -34,7 +37,14 @@ public class FloatingObject {
 	}
 
 	public void update() {
-		
+		applyFriction();
+		mX += vX; mY += vY;
+		mD3GLES20.setShapePosition(mKey, mX, mY);
+	}
+	
+	public void applyFriction() {
+		vX -= EnvironmentData.frictionCoeff*vX;
+		vY -= EnvironmentData.frictionCoeff*vY;
 	}
 	
 	public int getKey() {
@@ -61,4 +71,7 @@ public class FloatingObject {
 		return 0;
 	}
 	
+	public void setVelocity(float vx, float vy) {
+		vX = vx; vY = vy;
+	}
 }
