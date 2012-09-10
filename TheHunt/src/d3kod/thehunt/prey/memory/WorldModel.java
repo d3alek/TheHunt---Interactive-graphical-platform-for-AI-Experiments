@@ -195,7 +195,7 @@ public class WorldModel {
 	}
 	public void eatFood(float mPosHeadX, float mPosHeadY) {
 		//TODO: the food removed is not always the nearest food #BUG
-		mEnergy += ONE_FOOD_ENERGY;
+		mEnergy += mNearestFood.getNutri();
 		if (mEnergy > MAX_ENERGY) {
 			mEnergy = MAX_ENERGY;
 		}

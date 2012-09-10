@@ -1,6 +1,7 @@
 package d3kod.thehunt.environment;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 import android.content.Context;
 import android.graphics.PointF;
@@ -19,24 +20,32 @@ public class Environment {
 	public static final float LOUDNESS_PLOK = 1f;
 	private static final int NOISE_EVENTS_CLEAR_FREQUENCY = 2;
 	public EnvironmentData data;
-	private float[] foodColor = {0.5f, 0.5f, 0.5f, 1.0f};
 	public int mTextureDataHandle;
 	private D3GLES20 mD3GLES20;
 	private ArrayList<EventNoise> mNoiseEvents;
+	private Random mRandom;
+	
+	private static final float ALGAE_DROP_FOOD_CHANCE = 0.01f;
 	
 	public Environment(int width, int height) {
 		data = new EnvironmentData(width, height);
 		mNoiseEvents = new ArrayList<EventNoise>();
+		mRandom = new Random();
 	}
 	
 	public void update() {
 		data.updateFloatingObjects();
+		if (mRandom.nextFloat() < ALGAE_DROP_FOOD_CHANCE) {
+			int algaeIndex = (int)Math.floor(mRandom.nextFloat()*EnvironmentData.ALGAE_NUM);
+			putFoodAlgae(EnvironmentData.AlGAE_HARDCODED_POS[algaeIndex*2], 
+					EnvironmentData.AlGAE_HARDCODED_POS[algaeIndex*2 + 1]);
+		}
 	}
 	
 	public void initGraphics(Context context, D3GLES20 d3GLES20) {
 		mD3GLES20 = d3GLES20;
-		mTextureDataHandle = TextureHelper.loadTexture(context, R.drawable.hatching_cross);
-		data.makeAlgae(mTextureDataHandle, mD3GLES20);
+//		mTextureDataHandle = TextureHelper.loadTexture(context, R.drawable.hatching_cross);
+		data.makeAlgae(mD3GLES20);
 //		Tile.initBuffers();
 		
 	}
@@ -46,9 +55,14 @@ public class Environment {
 	public Tile[][] getTiles() {
 		return data.mTiles;
 	}
-	public void putFood(float x, float y) {
+	public void putFoodGM(float x, float y) {
 //		Log.v(TAG, "Putting food at " + x +  " " + y);
-		data.addFloatingObject(new FloatingObject(x, y, Type.FOOD, mD3GLES20), mD3GLES20.newDefaultCircle(0.01f, foodColor , 20));
+//		data.addFloatingObject(new FloatingObject(x, y, Type.FOOD, mD3GLES20), mD3GLES20.newDefaultCircle(0.01f, foodColor , 20));
+		data.addFloatingObject(new FoodGM(x, y, mD3GLES20));
+	}
+	
+	public void putFoodAlgae(float x, float y) {
+		data.addFloatingObject(new FoodAlgae(x, y, mD3GLES20));
 	}
 	
 	public Event senseCurrent(float x, float y) {

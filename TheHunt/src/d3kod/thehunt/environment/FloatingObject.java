@@ -6,7 +6,7 @@ import d3kod.d3gles20.D3GLES20;
 public class FloatingObject {
 
 	public enum Type {
-		FOOD, ALGAE;
+		FOOD_ALGAE, FOOD_GM, ALGAE;
 	}
 
 	private static final String TAG = "FloatingObject";
@@ -55,6 +55,10 @@ public class FloatingObject {
 	public void clearGraphic() {
 		if (!mGraphicSet) Log.v(TAG, "Graphic not set, can't clear!");
 		mD3GLES20.removeShape(mKey);		
+	}
+
+	public int nutrition() {
+		return 0;
 	}
 	
 }

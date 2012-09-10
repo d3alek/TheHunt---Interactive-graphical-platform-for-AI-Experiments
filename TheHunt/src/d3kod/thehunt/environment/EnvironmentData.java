@@ -1,6 +1,7 @@
 package d3kod.thehunt.environment;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 import android.graphics.PointF;
 import android.util.Log;
@@ -21,9 +22,9 @@ public class EnvironmentData {
 
 	public static final float currentStep = 0.002f;
 
-	private static final int ALGAE_NUM = 5;
+	public static final int ALGAE_NUM = 5;
 	
-	private static final float[] AlGAE_HARDCODED_POS = {
+	public static final float[] AlGAE_HARDCODED_POS = {
 		-0.5f, 0.5f,
 		1.0f, -0.3f,
 		0.3f, 0.11f,
@@ -114,12 +115,17 @@ public class EnvironmentData {
 //		Tile.initBuffers();
 	}
 //
+	@Deprecated
 	public void addFloatingObject(FloatingObject floatingObject, int graphicKey) {
 		floatingObject.setGraphic(graphicKey);
 		mFloatingObjects.add(floatingObject);
 //		Log.v(TAG, "Floating object type " + floatingObject.getType() + " with key" + graphicKey);
 	}
 
+	public void addFloatingObject(FloatingObject floatingObject) {
+		mFloatingObjects.add(floatingObject);
+	}
+	
 	public ArrayList<FloatingObject> getFloatingObjects() {
 		return mFloatingObjects;
 	}
@@ -136,7 +142,7 @@ public class EnvironmentData {
 	
 	public void removeFood(float x, float y) {
 		for (FloatingObject fo: mFloatingObjects) {
-			if (fo.getType() != Type.FOOD) continue;
+			if (fo.getType() != Type.FOOD_ALGAE && fo.getType() != Type.FOOD_GM) continue;
 			float foX = fo.getX(), foY = fo.getY();
 			if (D3Maths.rectContains(x, y, 0.2f, 0.2f, foX, foY)) {
 				fo.clearGraphic();
@@ -146,11 +152,11 @@ public class EnvironmentData {
 		}
 	}
 
-	public void makeAlgae(int textureDataHandle, D3GLES20 d3GLES20) {
+	public void makeAlgae(D3GLES20 d3GLES20) {
 		float algaeX, algaeY;
 		for (int i = 0; i < ALGAE_NUM; ++i) {
 			algaeX = AlGAE_HARDCODED_POS[i*2]; algaeY = AlGAE_HARDCODED_POS[i*2+1];
-			mFloatingObjects.add(new Algae(algaeX, algaeY, textureDataHandle, d3GLES20));
+			mFloatingObjects.add(new Algae(algaeX, algaeY, d3GLES20));
 //			addFloatingObject(
 //					new FloatingObject(D3GLES20.newDefaultCircle(ALGAE_SIZE, algaeColor, ALGAE_DETAILS), algaeX, algaeY, Type.ALGAE));
 		}

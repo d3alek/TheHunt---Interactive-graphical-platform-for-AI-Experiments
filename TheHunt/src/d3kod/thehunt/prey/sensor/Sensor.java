@@ -24,9 +24,6 @@ public class Sensor {
 		mEnv = env;
 		mSensors = new ArrayList<Sensor.Sensors>();
 		mSensors.add(Sensors.CURRENT_SENSOR);
-//		mSensors.add(Sensors.FOOD_SENSOR);
-//		mSensors.add(Sensors.ALGAE_SENSOR);
-//		mSensors.add(Sensors.LIGHT_SENSOR);
 		mSensors.add(Sensors.SIGHT_SENSOR);
 		mSensors.add(Sensors.HEARING_SENSOR);
 		sensedEvents = new ArrayList<Event>();
@@ -43,12 +40,14 @@ public class Sensor {
 				for (FloatingObject fo: sensedObjects) {
 					switch(fo.getType()) {
 					case ALGAE: sensedEvents.add(new EventAlgae(fo.getX(), fo.getY())); break;
-					case FOOD: sensedEvents.add(new EventFood(fo.getX(), fo.getY())); break;
+					case FOOD_ALGAE: sensedEvents.add(new EventFood(fo.getX(), fo.getY(), fo.nutrition())); break;
+					case FOOD_GM: sensedEvents.add(new EventFood(fo.getX(), fo.getY(), fo.nutrition())); break;
 					}
 				}
 				break;
 			case HEARING_SENSOR:
 				sensedEvents.addAll(mEnv.hearEvents(hX, hY, mHearRad));
+				break;
 			}
 		}
 		return sensedEvents;
