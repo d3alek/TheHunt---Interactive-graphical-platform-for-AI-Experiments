@@ -63,5 +63,9 @@ public class ExplorePlan extends Plan {
 	public Random getRandom() {
 		return mRandom;
 	}
+
+	public boolean isRapid() {
+		return false;
+	}
 	
 }

@@ -1,6 +1,5 @@
 package d3kod.thehunt.prey.planner;
 
-import android.util.Log;
 import d3kod.d3gles20.D3GLES20;
 import d3kod.thehunt.prey.Action;
 import d3kod.thehunt.prey.memory.MoodLevel;
@@ -8,7 +7,6 @@ import d3kod.thehunt.prey.memory.WorldModel;
 import d3kod.thehunt.prey.planner.plans.ExplorePlan;
 import d3kod.thehunt.prey.planner.plans.GoToAndEatPlan;
 import d3kod.thehunt.prey.planner.plans.GoToAndStayPlan;
-import d3kod.thehunt.prey.planner.plans.GoToPlan;
 import d3kod.thehunt.prey.planner.plans.NoPlan;
 import d3kod.thehunt.prey.planner.plans.Plan;
 import d3kod.thehunt.prey.planner.plans.RapidExplorePlan;
@@ -78,10 +76,13 @@ public class Planner {
 	private Plan makeExplorePlan(WorldModel mWorldModel) {
 //		Log.v(TAG, "Making explore plan");
 		if (mWorldModel.getMoodLevel() == MoodLevel.DESPAIR) {
-			if (mExplorePlan == null || mExplorePlan instanceof RapidExplorePlan) return mExplorePlan;
-			else mExplorePlan = new RapidExplorePlan(mWorldModel);
+			if (mExplorePlan == null || !mExplorePlan.isRapid()) {
+				mExplorePlan = new RapidExplorePlan(mWorldModel);
+			}
 		}
-		else if (mExplorePlan == null) mExplorePlan = new ExplorePlan(mWorldModel);
+		else if (mExplorePlan == null || mExplorePlan.isRapid()) {
+			mExplorePlan = new ExplorePlan(mWorldModel);
+		}
 		return mExplorePlan;
 	}
 

@@ -19,4 +19,9 @@ public class RapidExplorePlan extends ExplorePlan {
 		int actionInd = Math.round((wanderActions.length-1) * getRandom().nextFloat());
 		return wanderActions[actionInd];
 	}
+	
+	@Override
+	public boolean isRapid() {
+		return true;
+	}
 }
