@@ -70,8 +70,8 @@ public class Environment {
 		return new EventCurrent(tileDir);
 	}
 	
-	public void eatFood(float mPosHeadX, float mPosHeadY) {
-		data.removeFood(mPosHeadX, mPosHeadY);
+	public FloatingObject eatFood(float mPosHeadX, float mPosHeadY) {
+		return data.removeFood(mPosHeadX, mPosHeadY);
 	}
 	
 	public ArrayList<FloatingObject> seeObjects(float x, float y, float sightRadius) {

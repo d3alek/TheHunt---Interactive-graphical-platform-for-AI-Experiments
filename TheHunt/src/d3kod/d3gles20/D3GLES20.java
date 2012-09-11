@@ -101,14 +101,14 @@ public class D3GLES20 {
 		shapes.remove(key);
 	}
 
-	public void setShapePosition(int key, float x,
-			float y) {
-		if (shapes == null) {
-			Log.w(TAG, "Shapes are null in setShapePosition!");
-			return;
-		}
-		shapes.get(key).setPosition(x, y);
-	}
+//	public void setShapePosition(int key, float x,
+//			float y) {
+//		if (shapes == null) {
+//			Log.w(TAG, "Shapes are null in setShapePosition!");
+//			return;
+//		}
+//		shapes.get(key).setPosition(x, y);
+//	}
 
 	public void clearGraphics() {
 		shapes.clear();
@@ -156,5 +156,23 @@ public class D3GLES20 {
 
 	public ShaderManager getShaderManager() {
 		return sm;
+	}
+
+	
+	public void setShapePosition(int key, float x,
+			float y) {
+		if (shapes == null) {
+			Log.w(TAG, "Shapes are null in setShapePosition!");
+			return;
+		}
+		shapes.get(key).setPosition(x, y);
+	}
+	
+	public void setShapeVelocity(int key, float vx, float vy) {
+		if (shapes == null) {
+			Log.w(TAG, "Shapes are null in setShapeVelocity!");
+			return;
+		}
+		shapes.get(key).setVelocity(vx, vy);
 	}
 }

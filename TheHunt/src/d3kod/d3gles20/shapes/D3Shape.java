@@ -30,6 +30,8 @@ abstract public class D3Shape {
 	private float[] mMMatrix;
 	private float[] mCenter;
 	private float[] mCenterDefault;
+	private float mVelocityY;
+	private float mVelocityX;
 	
 	private static final float MIN_ALPHA = 0.1f;
 	
@@ -44,6 +46,7 @@ abstract public class D3Shape {
 		mMMatrix = new float[16];
 		mCenterDefault = new float[] {0.0f, 0.0f, 0.0f, 1.0f};
 		mCenter = new float[4];
+		mVelocityX = mVelocityY = 0;
 		Matrix.setIdentityM(getMMatrix(), 0);
         
 		mProgram = program;
@@ -81,12 +84,17 @@ abstract public class D3Shape {
 	}
 	
 	public void draw(float[] mVMatrix, float[] mProjMatrix, float interpolation) {
+		if (mVelocityX*mVelocityY != 0) {
+			setPosition(getCenterX() + interpolation * mVelocityX, 
+				getCenterY() + interpolation * mVelocityY);
+		}
 		draw(mVMatrix, mProjMatrix);
 	}
 	
 	public void draw(float[] mVMatrix, float[] mProjMatrix) {
 		setDrawVMatrix(mVMatrix);
 		setDrawProjMatrix(mProjMatrix);
+				
 		useProgram();
         useColor();
         drawBuffer(vertexBuffer, mMMatrix);
@@ -180,5 +188,9 @@ abstract public class D3Shape {
 	
 	public void noFade() {
 		mColor[3] = 1f;
+	}
+
+	public void setVelocity(float vx, float vy) {
+		mVelocityX = vx; mVelocityY = vy;
 	}
 }

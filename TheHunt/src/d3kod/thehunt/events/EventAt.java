@@ -35,4 +35,14 @@ public class EventAt extends Event {
 	public String toString() {
 		return "EventAt head: " + headX + " " + headY + " body: " + bodyX + " " + bodyY;
 	}
+
+	@Override
+	public float getX() {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public float getY() {
+		throw new UnsupportedOperationException();
+	}
 }

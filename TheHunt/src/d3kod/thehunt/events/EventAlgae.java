@@ -10,11 +10,13 @@ public class EventAlgae extends Event {
 		algaeX = x; algaeY = y;
 	}
 	
-	public float getAlgaeX() {
+	@Override
+	public float getX() {
 		return algaeX;
 	}
 	
-	public float getAlgaeY() {
+	@Override
+	public float getY() {
 		return algaeY;
 	}
 	
@@ -25,7 +27,7 @@ public class EventAlgae extends Event {
 		
 		EventAlgae that = (EventAlgae)o;
 		
-		return that.getAlgaeX() == algaeX && that.getAlgaeY() == algaeY;
+		return that.getX() == algaeX && that.getY() == algaeY;
 	}
 	
 	@Override

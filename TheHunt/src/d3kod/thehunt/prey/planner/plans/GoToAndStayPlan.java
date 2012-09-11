@@ -2,6 +2,7 @@ package d3kod.thehunt.prey.planner.plans;
 
 import android.util.Log;
 import d3kod.d3gles20.D3Maths;
+import d3kod.thehunt.events.Event;
 import d3kod.thehunt.prey.Action;
 import d3kod.thehunt.prey.memory.WorldModel;
 
@@ -17,9 +18,8 @@ public class GoToAndStayPlan extends MoveTowardsPlan {
 	private int keepDistanceCounter;
 	private int slowdownCounter;
 	
-	public GoToAndStayPlan(float hX, float hY, float bX, float bY, float tX,
-			float tY) {
-		super(hX, hY, bX, bY, tX, tY);
+	public GoToAndStayPlan(float hX, float hY, float bX, float bY, Event target) {
+		super(hX, hY, bX, bY, target);
 		keepDistanceCounter = 0;
 		slowdownCounter = 0;
 	}

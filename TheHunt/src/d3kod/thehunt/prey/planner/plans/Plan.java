@@ -43,6 +43,9 @@ public class Plan {
 	public float getTargetY() {
 		return mTargetY;
 	}
+	public void setTarget(float tX, float tY) {
+		mTargetX = tX; mTargetY = tY;
+	}
 	public float getTargetSize() {
 		return mTargetSize;
 	}

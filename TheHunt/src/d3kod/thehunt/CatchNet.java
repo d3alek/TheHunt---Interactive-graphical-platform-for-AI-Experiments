@@ -6,6 +6,7 @@ import d3kod.d3gles20.TextureManager;
 import d3kod.d3gles20.programs.Program;
 import d3kod.thehunt.environment.Environment;
 import d3kod.thehunt.floating_text.PlokText;
+import d3kod.thehunt.floating_text.SnatchText;
 import d3kod.thehunt.prey.Prey;
 
 public class CatchNet {
@@ -29,7 +30,7 @@ public class CatchNet {
 
 	private D3GLES20 mD3GLES20;
 
-//	private boolean showSnatchText;
+	private boolean showSnatchText;
 
 	private Program mProgram;
 
@@ -45,17 +46,6 @@ public class CatchNet {
 	}
 	
 	public void update() {
-//		if (mPathGraphic == null) return;
-//		if (mPathGraphic.fadeDone()) {	
-//			mPathGraphic = null;
-//			mD3GLES20.removeShape(mGraphicIndex);
-//			
-//			if (mCaughtPrey != null) {
-//				Log.v(TAG, "Prey is in net!!! YAY");
-//				Log.v(TAG, "Let it go now...");
-////				mCaughtPrey.release();
-//			}
-//		}
 		if (mPathGraphic == null) return;
 		if (mPathGraphic.fadeDone()) {
 			mPathGraphic = null;
@@ -72,16 +62,22 @@ public class CatchNet {
 		if (mNetGraphic.getScale() < 1) {
 			mNetGraphic.grow();
 		}
-		else if (mNetGraphic.fadeDone()) {
-			mPathGraphic = null;
-			mD3GLES20.removeShape(mPathGraphicIndex);
-			
-			mNetGraphic = null;
-			mD3GLES20.removeShape(mNetGraphicIndex);
-			
-			if (mCaughtPrey != null) {
-				Log.v(TAG, "Prey is in net!!! YAY");
-				Log.v(TAG, "Let it go now...");
+		else {
+			if (!showSnatchText) {
+				mD3GLES20.putExpiringShape(new SnatchText(mNetGraphic.getCenterX(), mNetGraphic.getCenterY(), tm, mD3GLES20.getShaderManager()));
+				showSnatchText = true;
+			}
+			if (mNetGraphic.fadeDone()) {
+				mPathGraphic = null;
+				mD3GLES20.removeShape(mPathGraphicIndex);
+				
+				mNetGraphic = null;
+				mD3GLES20.removeShape(mNetGraphicIndex);
+				
+				if (mCaughtPrey != null) {
+					Log.v(TAG, "Prey is in net!!! YAY");
+					Log.v(TAG, "Let it go now...");
+				}
 			}
 		}
 //		else if (!showSnatchText && mPathGraphic.isFinished()) {
@@ -99,7 +95,7 @@ public class CatchNet {
 		}
 		
 		notShown = false;
-//		showSnatchText = false;
+		showSnatchText = false;
 		
 		mPathGraphic = new D3CatchNetPath(mProgram);
 		mPathGraphicIndex = mD3GLES20.putShape(mPathGraphic);

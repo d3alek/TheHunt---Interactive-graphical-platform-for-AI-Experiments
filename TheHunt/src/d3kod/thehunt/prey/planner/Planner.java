@@ -88,10 +88,14 @@ public class Planner {
 
 	private Plan makeScavagePlan(WorldModel mWorldModel) {
 //		Log.v(TAG, "Making scavage plan");
+//		Plan scvgPlan = new GoToAndEatPlan(
+//				mWorldModel.getHeadX(), mWorldModel.getHeadY(), 
+//				mWorldModel.getBodyX(), mWorldModel.getBodyY(), 
+//				mWorldModel.getNearestFoodX(), mWorldModel.getNearestFoodY());
 		Plan scvgPlan = new GoToAndEatPlan(
 				mWorldModel.getHeadX(), mWorldModel.getHeadY(), 
 				mWorldModel.getBodyX(), mWorldModel.getBodyY(), 
-				mWorldModel.getNearestFoodX(), mWorldModel.getNearestFoodY());
+				mWorldModel.getNearestFood());
 		return scvgPlan;
 	}
 
@@ -102,7 +106,7 @@ public class Planner {
 			hidePlan = new GoToAndStayPlan(
 					mWorldModel.getHeadX(), mWorldModel.getHeadY(), 
 					mWorldModel.getBodyX(), mWorldModel.getBodyY(), 
-					mWorldModel.getNearestAlgaeX(), mWorldModel.getNearestAlgaeY());
+					mWorldModel.getNearestAlgae());
 		}
 		else {
 			hidePlan = new RapidExplorePlan(mWorldModel);

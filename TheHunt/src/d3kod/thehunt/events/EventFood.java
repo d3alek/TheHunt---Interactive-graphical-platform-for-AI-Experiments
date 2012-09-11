@@ -14,11 +14,19 @@ public class EventFood extends Event {
 		mNutri = nutrition;
 	}
 	
-	public float getFoodX() {
+	public void set(EventFood to) {
+		foodX = to.getX();
+		foodY = to.getY();
+		mNutri = to.getNutri();
+	}
+	
+	@Override
+	public float getX() {
 		return foodX;
 	}
 	
-	public float getFoodY() {
+	@Override
+	public float getY() {
 		return foodY;
 	}
 	
@@ -33,8 +41,8 @@ public class EventFood extends Event {
 		
 		EventFood that = (EventFood)o;
 		
-		return D3Maths.compareFloatsTolerance(that.getFoodX(), foodX, EQUALS_TOLERANCE) == 0 
-				&& D3Maths.compareFloatsTolerance(that.getFoodY(), foodY, EQUALS_TOLERANCE) == 0 
+		return D3Maths.compareFloatsTolerance(that.getX(), foodX, EQUALS_TOLERANCE) == 0 
+				&& D3Maths.compareFloatsTolerance(that.getY(), foodY, EQUALS_TOLERANCE) == 0 
 				&& that.getNutri() == mNutri;
 	}
 	@Override

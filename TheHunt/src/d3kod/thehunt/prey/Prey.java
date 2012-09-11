@@ -2,19 +2,17 @@ package d3kod.thehunt.prey;
 
 import java.util.Random;
 
-import android.graphics.Point;
 import android.graphics.PointF;
-import android.opengl.GLES20;
 import android.opengl.Matrix;
 import android.util.FloatMath;
 import android.util.Log;
 import d3kod.d3gles20.D3GLES20;
-import d3kod.d3gles20.D3Maths;
 import d3kod.d3gles20.TextureManager;
-import d3kod.d3gles20.Utilities;
 import d3kod.thehunt.TheHuntRenderer;
 import d3kod.thehunt.environment.Environment;
 import d3kod.thehunt.environment.EnvironmentData;
+import d3kod.thehunt.environment.FloatingObject;
+import d3kod.thehunt.floating_text.CrunchText;
 import d3kod.thehunt.floating_text.FlopText;
 import d3kod.thehunt.floating_text.PanicText;
 import d3kod.thehunt.floating_text.PlokText;
@@ -339,8 +337,15 @@ public class Prey {
 
 	private void eat() {
 //		Log.v(TAG, "Eating food at " + mD.mPosHeadX + " " + mD.mPosHeadY);
-		mEnv.eatFood(mD.mPosHeadX, mD.mPosHeadY);
-		mWorldModel.eatFood(mD.mPosHeadX, mD.mPosHeadY);
+		FloatingObject food = mEnv.eatFood(mD.mPosHeadX, mD.mPosHeadY);
+		if (food == null) {
+			Log.v(TAG, "I thought I ate something, but it was null :?");
+			mWorldModel.eatFood(0);
+		}
+		else {
+			mWorldModel.eatFood(food.nutrition());
+			mD3GLES20.putExpiringShape(new CrunchText(mD.mPosHeadX, mD.mPosHeadY, tm, mD3GLES20.getShaderManager()));
+		}
 	}
 
 	public void setCaught(boolean caught) {

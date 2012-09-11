@@ -1,27 +1,29 @@
 package d3kod.thehunt.prey.planner.plans;
 
-import android.util.Log;
 import d3kod.d3gles20.D3Maths;
+import d3kod.thehunt.events.Event;
 import d3kod.thehunt.prey.Action;
 import d3kod.thehunt.prey.Prey;
-import d3kod.thehunt.prey.PreyData;
 import d3kod.thehunt.prey.TurnAngle;
 import d3kod.thehunt.prey.memory.WorldModel;
 
 public class MoveTowardsPlan extends Plan {
 	private static final String TAG = "GoToPlan";
 	private static final float TOLERANCE = 0.005f;
-	private float tX;
-	private float tY;
+//	private float tX;
+//	private float tY;
+	private Event mTarget;
 	
-	public MoveTowardsPlan(float hX, float hY, float bX, float bY, float tX, float tY) {
-		super(tX, tY);
-		
-		this.tX = tX; this.tY = tY;
+	public MoveTowardsPlan(float hX, float hY, float bX, float bY, Event target) {
+		super(target.getX(), target.getY());
+		mTarget = target;
+//		this.tX = tX; this.tY = tY;
 	}
 	public void update(WorldModel mWorldModel) {
 		float hX = mWorldModel.getHeadX(), hY = mWorldModel.getHeadY(),
 				bX = mWorldModel.getBodyX(), bY = mWorldModel.getBodyY();
+		float tX = mTarget.getX(), tY = mTarget.getY();
+		super.setTarget(tX, tY);
 		float headFromTarget = D3Maths.distance(hX, hY, tX, tY),
 				bodyFromTarget = D3Maths.distance(bX, bY, tX, tY);
 //				headFromBody = D3GLES20.distance(bX, bY, hX, hY);
@@ -71,9 +73,9 @@ public class MoveTowardsPlan extends Plan {
 	}
 	
 	public float getTX() {
-		return tX;
+		return mTarget.getX();
 	}
 	public float getTY() {
-		return tY;
+		return mTarget.getY();
 	}
 }

@@ -23,6 +23,10 @@ public class FoodAlgae extends FloatingObject {
 	}
 
 	@Override
+	public void applyFriction() {
+	}
+	
+	@Override
 	public int nutrition() {
 		return FOOD_ALGAE_NUTRITION;
 	}

@@ -26,5 +26,9 @@ public class D3FoodAlgae extends D3Shape {
 	public float getRadius() {
 		throw new UnsupportedOperationException();
 	}
-
+	
+//	@Override
+//	public void draw(float[] mVMatrix, float[] mProjMatrix, float interpolation) {
+//		super.draw(mVMatrix, mProjMatrix, interpolation);
+//	}
 }

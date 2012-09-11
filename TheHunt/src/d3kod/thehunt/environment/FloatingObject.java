@@ -73,5 +73,6 @@ public class FloatingObject {
 	
 	public void setVelocity(float vx, float vy) {
 		vX = vx; vY = vy;
+		mD3GLES20.setShapeVelocity(mKey, vx, vy);
 	}
 }

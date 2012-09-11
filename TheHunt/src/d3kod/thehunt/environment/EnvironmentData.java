@@ -140,16 +140,17 @@ public class EnvironmentData {
 		return mTiles[row][col]; 
 	}
 	
-	public void removeFood(float x, float y) {
+	public FloatingObject removeFood(float x, float y) {
 		for (FloatingObject fo: mFloatingObjects) {
 			if (fo.getType() != Type.FOOD_ALGAE && fo.getType() != Type.FOOD_GM) continue;
 			float foX = fo.getX(), foY = fo.getY();
 			if (D3Maths.rectContains(x, y, 0.2f, 0.2f, foX, foY)) {
 				fo.clearGraphic();
 				mFloatingObjects.remove(fo);
-				return;
+				return fo;
 			}
 		}
+		return null;
 	}
 
 	public void makeAlgae(D3GLES20 d3GLES20) {
@@ -171,9 +172,22 @@ public class EnvironmentData {
 	}
 
 	public void updateFloatingObjects() {
+		ArrayList<FloatingObject> toRemove = new ArrayList<FloatingObject>();
 		for (FloatingObject fo: mFloatingObjects) {
 			fo.update();
+			if (!environmentContains(fo)) {
+				toRemove.add(fo);
+			}
 		}
+		for (FloatingObject fo: toRemove) {
+			fo.clearGraphic();
+			mFloatingObjects.remove(fo);
+		}
+	}
+
+	private boolean environmentContains(FloatingObject fo) {
+		return D3Maths.rectContains(
+				0, 0, mScreenWidth, mScreenHeight, fo.getX(), fo.getY());
 	}
 
 //	public ArrayList<EventNoise> getNoiseEvents() {
