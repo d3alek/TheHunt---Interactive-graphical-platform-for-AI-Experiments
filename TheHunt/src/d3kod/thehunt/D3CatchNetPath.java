@@ -31,6 +31,8 @@ public class D3CatchNetPath extends D3Path {
 	private static final float FADE_SPEED = 0.05f;
 
 	private static final float MIN_LENGTH = 0.5f;
+
+	private static final float MAX_RADIUS = 0.3f;
 	
 	private float mScale;
 	
@@ -106,7 +108,9 @@ public class D3CatchNetPath extends D3Path {
 				mRadius = minRadius;
 			}
 		}
-		
+		if (mRadius > MAX_RADIUS) {
+			mRadius = MAX_RADIUS;
+		}
 //		float[] center = {mCenterX, mCenterY, 0};
 		super.setVertexBuffer(Utilities.newFloatBuffer(D3Maths.circleVerticesData(mRadius, CLOSED_SHAPE_VERTICES_NUM)));
 		mVertexData.clear();

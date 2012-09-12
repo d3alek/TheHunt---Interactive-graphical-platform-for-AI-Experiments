@@ -24,6 +24,7 @@ import d3kod.thehunt.prey.sensor.Sensor;
 public class Prey {
 	
 	private static final String TAG = "Prey";
+	public static final float EAT_FOOD_RADIUS = 0.05f;
 	
 	private Planner mPlanner;
 	private WorldModel mWorldModel;
@@ -57,6 +58,13 @@ public class Prey {
 			doAction(mPlanner.nextAction(mWorldModel));
 		}
 		move(dx, dy);
+		
+		if (mWorldModel.getLightLevel() == 0) {
+			mGraphic.setHiddenColor();
+		}
+		else {
+			mGraphic.resetColor();
+		}
 	}
 	
 	private void updateWorldModel() {
@@ -344,6 +352,7 @@ public class Prey {
 		}
 		else {
 			mWorldModel.eatFood(food.nutrition());
+			mGraphic.initEatingMotion();
 			mD3GLES20.putExpiringShape(new CrunchText(mD.mPosHeadX, mD.mPosHeadY, tm, mD3GLES20.getShaderManager()));
 		}
 	}
@@ -367,9 +376,10 @@ public class Prey {
 		mPlanner.clear();
 		calcPosHead();
 		updateWorldModel();
+		mWorldModel.refillEnergy();
 		mWorldModel.recalcNearestFood();
 		mD3GLES20.putExpiringShape(new PlokText(mD.mPosX, mD.mPosY, tm, mD3GLES20.getShaderManager()));
-		mGraphic.reset();
+		mGraphic.resetColor();
 	}
 
 	private void randomizePos() {

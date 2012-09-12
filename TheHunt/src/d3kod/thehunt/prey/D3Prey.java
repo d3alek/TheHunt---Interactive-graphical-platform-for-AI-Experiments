@@ -1,6 +1,7 @@
 package d3kod.thehunt.prey;
 
 import java.nio.FloatBuffer;
+import java.util.Arrays;
 
 import android.opengl.GLES20;
 import android.opengl.Matrix;
@@ -11,14 +12,17 @@ import d3kod.d3gles20.Utilities;
 import d3kod.d3gles20.programs.AttribVariable;
 import d3kod.d3gles20.programs.Program;
 import d3kod.d3gles20.shapes.D3Shape;
+import d3kod.thehunt.TheHuntRenderer;
 
 public class D3Prey extends D3Shape {
 	private static final String TAG = "D3Prey";
 	
 	protected static float[] preyColor = {
 			0.0f, 0.0f, 0.0f, 1.0f };
-	protected final static float[] preyColorDefault = {
-			0.0f, 0.0f, 0.0f, 1.0f };
+	protected static float[] preyColorHidden = {
+		0.0f, 0.0f, 0.0f, 0.5f };
+//	protected final static float[] preyColorDefault = {
+//			0.0f, 0.0f, 0.0f, 1.0f };
 	private static final float colorFadeSpeed = 0.01f;
 	
 	public static boolean angleInterpolation = true;
@@ -37,7 +41,21 @@ public class D3Prey extends D3Shape {
 	
 	protected final float[] eyePosition = { -0.40f * headSize, 0.25f * headSize, 0.0f };
 	protected final float eyeSize = 0.25f*headSize;
-			
+		
+	// this works
+//	protected final float[] headPart1Start = { 0.0f, 1.0f, 0.0f };
+//	protected final float[] headPart1B = { -0.5f, 0.75f, 0.0f };
+//	protected final float[] headPart1C = { -1.0f, 0.5f, 0.0f };
+//	protected final float[] headPart2Start = { -1.0f, -0.5f, 0.0f };
+//	protected final float[] headPart2B = { -0.2f, -0.3f, 0.0f };
+//	protected final float[] headPart2C = { 0.2f, -0.3f, 0.0f };
+//	protected final float[] headPart3Start = { 1.0f, -0.5f, 0.0f };
+//	protected final float[] headPart3B = { 1.0f, 0.5f, 0.0f };
+//	protected final float[] headPart3C = { 0.5f, 0.75f, 0.0f };
+//	protected final float[] headPart4Start = { 0.5f, 0.75f, 0.0f };
+//	protected final float[] headPart4B = { 0.5f, 0.5f, 0.0f };
+//	protected final float[] headPart4C = { 0.0f, 0.0f, 0.0f };
+	
 	protected final float[] headPart1Start = { 0.0f, 1.0f, 0.0f };
 	protected final float[] headPart1B = { -0.5f, 0.75f, 0.0f };
 	protected final float[] headPart1C = { -1.0f, 0.5f, 0.0f };
@@ -45,10 +63,41 @@ public class D3Prey extends D3Shape {
 	protected final float[] headPart2B = { -0.2f, -0.3f, 0.0f };
 	protected final float[] headPart2C = { 0.2f, -0.3f, 0.0f };
 	protected final float[] headPart3Start = { 1.0f, -0.5f, 0.0f };
-	protected final float[] headPart3B = { 1.0f, 0.5f, 0.0f };
-	protected final float[] headPart3C = { 0.5f, 0.75f, 0.0f };
+	protected final float[] headPart3B = { 1.0f, 0.0f, 0.0f };
+	protected final float[] headPart3C = { 1.0f, 0.5f, 0.0f };
+	protected final float[] headPart4Start = { 0.7f, 0.7f, 0.0f };
+	protected final float[] headPart4B = { 0.5f, 0.5f, 0.0f };
+	protected final float[] headPart4C = { 0.0f, 0.0f, 0.0f };
 	
+
+	protected final int eatingMotionLengthSeconds = 1;
+	protected final int eatingMotionSteps = 8;
+	protected int eatingStep;
+	protected final int eatingMotionStepTicks = eatingMotionLengthSeconds*TheHuntRenderer.TICKS_PER_SECOND/eatingMotionSteps;
+	protected int eatingMotionStepCounter;
 	
+	protected final float[][] headPart4StartEatingMotion = 
+		{ 	
+			{ 	0.7f,	0.7f, 	0.0f },
+			{ 	0.6f,	0.75f, 	0.0f },
+			{ 	0.5f,	0.8f, 	0.0f },
+			{ 	0.4f,	0.85f, 	0.0f },
+			{ 	0.3f,	0.9f, 	0.0f },
+			{ 	0.2f,	0.95f, 	0.0f },
+			{ 	0.1f,	0.95f, 	0.0f },
+			{ 	0f, 	1f, 	0.0f }
+		};
+	protected final float[][] headPart4BEatingMotion = 
+		{	
+			{	0.5f, 	0.5f, 	0.0f },
+			{	0.42f, 	0.5f, 	0.0f },
+			{	0.35f, 	0.5f, 	0.0f },
+			{	0.28f, 	0.5f, 	0.0f },
+			{	0.2f, 	0.5f, 	0.0f },
+			{	0.12f, 	0.5f, 	0.0f },
+			{	0.05f, 	0.5f, 	0.0f },
+			{	0f, 	0.5f, 	0.0f }
+		};
 	// Body
 
 	protected final float[] bodyStart4 = { 0, 0.5f, 0, 0};
@@ -181,6 +230,7 @@ public class D3Prey extends D3Shape {
 		
         mProgramHandle = sm.getDefaultProgram().getHandle();
         
+        eatingStep = -1;
 //        mMVPMatrixHandle = GLES20.glGetUniformLocation(mProgramHandle, "u_MVPMatrix");
         //TODO: fix visibility
 //        mPositionHandle = AttribVariable.A_Position.getHandle();
@@ -208,8 +258,10 @@ public class D3Prey extends D3Shape {
 		float[] part2 = D3Maths.quadBezierCurveVertices(
 				headPart2Start, headPart2B, headPart2C, headPart3Start, detailsStep, headSize);
 		float[] part3 = D3Maths.quadBezierCurveVertices(
-				headPart3Start, headPart3B, headPart3C, headPart1Start, detailsStep, headSize);
-		float[] headVerticesData = new float[part1.length + part2.length + part3.length];
+				headPart3Start, headPart3B, headPart3C, headPart4Start, detailsStep, headSize);
+		float[] part4 = D3Maths.quadBezierCurveVertices(
+				headPart4Start, headPart4B, headPart4C, headPart1Start, detailsStep, headSize);
+		float[] headVerticesData = new float[part1.length + part2.length + part3.length + part4.length];
 		for (int i = 0; i < part1.length; ++i) {
 			headVerticesData[i] = part1[i];
 		}
@@ -219,10 +271,25 @@ public class D3Prey extends D3Shape {
 		for (int i = 0; i < part3.length; ++i) {
 			headVerticesData[part1.length + part2.length + i] = part3[i];
 		}
+		for (int i = 0; i < part4.length; ++i) {
+			headVerticesData[part1.length + part2.length + part3.length + i] = part4[i];
+		}
 		headVerticesNum = headVerticesData.length / D3GLES20.COORDS_PER_VERTEX;
 		return headVerticesData;
 	}
 
+	private float[] calcMoveHeadVerticesData(int step) {
+		float[] part4Modif = D3Maths.quadBezierCurveVertices(
+				headPart4StartEatingMotion[step], headPart4BEatingMotion[step], headPart4C, headPart1Start, detailsStep, headSize);
+		float[] headVerticesData = Arrays.copyOf(this.headVerticesData, this.headVerticesData.length);
+		
+		for (int i = 0; i < part4Modif.length; ++i) {
+			headVerticesData[D3GLES20.COORDS_PER_VERTEX * ((int)(3/detailsStep) + 3) + i] = part4Modif[i];
+		}
+		
+		return headVerticesData;
+	}
+	
 	float bodyStartAnglePredicted, bodyBAnglePredicted, bodyCAnglePredicted, bodyEndAnglePredicted;
     float mPredictedPosX, mPredictedPosY;
 
@@ -289,6 +356,19 @@ public class D3Prey extends D3Shape {
         Matrix.rotateM(mFeetModelMatrix, 0, mRightFootAngle, 0, 0, 1);
         super.drawBuffer(rightFinVertexBuffer, mFeetModelMatrix);
         
+        if (eatingStep != -1) {
+        	headVertexBuffer = Utilities.newFloatBuffer(calcMoveHeadVerticesData(eatingStep));
+        	if (eatingMotionStepCounter >= eatingMotionStepTicks) {
+        		eatingStep++;
+        		eatingMotionStepCounter = 0;
+        	}
+        	else eatingMotionStepCounter++;
+        	if (eatingStep >= eatingMotionSteps) {
+        		eatingStep = -1;
+        		headVertexBuffer = Utilities.newFloatBuffer(headVerticesData);
+        	}
+        }
+        
         Matrix.rotateM(mHeadModelMatrix, 0, mModelMatrix, 0, bodyStartAnglePredicted, 0, 0, 1);
         Matrix.translateM(mHeadModelMatrix , 0, 
         		headPosition[0], headPosition[1], 0);
@@ -345,12 +425,20 @@ public class D3Prey extends D3Shape {
 		throw(new UnsupportedOperationException());
 	}
 
-	public void reset() {
+	public void resetColor() {
 		super.setColor(preyColor);
 	}
 
 	public float[] getHeadModelMatrix() {
 		return mHeadModelMatrix;
+	}
+
+	public void setHiddenColor() {
+		super.setColor(preyColorHidden);
+	}
+	
+	public void initEatingMotion() {
+		eatingStep = 0;
 	}
 
 }

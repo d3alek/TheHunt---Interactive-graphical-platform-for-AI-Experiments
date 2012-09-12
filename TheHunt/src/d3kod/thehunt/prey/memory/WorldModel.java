@@ -294,4 +294,7 @@ public class WorldModel {
 	public MoodLevel getMoodLevel() {
 		return mMoodLevel;
 	}
+	public void refillEnergy() {
+		mEnergy = MAX_ENERGY;
+	}
 }

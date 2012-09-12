@@ -3,6 +3,7 @@ package d3kod.thehunt.prey.planner.plans;
 import android.util.Log;
 import d3kod.thehunt.events.Event;
 import d3kod.thehunt.prey.Action;
+import d3kod.thehunt.prey.Prey;
 import d3kod.thehunt.prey.memory.StressLevel;
 import d3kod.thehunt.prey.memory.WorldModel;
 
@@ -10,7 +11,7 @@ public class GoToAndEatPlan extends GoToPlan {
 
 	private static final String TAG = "GoToAndEatPlan";
 	private boolean ate;
-
+	
 	public GoToAndEatPlan(float hX, float hY, float bX, float bY, Event target) {
 		super(hX, hY, bX, bY, target);
 		ate = false;
@@ -33,4 +34,8 @@ public class GoToAndEatPlan extends GoToPlan {
 		}
 	}
 	
+	@Override
+	protected boolean closeEnough(float headFromTarget) {
+		return headFromTarget < Prey.EAT_FOOD_RADIUS;
+	}
 }

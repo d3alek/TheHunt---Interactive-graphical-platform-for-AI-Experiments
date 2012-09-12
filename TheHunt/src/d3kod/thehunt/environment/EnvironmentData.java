@@ -9,6 +9,7 @@ import d3kod.d3gles20.D3GLES20;
 import d3kod.d3gles20.D3Maths;
 import d3kod.thehunt.environment.FloatingObject.Type;
 import d3kod.thehunt.events.EventNoise;
+import d3kod.thehunt.prey.Prey;
 
 public class EnvironmentData {
 	public static final String TAG = "EnvironmentData";
@@ -144,7 +145,7 @@ public class EnvironmentData {
 		for (FloatingObject fo: mFloatingObjects) {
 			if (fo.getType() != Type.FOOD_ALGAE && fo.getType() != Type.FOOD_GM) continue;
 			float foX = fo.getX(), foY = fo.getY();
-			if (D3Maths.rectContains(x, y, 0.2f, 0.2f, foX, foY)) {
+			if (D3Maths.circleContains(x, y, Prey.EAT_FOOD_RADIUS, foX, foY)) {
 				fo.clearGraphic();
 				mFloatingObjects.remove(fo);
 				return fo;

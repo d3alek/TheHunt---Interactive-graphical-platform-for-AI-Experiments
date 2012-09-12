@@ -20,12 +20,16 @@ public class GoToPlan extends MoveTowardsPlan {
 		float hX = mWorldModel.getHeadX(), hY = mWorldModel.getHeadY();
 		float headFromTarget = D3Maths.distance(hX, hY, getTX(), getTY());
 		
-		if (headFromTarget <= DISTANCE_ENOUGH) {
+		if (closeEnough(headFromTarget)) {
 			arrived = true;
 //			if (isEmpty()) addNextAction(Action.none);
 			return;
 		}
 		super.update(mWorldModel);
+	}
+
+	protected boolean closeEnough(float headFromTarget) {
+		return headFromTarget <= DISTANCE_ENOUGH;
 	}
 	
 }
