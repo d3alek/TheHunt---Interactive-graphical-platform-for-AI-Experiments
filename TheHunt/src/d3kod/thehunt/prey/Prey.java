@@ -24,7 +24,7 @@ import d3kod.thehunt.prey.sensor.Sensor;
 public class Prey {
 	
 	private static final String TAG = "Prey";
-	public static final float EAT_FOOD_RADIUS = 0.05f;
+	public static final float EAT_FOOD_RADIUS = 0.1f;
 	
 	private Planner mPlanner;
 	private WorldModel mWorldModel;

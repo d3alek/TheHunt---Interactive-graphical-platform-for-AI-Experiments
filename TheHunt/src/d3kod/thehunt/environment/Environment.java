@@ -25,7 +25,7 @@ public class Environment {
 	private ArrayList<EventNoise> mNoiseEvents;
 	private Random mRandom;
 	
-	private static final float ALGAE_DROP_FOOD_CHANCE = 0.01f;
+	private static final float ALGAE_DROP_FOOD_CHANCE = 0.02f;
 	
 	public Environment(int width, int height) {
 		data = new EnvironmentData(width, height);

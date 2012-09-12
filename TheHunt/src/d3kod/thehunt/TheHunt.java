@@ -31,7 +31,7 @@ public class TheHunt extends Activity {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
-        setContentView(R.layout.clean_main);
+        setContentView(R.layout.clean_release);
         mMSperFrame = (TextView)findViewById(R.id.msPerFrame);
         mCaughtCounter = (TextView)findViewById(R.id.caughtCounter);
         mEnergyCounter = (TextView)findViewById(R.id.preyEnergy);
@@ -50,7 +50,7 @@ public class TheHunt extends Activity {
     protected void onResume() {
     	Log.v(TAG, "Resuming activity");
     	
-    	((ToggleButton)findViewById(R.id.aiToggle)).setChecked(PreyData.AI);
+    	if (findViewById(R.id.aiToggle) != null) ((ToggleButton)findViewById(R.id.aiToggle)).setChecked(PreyData.AI);
     	if (mBodyBendDelay != null) mBodyBendDelay.setText(PreyData.BODY_BENDS_PER_SECOND+"");
     	if (mActionDelay != null) mActionDelay.setText(PreyData.ACTIONS_PER_SECOND+"");
 //    	if (mPosInterpolation != null) mPosInterpolation.setChecked(Prey.posInterpolation);//mPosInterpolation = (ToggleButton)findViewById(R.id.posInterpolationToggle);

@@ -9,7 +9,7 @@ import d3kod.d3gles20.D3Maths;
 
 public class FoodAlgae extends FloatingObject {
 
-	private static final int FOOD_ALGAE_NUTRITION = 10;
+	private static final int FOOD_ALGAE_NUTRITION = 20;
 	private static final float MAX_VELOCITY = 0.005f;
 	private D3FoodAlgae mGraphic;
 	

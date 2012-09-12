@@ -70,10 +70,10 @@ public class D3Prey extends D3Shape {
 	protected final float[] headPart4C = { 0.0f, 0.0f, 0.0f };
 	
 
-	protected final int eatingMotionLengthSeconds = 1;
+	protected final float eatingMotionLengthSeconds = 0.5f;
 	protected final int eatingMotionSteps = 8;
 	protected int eatingStep;
-	protected final int eatingMotionStepTicks = eatingMotionLengthSeconds*TheHuntRenderer.TICKS_PER_SECOND/eatingMotionSteps;
+	protected final int eatingMotionStepTicks = (int)(eatingMotionLengthSeconds*TheHuntRenderer.TICKS_PER_SECOND/eatingMotionSteps);
 	protected int eatingMotionStepCounter;
 	
 	protected final float[][] headPart4StartEatingMotion = 

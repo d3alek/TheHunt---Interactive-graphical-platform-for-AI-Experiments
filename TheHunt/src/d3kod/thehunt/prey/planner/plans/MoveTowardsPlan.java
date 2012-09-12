@@ -10,6 +10,7 @@ import d3kod.thehunt.prey.memory.WorldModel;
 public class MoveTowardsPlan extends Plan {
 	private static final String TAG = "GoToPlan";
 	private static final float TOLERANCE = 0.005f;
+	private static final float GOING_TOWARDS_TARGET_ANGLE_MAX = TurnAngle.LEFT_SMALL.getValue()/2;
 //	private float tX;
 //	private float tY;
 	private Event mTarget;
@@ -35,7 +36,7 @@ public class MoveTowardsPlan extends Plan {
 //		Log.v(TAG, "angleToTarget is " + angleToTarget + " bht is " + bht);
 		if (bht > 0) {
 			//Target is to the left
-			if (angleToTarget < TurnAngle.LEFT_SMALL.getValue()/2) {
+			if (angleToTarget < GOING_TOWARDS_TARGET_ANGLE_MAX) {
 				addNextAction(Action.FORWARD_LARGE);
 			}
 			else if (angleToTarget < TurnAngle.LEFT_SMALL.getValue()) {
@@ -56,7 +57,7 @@ public class MoveTowardsPlan extends Plan {
 		else {
 			//Target is to the right
 //			}
-			if (angleToTarget < TurnAngle.LEFT_SMALL.getValue()/2) {
+			if (angleToTarget < GOING_TOWARDS_TARGET_ANGLE_MAX) {
 				addNextAction(Action.FORWARD_LARGE);
 			}
 			else if (angleToTarget < TurnAngle.LEFT_SMALL.getValue()) {

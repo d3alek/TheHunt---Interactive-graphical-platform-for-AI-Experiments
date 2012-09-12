@@ -21,7 +21,7 @@ public class EnvironmentData {
 	public static final int tileRows = 12;
 	public static final int tileCols = 20; 
 
-	public static final float currentStep = 0.002f;
+	public static final float currentSpeed = 0.0005f;
 
 	public static final int ALGAE_NUM = 5;
 	

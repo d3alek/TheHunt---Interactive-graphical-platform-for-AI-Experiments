@@ -165,7 +165,8 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 			smoothingCount = 0;
 			((TheHunt) mContext).runOnUiThread(new Runnable() {
 				public void run() {
-					((TheHunt) mContext).mPreyState.setText(mPrey.getStateString());
+					if (((TheHunt) mContext).mPreyState != null) 
+						((TheHunt) mContext).mPreyState.setText(mPrey.getStateString());
 					((TheHunt) mContext).mMSperFrame.setText(smoothMspf + "");
 					((TheHunt) mContext).mEnergyCounter.setText(mPrey.getEnergy()+"");
 
@@ -189,8 +190,8 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 		PointF preyPos = mPrey.getPosition();
 		
 		PointF curDirDelta = mEnv.data.getTileFromPos(preyPos).getDir().getDelta();
-		mPrey.update(curDirDelta.x * EnvironmentData.currentStep, 
-				curDirDelta.y * EnvironmentData.currentStep);
+		mPrey.update(curDirDelta.x * EnvironmentData.currentSpeed, 
+				curDirDelta.y * EnvironmentData.currentSpeed);
 
 		preyPos = mPrey.getPosition();
 //		if (SHOW_CIRCLE_CONTAINS_CHECKS && !mPrey.getCaught() && mNet.isBuilt()) {
