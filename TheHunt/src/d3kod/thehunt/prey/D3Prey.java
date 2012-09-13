@@ -206,6 +206,7 @@ public class D3Prey extends D3Shape {
 		mD = data;
 		Matrix.setIdentityM(mModelMatrix, 0);
 		
+		mMouthOpen = true;
 		headVerticesData = calcHeadVerticesData();
 		leftFinVerticesData = calcLeftFinVerticesData();
 		rightFinVerticesData = calcRightFinVerticesData();
@@ -295,6 +296,8 @@ public class D3Prey extends D3Shape {
 
 	private float[] rib1Pos = new float[3];
 	private float[] rib2Pos = new float[3];
+
+	private boolean mMouthOpen;
     
 	@Override
 	public void draw(float[] mVMatrix, float[] mProjMatrix, float interpolation) {
@@ -441,4 +444,20 @@ public class D3Prey extends D3Shape {
 		eatingStep = 0;
 	}
 
+	public void openMouth() {
+		if (!mMouthOpen) {
+			mMouthOpen = true;
+			headVerticesData = calcMoveHeadVerticesData(0);
+			headVertexBuffer = Utilities.newFloatBuffer(headVerticesData);
+		}
+	}
+	
+	public void closeMouth() {
+		if (mMouthOpen) {
+			mMouthOpen = false;
+			if (eatingStep == -1) initEatingMotion();
+			headVerticesData = calcMoveHeadVerticesData(eatingMotionSteps-1);
+//			headVertexBuffer = Utilities.newFloatBuffer(headVerticesData);
+		}
+	}
 }

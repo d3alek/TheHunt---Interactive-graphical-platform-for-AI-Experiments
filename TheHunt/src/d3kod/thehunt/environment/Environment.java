@@ -25,7 +25,7 @@ public class Environment {
 	private ArrayList<EventNoise> mNoiseEvents;
 	private Random mRandom;
 	
-	private static final float ALGAE_DROP_FOOD_CHANCE = 0.02f;
+	private static final float ALGAE_DROP_FOOD_CHANCE = 0.015f;
 	
 	public Environment(int width, int height) {
 		data = new EnvironmentData(width, height);
@@ -123,7 +123,6 @@ public class Environment {
 		for (FloatingObject fo: data.getFloatingObjects()) {
 			if (fo.getType() == Type.ALGAE &&
 					D3Maths.circlesIntersect(centerX, centerY, radius, fo.getX(), fo.getY(), fo.getRadius())) {
-				Log.v(TAG, "Net intersects with algae " + fo.getKey());
 				return true;
 			}
 		}

@@ -18,6 +18,7 @@ import d3kod.thehunt.floating_text.PanicText;
 import d3kod.thehunt.floating_text.PlokText;
 import d3kod.thehunt.prey.memory.StressLevel;
 import d3kod.thehunt.prey.memory.WorldModel;
+import d3kod.thehunt.prey.planner.PlanState;
 import d3kod.thehunt.prey.planner.Planner;
 import d3kod.thehunt.prey.sensor.Sensor;
 
@@ -64,6 +65,13 @@ public class Prey {
 		}
 		else {
 			mGraphic.resetColor();
+		}
+		
+		if (mPlanner.getState() == PlanState.FORAGE) {
+			mGraphic.openMouth();
+		}
+		else {
+			mGraphic.closeMouth();
 		}
 	}
 	

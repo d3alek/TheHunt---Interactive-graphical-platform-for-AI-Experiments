@@ -55,7 +55,7 @@ public class CatchNet {
 		else if (mPathGraphic.isFinished() && !mPathGraphic.isInvalid() && mNetGraphic == null) {
 			if (mEnv.netIntersectsWithAlgae(mPathGraphic.getCenterX(), mPathGraphic.getCenterY(), mPathGraphic.getRadius())) {
 				mPathGraphic.setInvalid();
-				Log.v(TAG, "Net is invalid because it intersects with algae");
+				//TODO: block text
 //				mD3GLES20.putExpiringShape(new BlockedText(mNetGraphic.getCenterX(), mNetGraphic.getCenterY(), tm, mD3GLES20.getShaderManager()));
 			}
 			else {
