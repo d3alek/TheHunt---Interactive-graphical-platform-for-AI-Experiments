@@ -75,4 +75,8 @@ public class FloatingObject {
 		vX = vx; vY = vy;
 		mD3GLES20.setShapeVelocity(mKey, vx, vy);
 	}
+
+	public float getRadius() {
+		return mD3GLES20.getShape(mKey).getRadius();
+	}
 }

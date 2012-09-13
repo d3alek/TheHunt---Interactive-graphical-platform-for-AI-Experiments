@@ -175,4 +175,12 @@ public class D3GLES20 {
 		}
 		shapes.get(key).setVelocity(vx, vy);
 	}
+
+	public D3Shape getShape(int key) {
+		if (shapes == null) {
+			Log.w(TAG, "Shapes are null in getShape!");
+			return null;
+		}
+		return shapes.get(key);
+	}
 }

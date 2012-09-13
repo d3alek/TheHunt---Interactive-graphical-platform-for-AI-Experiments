@@ -32,7 +32,8 @@ public class MultisampleConfigChooser implements GLSurfaceView.EGLConfigChooser 
 
         if (!egl.eglChooseConfig(display, configSpec, null, 0,
                 mValue)) {
-            throw new IllegalArgumentException("eglChooseConfig failed");
+//            throw new IllegalArgumentException("eglChooseConfig failed");
+        	Log.e(TAG, "eglChooseConfig failed");
         }
         int numConfigs = mValue[0];
 
@@ -57,7 +58,8 @@ public class MultisampleConfigChooser implements GLSurfaceView.EGLConfigChooser 
 
             if (!egl.eglChooseConfig(display, configSpec, null, 0,
                     mValue)) {
-                throw new IllegalArgumentException("2nd eglChooseConfig failed");
+//                throw new IllegalArgumentException("2nd eglChooseConfig failed");
+            	Log.e(TAG, "2nd eglChooseConfig failed");
             }
             numConfigs = mValue[0];
 
@@ -74,7 +76,8 @@ public class MultisampleConfigChooser implements GLSurfaceView.EGLConfigChooser 
 
                 if (!egl.eglChooseConfig(display, configSpec, null, 0,
                         mValue)) {
-                    throw new IllegalArgumentException("3rd eglChooseConfig failed");
+//                    throw new IllegalArgumentException("3rd eglChooseConfig failed");
+                    Log.e(TAG, "3rd eglChooseConfig failed");
                 }
                 numConfigs = mValue[0];
 

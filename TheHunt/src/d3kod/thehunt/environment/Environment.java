@@ -118,4 +118,16 @@ public class Environment {
 		mNoiseEvents.add(new EventNoise(x, y, loudness));
 	}
 
+	public boolean netIntersectsWithAlgae(float centerX, float centerY,
+			float radius) {
+		for (FloatingObject fo: data.getFloatingObjects()) {
+			if (fo.getType() == Type.ALGAE &&
+					D3Maths.circlesIntersect(centerX, centerY, radius, fo.getX(), fo.getY(), fo.getRadius())) {
+				Log.v(TAG, "Net intersects with algae " + fo.getKey());
+				return true;
+			}
+		}
+		return false;
+	}
+
 }

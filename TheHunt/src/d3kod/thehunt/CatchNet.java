@@ -2,6 +2,7 @@ package d3kod.thehunt;
 
 import android.util.Log;
 import d3kod.d3gles20.D3GLES20;
+import d3kod.d3gles20.D3Maths;
 import d3kod.d3gles20.TextureManager;
 import d3kod.d3gles20.programs.Program;
 import d3kod.thehunt.environment.Environment;
@@ -51,12 +52,19 @@ public class CatchNet {
 			mPathGraphic = null;
 			mD3GLES20.removeShape(mPathGraphicIndex);
 		}
-		else if (mPathGraphic.isFinished() && mNetGraphic == null) {
-			mNetGraphic = new D3CatchNet(
-					mPathGraphic.getCenterX(), mPathGraphic.getCenterY(),mPathGraphic.getRadius(), mProgram);
-			mNetGraphicIndex = mD3GLES20.putShape(mNetGraphic);
-			mD3GLES20.putExpiringShape(new PlokText(mPathGraphic.getCenterX(), mPathGraphic.getCenterY(), tm, mD3GLES20.getShaderManager()));
-			mEnv.putNoise(mPathGraphic.getCenterX(), mPathGraphic.getCenterY(), Environment.LOUDNESS_PLOK);
+		else if (mPathGraphic.isFinished() && !mPathGraphic.isInvalid() && mNetGraphic == null) {
+			if (mEnv.netIntersectsWithAlgae(mPathGraphic.getCenterX(), mPathGraphic.getCenterY(), mPathGraphic.getRadius())) {
+				mPathGraphic.setInvalid();
+				Log.v(TAG, "Net is invalid because it intersects with algae");
+//				mD3GLES20.putExpiringShape(new BlockedText(mNetGraphic.getCenterX(), mNetGraphic.getCenterY(), tm, mD3GLES20.getShaderManager()));
+			}
+			else {
+				mNetGraphic = new D3CatchNet(
+						mPathGraphic.getCenterX(), mPathGraphic.getCenterY(), mPathGraphic.getRadius(), mProgram);
+				mNetGraphicIndex = mD3GLES20.putShape(mNetGraphic);
+				mD3GLES20.putExpiringShape(new PlokText(mPathGraphic.getCenterX(), mPathGraphic.getCenterY(), tm, mD3GLES20.getShaderManager()));
+				mEnv.putNoise(mPathGraphic.getCenterX(), mPathGraphic.getCenterY(), Environment.LOUDNESS_PLOK);				
+			}
 		}
 		if (mNetGraphic == null) return;
 		if (mNetGraphic.getScale() < 1) {
@@ -145,10 +153,6 @@ public class CatchNet {
 	public int getGraphicIndex() {
 		return mNetGraphicIndex;
 	}
-
-//	public boolean isBuilt() {
-//		return mPathGraphic != null && mPathGraphic.isFinished();
-//	}
 
 	public void caughtPrey(Prey mPrey) {
 		mCaughtPrey = mPrey;

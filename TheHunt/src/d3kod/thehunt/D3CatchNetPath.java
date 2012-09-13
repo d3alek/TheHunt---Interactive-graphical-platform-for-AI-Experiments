@@ -155,13 +155,13 @@ public class D3CatchNetPath extends D3Path {
 	
 	@Override
 	public void draw(float[] mVMatrix, float[] mProjMatrix) {
-		if (mIsClosed) {
-//			if (getRadius() <= MIN_RADIUS) {
-//				fade(FADE_SPEED);
-//			}
-//			else shrink();
-		}
-		else if (mIsInvalid) {
+//		if (mIsClosed) {
+////			if (getRadius() <= MIN_RADIUS) {
+////				fade(FADE_SPEED);
+////			}
+////			else shrink();
+//		}
+		if (mIsInvalid) {
 			fade(FADE_SPEED);
 		}
 		
