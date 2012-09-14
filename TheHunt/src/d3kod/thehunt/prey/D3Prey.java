@@ -460,4 +460,11 @@ public class D3Prey extends D3Shape {
 //			headVertexBuffer = Utilities.newFloatBuffer(headVerticesData);
 		}
 	}
+
+	public float getPredictedX() {
+		return mPredictedPosX;
+	}
+	public float getPredictedY() {
+		return mPredictedPosY;
+	}
 }

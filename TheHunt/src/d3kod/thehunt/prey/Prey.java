@@ -413,4 +413,8 @@ public class Prey {
 	public String getStateString() {
 		return mPlanner.getState().toString();
 	}
+
+	public PointF getPredictedPosition() {
+		return new PointF(mGraphic.getPredictedX(), mGraphic.getPredictedY());
+	}
 }

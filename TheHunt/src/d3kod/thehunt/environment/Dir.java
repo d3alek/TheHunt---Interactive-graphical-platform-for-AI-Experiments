@@ -3,11 +3,13 @@ package d3kod.thehunt.environment;
 import android.graphics.PointF;
 
 public enum Dir {
-	E(0), S(2), W(4), N(6), NE(7), SE(1), SW(3), NW(5), UNDEFINED(8);
+	E(0, -90), S(2, 180), W(4, 90), N(6, 0), NE(7, -45), SE(1, -135), SW(3, 135), NW(5, 45), UNDEFINED(8, 0);
 	public static final int numDirs = 9;
 	private int index;
-	private Dir(int setIndex) {
+	private int mAngle;
+	private Dir(int setIndex, int angle) {
 		index = setIndex;
+		mAngle = angle;
 	}
 	public int getIndex() {
 		return index;
@@ -37,5 +39,8 @@ public enum Dir {
 		case 7: return new PointF(1, 1);
 		default: return new PointF(0, 0);
 		}
+	}
+	public float getAngle() {
+		return mAngle;
 	}
 }

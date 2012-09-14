@@ -119,7 +119,7 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 		mScreenToWorldRatioWidth = mScreenWidthPx/(float)worldWidthPx;
 		mScreenToWorldRatioHeight = mScreenHeightPx/(float)worldHeightPx;
 		mCamera = new Camera(mScreenToWorldRatioWidth, 
-				mScreenToWorldRatioHeight, worldWidthPx/(float)worldHeightPx);
+				mScreenToWorldRatioHeight, worldWidthPx/(float)worldHeightPx, mD3GLES20);
 		
 	    Log.v(TAG, "mScreenWidth " + mScreenWidthPx + " mScreenHeight " + mScreenHeightPx);
 	    
@@ -194,16 +194,14 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 				curDirDelta.y * EnvironmentData.currentSpeed);
 
 		preyPos = mPrey.getPosition();
-//		if (SHOW_CIRCLE_CONTAINS_CHECKS && !mPrey.getCaught() && mNet.isBuilt()) {
-//			tempCircle = mD3GLES20.newContainsCheckCircle(mNet.getGraphicIndex(), preyPos.x, preyPos.y);
-//		}
+		
 		if (mPrey.getCaught()) {
 			releaseCountdown--;
 			if (releaseCountdown <= 0) {
 				mPrey.release();
 			}
 		}
-//		if (!mPrey.getCaught() && mNet.isBuilt() && D3GLES20.contains(mNet.getGraphicIndex(), preyPos.x, preyPos.y)) {
+		
 		if (!mPrey.getCaught() && mNet.tryToCatch() && mD3GLES20.contains(mNet.getGraphicIndex(), preyPos.x, preyPos.y)) {
 			PointF preyHeadPos = mPrey.getHeadPositon();
 			if (!mD3GLES20.contains(mNet.getGraphicIndex(), preyHeadPos.x, preyHeadPos.y)) {
@@ -223,6 +221,14 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 				releaseCountdown = RELEASE_TICKS;
 			}
 		}
+		
+		if (!mCamera.contains(preyPos)) {
+//			Log.v(TAG, "Camera does not contain preyPos!");
+			mCamera.showPreyPointer();
+		}
+		else {
+			mCamera.hidePreyPointer();
+		}
 	}
 
 	private void drawWorld(float interpolation) {
@@ -238,16 +244,10 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 		GLES20.glClear(clearMask);
 		
 		mVMatrix = mCamera.toViewMatrix();
-				
-		mD3GLES20.drawAll(mVMatrix, mProjMatrix, interpolation);
-//		mPrey.draw(mVMatrix, mProjMatrix, interpolation);
 		
-		if (SHOW_CIRCLE_CONTAINS_CHECKS) {
-			if (tempCircle != null) {
-				if (tempCircle.isExpired()) tempCircle = null;
-				else tempCircle.draw(mVMatrix, mProjMatrix);
-			}
-		}
+		mCamera.setPreyPointerPosition(mPrey.getPredictedPosition());
+		
+		mD3GLES20.drawAll(mVMatrix, mProjMatrix, interpolation);
 //		Log.v(TAG, "End drawing");
 	}
 

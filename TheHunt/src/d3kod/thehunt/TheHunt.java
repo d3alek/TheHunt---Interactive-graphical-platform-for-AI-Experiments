@@ -1,5 +1,7 @@
 package d3kod.thehunt;
 
+import org.acra.ErrorReporter;
+
 import android.app.Activity;
 import android.os.Bundle;
 import android.util.Log;
@@ -37,6 +39,8 @@ public class TheHunt extends Activity {
         mEnergyCounter = (TextView)findViewById(R.id.preyEnergy);
         mGLView = (MyGLSurfaceView)findViewById(R.id.glSurfaceView);
         mPreyState = (TextView)findViewById(R.id.preyState);
+        
+//        ErrorReporter.getInstance().handleException(null);
     }
     
     @Override
@@ -95,7 +99,7 @@ public class TheHunt extends Activity {
     	case R.id.flopBack:
     		mGLView.post(new Runnable() {
 				public void run() {
-					mGLView.mRenderer.mPrey.backFinMotion(TurnAngle.BACK_SMALL);
+					mGLView.mRenderer.mPrey.backFinMotion(TurnAngle.BACK_LARGE);
 				}
 			});
     		break;
