@@ -26,6 +26,7 @@ public class Environment {
 	private Random mRandom;
 	
 	private static final float ALGAE_DROP_FOOD_CHANCE = 0.015f;
+	private static final float NET_INTERSECT_RAD_ADJ = 0.2f;
 	
 	public Environment(int width, int height) {
 		data = new EnvironmentData(width, height);
@@ -122,7 +123,7 @@ public class Environment {
 			float radius) {
 		for (FloatingObject fo: data.getFloatingObjects()) {
 			if (fo.getType() == Type.ALGAE &&
-					D3Maths.circlesIntersect(centerX, centerY, radius, fo.getX(), fo.getY(), fo.getRadius())) {
+					D3Maths.circlesIntersect(centerX, centerY, radius - NET_INTERSECT_RAD_ADJ, fo.getX(), fo.getY(), fo.getRadius())) {
 				return true;
 			}
 		}
