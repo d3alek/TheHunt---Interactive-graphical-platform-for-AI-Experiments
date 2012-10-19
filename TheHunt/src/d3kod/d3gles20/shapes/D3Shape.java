@@ -32,6 +32,7 @@ abstract public class D3Shape {
 	private float[] mCenterDefault;
 	private float mVelocityY;
 	private float mVelocityX;
+	private float mScale;
 	
 	private static final float MIN_ALPHA = 0.1f;
 	
@@ -48,7 +49,7 @@ abstract public class D3Shape {
 		mCenter = new float[4];
 		mVelocityX = mVelocityY = 0;
 		Matrix.setIdentityM(getMMatrix(), 0);
-        
+		mScale = 1;
 		mProgram = program;
 		mMVPMatrixHandle = GLES20.glGetUniformLocation(mProgram.getHandle(), "u_MVPMatrix"); 
 	    mPositionHandle = AttribVariable.A_Position.getHandle();
@@ -142,6 +143,7 @@ abstract public class D3Shape {
 	public void setPosition(float x, float y) {
 		Matrix.setIdentityM(mMMatrix, 0);
 		Matrix.translateM(mMMatrix, 0, x, y, 0);
+		Matrix.scaleM(mMMatrix, 0, mScale, mScale, 0);
 		Matrix.multiplyMV(mCenter, 0, mMMatrix, 0, mCenterDefault, 0);
 	}
 	public void setPosition(float x, float y, float angleDeg) {
@@ -192,5 +194,24 @@ abstract public class D3Shape {
 
 	public void setVelocity(float vx, float vy) {
 		mVelocityX = vx; mVelocityY = vy;
+	}
+	
+	public void setScale(float scale) {
+		mScale = scale;
+		Matrix.scaleM(mMMatrix, 0, mScale, mScale, 0);
+	}
+	
+	public float getScale() {
+		return mScale;
+	}
+	
+	public void grow(float growSpeed) {
+		mScale = mScale*(1+growSpeed);
+		Matrix.scaleM(mMMatrix, 0, (1+growSpeed), (1+growSpeed), 0);
+	}
+	
+	public void shrink(float shrinkSpeed) {
+		mScale = mScale*(1-shrinkSpeed);
+		Matrix.scaleM(mMMatrix, 0, (1-shrinkSpeed), (1-shrinkSpeed), 0);
 	}
 }

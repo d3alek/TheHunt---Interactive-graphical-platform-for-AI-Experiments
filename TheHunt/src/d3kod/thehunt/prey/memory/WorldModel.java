@@ -61,7 +61,7 @@ public class WorldModel {
 	public WorldModel(float screenWidth, float screenHeight) {
 //		mNodes = new MemoryGraph(screenWidth, screenHeight);
 //		mNearestFoodX = mNearestFoodY = -1;
-		mNearestFood = new EventFood(0, 0, 0);
+		mNearestFood = new EventFood(0, 0, 0); //TODO: I don't like this. Better make it null
 		mNearestAlgae = null;
 		mStressLevel = StressLevel.CALM;
 		mHiddenFor = 0;
@@ -76,7 +76,13 @@ public class WorldModel {
 		for (Event e: sensorEvents) {
 			processEvent(e);
 		}
-		mNearestAlgae = recallNearestAlgae();
+		if (knowAlgaeLocation()) {
+			mNearestAlgae.set(recallNearestAlgae());
+		}
+		else {
+			mNearestAlgae = recallNearestAlgae();
+		}
+		
 		if (energyDepleteCounter >= ENERGY_DEPLETE_TICKS) {
 			energyDepleteCounter = 0;
 			mEnergy -= ENERGY_DEPLETE_SPEED;
@@ -107,8 +113,12 @@ public class WorldModel {
 	private void processEvent(Event e) {
 		if (mEventMemory.contains(e)) {
 			//TODO: fix dirty, works only with moving food for now
-			if (mNearestFood != null && mNearestFood.equals(e)) {
+			//TODO: doing it to work with algae as well now
+			if (knowFoodLocation() && mNearestFood.equals(e)) {
 				mNearestFood.set((EventFood) e);
+			}
+			else if (mNearestAlgae != null && mNearestAlgae.equals(e)) {
+				mNearestAlgae.set((EventAlgae) e);
 			}
 			mEventMemory.remove(e);
 			mEventMemory.add(e);
@@ -288,9 +298,7 @@ public class WorldModel {
 	public int getEnergy() {
 		return mEnergy;
 	}
-//	public boolean isPanicked() {
-//		return mPanic;
-//	}
+	
 	public MoodLevel getMoodLevel() {
 		return mMoodLevel;
 	}

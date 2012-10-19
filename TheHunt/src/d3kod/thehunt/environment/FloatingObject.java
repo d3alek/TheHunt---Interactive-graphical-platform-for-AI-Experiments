@@ -21,25 +21,28 @@ public class FloatingObject {
 
 	private float vX;
 	private float vY;
+
+	private boolean mRemove;
 	
 	
 	public FloatingObject(float x, float y, Type type, D3GLES20 d3GLES20) {
 		mD3GLES20 =  d3GLES20;
 		mType = type;
 		mX = x; mY = y;
+		mRemove = false;
 	}
 	
 	public void setGraphic(int key) {
-		Log.v(TAG, "Floating object type " + getType() + " with key" + key);
+		Log.v(TAG, "Floating object type " + getType() + " with key " + key + " at " + mX + " " + mY);
 		mGraphicSet = true;
 		mKey = key;
 		mD3GLES20.setShapePosition(key, mX, mY);
 	}
 
 	public void update() {
-		applyFriction();
+//		applyFriction();
 		mX += vX; mY += vY;
-		mD3GLES20.setShapePosition(mKey, mX, mY);
+//		mD3GLES20.setShapePosition(mKey, mX, mY);
 	}
 	
 	public void applyFriction() {
@@ -64,9 +67,18 @@ public class FloatingObject {
 
 	public void clearGraphic() {
 		if (!mGraphicSet) Log.v(TAG, "Graphic not set, can't clear!");
-		mD3GLES20.removeShape(mKey);		
+		mD3GLES20.removeShape(mKey);
+		mRemove = true;
 	}
 
+	public boolean toRemove() {
+		return mRemove;
+	}
+	
+	public void setToRemove() {
+		mRemove = true;
+	}
+	
 	public int nutrition() {
 		return 0;
 	}
@@ -78,5 +90,13 @@ public class FloatingObject {
 
 	public float getRadius() {
 		return mD3GLES20.getShape(mKey).getRadius();
+	}
+	
+	public float getVX() {
+		return vX;
+	}
+	
+	public float getVY() {
+		return vY;
 	}
 }

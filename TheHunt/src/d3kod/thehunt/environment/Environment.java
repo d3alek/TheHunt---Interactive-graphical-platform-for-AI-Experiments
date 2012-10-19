@@ -25,7 +25,7 @@ public class Environment {
 	private ArrayList<EventNoise> mNoiseEvents;
 	private Random mRandom;
 	
-	private static final float ALGAE_DROP_FOOD_CHANCE = 0.015f;
+//	private static final float ALGAE_DROP_FOOD_CHANCE = 0.015f;
 	private static final float NET_INTERSECT_RAD_ADJ = 0.2f;
 	
 	public Environment(int width, int height) {
@@ -36,17 +36,16 @@ public class Environment {
 	
 	public void update() {
 		data.updateFloatingObjects();
-		if (mRandom.nextFloat() < ALGAE_DROP_FOOD_CHANCE) {
-			int algaeIndex = (int)Math.floor(mRandom.nextFloat()*EnvironmentData.ALGAE_NUM);
-			putFoodAlgae(EnvironmentData.AlGAE_HARDCODED_POS[algaeIndex*2], 
-					EnvironmentData.AlGAE_HARDCODED_POS[algaeIndex*2 + 1]);
-		}
+//		if (mRandom.nextFloat() < ALGAE_DROP_FOOD_CHANCE) {
+//			int algaeIndex = (int)Math.floor(mRandom.nextFloat()*EnvironmentData.ALGAE_NUM);
+//			putFoodAlgae(EnvironmentData.AlGAE_HARDCODED_POS[algaeIndex*2], 
+//					EnvironmentData.AlGAE_HARDCODED_POS[algaeIndex*2 + 1]);
+//		}
 	}
-	
 	public void initGraphics(Context context, D3GLES20 d3GLES20) {
 		mD3GLES20 = d3GLES20;
 //		mTextureDataHandle = TextureHelper.loadTexture(context, R.drawable.hatching_cross);
-		data.makeAlgae(mD3GLES20);
+		data.makeAlgae(mD3GLES20, this);
 //		Tile.initBuffers();
 		
 	}
@@ -63,6 +62,7 @@ public class Environment {
 	}
 	
 	public void putFoodAlgae(float x, float y) {
+		Log.v(TAG, "Putting food algae!");
 		data.addFloatingObject(new FoodAlgae(x, y, mD3GLES20));
 	}
 	
@@ -130,4 +130,7 @@ public class Environment {
 		return false;
 	}
 
+	public void putNewAlgae(float x, float y) {
+		data.getFloatingObjectsToAdd().add(new Algae(x, y, mD3GLES20, this));
+	}
 }

@@ -125,29 +125,29 @@ public class D3Algae extends D3Shape {
 
 	@Override
 	public float getRadius() {
-		return ALGAE_SIZE;
+		return ALGAE_SIZE * getScale();
 	}
 
-	public void wiggle() {
-		Random rand = new Random();
-		float randSpeedX, randSpeedY;
-		
-		for (int i = 0; i < controlPointsNum; ++i) {
-//			randSpeedX = WIGGLE_SPEED * (1-2*rand.nextFloat());
-//			randSpeedY = WIGGLE_SPEED * (1-2*rand.nextFloat());
-			if (wiggleData[i][0] == 0) {
-				// decide for wiggle direction
-				wiggleData[i][0] = rand.nextFloat() > 0.5 ? 1 : -1;
-			}
-			if (wiggleData[i][1] >= MAX_WIGGLES) {
-				wiggleData[i][0] = -wiggleData[i][0];
-				wiggleData[i][1] = 0;
-			}
-			controPointsData[i][0] += WIGGLE_SPEED*wiggleData[i][0];
-			controPointsData[i][1] += WIGGLE_SPEED*wiggleData[i][0];
-			wiggleData[i][1]++;
-		}
-		setVertexBuffer(makeVerticesBuffer());
-	}
+//	public void wiggle() {
+//		Random rand = new Random();
+//		float randSpeedX, randSpeedY;
+//		
+//		for (int i = 0; i < controlPointsNum; ++i) {
+////			randSpeedX = WIGGLE_SPEED * (1-2*rand.nextFloat());
+////			randSpeedY = WIGGLE_SPEED * (1-2*rand.nextFloat());
+//			if (wiggleData[i][0] == 0) {
+//				// decide for wiggle direction
+//				wiggleData[i][0] = rand.nextFloat() > 0.5 ? 1 : -1;
+//			}
+//			if (wiggleData[i][1] >= MAX_WIGGLES) {
+//				wiggleData[i][0] = -wiggleData[i][0];
+//				wiggleData[i][1] = 0;
+//			}
+//			controPointsData[i][0] += WIGGLE_SPEED*wiggleData[i][0];
+//			controPointsData[i][1] += WIGGLE_SPEED*wiggleData[i][0];
+//			wiggleData[i][1]++;
+//		}
+//		setVertexBuffer(makeVerticesBuffer());
+//	}
 
 }

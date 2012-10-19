@@ -45,6 +45,8 @@ public class EnvironmentData {
 	
 	private ArrayList<FloatingObject> mFloatingObjects;
 
+	private ArrayList<FloatingObject> mFloatingObjectsToAdd;
+
 //	private ArrayList<EventNoise> mNoiseEvents;
 	public static Tile[][] mTiles;
 //	public Currents currents;
@@ -68,6 +70,7 @@ public class EnvironmentData {
 //		currents.initialize();
 		mFoodX = -1; mFoodY = -1;
 		mFloatingObjects = new ArrayList<FloatingObject>();
+		mFloatingObjectsToAdd = new ArrayList<FloatingObject>();
 //		mNoiseEvents = new ArrayList<EventNoise>();
 	}
 	
@@ -124,7 +127,8 @@ public class EnvironmentData {
 	}
 
 	public void addFloatingObject(FloatingObject floatingObject) {
-		mFloatingObjects.add(floatingObject);
+		mFloatingObjectsToAdd.add(floatingObject);
+//		mFloatingObjects.add(floatingObject);
 	}
 	
 	public ArrayList<FloatingObject> getFloatingObjects() {
@@ -154,11 +158,11 @@ public class EnvironmentData {
 		return null;
 	}
 
-	public void makeAlgae(D3GLES20 d3GLES20) {
+	public void makeAlgae(D3GLES20 d3GLES20, Environment env) {
 		float algaeX, algaeY;
 		for (int i = 0; i < ALGAE_NUM; ++i) {
 			algaeX = AlGAE_HARDCODED_POS[i*2]; algaeY = AlGAE_HARDCODED_POS[i*2+1];
-			mFloatingObjects.add(new Algae(algaeX, algaeY, d3GLES20));
+			mFloatingObjects.add(new Algae(algaeX, algaeY, d3GLES20, env));
 //			addFloatingObject(
 //					new FloatingObject(D3GLES20.newDefaultCircle(ALGAE_SIZE, algaeColor, ALGAE_DETAILS), algaeX, algaeY, Type.ALGAE));
 		}
@@ -174,16 +178,22 @@ public class EnvironmentData {
 
 	public void updateFloatingObjects() {
 		ArrayList<FloatingObject> toRemove = new ArrayList<FloatingObject>();
+		
 		for (FloatingObject fo: mFloatingObjects) {
 			fo.update();
-			if (!environmentContains(fo)) {
+			if (fo.toRemove() || !environmentContains(fo)) {
+				Log.v(TAG, "To remove " + fo.getKey());
 				toRemove.add(fo);
 			}
 		}
+		
 		for (FloatingObject fo: toRemove) {
 			fo.clearGraphic();
 			mFloatingObjects.remove(fo);
 		}
+
+		mFloatingObjects.addAll(mFloatingObjectsToAdd);
+		mFloatingObjectsToAdd.clear();
 	}
 
 	private boolean environmentContains(FloatingObject fo) {
@@ -199,4 +209,8 @@ public class EnvironmentData {
 ////		Tile noiseTile = getTileFromPos(new PointF(x, y));
 //		mNoiseEvents.add(new EventNoise(x, y));
 //	}
+	
+	public ArrayList<FloatingObject> getFloatingObjectsToAdd() {
+		return mFloatingObjectsToAdd;
+	}
 }

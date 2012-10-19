@@ -1,25 +1,16 @@
 package d3kod.thehunt.events;
 
+import d3kod.d3gles20.D3Maths;
 
-public class EventAlgae extends Event {
-	private float algaeX;
-	private float algaeY;
 
+public class EventAlgae extends MovingEvent {
+
+	private static final float EQUALS_TOLERANCE = 0.02f; // TODO: set to Algae velocity
+	
 	public EventAlgae(float x, float y) {
-		super(EventType.ALGAE);
-		algaeX = x; algaeY = y;
+		super(x, y, EventType.ALGAE);
 	}
-	
-	@Override
-	public float getX() {
-		return algaeX;
-	}
-	
-	@Override
-	public float getY() {
-		return algaeY;
-	}
-	
+
 	@Override
 	public boolean equals(Object o) {
 		if (this == o) return true;
@@ -27,16 +18,9 @@ public class EventAlgae extends Event {
 		
 		EventAlgae that = (EventAlgae)o;
 		
-		return that.getX() == algaeX && that.getY() == algaeY;
+		return D3Maths.compareFloatsTolerance(that.getX(), mX, EQUALS_TOLERANCE) == 0 
+				&& D3Maths.compareFloatsTolerance(that.getY(), mY, EQUALS_TOLERANCE) == 0;
 	}
 	
-	@Override
-	public int hashCode() {
-		throw new UnsupportedOperationException();
-	}
-	
-	@Override
-	public String toString() {
-		return "EventAlgae " + algaeX + " " + algaeY;
-	}
+
 }

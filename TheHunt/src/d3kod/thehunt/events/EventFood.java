@@ -2,36 +2,28 @@ package d3kod.thehunt.events;
 
 import d3kod.d3gles20.D3Maths;
 
-public class EventFood extends Event {
+public class EventFood extends MovingEvent {
 	private static final float EQUALS_TOLERANCE = 0.02f; // FoodAlgae velocity
-	private float foodX;
-	private float foodY;
+	
 	private int mNutri;
 
 	public EventFood(float x, float y, int nutrition) {
-		super(EventType.FOOD);
-		foodX = x; foodY = y;
+		super(x, y, EventType.FOOD);
 		mNutri = nutrition;
 	}
 	
 	public void set(EventFood to) {
-		foodX = to.getX();
-		foodY = to.getY();
+		super.set(to);
 		mNutri = to.getNutri();
-	}
-	
-	@Override
-	public float getX() {
-		return foodX;
-	}
-	
-	@Override
-	public float getY() {
-		return foodY;
 	}
 	
 	public int getNutri() {
 		return mNutri;
+	}
+	
+	@Override
+	public int hashCode() {
+		throw new UnsupportedOperationException();
 	}
 	
 	@Override
@@ -41,16 +33,9 @@ public class EventFood extends Event {
 		
 		EventFood that = (EventFood)o;
 		
-		return D3Maths.compareFloatsTolerance(that.getX(), foodX, EQUALS_TOLERANCE) == 0 
-				&& D3Maths.compareFloatsTolerance(that.getY(), foodY, EQUALS_TOLERANCE) == 0 
+		return D3Maths.compareFloatsTolerance(that.getX(), mX, EQUALS_TOLERANCE) == 0 
+				&& D3Maths.compareFloatsTolerance(that.getY(), mY, EQUALS_TOLERANCE) == 0 
 				&& that.getNutri() == mNutri;
 	}
-	@Override
-	public int hashCode() {
-		throw new UnsupportedOperationException();
-	}
-	@Override
-	public String toString() {
-		return "EventFood " + foodX + " " + foodY + " " + mNutri;
-	}
+	
 }

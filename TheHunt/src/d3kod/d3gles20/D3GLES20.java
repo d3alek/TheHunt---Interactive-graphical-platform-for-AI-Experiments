@@ -165,6 +165,10 @@ public class D3GLES20 {
 			Log.w(TAG, "Shapes are null in setShapePosition!");
 			return;
 		}
+		if (!shapes.containsKey(key)) {
+			Log.w(TAG, "Shapes does not contain key " + key);
+			return;
+		}
 		shapes.get(key).setPosition(x, y);
 	}
 	
