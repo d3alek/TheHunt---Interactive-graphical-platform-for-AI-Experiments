@@ -9,10 +9,7 @@ import d3kod.thehunt.prey.Action;
 import d3kod.thehunt.prey.memory.WorldModel;
 
 public class ExplorePlan extends Plan {
-
-//	private boolean mRotating;
-//	private int mRotStep;
-
+	// Doc: isFinished() always returns true
 	private static final String TAG = "Explore plan";
 	private Random mRandom;
 

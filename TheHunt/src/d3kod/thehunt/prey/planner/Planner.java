@@ -54,6 +54,12 @@ public class Planner {
 	}
 	
 	private PlanState checkForSomethingInteresting(WorldModel mWorldModel) {
+		if (mWorldModel.getMoodLevel() == MoodLevel.DESPAIR) {
+			if (mWorldModel.knowFoodLocation()) {
+				return PlanState.FORAGE;
+			}
+			return PlanState.EXPLORE;
+		}
 		switch (mWorldModel.getStressLevel()) {
 		case CALM: 
 			if (mWorldModel.knowFoodLocation()) {

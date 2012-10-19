@@ -4,6 +4,7 @@ import android.util.Log;
 import d3kod.thehunt.events.Event;
 import d3kod.thehunt.prey.Action;
 import d3kod.thehunt.prey.Prey;
+import d3kod.thehunt.prey.memory.MoodLevel;
 import d3kod.thehunt.prey.memory.StressLevel;
 import d3kod.thehunt.prey.memory.WorldModel;
 
@@ -20,7 +21,7 @@ public class GoToAndEatPlan extends GoToPlan {
 	@Override
 	public void update(WorldModel mWorldModel) {
 		if (ate) return;
-		if (mWorldModel.getStressLevel() == StressLevel.PLOK_CLOSE) {
+		if (mWorldModel.getStressLevel() == StressLevel.PLOK_CLOSE && mWorldModel.getMoodLevel() != MoodLevel.DESPAIR) {
 			Log.v(TAG, "Plok close!");
 			finish();
 		}

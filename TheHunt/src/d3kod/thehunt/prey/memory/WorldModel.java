@@ -70,9 +70,6 @@ public class WorldModel {
 		incrRiskCounter = 0;
 	}
 	public void update(ArrayList<Event> sensorEvents) {
-//		mLoudNoiseHeard = false;
-//		Log.v(TAG, "Updating world model");
-//		mPanic = false;
 		for (Event e: sensorEvents) {
 			processEvent(e);
 		}
@@ -100,9 +97,6 @@ public class WorldModel {
 			incrRiskCounter++;
 			if (incrRiskCounter >= INCR_RISK_TICKS) {
 				incrRiskCounter = 0;
-//				hiddenForSafe -= HIDDEN_FOR_SAFE_ADJ;
-//				if (hiddenForSafe < 0) hiddenForSafe = 0;
-//				Log.v(TAG, "decr hiddenForSafe is now " + hiddenForSafe);
 				increaseRisk();
 			}
 		}
