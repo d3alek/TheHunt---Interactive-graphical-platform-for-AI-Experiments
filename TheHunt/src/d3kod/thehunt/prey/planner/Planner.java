@@ -7,6 +7,7 @@ import d3kod.thehunt.prey.memory.WorldModel;
 import d3kod.thehunt.prey.planner.plans.ExplorePlan;
 import d3kod.thehunt.prey.planner.plans.GoToAndEatPlan;
 import d3kod.thehunt.prey.planner.plans.GoToAndStayPlan;
+import d3kod.thehunt.prey.planner.plans.GotoAndStayWhileHidden;
 import d3kod.thehunt.prey.planner.plans.NoPlan;
 import d3kod.thehunt.prey.planner.plans.Plan;
 import d3kod.thehunt.prey.planner.plans.RapidExplorePlan;
@@ -103,7 +104,7 @@ public class Planner {
 //		Log.v(TAG, "Making hide plan");
 		Plan hidePlan;
 		if (mWorldModel.knowAlgaeLocation()) {
-			hidePlan = new GoToAndStayPlan(
+			hidePlan = new GotoAndStayWhileHidden(
 					mWorldModel.getHeadX(), mWorldModel.getHeadY(), 
 					mWorldModel.getBodyX(), mWorldModel.getBodyY(), 
 					mWorldModel.getNearestAlgae());

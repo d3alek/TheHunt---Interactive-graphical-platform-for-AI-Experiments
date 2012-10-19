@@ -305,4 +305,10 @@ public class WorldModel {
 	public void refillEnergy() {
 		mEnergy = MAX_ENERGY;
 	}
+	public void noAlgaeHere() {
+		mEventMemory.remove(mNearestAlgae);
+		EventAlgae nearestAlgae = recallNearestAlgae();
+		if (nearestAlgae == null) mNearestAlgae = null;
+		else mNearestAlgae.set(nearestAlgae);
+	}
 }
