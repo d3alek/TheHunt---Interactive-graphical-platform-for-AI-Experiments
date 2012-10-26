@@ -23,7 +23,7 @@ public class EnvironmentData {
 
 	public static final float currentSpeed = 0.0005f;
 
-	public static final int ALGAE_NUM = 5;
+//	public static final int ALGAE_NUM = 5;
 	
 	public static final float[] AlGAE_HARDCODED_POS = {
 		-0.5f, 0.5f,
@@ -46,6 +46,12 @@ public class EnvironmentData {
 	private ArrayList<FloatingObject> mFloatingObjects;
 
 	private ArrayList<FloatingObject> mFloatingObjectsToAdd;
+
+	private ArrayList<FloatingObject> mFloatingObjectsToSetGraphics;
+	
+	private D3GLES20 mD3GLES20;
+
+	private boolean mGraphicsAreSet;
 
 //	private ArrayList<EventNoise> mNoiseEvents;
 	public static Tile[][] mTiles;
@@ -71,6 +77,8 @@ public class EnvironmentData {
 		mFoodX = -1; mFoodY = -1;
 		mFloatingObjects = new ArrayList<FloatingObject>();
 		mFloatingObjectsToAdd = new ArrayList<FloatingObject>();
+		mFloatingObjectsToSetGraphics = new ArrayList<FloatingObject>();
+		mGraphicsAreSet = false;
 //		mNoiseEvents = new ArrayList<EventNoise>();
 	}
 	
@@ -119,12 +127,12 @@ public class EnvironmentData {
 //		Tile.initBuffers();
 	}
 //
-	@Deprecated
-	public void addFloatingObject(FloatingObject floatingObject, int graphicKey) {
-		floatingObject.setGraphic(graphicKey);
-		mFloatingObjects.add(floatingObject);
-//		Log.v(TAG, "Floating object type " + floatingObject.getType() + " with key" + graphicKey);
-	}
+//	@Deprecated
+//	public void addFloatingObject(FloatingObject floatingObject, int graphicKey) {
+//		floatingObject.setGraphic(graphicKey);
+//		mFloatingObjects.add(floatingObject);
+////		Log.v(TAG, "Floating object type " + floatingObject.getType() + " with key" + graphicKey);
+//	}
 
 	public void addFloatingObject(FloatingObject floatingObject) {
 		mFloatingObjectsToAdd.add(floatingObject);
@@ -158,15 +166,15 @@ public class EnvironmentData {
 		return null;
 	}
 
-	public void makeAlgae(D3GLES20 d3GLES20, Environment env) {
-		float algaeX, algaeY;
-		for (int i = 0; i < ALGAE_NUM; ++i) {
-			algaeX = AlGAE_HARDCODED_POS[i*2]; algaeY = AlGAE_HARDCODED_POS[i*2+1];
-			mFloatingObjects.add(new Algae(algaeX, algaeY, d3GLES20, env));
-//			addFloatingObject(
-//					new FloatingObject(D3GLES20.newDefaultCircle(ALGAE_SIZE, algaeColor, ALGAE_DETAILS), algaeX, algaeY, Type.ALGAE));
-		}
-	}
+//	public void makeAlgae(D3GLES20 d3GLES20, Environment env) {
+//		float algaeX, algaeY;
+//		for (int i = 0; i < ALGAE_NUM; ++i) {
+//			algaeX = AlGAE_HARDCODED_POS[i*2]; algaeY = AlGAE_HARDCODED_POS[i*2+1];
+//			mFloatingObjects.add(new Algae(algaeX, algaeY, d3GLES20, env));
+////			addFloatingObject(
+////					new FloatingObject(D3GLES20.newDefaultCircle(ALGAE_SIZE, algaeColor, ALGAE_DETAILS), algaeX, algaeY, Type.ALGAE));
+//		}
+//	}
 	
 	public void logFloatingObjects() {
 		String log = "Floating objects log: ";
@@ -180,7 +188,7 @@ public class EnvironmentData {
 		ArrayList<FloatingObject> toRemove = new ArrayList<FloatingObject>();
 		
 		for (FloatingObject fo: mFloatingObjects) {
-			fo.update();
+//			fo.update();
 			if (fo.toRemove() || !environmentContains(fo)) {
 				Log.v(TAG, "To remove " + fo.getKey());
 				toRemove.add(fo);
@@ -193,6 +201,18 @@ public class EnvironmentData {
 		}
 
 		mFloatingObjects.addAll(mFloatingObjectsToAdd);
+		if (mGraphicsAreSet) {
+			for (FloatingObject fo: mFloatingObjectsToAdd) {
+				fo.setGraphic(mD3GLES20);
+			}
+			for (FloatingObject fo: mFloatingObjectsToSetGraphics) {
+				fo.setGraphic(mD3GLES20);
+			}
+			mFloatingObjectsToSetGraphics.clear();
+		}
+		else {
+			mFloatingObjectsToSetGraphics.addAll(mFloatingObjectsToAdd);
+		}
 		mFloatingObjectsToAdd.clear();
 	}
 
@@ -200,17 +220,16 @@ public class EnvironmentData {
 		return D3Maths.rectContains(
 				0, 0, mScreenWidth, mScreenHeight, fo.getX(), fo.getY());
 	}
-
-//	public ArrayList<EventNoise> getNoiseEvents() {
-//		return mNoiseEvents;
-//	}
-//
-//	public void addNoise(float x, float y) {
-////		Tile noiseTile = getTileFromPos(new PointF(x, y));
-//		mNoiseEvents.add(new EventNoise(x, y));
-//	}
 	
 	public ArrayList<FloatingObject> getFloatingObjectsToAdd() {
 		return mFloatingObjectsToAdd;
+	}
+
+	public void setGraphics(D3GLES20 d3gles20) {
+		mGraphicsAreSet = true;
+		mD3GLES20 = d3gles20;
+//		for (FloatingObject fo: mFloatingObjects) {
+//			fo.setGraphic(mD3GLES20);
+//		}
 	}
 }

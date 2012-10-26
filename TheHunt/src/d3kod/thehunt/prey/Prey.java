@@ -380,7 +380,9 @@ public class Prey {
 
 	public void release() {
 		mD.mIsCaught = false;
-		randomizePos();
+//		randomizePos();
+		PointF newPos = mEnv.randomPosInEnv();
+		mD.mPosX = newPos.x; mD.mPosY = newPos.y;
 		mPlanner.clear();
 		calcPosHead();
 		updateWorldModel();
@@ -390,11 +392,11 @@ public class Prey {
 		mGraphic.resetColor();
 	}
 
-	private void randomizePos() {
-		Random rand = new Random();
-		mD.mPosX = -EnvironmentData.mScreenWidth/2+rand.nextFloat()*EnvironmentData.mScreenWidth;
-		mD.mPosY = -EnvironmentData.mScreenHeight/2+rand.nextFloat()*EnvironmentData.mScreenHeight;
-	}
+//	private void randomizePos() {
+//		Random rand = new Random();
+//		mD.mPosX = -EnvironmentData.mScreenWidth/2+rand.nextFloat()*EnvironmentData.mScreenWidth;
+//		mD.mPosY = -EnvironmentData.mScreenHeight/2+rand.nextFloat()*EnvironmentData.mScreenHeight;
+//	}
 	public void initGraphics(D3GLES20 d3GLES20) {
         mGraphic = new D3Prey(mD, d3GLES20.getShaderManager());
         mD3GLES20 = d3GLES20;
@@ -403,7 +405,8 @@ public class Prey {
 		if (Planner.SHOW_TARGET) {
 			mPlanner.makeTarget();
 		}
-		randomizePos();
+		PointF newPos = mEnv.randomPosInEnv();
+		mD.mPosX = newPos.x; mD.mPosY = newPos.y;
 	}
 
 	public int getEnergy() {

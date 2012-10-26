@@ -5,11 +5,8 @@ import java.util.Random;
 
 import android.content.Context;
 import android.graphics.PointF;
-import android.util.Log;
 import d3kod.d3gles20.D3GLES20;
 import d3kod.d3gles20.D3Maths;
-import d3kod.d3gles20.TextureHelper;
-import d3kod.thehunt.R;
 import d3kod.thehunt.environment.FloatingObject.Type;
 import d3kod.thehunt.events.Event;
 import d3kod.thehunt.events.EventCurrent;
@@ -25,6 +22,8 @@ public class Environment {
 	private ArrayList<EventNoise> mNoiseEvents;
 	private Random mRandom;
 	
+	
+	public static final int ALGAE_NUM = 20;
 //	private static final float ALGAE_DROP_FOOD_CHANCE = 0.015f;
 	private static final float NET_INTERSECT_RAD_ADJ = 0.2f;
 	
@@ -32,8 +31,27 @@ public class Environment {
 		data = new EnvironmentData(width, height);
 		mNoiseEvents = new ArrayList<EventNoise>();
 		mRandom = new Random();
+		seedAlgae();
 	}
 	
+	private void seedAlgae() {
+		for (int i = 0; i < ALGAE_NUM; ++i) {
+			data.addFloatingObject(new NAlgae(1, randomPosInEnv()));
+		}
+	}
+
+	public PointF randomPosInEnv() {
+		return new PointF(
+				-data.mScreenWidth/2 + mRandom.nextFloat()*data.mScreenWidth, 
+				-data.mScreenHeight/2 + mRandom.nextFloat()*data.mScreenHeight);
+	}
+	
+//	private void randomizePos() {
+//		Random rand = new Random();
+//		mD.mPosX = -EnvironmentData.mScreenWidth/2+rand.nextFloat()*EnvironmentData.mScreenWidth;
+//		mD.mPosY = -EnvironmentData.mScreenHeight/2+rand.nextFloat()*EnvironmentData.mScreenHeight;
+//	}
+
 	public void update() {
 		data.updateFloatingObjects();
 //		if (mRandom.nextFloat() < ALGAE_DROP_FOOD_CHANCE) {
@@ -45,10 +63,13 @@ public class Environment {
 	public void initGraphics(Context context, D3GLES20 d3GLES20) {
 		mD3GLES20 = d3GLES20;
 //		mTextureDataHandle = TextureHelper.loadTexture(context, R.drawable.hatching_cross);
-		data.makeAlgae(mD3GLES20, this);
+//		data.makeAlgae(mD3GLES20, this);
 //		Tile.initBuffers();
-		
+		data.setGraphics(mD3GLES20);
 	}
+	
+	
+	
 	public void recalculateCurrents() {
 	}
 	
@@ -58,13 +79,13 @@ public class Environment {
 	public void putFoodGM(float x, float y) {
 //		Log.v(TAG, "Putting food at " + x +  " " + y);
 //		data.addFloatingObject(new FloatingObject(x, y, Type.FOOD, mD3GLES20), mD3GLES20.newDefaultCircle(0.01f, foodColor , 20));
-		data.addFloatingObject(new FoodGM(x, y, mD3GLES20));
+		data.addFloatingObject(new FoodGM(x, y));
 	}
 	
-	public void putFoodAlgae(float x, float y) {
-		Log.v(TAG, "Putting food algae!");
-		data.addFloatingObject(new FoodAlgae(x, y, mD3GLES20));
-	}
+//	public void putFoodAlgae(float x, float y) {
+//		Log.v(TAG, "Putting food algae!");
+//		data.addFloatingObject(new FoodAlgae(x, y, mD3GLES20));
+//	}
 	
 	public Event senseCurrent(float x, float y) {
 		Dir tileDir = data.getTileFromPos(new PointF(x, y)).getDir();
@@ -89,7 +110,7 @@ public class Environment {
 	
 	public Event senseLight(float hX, float hY) {
 		for (FloatingObject fo: data.getFloatingObjects()) {
-			if (fo.getType() == Type.ALGAE && mD3GLES20.contains(fo.getKey(), hX, hY)) {
+			if (fo.getType() == Type.ALGAE && fo.contains(hX, hY)) {
 				return new EventLight(0);
 			}
 		}
@@ -97,7 +118,7 @@ public class Environment {
 	}
 	public boolean netObstacle(float x, float y) {
 		for (FloatingObject fo: data.getFloatingObjects()) {
-			if (fo.getType() == Type.ALGAE && mD3GLES20.contains(fo.getKey(), x, y)) 
+			if (fo.getType() == Type.ALGAE && fo.contains(x, y)) 
 				return true;
 		}
 		return false;
@@ -130,7 +151,7 @@ public class Environment {
 		return false;
 	}
 
-	public void putNewAlgae(float x, float y) {
-		data.getFloatingObjectsToAdd().add(new Algae(x, y, mD3GLES20, this));
-	}
+//	public void putNewAlgae(float x, float y) {
+//		data.getFloatingObjectsToAdd().add(new Algae(x, y, mD3GLES20, this));
+//	}
 }

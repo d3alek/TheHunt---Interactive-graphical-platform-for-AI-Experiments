@@ -2,8 +2,10 @@ package d3kod.thehunt.environment;
 
 import android.util.Log;
 import d3kod.d3gles20.D3GLES20;
+import d3kod.d3gles20.D3Maths;
+import d3kod.d3gles20.shapes.D3Shape;
 
-public class FloatingObject {
+public abstract class FloatingObject {
 
 	public enum Type {
 		FOOD_ALGAE, FOOD_GM, ALGAE;
@@ -23,27 +25,33 @@ public class FloatingObject {
 	private float vY;
 
 	private boolean mRemove;
+
+	private D3Shape mGraphic;
 	
 	
-	public FloatingObject(float x, float y, Type type, D3GLES20 d3GLES20) {
-		mD3GLES20 =  d3GLES20;
+	public FloatingObject(float x, float y, Type type) {
+//		mD3GLES20 =  d3GLES20;
 		mType = type;
 		mX = x; mY = y;
 		mRemove = false;
 	}
 	
-	public void setGraphic(int key) {
-		Log.v(TAG, "Floating object type " + getType() + " with key " + key + " at " + mX + " " + mY);
+	protected void setGraphic(D3Shape graphic, D3GLES20 d3GLES20) {
 		mGraphicSet = true;
-		mKey = key;
-		mD3GLES20.setShapePosition(key, mX, mY);
+		mGraphic = graphic;
+		mD3GLES20 = d3GLES20;
+		mKey = mD3GLES20.putShape(mGraphic);
+		mD3GLES20.setShapePosition(mKey, mX, mY);
+		Log.v(TAG, "Set graphic for floating object type " + getType() + " with key " + mKey + " at " + mX + " " + mY);
 	}
+	
+	abstract public void setGraphic(D3GLES20 d3gles20);
 
-	public void update() {
-//		applyFriction();
-		mX += vX; mY += vY;
-//		mD3GLES20.setShapePosition(mKey, mX, mY);
-	}
+//	public void update() {
+////		applyFriction();
+//		mX += vX; mY += vY;
+////		mD3GLES20.setShapePosition(mKey, mX, mY);
+//	}
 	
 	public void applyFriction() {
 		vX -= EnvironmentData.frictionCoeff*vX;
@@ -89,7 +97,8 @@ public class FloatingObject {
 	}
 
 	public float getRadius() {
-		return mD3GLES20.getShape(mKey).getRadius();
+//		if (!mGraphicSet) return 0; //TODO: dirty fix
+		return mGraphic.getRadius();
 	}
 	
 	public float getVX() {
@@ -98,5 +107,22 @@ public class FloatingObject {
 	
 	public float getVY() {
 		return vY;
+	}
+
+	public boolean contains(float x, float y) {
+		if (!mGraphicSet) {
+			Log.v(TAG, "Illegal contains call " + x + " " + y + " because graphics are not set!");
+			return false;
+		}
+//		Log.v(TAG, "Contains check with center " + mX + " " + mY + " or should it be " + mGraphic.getCenterX() + " " + mGraphic.getCenterY());
+		return D3Maths.circleContains(mX, mY, getRadius(), x, y); //TODO: fix getRadius() call, keep seperate radiuses for graphic and logic
+	}
+
+	public boolean graphicIsSet() {
+		return mGraphicSet;
+	}
+
+	public D3Shape getGraphic() {
+		return mGraphic;
 	}
 }
