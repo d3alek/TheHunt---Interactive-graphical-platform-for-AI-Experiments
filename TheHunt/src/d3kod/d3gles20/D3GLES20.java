@@ -10,6 +10,7 @@ import d3kod.d3gles20.shapes.D3FadingShape;
 import d3kod.d3gles20.shapes.D3Quad;
 import d3kod.d3gles20.shapes.D3Shape;
 import d3kod.d3gles20.shapes.D3TempCircle;
+import d3kod.thehunt.environment.FloatingObject;
 import d3kod.thehunt.floating_text.FlopText;
 
 import android.opengl.GLES20;
@@ -186,5 +187,11 @@ public class D3GLES20 {
 			return null;
 		}
 		return shapes.get(key);
+	}
+
+	public boolean shapesCollide(D3Shape shape1, D3Shape shape2) {
+		return D3Maths.circlesIntersect(
+				shape1.getCenterX(), shape1.getCenterY(), shape1.getRadius(), 
+				shape2.getCenterX(), shape2.getCenterY(), shape2.getRadius());
 	}
 }

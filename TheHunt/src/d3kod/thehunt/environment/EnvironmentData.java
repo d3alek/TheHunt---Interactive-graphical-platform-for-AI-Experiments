@@ -1,14 +1,12 @@
 package d3kod.thehunt.environment;
 
 import java.util.ArrayList;
-import java.util.Random;
 
 import android.graphics.PointF;
 import android.util.Log;
 import d3kod.d3gles20.D3GLES20;
 import d3kod.d3gles20.D3Maths;
 import d3kod.thehunt.environment.FloatingObject.Type;
-import d3kod.thehunt.events.EventNoise;
 import d3kod.thehunt.prey.Prey;
 
 public class EnvironmentData {
@@ -190,8 +188,40 @@ public class EnvironmentData {
 		for (FloatingObject fo: mFloatingObjects) {
 			fo.update();
 			if (fo.toRemove() || !environmentContains(fo)) {
-				Log.v(TAG, "To remove " + fo.getKey());
+				//Log.v(TAG, "To remove " + fo.getKey());
+				fo.setToRemove();
 				toRemove.add(fo);
+			}
+		}
+		
+		// Elementary collision detection between algae only!
+		FloatingObject fo1, fo2;
+		NAlgae algae1, algae2;
+		for (int i = 0; i < mFloatingObjects.size(); ++i) {
+			fo1 = mFloatingObjects.get(i);
+			if (fo1.toRemove() || fo1.getType() != Type.ALGAE) continue;
+			for (int j = i; j < mFloatingObjects.size(); ++j) {
+				fo2 = mFloatingObjects.get(j);
+				if (fo2.toRemove() || fo2.getType() != Type.ALGAE || fo2 == fo1) continue;
+				if (mD3GLES20.shapesCollide(fo1.getGraphic(), fo2.getGraphic())) {
+					//Log.v(TAG, "Collision between " + fo1 + " and " + fo2);
+					algae1 = ((NAlgae)fo1);
+					algae2 = ((NAlgae)fo2);
+					if (algae1.getSize() > algae2.getSize()) {
+						algae1.mergeWith(algae2);
+						algae2.setToRemove();
+						toRemove.add(algae2);
+						Log.v(TAG, "Bigger " + algae1 + " new size " + algae1.getSize() + " and to remove " + algae2);
+						break;
+					}
+					else {
+						algae2.mergeWith(algae1);
+						algae1.setToRemove();
+						toRemove.add(algae1);
+						Log.v(TAG, "Bigger " + algae2 + " new size " + algae2.getSize() + " and to remove " + algae1);
+						break;
+					}
+				}
 			}
 		}
 		

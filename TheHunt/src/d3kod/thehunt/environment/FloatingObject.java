@@ -13,7 +13,7 @@ public abstract class FloatingObject {
 
 	private static final String TAG = "FloatingObject";
 
-//	private static final float FRICTION = 0.001f;
+	private static final float FRICTION = 0f;
 	
 	private int mKey;
 	Type mType;
@@ -52,17 +52,17 @@ public abstract class FloatingObject {
 
 	public void update() {
 		//Log.v(TAG, "UPDATING FLOATING OBJECT!");
+		applyFriction();
 		mX += vX; mY += vY;
-//		applyFriction();
 //		mGraphic.setPosition(mX, mY);
 //		mD3GLES20.setShapePosition(mKey, mX, mY);
 	}
 //	
-//	public void applyFriction() {
-//		//vX -= EnvironmentData.frictionCoeff*vX;
-//		//vY -= EnvironmentData.frictionCoeff*vY;
+	public void applyFriction() {
+		//vX -= EnvironmentData.frictionCoeff*vX;
+		//vY -= EnvironmentData.frictionCoeff*vY;
 //		setVelocity(vX - FRICTION*vX, vY - FRICTION*vY);
-//	}
+	}
 	
 	public int getKey() {
 		return mKey;
@@ -130,5 +130,10 @@ public abstract class FloatingObject {
 
 	public D3Shape getGraphic() {
 		return mGraphic;
+	}
+	
+	@Override
+	public String toString() {
+		return "Floating object " + mType + "(" + mKey + ")";
 	}
 }

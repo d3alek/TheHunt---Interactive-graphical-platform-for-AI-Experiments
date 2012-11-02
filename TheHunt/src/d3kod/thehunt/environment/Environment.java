@@ -23,7 +23,7 @@ public class Environment {
 	private Random mRandom;
 	
 	
-	public static final int ALGAE_NUM = 20;
+	public static final int ALGAE_NUM = 300;
 //	private static final float ALGAE_DROP_FOOD_CHANCE = 0.015f;
 	private static final float NET_INTERSECT_RAD_ADJ = 0.2f;
 	
