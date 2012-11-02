@@ -12,6 +12,8 @@ public abstract class FloatingObject {
 	}
 
 	private static final String TAG = "FloatingObject";
+
+//	private static final float FRICTION = 0.001f;
 	
 	private int mKey;
 	Type mType;
@@ -42,21 +44,25 @@ public abstract class FloatingObject {
 		mD3GLES20 = d3GLES20;
 		mKey = mD3GLES20.putShape(mGraphic);
 		mD3GLES20.setShapePosition(mKey, mX, mY);
+		mD3GLES20.setShapeVelocity(mKey, vX, vY);
 		Log.v(TAG, "Set graphic for floating object type " + getType() + " with key " + mKey + " at " + mX + " " + mY);
 	}
 	
 	abstract public void setGraphic(D3GLES20 d3gles20);
 
-//	public void update() {
-////		applyFriction();
-//		mX += vX; mY += vY;
-////		mD3GLES20.setShapePosition(mKey, mX, mY);
-//	}
-	
-	public void applyFriction() {
-		vX -= EnvironmentData.frictionCoeff*vX;
-		vY -= EnvironmentData.frictionCoeff*vY;
+	public void update() {
+		//Log.v(TAG, "UPDATING FLOATING OBJECT!");
+		mX += vX; mY += vY;
+//		applyFriction();
+//		mGraphic.setPosition(mX, mY);
+//		mD3GLES20.setShapePosition(mKey, mX, mY);
 	}
+//	
+//	public void applyFriction() {
+//		//vX -= EnvironmentData.frictionCoeff*vX;
+//		//vY -= EnvironmentData.frictionCoeff*vY;
+//		setVelocity(vX - FRICTION*vX, vY - FRICTION*vY);
+//	}
 	
 	public int getKey() {
 		return mKey;
@@ -93,7 +99,7 @@ public abstract class FloatingObject {
 	
 	public void setVelocity(float vx, float vy) {
 		vX = vx; vY = vy;
-		mD3GLES20.setShapeVelocity(mKey, vx, vy);
+		if (mGraphicSet) mD3GLES20.setShapeVelocity(mKey, vx, vy);
 	}
 
 	public float getRadius() {

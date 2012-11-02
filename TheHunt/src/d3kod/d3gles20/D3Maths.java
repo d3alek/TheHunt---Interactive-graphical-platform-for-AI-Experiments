@@ -1,5 +1,7 @@
 package d3kod.d3gles20;
 
+import java.util.Random;
+
 import android.util.FloatMath;
 
 public class D3Maths {
@@ -7,6 +9,7 @@ public class D3Maths {
 	public static final String TAG = "D3Maths";
 	public static final float EPSILON = 0.00001f;
 	public static final float PI = 3.14f;
+	private static Random random = new Random();
 	
 	public static float angleBetweenVectors(float x1, float y1, float x2, float y2, float len1, float len2) {
 		return (float) Math.toDegrees(Math.acos((x1*x2 + y1*y2)/(len1*len2)));
@@ -89,5 +92,9 @@ public class D3Maths {
 			angleRad += step;
 		}
 		return vertices;
+	}
+
+	public static float getRandAngle() {
+		return random.nextFloat()*PI*2;
 	}
 }

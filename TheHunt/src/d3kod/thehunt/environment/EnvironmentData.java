@@ -188,7 +188,7 @@ public class EnvironmentData {
 		ArrayList<FloatingObject> toRemove = new ArrayList<FloatingObject>();
 		
 		for (FloatingObject fo: mFloatingObjects) {
-//			fo.update();
+			fo.update();
 			if (fo.toRemove() || !environmentContains(fo)) {
 				Log.v(TAG, "To remove " + fo.getKey());
 				toRemove.add(fo);
