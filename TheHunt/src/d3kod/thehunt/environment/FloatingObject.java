@@ -54,7 +54,7 @@ public abstract class FloatingObject {
 		//Log.v(TAG, "UPDATING FLOATING OBJECT!");
 		applyFriction();
 		mX += vX; mY += vY;
-//		mGraphic.setPosition(mX, mY);
+		mGraphic.setPosition(mX, mY);
 //		mD3GLES20.setShapePosition(mKey, mX, mY);
 	}
 //	
