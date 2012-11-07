@@ -4,10 +4,12 @@ import java.util.ArrayList;
 
 import d3kod.thehunt.environment.Environment;
 import d3kod.thehunt.environment.FloatingObject;
+import d3kod.thehunt.environment.NAlgae;
 import d3kod.thehunt.events.Event;
 import d3kod.thehunt.events.EventAlgae;
 import d3kod.thehunt.events.EventAt;
 import d3kod.thehunt.events.EventFood;
+import d3kod.thehunt.prey.memory.WorldModel;
 
 public class Sensor {
 	
@@ -39,7 +41,15 @@ public class Sensor {
 				ArrayList<FloatingObject> sensedObjects = mEnv.seeObjects(hX, hY, mSightRad);
 				for (FloatingObject fo: sensedObjects) {
 					switch(fo.getType()) {
-					case ALGAE: sensedEvents.add(new EventAlgae(fo.getX(), fo.getY())); break;
+					case ALGAE:
+						sensedEvents.add(new EventAlgae(fo.getX(), fo.getY(), ((NAlgae)fo).getSize()));
+						if (((NAlgae)fo).getSize() >= WorldModel.MINIMUM_HIDING_ALGAE_SIZE) {
+							break;
+						}
+						else {
+							break;
+							// no break - register it as food as well
+						}
 					case FOOD_ALGAE: sensedEvents.add(new EventFood(fo.getX(), fo.getY(), fo.nutrition())); break;
 					case FOOD_GM: sensedEvents.add(new EventFood(fo.getX(), fo.getY(), fo.nutrition())); break;
 					}

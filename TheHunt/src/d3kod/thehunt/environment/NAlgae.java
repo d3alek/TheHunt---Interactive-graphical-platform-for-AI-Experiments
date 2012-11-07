@@ -10,6 +10,7 @@ public class NAlgae extends FloatingObject {
 	private static final float FRICTION = 0.001f;
 	private static final float MAX_FRICTION = 0.1f;
 	private static final int MAX_SIZE = 50;
+	private static final int FOOD_ALGAE_BITE_NUTRITION = 20;
 	private int mSize;
 
 	public NAlgae(int n, PointF pos, float dirAngle) {
@@ -59,5 +60,10 @@ public class NAlgae extends FloatingObject {
 
 	private float calcFriction() {
 		return Math.min(FRICTION*(mSize*mSize+mSize+3), MAX_FRICTION);
+	}
+	
+	@Override
+	public int nutrition() {
+		return FOOD_ALGAE_BITE_NUTRITION;
 	}
 }

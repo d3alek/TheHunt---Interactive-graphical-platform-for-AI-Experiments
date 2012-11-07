@@ -36,6 +36,7 @@ public class WorldModel {
 	
 	private static final int SECONDS_FOR_INCR_RISK = 2;
 	private static final int INCR_RISK_TICKS = TheHuntRenderer.TICKS_PER_SECOND*SECONDS_FOR_INCR_RISK;
+	public static final int MINIMUM_HIDING_ALGAE_SIZE = 10;
 	
 	//MemoryGraph mNodes;
 	private float mHeadX;
@@ -113,6 +114,15 @@ public class WorldModel {
 			}
 			else if (mNearestAlgae != null && mNearestAlgae.equals(e)) {
 				mNearestAlgae.set((EventAlgae) e);
+				if (mNearestAlgae.getSize() < MINIMUM_HIDING_ALGAE_SIZE) {
+					noAlgaeHere();
+					Log.v(TAG, "Forgetting the current nearest algae because too small!");
+					return; // otherwise will remove it again
+				}
+			}
+			if (e.type() == EventType.ALGAE && ((EventAlgae)e).getSize() < MINIMUM_HIDING_ALGAE_SIZE) {
+				mEventMemory.remove(e);
+				return;
 			}
 			mEventMemory.remove(e);
 			mEventMemory.add(e);
@@ -167,6 +177,9 @@ public class WorldModel {
 			}
 		}
 		if (e.type() == EventType.FOOD || e.type() == EventType.ALGAE) {
+			if (e.type() == EventType.ALGAE && ((EventAlgae)e).getSize() < MINIMUM_HIDING_ALGAE_SIZE) {
+				return;
+			}
 			rememberEvent(e);
 		}
 	}

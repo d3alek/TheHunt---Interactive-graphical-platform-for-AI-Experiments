@@ -46,28 +46,14 @@ public class Environment {
 				-data.mScreenHeight/2 + mRandom.nextFloat()*data.mScreenHeight);
 	}
 	
-//	private void randomizePos() {
-//		Random rand = new Random();
-//		mD.mPosX = -EnvironmentData.mScreenWidth/2+rand.nextFloat()*EnvironmentData.mScreenWidth;
-//		mD.mPosY = -EnvironmentData.mScreenHeight/2+rand.nextFloat()*EnvironmentData.mScreenHeight;
-//	}
-
 	public void update() {
 		data.updateFloatingObjects();
-//		if (mRandom.nextFloat() < ALGAE_DROP_FOOD_CHANCE) {
-//			int algaeIndex = (int)Math.floor(mRandom.nextFloat()*EnvironmentData.ALGAE_NUM);
-//			putFoodAlgae(EnvironmentData.AlGAE_HARDCODED_POS[algaeIndex*2], 
-//					EnvironmentData.AlGAE_HARDCODED_POS[algaeIndex*2 + 1]);
-//		}
+
 	}
 	public void initGraphics(Context context, D3GLES20 d3GLES20) {
 		mD3GLES20 = d3GLES20;
-//		mTextureDataHandle = TextureHelper.loadTexture(context, R.drawable.hatching_cross);
-//		data.makeAlgae(mD3GLES20, this);
-//		Tile.initBuffers();
 		data.setGraphics(mD3GLES20);
 	}
-	
 	
 	
 	public void recalculateCurrents() {
