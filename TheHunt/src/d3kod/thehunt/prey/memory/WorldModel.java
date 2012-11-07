@@ -15,7 +15,10 @@ import d3kod.thehunt.events.EventCurrent;
 import d3kod.thehunt.events.EventFood;
 import d3kod.thehunt.events.EventLight;
 import d3kod.thehunt.events.EventNoise;
+import d3kod.thehunt.events.MovingEvent;
 
+
+//TODO: Refractor - make getNearest{Algae,Food}() method of the memory, abstract away the concept of nearest things as well
 public class WorldModel {
 	private static final String TAG = "WorldModel";
 	private static final float INF = 100;
@@ -25,7 +28,6 @@ public class WorldModel {
 	private static final int HIDDEN_FOR_SAFE_MAX = 100;
 	
 	private static final int ENERGY_DEPLETE_SPEED = 3;
-//	private static final int ONE_FOOD_ENERGY = 30;
 	
 	private static final int DESPAIR_ENERGY = 30;
 	private static final int RISK_ENERGY = 60;
@@ -45,8 +47,8 @@ public class WorldModel {
 	private float mBodyX;
 	private int mLightLevel;
 	
-	private ArrayList<Event> mEventMemory = new ArrayList<Event>();
-	private EventFood mNearestFood;
+	private ArrayList<MovingEvent> mEventMemory = new ArrayList<MovingEvent>();
+	private MovingEvent mNearestFood;
 	private EventAlgae mNearestAlgae;
 	private Dir mCurrentDir;
 	private float mHeadAngle;
@@ -60,9 +62,7 @@ public class WorldModel {
 	
 	
 	public WorldModel(float screenWidth, float screenHeight) {
-//		mNodes = new MemoryGraph(screenWidth, screenHeight);
-//		mNearestFoodX = mNearestFoodY = -1;
-		mNearestFood = new EventFood(0, 0, 0); //TODO: I don't like this. Better make it null
+		mNearestFood = null;
 		mNearestAlgae = null;
 		mStressLevel = StressLevel.CALM;
 		mHiddenFor = 0;
@@ -74,12 +74,9 @@ public class WorldModel {
 		for (Event e: sensorEvents) {
 			processEvent(e);
 		}
-		if (knowAlgaeLocation()) {
-			mNearestAlgae.set(recallNearestAlgae());
-		}
-		else {
-			mNearestAlgae = recallNearestAlgae();
-		}
+		// TODO: WTF SO LAME.. EVERY FUCKING TIME?!
+		mNearestAlgae = recallNearestAlgae();
+
 		
 		if (energyDepleteCounter >= ENERGY_DEPLETE_TICKS) {
 			energyDepleteCounter = 0;
@@ -107,25 +104,21 @@ public class WorldModel {
 	}
 	private void processEvent(Event e) {
 		if (mEventMemory.contains(e)) {
-			//TODO: fix dirty, works only with moving food for now
-			//TODO: doing it to work with algae as well now
-			if (knowFoodLocation() && mNearestFood.equals(e)) {
-				mNearestFood.set((EventFood) e);
+			MovingEvent me = ((MovingEvent) e);
+			if (knowFoodLocation() && mNearestFood.equals(me)) {
+				mNearestFood.set(me);
 			}
-			else if (mNearestAlgae != null && mNearestAlgae.equals(e)) {
-				mNearestAlgae.set((EventAlgae) e);
+			else if (knowAlgaeLocation() && mNearestAlgae.equals(me)) {
+				mNearestAlgae.set((EventAlgae) me);
 				if (mNearestAlgae.getSize() < MINIMUM_HIDING_ALGAE_SIZE) {
 					noAlgaeHere();
 					Log.v(TAG, "Forgetting the current nearest algae because too small!");
 					return; // otherwise will remove it again
 				}
 			}
-			if (e.type() == EventType.ALGAE && ((EventAlgae)e).getSize() < MINIMUM_HIDING_ALGAE_SIZE) {
-				mEventMemory.remove(e);
-				return;
-			}
-			mEventMemory.remove(e);
-			mEventMemory.add(e);
+			//TODO: This is lame
+			mEventMemory.remove(me);
+			mEventMemory.add(me);
 			return;
 		}
 		switch(e.type()) { 
@@ -136,17 +129,16 @@ public class WorldModel {
 			mHeadAngle = eAt.getHeadAngle();
 			break;
 		case FOOD: 
-			EventFood food = (EventFood)e;
+		case ALGAE:
+			MovingEvent food = (MovingEvent)e;
 			float foodX = food.getX();
 			float foodY = food.getY();
 			if (!knowFoodLocation() ||
 					D3Maths.distance(mHeadX, mHeadY, mNearestFood.getX(), mNearestFood.getY()) > 
 					D3Maths.distance(mHeadX, mHeadY, foodX, foodY)) {
-				mNearestFood.set(food);
+				mNearestFood = food; //TODO: make sure this updates the fish target as well
 				//TODO cache current food distance
 			}
-			break;
-		case ALGAE:
 			break;
 		case LIGHT:
 			mLightLevel = ((EventLight) e).getLightLevel();
@@ -170,21 +162,18 @@ public class WorldModel {
 				Log.v(TAG, "Loud noise heard, panic!");
 				mStressLevel = StressLevel.PLOK_CLOSE;
 				mHiddenFor = 0;
-//				if (hiddenForSafe < HIDDEN_FOR_SAFE_MAX) hiddenForSafe += HIDDEN_FOR_SAFE_ADJ;
-//				Log.v(TAG, "incr hiddenForSafe is now " + hiddenForSafe);
 				decreaseRisk();
-//				mPanic = true;
 			}
 		}
 		if (e.type() == EventType.FOOD || e.type() == EventType.ALGAE) {
 			if (e.type() == EventType.ALGAE && ((EventAlgae)e).getSize() < MINIMUM_HIDING_ALGAE_SIZE) {
 				return;
 			}
-			rememberEvent(e);
+			rememberEvent((MovingEvent) e);
 		}
 	}
 
-	private void rememberEvent(Event e) {
+	private void rememberEvent(MovingEvent e) {
 		mEventMemory.add(e);
 	}
 	
@@ -206,7 +195,7 @@ public class WorldModel {
 	public float getNearestFoodY() {
 		return mNearestFood.getY();
 	}
-	public EventFood getNearestFood() {
+	public MovingEvent getNearestFood() {
 		return mNearestFood;
 	}
 	public EventAlgae getNearestAlgae() {
@@ -226,29 +215,33 @@ public class WorldModel {
 	}
 	public void eatFood(int energy) {
 		//TODO: the food removed is not always the nearest food #BUG
+		if (energy == 0) {
+			Log.v(TAG, "Didn't eat anything... forget about this food");
+			mEventMemory.remove(mNearestFood);
+		}
 		mEnergy += energy;
 		if (mEnergy > MAX_ENERGY) {
 			mEnergy = MAX_ENERGY;
 		}
-		mEventMemory.remove(mNearestFood);
-		mNearestFood.set(recallNearestFood());
+		//TODO: Do we need this?
+		mNearestFood = recallNearestFood();
 	}
-	private EventFood recallNearestFood() {
+	private MovingEvent recallNearestFood() {
 		float closestX = INF, closestY = INF;
-		EventFood closestFood = new EventFood(0, 0, 0);
+		MovingEvent closestFood = null;
 		
-		for (Event e: mEventMemory) {
-			if (e.type() == EventType.FOOD) {
-				EventFood ef = (EventFood)e;
-				float foodX = ef.getX();
-				float foodY = ef.getY();
+		for (MovingEvent e: mEventMemory) {
+//			if (e.type() == EventType.FOOD) {
+//				EventFood ef = (EventFood)e;
+				float foodX = e.getX();
+				float foodY = e.getY();
 				if (D3Maths.distance(mHeadX, mHeadY, foodX, foodY) <
 						D3Maths.distance(mHeadX, mHeadY, closestX, closestY)) {
-					closestFood = ef;
+					closestFood = e;
 					closestX = foodX; 
 					closestY = foodY;
 				}
-			}
+//			}
 		}
 		
 		return closestFood;
@@ -282,13 +275,13 @@ public class WorldModel {
 		return mBodyY;
 	}
 	public boolean knowFoodLocation() {
-		return (mNearestFood.getNutri() > 0);
+		return mNearestFood != null;
 	}
 	public boolean knowAlgaeLocation() {
 		return mNearestAlgae != null;
 	}
 	public void recalcNearestFood() {
-		mNearestFood.set(recallNearestFood());
+		mNearestFood = recallNearestFood();
 	}
 	public Dir getCurrentDir() {
 		return mCurrentDir;

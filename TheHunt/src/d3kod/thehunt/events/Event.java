@@ -20,5 +20,5 @@ public abstract class Event {
 	
 	public String toString() {
 		return "Event " + mType;
-	};
+	}
 }

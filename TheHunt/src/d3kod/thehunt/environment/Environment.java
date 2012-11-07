@@ -12,6 +12,7 @@ import d3kod.thehunt.events.Event;
 import d3kod.thehunt.events.EventCurrent;
 import d3kod.thehunt.events.EventLight;
 import d3kod.thehunt.events.EventNoise;
+import d3kod.thehunt.prey.Prey;
 public class Environment {
 	private static final String TAG = "Environment";
 	public static final float LOUDNESS_PLOK = 1f;
@@ -78,8 +79,17 @@ public class Environment {
 		return new EventCurrent(tileDir);
 	}
 	
-	public FloatingObject eatFood(float mPosHeadX, float mPosHeadY) {
-		return data.removeFood(mPosHeadX, mPosHeadY);
+	public int eatFood(float x, float y) {
+		for (FloatingObject fo: data.getFloatingObjects()) {
+			if (fo.getType() != Type.ALGAE && fo.getType() != Type.FOOD_GM) continue;
+			float foX = fo.getX(), foY = fo.getY();
+			if (D3Maths.circleContains(x, y, Prey.EAT_FOOD_RADIUS, foX, foY)) {
+				Eatable eatable = (Eatable) fo;
+				eatable.processBite();
+				return eatable.getNutrition();
+			}
+		}
+		return 0;
 	}
 	
 	public ArrayList<FloatingObject> seeObjects(float x, float y, float sightRadius) {

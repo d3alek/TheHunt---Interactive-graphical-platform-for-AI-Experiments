@@ -353,13 +353,13 @@ public class Prey {
 
 	private void eat() {
 //		Log.v(TAG, "Eating food at " + mD.mPosHeadX + " " + mD.mPosHeadY);
-		FloatingObject food = mEnv.eatFood(mD.mPosHeadX, mD.mPosHeadY);
-		if (food == null) {
-			Log.v(TAG, "I thought I ate something, but it was null :?");
+		int nutrition = mEnv.eatFood(mD.mPosHeadX, mD.mPosHeadY);
+		if (nutrition == 0) {
+			Log.v(TAG, "I thought I ate something, but it felt like thin air :?");
 			mWorldModel.eatFood(0);
 		}
 		else {
-			mWorldModel.eatFood(food.nutrition());
+			mWorldModel.eatFood(nutrition);
 			mGraphic.initEatingMotion();
 			mD3GLES20.putExpiringShape(new CrunchText(mD.mPosHeadX, mD.mPosHeadY, tm, mD3GLES20.getShaderManager()));
 		}

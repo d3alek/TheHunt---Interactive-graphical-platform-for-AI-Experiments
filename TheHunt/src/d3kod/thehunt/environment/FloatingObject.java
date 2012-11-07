@@ -93,10 +93,6 @@ public abstract class FloatingObject {
 		mRemove = true;
 	}
 	
-	public int nutrition() {
-		return 0;
-	}
-	
 	public void setVelocity(float vx, float vy) {
 		vX = vx; vY = vy;
 		if (mGraphicSet) mD3GLES20.setShapeVelocity(mKey, vx, vy);

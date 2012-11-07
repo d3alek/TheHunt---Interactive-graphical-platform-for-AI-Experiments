@@ -4,7 +4,7 @@ import android.graphics.PointF;
 import android.util.FloatMath;
 import d3kod.d3gles20.D3GLES20;
 
-public class NAlgae extends FloatingObject {
+public class NAlgae extends FloatingObject implements Eatable {
 
 	private static final float ALGAE_START_SPEED = 0.005f;
 	private static final float FRICTION = 0.001f;
@@ -61,9 +61,13 @@ public class NAlgae extends FloatingObject {
 	private float calcFriction() {
 		return Math.min(FRICTION*(mSize*mSize+mSize+3), MAX_FRICTION);
 	}
-	
-	@Override
-	public int nutrition() {
+
+	public int getNutrition() {
 		return FOOD_ALGAE_BITE_NUTRITION;
+	}
+
+	public void processBite() {
+		setSize(mSize-1);
+		if (getSize() < 1) setToRemove();
 	}
 }
