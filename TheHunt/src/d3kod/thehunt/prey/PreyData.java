@@ -10,6 +10,7 @@ public class PreyData {
 	public static int BODY_BENDS_PER_SECOND = 12;
 	public static int BODY_BEND_DELAY = TheHuntRenderer.TICKS_PER_SECOND/BODY_BENDS_PER_SECOND;
 	public static final int ACTIONS_PER_SECOND_MAX = 30;
+	private static final int EAT_PER_SECOND = 2;
 	public static int ACTIONS_PER_SECOND = 30;
 	public static int ACTION_DELAY = TheHuntRenderer.TICKS_PER_SECOND/ACTIONS_PER_SECOND;
 	
@@ -27,7 +28,7 @@ public class PreyData {
 	public static int SMALL_TICKS_BACK_PER_TURN = TheHuntRenderer.TICKS_PER_SECOND/SMALL_TURNS_BACK_PER_SECOND;
 	public static int MEDIUM_TICKS_BACK_PER_TURN = TheHuntRenderer.TICKS_PER_SECOND/MEDIUM_TURNS_BACK_PER_SECOND;
 	public static int LARGE_TICKS_BACK_PER_TURN = TheHuntRenderer.TICKS_PER_SECOND/LARGE_TURNS_BACK_PER_SECOND;
-	
+	public static int EAT_TICKS = TheHuntRenderer.TICKS_PER_SECOND/EAT_PER_SECOND;
 	
 	public static int angleFlopSmall = 20;
 	public static int angleFlopMedium = 45;
