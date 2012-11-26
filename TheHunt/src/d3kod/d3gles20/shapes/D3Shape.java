@@ -3,6 +3,7 @@ package d3kod.d3gles20.shapes;
 import java.nio.FloatBuffer;
 import java.util.Arrays;
 
+import android.graphics.PointF;
 import android.opengl.GLES20;
 import android.opengl.Matrix;
 import android.util.Log;
@@ -118,6 +119,10 @@ abstract public class D3Shape {
 
 	public float getCenterY() {
 		return mCenter[1];
+	}
+
+	public PointF getCenter() {
+		return new PointF(mCenter[0], mCenter[1]);
 	}
 	
 	abstract public float getRadius();

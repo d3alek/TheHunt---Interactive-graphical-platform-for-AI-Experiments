@@ -7,11 +7,13 @@ import android.opengl.Matrix;
 import android.util.FloatMath;
 import android.util.Log;
 import d3kod.d3gles20.D3GLES20;
+import d3kod.d3gles20.D3Maths;
 import d3kod.d3gles20.TextureManager;
 import d3kod.thehunt.TheHuntRenderer;
 import d3kod.thehunt.environment.Environment;
 import d3kod.thehunt.environment.EnvironmentData;
 import d3kod.thehunt.environment.FloatingObject;
+import d3kod.thehunt.environment.NAlgae;
 import d3kod.thehunt.floating_text.CrunchText;
 import d3kod.thehunt.floating_text.FlopText;
 import d3kod.thehunt.floating_text.PanicText;
@@ -346,9 +348,16 @@ public class Prey {
 		case FORWARD_MEDIUM: backFinMotion(TurnAngle.BACK_MEDIUM); break;
 		case FORWARD_LARGE: backFinMotion(TurnAngle.BACK_LARGE); break;
 		case eat: eat(); break; 
+		case poop: poop(); break;
 		case none: break;
 		default: Log.v(TAG, "Could not process action!");
 		}
+	}
+
+	private void poop() {
+		//TODO D3Prey does not use getCenter... !!! 
+		mEnv.addNewAlgae(1, new PointF(mD.mPosX, mD.mPosY), D3Maths.getRandAngle());
+		mWorldModel.reduceEnergy(NAlgae.FOOD_ALGAE_BITE_NUTRITION);
 	}
 
 	private void eat() {

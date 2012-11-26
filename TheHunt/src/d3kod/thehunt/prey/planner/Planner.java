@@ -30,6 +30,8 @@ public class Planner {
 		if (!mPlan.finishedCurrentAction()) {
 //			Log.v(TAG, "Ticking current action")
 			mPlan.tickCurrentAction();
+			//TODO: this looks like a good place for parallel actions
+			if (mWorldModel.amOverweight()) return Action.poop;
 			return Action.none;
 		}
 		mPlan.update(mWorldModel);

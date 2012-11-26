@@ -10,7 +10,7 @@ public class NAlgae extends FloatingObject implements Eatable {
 	private static final float FRICTION = 0.001f;
 	private static final float MAX_FRICTION = 0.1f;
 	private static final int MAX_SIZE = 50;
-	private static final int FOOD_ALGAE_BITE_NUTRITION = 20;
+	public static final int FOOD_ALGAE_BITE_NUTRITION = 20;
 	private int mSize;
 
 	public NAlgae(int n, PointF pos, float dirAngle) {
@@ -40,6 +40,7 @@ public class NAlgae extends FloatingObject implements Eatable {
 		setVelocity(
 				getVX()+algae.getVX()*prevSize2/((float)prevSize1), 
 				getVY()+algae.getVY()*prevSize2/((float)prevSize1));
+		algae.setSize(prevSize2 - (mSize - prevSize1)); 
 	}
 	
 	public int getSize() {

@@ -215,15 +215,19 @@ public class EnvironmentData {
 					algae2 = ((NAlgae)fo2);
 					if (algae1.getSize() > algae2.getSize()) {
 						algae1.mergeWith(algae2);
-						algae2.setToRemove();
-						toRemove.add(algae2);
+						if (algae2.getSize() == 0) {
+							algae2.setToRemove();
+							toRemove.add(algae2);
+						}
 						Log.v(TAG, "Bigger " + algae1 + " new size " + algae1.getSize() + " and to remove " + algae2);
 						break;
 					}
 					else {
 						algae2.mergeWith(algae1);
-						algae1.setToRemove();
-						toRemove.add(algae1);
+						if (algae1.getSize() == 0) {
+							algae1.setToRemove();
+							toRemove.add(algae1);
+						}
 						Log.v(TAG, "Bigger " + algae2 + " new size " + algae2.getSize() + " and to remove " + algae1);
 						break;
 					}

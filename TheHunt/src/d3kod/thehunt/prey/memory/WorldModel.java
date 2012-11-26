@@ -6,13 +6,11 @@ import android.util.Log;
 import d3kod.d3gles20.D3Maths;
 import d3kod.thehunt.TheHuntRenderer;
 import d3kod.thehunt.environment.Dir;
-import d3kod.thehunt.environment.FloatingObject;
 import d3kod.thehunt.events.Event;
 import d3kod.thehunt.events.Event.EventType;
 import d3kod.thehunt.events.EventAlgae;
 import d3kod.thehunt.events.EventAt;
 import d3kod.thehunt.events.EventCurrent;
-import d3kod.thehunt.events.EventFood;
 import d3kod.thehunt.events.EventLight;
 import d3kod.thehunt.events.EventNoise;
 import d3kod.thehunt.events.MovingEvent;
@@ -59,6 +57,7 @@ public class WorldModel {
 //	private boolean mPanic;
 	private int incrRiskCounter;
 	private MoodLevel mMoodLevel;
+	private boolean mOverweight;
 	
 	
 	public WorldModel(float screenWidth, float screenHeight) {
@@ -69,6 +68,7 @@ public class WorldModel {
 		mEnergy = MAX_ENERGY;
 		energyDepleteCounter = 0;
 		incrRiskCounter = 0;
+		mOverweight = false;
 	}
 	public void update(ArrayList<Event> sensorEvents) {
 		for (Event e: sensorEvents) {
@@ -80,8 +80,7 @@ public class WorldModel {
 		
 		if (energyDepleteCounter >= ENERGY_DEPLETE_TICKS) {
 			energyDepleteCounter = 0;
-			mEnergy -= ENERGY_DEPLETE_SPEED;
-			if (mEnergy < 0) mEnergy = 0;
+			reduceEnergy(ENERGY_DEPLETE_SPEED);
 		}
 		else {
 			energyDepleteCounter++;
@@ -220,9 +219,9 @@ public class WorldModel {
 			mEventMemory.remove(mNearestFood);
 		}
 		mEnergy += energy;
-		if (mEnergy > MAX_ENERGY) {
-			mEnergy = MAX_ENERGY;
-		}
+//		if (mEnergy > MAX_ENERGY) {
+//			mEnergy = MAX_ENERGY;
+//		}
 		//TODO: Do we need this?
 		mNearestFood = recallNearestFood();
 	}
@@ -310,5 +309,16 @@ public class WorldModel {
 		EventAlgae nearestAlgae = recallNearestAlgae();
 		if (nearestAlgae == null) mNearestAlgae = null;
 		else mNearestAlgae.set(nearestAlgae);
+	}
+	public boolean amOverweight() {
+		return mOverweight;
+	}
+	public void reduceEnergy(int amount) {
+		mEnergy -= amount;
+		if (mEnergy > MAX_ENERGY) mOverweight = true;
+		else {
+			mOverweight = false;
+			if (mEnergy < 0) mEnergy = 0;
+		}
 	}
 }

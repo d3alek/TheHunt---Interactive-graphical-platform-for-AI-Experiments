@@ -35,6 +35,10 @@ public class Environment {
 		seedAlgae();
 	}
 	
+	public void addNewAlgae(int n, PointF pos, float dirAngle) {
+		data.addFloatingObject(new NAlgae(n, pos, dirAngle));
+	}
+	
 	private void seedAlgae() {
 		for (int i = 0; i < ALGAE_NUM; ++i) {
 			data.addFloatingObject(new NAlgae(1, randomPosInEnv(), D3Maths.getRandAngle()));

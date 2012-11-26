@@ -129,9 +129,13 @@ public class CatchNet {
 	}
 
 	public void finish(float x, float y) {
-		if (mPathGraphic == null || mPathGraphic.isInvalid() || mPathGraphic.isFinished()) {
-			// TODO: is mPathGraphic null now? ...
+		// TODO: remove restrictions on net placement, handle in game logic
+		if (mPathGraphic == null) {
 			notShown = true;
+			return;
+		}
+		if (mPathGraphic.isInvalid() || mPathGraphic.isFinished()) {
+			// TODO: is mPathGraphic null now? ...
 			return;
 		}
 		if (mPathGraphic.getLength() < MAX_FOOD_PLACEMENT_LENGTH) {
