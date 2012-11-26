@@ -12,6 +12,7 @@ public class D3FoodGM extends D3Shape {
 
 	private static float[] foodColor = {0.2f, 0.2f, 0.2f, 1.0f};
 	private static int drawType = GLES20.GL_LINE_LOOP;
+	private static final float radius = 0.01f;
 	
 	protected D3FoodGM(ShaderManager sm) {
 		super(foodColor, drawType, sm.getDefaultProgram());
@@ -19,12 +20,12 @@ public class D3FoodGM extends D3Shape {
 	}
 
 	private FloatBuffer makeVertexBuffer() {
-		return Utilities.newFloatBuffer(D3Maths.circleVerticesData(0.01f, 20));
+		return Utilities.newFloatBuffer(D3Maths.circleVerticesData(radius, 20));
 	}
 
 	@Override
 	public float getRadius() {
-		throw new UnsupportedOperationException();
+		return radius;
 	}
 
 }

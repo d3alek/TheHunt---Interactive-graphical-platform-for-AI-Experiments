@@ -50,6 +50,10 @@ public class NAlgae extends FloatingObject implements Eatable {
 		mSize = Math.min(size, MAX_SIZE);
 		updateGraphicSize();
 	}
+
+	public void grow(int increment) {
+		setSize(mSize + increment);
+	}
 	
 	@Override
 	public void applyFriction() {

@@ -30,6 +30,8 @@ public class EnvironmentData {
 		-0.8f, -0.5f,
 		1.2f, 0.7f
 	};
+
+	private static final int FOOD_GM_SIZE_INCREMENT = 3;
 	
 //	private static final float[] AlGAE_HARDCODED_POS = {
 //		0f, 0f
@@ -153,7 +155,7 @@ public class EnvironmentData {
 	
 	public FloatingObject removeFood(float x, float y) {
 		for (FloatingObject fo: mFloatingObjects) {
-			if (fo.getType() != Type.FOOD_ALGAE && fo.getType() != Type.FOOD_GM) continue;
+			if (fo.getType() != Type.FOOD_GM) continue;
 			float foX = fo.getX(), foY = fo.getY();
 			if (D3Maths.circleContains(x, y, Prey.EAT_FOOD_RADIUS, foX, foY)) {
 				fo.clearGraphic();
@@ -194,7 +196,7 @@ public class EnvironmentData {
 			}
 		}
 		
-		// Elementary collision detection between algae only!
+		// Elementary collision detection between algae + GM food
 		FloatingObject fo1, fo2;
 		NAlgae algae1, algae2;
 		for (int i = 0; i < mFloatingObjects.size(); ++i) {
@@ -202,9 +204,13 @@ public class EnvironmentData {
 			if (fo1.toRemove() || fo1.getType() != Type.ALGAE) continue;
 			for (int j = i; j < mFloatingObjects.size(); ++j) {
 				fo2 = mFloatingObjects.get(j);
-				if (fo2.toRemove() || fo2.getType() != Type.ALGAE || fo2 == fo1) continue;
+				if (fo2.toRemove() 
+						//|| (fo2.getType() != Type.ALGAE && fo1.getType() != Type.FOOD_GM) 
+						|| fo2.getType() != Type.ALGAE
+						|| fo2 == fo1) {
+					continue;
+				}
 				if (mD3GLES20.shapesCollide(fo1.getGraphic(), fo2.getGraphic())) {
-					//Log.v(TAG, "Collision between " + fo1 + " and " + fo2);
 					algae1 = ((NAlgae)fo1);
 					algae2 = ((NAlgae)fo2);
 					if (algae1.getSize() > algae2.getSize()) {
@@ -223,7 +229,20 @@ public class EnvironmentData {
 					}
 				}
 			}
+			for (int j = 0; j < mFloatingObjects.size(); ++j) {
+				fo2 = mFloatingObjects.get(j);
+				if (fo2.toRemove() || fo2.getType() != Type.FOOD_GM) {
+					continue;
+				}
+				if (mD3GLES20.shapesCollide(fo1.getGraphic(), fo2.getGraphic())) {
+					algae1 = (NAlgae) fo1;
+					algae1.grow(FOOD_GM_SIZE_INCREMENT);
+					fo2.setToRemove();
+					toRemove.add(fo2);
+				}
+			}
 		}
+		
 		
 		for (FloatingObject fo: toRemove) {
 			fo.clearGraphic();
