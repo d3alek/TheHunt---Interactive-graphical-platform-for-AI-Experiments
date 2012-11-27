@@ -11,13 +11,18 @@ public class MoveTowardsPlan extends Plan {
 	private static final String TAG = "GoToPlan";
 	private static final float TOLERANCE = 0.005f;
 	private static final float GOING_TOWARDS_TARGET_ANGLE_MAX = TurnAngle.LEFT_SMALL.getValue()/2;
+	private static final int TURN_LARGE_COOLDOWN = 10;
 //	private float tX;
 //	private float tY;
 	private Event mTarget;
+	private int turnLeftLargeCooldown;
+	private int turnRightLargeCooldown;
 	
 	public MoveTowardsPlan(float hX, float hY, float bX, float bY, Event target) {
 		super(target.getX(), target.getY());
 		mTarget = target;
+		turnLeftLargeCooldown = 0;
+		turnRightLargeCooldown = 0;
 //		this.tX = tX; this.tY = tY;
 	}
 	public void update(WorldModel mWorldModel) {
@@ -47,8 +52,15 @@ public class MoveTowardsPlan extends Plan {
 			}
 			else {
 				//TODO: don't do two large in a row
-				addNextAction(Action.TURN_LEFT_LARGE);
+				if (turnLeftLargeCooldown > 0) {
+					addNextAction(Action.TURN_LEFT_SMALL);
+				}
+				else {
+					addNextAction(Action.TURN_LEFT_LARGE);
+					turnLeftLargeCooldown = TURN_LARGE_COOLDOWN;
+				}
 			}
+			turnLeftLargeCooldown--;
 //			else {
 //				
 //				
@@ -68,8 +80,15 @@ public class MoveTowardsPlan extends Plan {
 				addNextAction(Action.TURN_RIGHT_MEDIUM);
 			}
 			else {
-				addNextAction(Action.TURN_RIGHT_LARGE);
+				if (turnRightLargeCooldown > 0) {
+					addNextAction(Action.TURN_RIGHT_SMALL);
+				}
+				else {
+					addNextAction(Action.TURN_RIGHT_LARGE);
+					turnRightLargeCooldown = TURN_LARGE_COOLDOWN;
+				}
 			}
+			turnRightLargeCooldown--;
 		}
 	}
 	

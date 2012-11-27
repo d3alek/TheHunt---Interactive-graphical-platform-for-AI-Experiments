@@ -14,6 +14,9 @@ import d3kod.thehunt.events.EventCurrent;
 import d3kod.thehunt.events.EventLight;
 import d3kod.thehunt.events.EventNoise;
 import d3kod.thehunt.events.MovingEvent;
+import d3kod.thehunt.prey.D3Prey;
+import d3kod.thehunt.prey.Prey;
+import d3kod.thehunt.prey.PreyData;
 
 
 //TODO: Refractor - make getNearest{Algae,Food}() method of the memory, abstract away the concept of nearest things as well
@@ -36,7 +39,7 @@ public class WorldModel {
 	
 	private static final int SECONDS_FOR_INCR_RISK = 2;
 	private static final int INCR_RISK_TICKS = TheHuntRenderer.TICKS_PER_SECOND*SECONDS_FOR_INCR_RISK;
-	public static final int MINIMUM_HIDING_ALGAE_SIZE = 10;
+	public static final float MINIMUM_HIDING_ALGAE_RADIUS = D3Prey.preyRadius;
 	
 	//MemoryGraph mNodes;
 	private float mHeadX;
@@ -109,7 +112,7 @@ public class WorldModel {
 			}
 			else if (knowAlgaeLocation() && mNearestAlgae.equals(me)) {
 				mNearestAlgae.set((EventAlgae) me);
-				if (mNearestAlgae.getSize() < MINIMUM_HIDING_ALGAE_SIZE) {
+				if (mNearestAlgae.getRadius() < MINIMUM_HIDING_ALGAE_RADIUS) {
 					noAlgaeHere();
 					Log.v(TAG, "Forgetting the current nearest algae because too small!");
 					return; // otherwise will remove it again
@@ -165,7 +168,7 @@ public class WorldModel {
 			}
 		}
 		if (e.type() == EventType.FOOD || e.type() == EventType.ALGAE) {
-			if (e.type() == EventType.ALGAE && ((EventAlgae)e).getSize() < MINIMUM_HIDING_ALGAE_SIZE) {
+			if (e.type() == EventType.ALGAE && ((EventAlgae)e).getRadius() < MINIMUM_HIDING_ALGAE_RADIUS) {
 				return;
 			}
 			rememberEvent((MovingEvent) e);

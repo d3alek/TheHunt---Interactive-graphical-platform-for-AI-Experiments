@@ -35,8 +35,8 @@ public class GoToAndEatPlan extends GoToPlan {
 		}
 	}
 	
-	@Override
-	protected boolean closeEnough(float headFromTarget) {
-		return headFromTarget < Prey.EAT_FOOD_RADIUS;
-	}
+//	@Override
+//	protected boolean closeEnough(float headFromTarget) {
+//		return headFromTarget < Prey.EAT_FOOD_RADIUS;
+//	}
 }

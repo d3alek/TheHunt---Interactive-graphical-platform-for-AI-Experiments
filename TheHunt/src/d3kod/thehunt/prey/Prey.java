@@ -9,6 +9,7 @@ import android.util.Log;
 import d3kod.d3gles20.D3GLES20;
 import d3kod.d3gles20.D3Maths;
 import d3kod.d3gles20.TextureManager;
+import d3kod.d3gles20.shapes.D3Shape;
 import d3kod.thehunt.TheHuntRenderer;
 import d3kod.thehunt.environment.Environment;
 import d3kod.thehunt.environment.EnvironmentData;
@@ -362,7 +363,7 @@ public class Prey {
 
 	private void eat() {
 //		Log.v(TAG, "Eating food at " + mD.mPosHeadX + " " + mD.mPosHeadY);
-		int nutrition = mEnv.eatFood(mD.mPosHeadX, mD.mPosHeadY);
+		int nutrition = mEnv.eatFood(mD.mPosHeadX, mD.mPosHeadY, this);
 		if (nutrition == 0) {
 			Log.v(TAG, "I thought I ate something, but it felt like thin air :?");
 			mWorldModel.eatFood(0);
@@ -428,5 +429,9 @@ public class Prey {
 
 	public PointF getPredictedPosition() {
 		return new PointF(mGraphic.getPredictedX(), mGraphic.getPredictedY());
+	}
+
+	public D3Shape getGraphic() {
+		return mGraphic;
 	}
 }

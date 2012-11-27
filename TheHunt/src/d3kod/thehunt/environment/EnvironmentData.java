@@ -213,22 +213,22 @@ public class EnvironmentData {
 				if (mD3GLES20.shapesCollide(fo1.getGraphic(), fo2.getGraphic())) {
 					algae1 = ((NAlgae)fo1);
 					algae2 = ((NAlgae)fo2);
-					if (algae1.getSize() > algae2.getSize()) {
+					if (algae1.getN() > algae2.getN()) {
 						algae1.mergeWith(algae2);
-						if (algae2.getSize() == 0) {
+						if (algae2.getN() == 0) {
 							algae2.setToRemove();
 							toRemove.add(algae2);
 						}
-						Log.v(TAG, "Bigger " + algae1 + " new size " + algae1.getSize() + " and to remove " + algae2);
+						Log.v(TAG, "Bigger " + algae1 + " new size " + algae1.getN() + " and to remove " + algae2);
 						break;
 					}
 					else {
 						algae2.mergeWith(algae1);
-						if (algae1.getSize() == 0) {
+						if (algae1.getN() == 0) {
 							algae1.setToRemove();
 							toRemove.add(algae1);
 						}
-						Log.v(TAG, "Bigger " + algae2 + " new size " + algae2.getSize() + " and to remove " + algae1);
+						Log.v(TAG, "Bigger " + algae2 + " new size " + algae2.getN() + " and to remove " + algae1);
 						break;
 					}
 				}

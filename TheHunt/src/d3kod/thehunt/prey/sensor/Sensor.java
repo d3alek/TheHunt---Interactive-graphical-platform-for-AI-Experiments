@@ -43,8 +43,8 @@ public class Sensor {
 				for (FloatingObject fo: sensedObjects) {
 					switch(fo.getType()) {
 					case ALGAE:
-						sensedEvents.add(new EventAlgae(fo.getX(), fo.getY(), ((NAlgae)fo).getSize()));
-						if (((NAlgae)fo).getSize() >= WorldModel.MINIMUM_HIDING_ALGAE_SIZE) {
+						sensedEvents.add(new EventAlgae(fo.getX(), fo.getY(), ((NAlgae)fo).getRadius()));
+						if (((NAlgae)fo).getRadius() >= WorldModel.MINIMUM_HIDING_ALGAE_RADIUS) {
 							break;
 						}
 						else {

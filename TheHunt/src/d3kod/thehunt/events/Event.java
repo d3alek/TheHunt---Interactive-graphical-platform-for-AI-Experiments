@@ -18,6 +18,10 @@ public abstract class Event {
 	
 	public abstract float getY();
 	
+	public float getRadius() {
+		return 0;
+	}
+	
 	public String toString() {
 		return "Event " + mType;
 	}

@@ -12,6 +12,7 @@ import d3kod.thehunt.events.Event;
 import d3kod.thehunt.events.EventCurrent;
 import d3kod.thehunt.events.EventLight;
 import d3kod.thehunt.events.EventNoise;
+import d3kod.thehunt.prey.D3Prey;
 import d3kod.thehunt.prey.Prey;
 public class Environment {
 	private static final String TAG = "Environment";
@@ -83,11 +84,12 @@ public class Environment {
 		return new EventCurrent(tileDir);
 	}
 	
-	public int eatFood(float x, float y) {
+	public int eatFood(float x, float y, Prey prey) {
 		for (FloatingObject fo: data.getFloatingObjects()) {
 			if (fo.getType() != Type.ALGAE && fo.getType() != Type.FOOD_GM) continue;
 			float foX = fo.getX(), foY = fo.getY();
-			if (D3Maths.circleContains(x, y, Prey.EAT_FOOD_RADIUS, foX, foY)) {
+			//if (D3Maths.circleContains(x, y, Prey.EAT_FOOD_RADIUS, foX, foY)) {
+			if (mD3GLES20.shapesCollide(fo.getGraphic(), prey.getGraphic())) {
 				Eatable eatable = (Eatable) fo;
 				eatable.processBite();
 				return eatable.getNutrition();

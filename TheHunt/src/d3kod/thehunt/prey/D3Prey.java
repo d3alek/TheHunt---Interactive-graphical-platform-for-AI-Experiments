@@ -29,12 +29,12 @@ public class D3Prey extends D3Shape {
 	public static boolean posInterpolation = true;
 	protected final float detailsStep = 0.1f;
 	protected final int STRIDE_BYTES = D3GLES20.COORDS_PER_VERTEX * Utilities.BYTES_PER_FLOAT;
-	protected static final float preySize = 0.8f;
-	protected final float bodyLength = 0.1f * preySize;
+	public static final float preySize = 0.8f;
+	protected static final float bodyLength = 0.1f * preySize;
 	protected final int eyeDetailsLevel = 10;
 	
 	//Head
-	protected final float headSize = 0.04f * preySize;
+	protected static final float headSize = 0.04f * preySize;
 	protected final float[] headPosition = {
 			0, bodyLength/2 + headSize*0.4f, 0
 	};
@@ -145,6 +145,8 @@ public class D3Prey extends D3Shape {
 	protected FloatBuffer rightFinVertexBuffer;
 	protected FloatBuffer leftFinVertexBuffer;
 	public FloatBuffer ribVertexBuffer;
+	
+	public static float preyRadius = (headSize + bodyLength + finSize)/2f;
 	
 	private final float[] leftFootPosition = {
 			0, -bodyLength/2, 0
@@ -425,7 +427,7 @@ public class D3Prey extends D3Shape {
 	
 	@Override
 	public float getRadius() {
-		throw(new UnsupportedOperationException());
+		return preyRadius;
 	}
 
 	public void resetColor() {
