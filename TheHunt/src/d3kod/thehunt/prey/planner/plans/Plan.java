@@ -1,18 +1,18 @@
 package d3kod.thehunt.prey.planner.plans;
 
 import java.util.ArrayList;
+import java.util.Stack;
 
-import android.opengl.Matrix;
 import android.util.Log;
-import d3kod.d3gles20.D3GLES20;
 import d3kod.thehunt.prey.Action;
 import d3kod.thehunt.prey.memory.WorldModel;
-import d3kod.thehunt.prey.planner.Planner;
 
 public class Plan {
 	private static final String TAG = "Plan";
 	private static final int MAX_ACTIONS = 1000;
 	ArrayList<Action> mActions;
+//	ArrayList<Action> mParallelActions;
+	Stack<ParallelAction> mParallelActions;
 	int mCurrentAction;
 	private int mLastAction;
 	private float mTargetX;
@@ -30,6 +30,7 @@ public class Plan {
 	
 	public Plan(float targetX, float targetY, float targetSize, float[] targetColor) {
 		mActions = new ArrayList<Action>();
+		mParallelActions = new Stack<ParallelAction>(); 
 		mCurrentAction = 0;
 		mLastAction = MAX_ACTIONS;
 		mTargetX = targetX;
@@ -121,5 +122,36 @@ public class Plan {
 
 	public void tickCurrentAction() {
 		mCurrentActionTicks--;
+	}
+	
+	public void addParallelAction(Action action) {
+		ParallelAction newAction = new ParallelAction(action);
+		if (mParallelActions.contains(newAction)) {
+			return;
+		}
+		mParallelActions.push(newAction);
+	}
+	//TODO: Use recursion to not wait for top to finish before starting second 
+	public Action getParallelAction() {
+		if (mParallelActions.empty()) {
+			return Action.none;
+		}
+		ParallelAction top = mParallelActions.peek();
+		if (!top.started()) {
+			top.start();
+			return top.getAction(); 
+		}
+		if (top.getTicks() > 1) {
+			top.tickOnce();
+		}
+		else mParallelActions.pop();
+		return Action.none;
+	}
+	
+	public Stack<ParallelAction> getParallelActions() {
+		return mParallelActions;
+	}
+	public void setParallelActions(Stack<ParallelAction> setTo) {
+		mParallelActions = (Stack<ParallelAction>)setTo.clone();
 	}
 }

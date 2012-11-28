@@ -19,7 +19,7 @@ public abstract class Event {
 	public abstract float getY();
 	
 	public float getRadius() {
-		return 0;
+		throw(new UnsupportedOperationException());
 	}
 	
 	public String toString() {

@@ -40,7 +40,7 @@ public class Prey {
 	
 	
 //	private static final float FORCE_TO_DISTANCE = 0.00004f;
-	private static final float FORCE_TO_DISTANCE = 0.00003f;
+	private static final float FORCE_TO_DISTANCE = 0.00002f;
 	
 	public static int flopBacksPerSecond = 2;
 	public static int flopBackTicks = TheHuntRenderer.TICKS_PER_SECOND/flopBacksPerSecond;
@@ -60,6 +60,7 @@ public class Prey {
 		if (PreyData.AI) {
 			updateWorldModel();
 			doAction(mPlanner.nextAction(mWorldModel));
+			doAction(mPlanner.nextParallelAction());
 		}
 		move(dx, dy);
 		
@@ -337,7 +338,11 @@ public class Prey {
 		return new PointF(mD.mPosHeadX, mD.mPosHeadY);
 	}
 	private void doAction(Action nextAction) {
-		if (nextAction == null) return;
+		if (nextAction == null) {
+//			Log.v(TAG, "Action is null!");
+			return;
+		}
+//		Log.v(TAG, "Doing action " + nextAction);
 		switch(nextAction) {
 		case TURN_LEFT_SMALL: turn(TurnAngle.LEFT_SMALL);break;//flopLeft(); break;
 		case TURN_LEFT_MEDIUM: turn(TurnAngle.LEFT_MEDIUM);break;
@@ -348,7 +353,7 @@ public class Prey {
 		case FORWARD_SMALL: backFinMotion(TurnAngle.BACK_SMALL); break;
 		case FORWARD_MEDIUM: backFinMotion(TurnAngle.BACK_MEDIUM); break;
 		case FORWARD_LARGE: backFinMotion(TurnAngle.BACK_LARGE); break;
-		case eat: eat(); break; 
+		case eat: Log.v(TAG, "Doing eat action!"); eat(); break; 
 		case poop: poop(); break;
 		case none: break;
 		default: Log.v(TAG, "Could not process action!");
@@ -363,7 +368,7 @@ public class Prey {
 
 	private void eat() {
 //		Log.v(TAG, "Eating food at " + mD.mPosHeadX + " " + mD.mPosHeadY);
-		int nutrition = mEnv.eatFood(mD.mPosHeadX, mD.mPosHeadY, this);
+		int nutrition = mEnv.eatFood(mD.mPosHeadX, mD.mPosHeadY);
 		if (nutrition == 0) {
 			Log.v(TAG, "I thought I ate something, but it felt like thin air :?");
 			mWorldModel.eatFood(0);

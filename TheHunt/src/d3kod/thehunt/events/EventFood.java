@@ -2,13 +2,13 @@ package d3kod.thehunt.events;
 
 import d3kod.d3gles20.D3Maths;
 
-public class EventFood extends MovingEvent {
+public class EventFood extends EatableEvent {
 	private static final float EQUALS_TOLERANCE = 0.02f; // FoodAlgae velocity
 	
 	private int mNutri;
 
 	public EventFood(float x, float y, int nutrition) {
-		super(x, y, EventType.FOOD);
+		super(x, y, EventType.FOOD, 0); // pass 0 for radius, it will be made to 0.06 or so in EatableEvent
 		mNutri = nutrition;
 	}
 	

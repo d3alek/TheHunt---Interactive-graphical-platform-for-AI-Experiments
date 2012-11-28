@@ -8,6 +8,7 @@ import android.graphics.PointF;
 import d3kod.d3gles20.D3GLES20;
 import d3kod.d3gles20.D3Maths;
 import d3kod.thehunt.environment.FloatingObject.Type;
+import d3kod.thehunt.events.EatableEvent;
 import d3kod.thehunt.events.Event;
 import d3kod.thehunt.events.EventCurrent;
 import d3kod.thehunt.events.EventLight;
@@ -84,12 +85,12 @@ public class Environment {
 		return new EventCurrent(tileDir);
 	}
 	
-	public int eatFood(float x, float y, Prey prey) {
+	public int eatFood(float x, float y) {
 		for (FloatingObject fo: data.getFloatingObjects()) {
 			if (fo.getType() != Type.ALGAE && fo.getType() != Type.FOOD_GM) continue;
 			float foX = fo.getX(), foY = fo.getY();
-			//if (D3Maths.circleContains(x, y, Prey.EAT_FOOD_RADIUS, foX, foY)) {
-			if (mD3GLES20.shapesCollide(fo.getGraphic(), prey.getGraphic())) {
+			if (D3Maths.circleContains(x, y, Math.max(fo.getRadius(), EatableEvent.MIN_RADIUS), foX, foY)) {
+//			if (mD3GLES20.shapesCollide(fo.getGraphic(), prey.getGraphic())) {
 				Eatable eatable = (Eatable) fo;
 				eatable.processBite();
 				return eatable.getNutrition();

@@ -1,14 +1,16 @@
 package d3kod.thehunt.prey.planner;
 
+import java.util.Stack;
+
 import d3kod.d3gles20.D3GLES20;
 import d3kod.thehunt.prey.Action;
 import d3kod.thehunt.prey.memory.MoodLevel;
 import d3kod.thehunt.prey.memory.WorldModel;
 import d3kod.thehunt.prey.planner.plans.ExplorePlan;
 import d3kod.thehunt.prey.planner.plans.GoToAndEatPlan;
-import d3kod.thehunt.prey.planner.plans.GoToAndStayPlan;
 import d3kod.thehunt.prey.planner.plans.GotoAndStayWhileHidden;
 import d3kod.thehunt.prey.planner.plans.NoPlan;
+import d3kod.thehunt.prey.planner.plans.ParallelAction;
 import d3kod.thehunt.prey.planner.plans.Plan;
 import d3kod.thehunt.prey.planner.plans.RapidExplorePlan;
 
@@ -31,9 +33,10 @@ public class Planner {
 //			Log.v(TAG, "Ticking current action")
 			mPlan.tickCurrentAction();
 			//TODO: this looks like a good place for parallel actions
-			if (mWorldModel.amOverweight()) return Action.poop;
+			//if (mWorldModel.amOverweight()) return Action.poop;
 			return Action.none;
 		}
+		if (mWorldModel.amOverweight()) mPlan.addParallelAction(Action.poop);
 		mPlan.update(mWorldModel);
 		if (!mPlan.isFinished()) {
 			if (SHOW_TARGET && !(mPlan instanceof ExplorePlan)) mD3GLES20.setShapePosition(mPlanTarget, mPlan.getTargetX(), mPlan.getTargetY());
@@ -42,6 +45,7 @@ public class Planner {
 		else if (SHOW_TARGET && !(mPlan instanceof ExplorePlan)) mD3GLES20.removeShape(mPlanTarget);
 		
 		mState = checkForSomethingInteresting(mWorldModel);
+		Stack<ParallelAction> saveParallelActions = mPlan.getParallelActions();
 //		Log.v(TAG, "mState is " + mState);
 		switch(mState) {
 		case EXPLORE: mPlan = makeExplorePlan(mWorldModel); break;
@@ -49,6 +53,7 @@ public class Planner {
 		case HIDE: mPlan = makeHidePlan(mWorldModel); break;
 		case DONOTHING: mPlan = new NoPlan(mWorldModel.getHeadX(), mWorldModel.getHeadY()); break;
 		}
+		mPlan.setParallelActions(saveParallelActions);
 		if (SHOW_TARGET && !(mPlan instanceof ExplorePlan)) makeTarget();
 		mPlan.update(mWorldModel);
 		if (SHOW_TARGET && !(mPlan instanceof ExplorePlan)) mD3GLES20.setShapePosition(mPlanTarget, mPlan.getTargetX(), mPlan.getTargetY());
@@ -143,6 +148,10 @@ public class Planner {
 
 	public PlanState getState() {
 		return mState;
+	}
+
+	public Action nextParallelAction() {
+		return mPlan.getParallelAction();
 	}
 	
 }

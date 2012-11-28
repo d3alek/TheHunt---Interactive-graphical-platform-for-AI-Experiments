@@ -28,7 +28,8 @@ public class GoToAndEatPlan extends GoToPlan {
 		else super.update(mWorldModel);
 		if (arrived) {
 			finish();
-			addNextAction(Action.eat);
+//			addNextAction(Action.eat);
+			addParallelAction(Action.eat);
 			ate = true;
 //			logActions();
 			return;

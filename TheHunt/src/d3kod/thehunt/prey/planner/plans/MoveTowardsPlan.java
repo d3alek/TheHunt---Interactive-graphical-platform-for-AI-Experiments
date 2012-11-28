@@ -11,7 +11,7 @@ public class MoveTowardsPlan extends Plan {
 	private static final String TAG = "GoToPlan";
 	private static final float TOLERANCE = 0.005f;
 	private static final float GOING_TOWARDS_TARGET_ANGLE_MAX = TurnAngle.LEFT_SMALL.getValue()/2;
-	private static final int TURN_LARGE_COOLDOWN = 10;
+	private static final int TURN_LARGE_COOLDOWN = 3;
 //	private float tX;
 //	private float tY;
 	private Event mTarget;
@@ -53,7 +53,7 @@ public class MoveTowardsPlan extends Plan {
 			else {
 				//TODO: don't do two large in a row
 				if (turnLeftLargeCooldown > 0) {
-					addNextAction(Action.TURN_LEFT_SMALL);
+					addNextAction(Action.TURN_LEFT_MEDIUM);
 				}
 				else {
 					addNextAction(Action.TURN_LEFT_LARGE);
@@ -81,7 +81,7 @@ public class MoveTowardsPlan extends Plan {
 			}
 			else {
 				if (turnRightLargeCooldown > 0) {
-					addNextAction(Action.TURN_RIGHT_SMALL);
+					addNextAction(Action.TURN_RIGHT_MEDIUM);
 				}
 				else {
 					addNextAction(Action.TURN_RIGHT_LARGE);

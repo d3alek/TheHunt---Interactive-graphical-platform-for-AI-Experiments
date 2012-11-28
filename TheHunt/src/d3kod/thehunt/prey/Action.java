@@ -17,4 +17,8 @@ public enum Action {
 	public int getTicks() {
 		return mTicks;
 	}
+	
+	public void tickOnce() {
+		mTicks--;
+	}
 }
