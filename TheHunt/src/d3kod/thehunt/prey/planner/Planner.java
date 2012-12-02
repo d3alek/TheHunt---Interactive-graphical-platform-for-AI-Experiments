@@ -46,7 +46,6 @@ public class Planner {
 		
 		mState = checkForSomethingInteresting(mWorldModel);
 		Stack<ParallelAction> saveParallelActions = mPlan.getParallelActions();
-//		Log.v(TAG, "mState is " + mState);
 		switch(mState) {
 		case EXPLORE: mPlan = makeExplorePlan(mWorldModel); break;
 		case FORAGE: mPlan = makeScavagePlan(mWorldModel); break;
@@ -101,11 +100,6 @@ public class Planner {
 	}
 
 	private Plan makeScavagePlan(WorldModel mWorldModel) {
-//		Log.v(TAG, "Making scavage plan");
-//		Plan scvgPlan = new GoToAndEatPlan(
-//				mWorldModel.getHeadX(), mWorldModel.getHeadY(), 
-//				mWorldModel.getBodyX(), mWorldModel.getBodyY(), 
-//				mWorldModel.getNearestFoodX(), mWorldModel.getNearestFoodY());
 		Plan scvgPlan = new GoToAndEatPlan(
 				mWorldModel.getHeadX(), mWorldModel.getHeadY(), 
 				mWorldModel.getBodyX(), mWorldModel.getBodyY(), 
@@ -128,11 +122,6 @@ public class Planner {
 		return hidePlan;
 	}
 	
-//	private Action chooseRandomAction() {
-//		int actionInd = Math.round((numActions-1) * mRandom.nextFloat());
-//		return allActions[actionInd];
-//	}
-
 	public void makeTarget() {
 		mPlanTarget = mD3GLES20.newDefaultCircle(mPlan.getTargetSize(), mPlan.getTargetColor(), 10);
 	}

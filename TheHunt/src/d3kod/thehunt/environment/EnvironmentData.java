@@ -219,7 +219,7 @@ public class EnvironmentData {
 							algae2.setToRemove();
 							toRemove.add(algae2);
 						}
-						Log.v(TAG, "Bigger " + algae1 + " new size " + algae1.getN() + " and to remove " + algae2);
+						//Log.v(TAG, "Bigger " + algae1 + " new size " + algae1.getN() + " and to remove " + algae2);
 						break;
 					}
 					else {
@@ -228,7 +228,8 @@ public class EnvironmentData {
 							algae1.setToRemove();
 							toRemove.add(algae1);
 						}
-						Log.v(TAG, "Bigger " + algae2 + " new size " + algae2.getN() + " and to remove " + algae1);
+						//Log.v(TAG, "Bigger " + algae2 + " new size " + algae2.getN() + " and to remove " + algae1);
+		
 						break;
 					}
 				}

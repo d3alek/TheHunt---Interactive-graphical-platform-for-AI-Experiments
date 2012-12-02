@@ -228,20 +228,22 @@ public class WorldModel {
 		//TODO: Do we need this?
 		mNearestFood = recallNearestFood();
 	}
+	
 	private MovingEvent recallNearestFood() {
-		float closestX = INF, closestY = INF;
+		float closestX = INF, closestY = INF, closestRadius = 0;
+		float foodX, foodY, foodRadius;
 		MovingEvent closestFood = null;
 		
 		for (MovingEvent e: mEventMemory) {
-//			if (e.type() == EventType.FOOD) {
-//				EventFood ef = (EventFood)e;
-				float foodX = e.getX();
-				float foodY = e.getY();
-				if (D3Maths.distance(mHeadX, mHeadY, foodX, foodY) <
-						D3Maths.distance(mHeadX, mHeadY, closestX, closestY)) {
+				foodX = e.getX();
+				foodY = e.getY();
+				foodRadius = e.getRadius();
+				if (D3Maths.distanceToCircle(mHeadX, mHeadY, foodX, foodY, foodRadius) <
+						D3Maths.distanceToCircle(mHeadX, mHeadY, closestX, closestY, closestRadius)) {
 					closestFood = e;
 					closestX = foodX; 
 					closestY = foodY;
+					closestRadius = foodRadius;
 				}
 //			}
 		}

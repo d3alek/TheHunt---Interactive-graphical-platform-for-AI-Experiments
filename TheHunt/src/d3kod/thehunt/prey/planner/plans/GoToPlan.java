@@ -15,7 +15,7 @@ public class GoToPlan extends MoveTowardsPlan {
 	public GoToPlan(float hX, float hY, float bX, float bY, Event target) {
 		super(hX, hY, bX, bY, target);
 		targetRadius = target.getRadius();
-		Log.v(TAG, "New GoToPlan to radius " + targetRadius);
+		//Log.v(TAG, "New GoToPlan to radius " + targetRadius);
 		arrived = false;
 	}
 
@@ -24,7 +24,7 @@ public class GoToPlan extends MoveTowardsPlan {
 		if (arrived) return;
 		float hX = mWorldModel.getHeadX(), hY = mWorldModel.getHeadY();
 		float headFromTarget = D3Maths.distance(hX, hY, getTX(), getTY());
-		Log.v(TAG, "Updating, headFromTarget is now " + headFromTarget); 
+		//Log.v(TAG, "Updating, headFromTarget is now " + headFromTarget); 
 		if (closeEnough(headFromTarget)) {
 			arrived = true;
 //			if (isEmpty()) addNextAction(Action.none);

@@ -40,7 +40,11 @@ public class D3Maths {
 	public static float distance(float mX, float mY, float fX, float fY) {
 		return FloatMath.sqrt((mX-fX)*(mX-fX)+(mY-fY)*(mY-fY));
 	}
-
+	
+	public static float distanceToCircle(float x, float y, float circleX,
+			float circleY, float circleRadius) {
+		return distance(x, y, circleX, circleY) - circleRadius; 
+	}
 	public static float det(float x1, float y1, float x2, float y2, float x3, float y3) {
 		return x1 * y2 + y1 * x3 + x2 * y3 - x3 * y2 - y3 * x1 - x2 * y1;
 	}
@@ -97,4 +101,6 @@ public class D3Maths {
 	public static float getRandAngle() {
 		return random.nextFloat()*PI*2;
 	}
+
+	
 }
