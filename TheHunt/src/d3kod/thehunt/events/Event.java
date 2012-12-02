@@ -18,6 +18,13 @@ public abstract class Event {
 	
 	public abstract float getY();
 	
+	public boolean isOfType(EventType[] types) {
+		for (EventType type: types) {
+			if (mType == type) return true;
+		}
+		return false;
+	}
+	
 	public float getRadius() {
 		throw(new UnsupportedOperationException());
 	}
