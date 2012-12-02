@@ -1,5 +1,6 @@
 package d3kod.thehunt.prey;
 
+import android.graphics.PointF;
 import d3kod.thehunt.TheHuntRenderer;
 import d3kod.thehunt.floating_text.PanicText;
 
@@ -82,6 +83,7 @@ public class PreyData {
 	protected float bodyEndAngleRot;
 	
 	protected float[] mHeadPosMatrix = new float[16];
+	protected float[] mTailPosPatrix = new float[16];
 	protected int bodyBendCounter;
 	protected int backFinAngle;
 	
@@ -95,4 +97,5 @@ public class PreyData {
 	protected TurnAngle turningBackFinAngle;
 	
 	protected PanicText emotionText;
+	public PointF mPosTail;
 }

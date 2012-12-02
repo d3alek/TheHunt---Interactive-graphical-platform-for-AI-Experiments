@@ -38,7 +38,6 @@ public class Prey {
 
 	public static final float bodyToHeadLength = 0.07f;
 	
-	
 //	private static final float FORCE_TO_DISTANCE = 0.00004f;
 	private static final float FORCE_TO_DISTANCE = 0.00002f;
 	
@@ -55,7 +54,7 @@ public class Prey {
 	public void update(float dx, float dy) {
 		if (mD.mIsCaught) return;
 		
-		calcPosHead();
+		calcPosHeadandTail();
 
 		if (PreyData.AI) {
 			updateWorldModel();
@@ -108,16 +107,21 @@ public class Prey {
 		}
 	}
 
-	private void calcPosHead() {
+	private void calcPosHeadandTail() {
 		float[] posTemp = { 0.0f, bodyToHeadLength, 0.0f, 1.0f };
+		float[] posTail = { D3Prey.tailPosition[0], D3Prey.tailPosition[1], 0.0f, 1.0f };
 		
 		Matrix.setIdentityM(mD.mHeadPosMatrix, 0);
 		Matrix.translateM(mD.mHeadPosMatrix, 0, mD.mPosX, mD.mPosY, 0);
 		Matrix.rotateM(mD.mHeadPosMatrix, 0, mD.bodyStartAngle, 0, 0, 1);
 		Matrix.multiplyMV(posTemp, 0, mD.mHeadPosMatrix, 0, posTemp, 0);
 		
+		Matrix.setIdentityM(mD.mTailPosPatrix, 0);
+		Matrix.translateM(mD.mTailPosPatrix, 0, mD.mPosX, mD.mPosY, 0);
+		Matrix.multiplyMV(posTail, 0, mD.mTailPosPatrix, 0, posTail, 0);
 		mD.mPosHeadX = posTemp[0]; 
 		mD.mPosHeadY = posTemp[1];
+		mD.mPosTail = new PointF(posTail[0], posTail[1]);
 	}
 
 	public void move(float x, float y) {
@@ -362,7 +366,7 @@ public class Prey {
 
 	private void poop() {
 		//TODO D3Prey does not use getCenter... !!! 
-		mEnv.addNewAlgae(1, new PointF(mD.mPosX, mD.mPosY), D3Maths.getRandAngle());
+		mEnv.addNewAlgae(1, new PointF(mD.mPosTail.x, mD.mPosTail.y), D3Maths.getRandAngle());
 		mWorldModel.reduceEnergy(NAlgae.FOOD_ALGAE_BITE_NUTRITION);
 	}
 
@@ -399,7 +403,7 @@ public class Prey {
 		PointF newPos = mEnv.randomPosInEnv();
 		mD.mPosX = newPos.x; mD.mPosY = newPos.y;
 		mPlanner.clear();
-		calcPosHead();
+		calcPosHeadandTail();
 		updateWorldModel();
 		mWorldModel.refillEnergy();
 		mWorldModel.recalcNearestFood();

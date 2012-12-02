@@ -148,7 +148,7 @@ public class D3Prey extends D3Shape {
 	
 	public static float preyRadius = (headSize + bodyLength + finSize)/2f;
 	
-	private final float[] leftFootPosition = {
+	public static final float[] tailPosition = {
 			0, -bodyLength/2, 0
 	};
 	
@@ -351,13 +351,13 @@ public class D3Prey extends D3Shape {
         
         Matrix.rotateM(mFeetModelMatrix, 0, mModelMatrix, 0, bodyEndAnglePredicted, 0, 0, 1);
         Matrix.translateM(mFeetModelMatrix, 0, 
-        		leftFootPosition[0], leftFootPosition[1], 0);
+        		tailPosition[0], tailPosition[1], 0);
         Matrix.rotateM(mFeetModelMatrix, 0, mLeftFootAngle, 0, 0, 1);
         super.drawBuffer(leftFinVertexBuffer, mFeetModelMatrix);
         
         Matrix.rotateM(mFeetModelMatrix, 0, mModelMatrix, 0, bodyEndAnglePredicted, 0, 0, 1);
         Matrix.translateM(mFeetModelMatrix, 0, 
-        		leftFootPosition[0], leftFootPosition[1], 0);
+        		tailPosition[0], tailPosition[1], 0);
         Matrix.rotateM(mFeetModelMatrix, 0, mRightFootAngle, 0, 0, 1);
         super.drawBuffer(rightFinVertexBuffer, mFeetModelMatrix);
         
