@@ -8,7 +8,7 @@ public enum Action {
 	FORWARD_SMALL(PreyData.SMALL_TICKS_BACK_PER_TURN), FORWARD_MEDIUM(PreyData.MEDIUM_TICKS_BACK_PER_TURN), 
 	FORWARD_LARGE(PreyData.LARGE_TICKS_BACK_PER_TURN), eat(PreyData.EAT_TICKS), none(1), poop(1);
 
-	private int mTicks;
+	private int mTicks; 
 
 	private Action(int ticks) {
 		mTicks = ticks;
