@@ -2,7 +2,7 @@ package d3kod.thehunt.prey;
 
 import java.util.Random;
 
-import android.graphics.PointF;
+import android.graphics.PointF; 
 import android.opengl.Matrix;
 import android.util.FloatMath;
 import android.util.Log;
