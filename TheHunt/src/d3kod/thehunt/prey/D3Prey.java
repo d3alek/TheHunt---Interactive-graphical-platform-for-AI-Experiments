@@ -284,7 +284,11 @@ public class D3Prey extends D3Shape {
 	private float[] calcMoveHeadVerticesData(int step) {
 		float[] part4Modif = D3Maths.quadBezierCurveVertices(
 				headPart4StartEatingMotion[step], headPart4BEatingMotion[step], headPart4C, headPart1Start, detailsStep, headSize);
-		float[] headVerticesData = Arrays.copyOf(this.headVerticesData, this.headVerticesData.length);
+		float[] headVerticesData = new float[this.headVerticesData.length];//Arrays.copyOf(this.headVerticesData, this.headVerticesData.length);
+	
+		for (int i = 0; i < headVerticesData.length; ++i) {
+			headVerticesData[i] = this.headVerticesData[i];
+		}
 		
 		for (int i = 0; i < part4Modif.length; ++i) {
 			headVerticesData[D3GLES20.COORDS_PER_VERTEX * ((int)(3/detailsStep) + 3) + i] = part4Modif[i];

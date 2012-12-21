@@ -72,7 +72,10 @@ abstract public class D3Shape {
 	}
 	
 	public void setColor(float[] color) {
-		mColor = Arrays.copyOf(color, color.length);
+		//mColor = Arrays.copyOf(color, color.length);
+		for (int i = 0; i < color.length; ++i) {
+			mColor[i] = color[i];
+		}
 	}
 	
 	protected void setProgram(Program program) {
