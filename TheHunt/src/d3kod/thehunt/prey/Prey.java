@@ -1,8 +1,6 @@
 package d3kod.thehunt.prey;
 
-import java.util.Random;
-
-import android.graphics.PointF; 
+import android.graphics.PointF;
 import android.opengl.Matrix;
 import android.util.FloatMath;
 import android.util.Log;
@@ -13,7 +11,6 @@ import d3kod.d3gles20.shapes.D3Shape;
 import d3kod.thehunt.TheHuntRenderer;
 import d3kod.thehunt.environment.Environment;
 import d3kod.thehunt.environment.EnvironmentData;
-import d3kod.thehunt.environment.FloatingObject;
 import d3kod.thehunt.environment.NAlgae;
 import d3kod.thehunt.floating_text.CrunchText;
 import d3kod.thehunt.floating_text.FlopText;

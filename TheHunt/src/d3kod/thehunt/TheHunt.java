@@ -1,7 +1,5 @@
 package d3kod.thehunt;
 
-import org.acra.ErrorReporter;
-
 import android.app.Activity;
 import android.os.Bundle;
 import android.util.Log;
@@ -10,9 +8,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.TextView;
 import android.widget.ToggleButton;
-import d3kod.thehunt.prey.Prey;
 import d3kod.thehunt.prey.PreyData;
-import d3kod.thehunt.prey.TurnAngle;
 
 public class TheHunt extends Activity {
 
@@ -24,8 +20,8 @@ public class TheHunt extends Activity {
 	protected TextView mMSperFrame;
 //	private ToggleButton mPosInterpolation;
 //	private ToggleButton mAngleInterpolation;
-	protected TextView mCaughtCounter;
-	protected TextView mEnergyCounter;
+	protected TextView mScore;
+//	protected TextView mEnergyCounter;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -35,8 +31,8 @@ public class TheHunt extends Activity {
 
         setContentView(R.layout.clean_release);
         mMSperFrame = (TextView)findViewById(R.id.msPerFrame);
-        mCaughtCounter = (TextView)findViewById(R.id.caughtCounter);
-        mEnergyCounter = (TextView)findViewById(R.id.preyEnergy);
+        mScore = (TextView)findViewById(R.id.caughtCounter);
+//        mEnergyCounter = (TextView)findViewById(R.id.preyEnergy);
         mGLView = (MyGLSurfaceView)findViewById(R.id.glSurfaceView);
         mPreyState = (TextView)findViewById(R.id.preyState);
         
@@ -83,25 +79,25 @@ public class TheHunt extends Activity {
     public void onButtonClicked(View view) {
     	switch(view.getId()) {
     	case R.id.flopLeft:
-    		mGLView.post(new Runnable() {
-				public void run() {
-					mGLView.mRenderer.mPrey.turn(TurnAngle.LEFT_SMALL);
-				}
-			});
+//    		mGLView.post(new Runnable() {
+//				public void run() {
+//					mGLView.mRenderer.mPrey.turn(TurnAngle.LEFT_SMALL);
+//				}
+//			});
     		break;
     	case R.id.flopRight:
-    		mGLView.post(new Runnable() {
-				public void run() {
-					mGLView.mRenderer.mPrey.turn(TurnAngle.RIGHT_SMALL);
-				}
-			});
+//    		mGLView.post(new Runnable() {
+//				public void run() {
+//					mGLView.mRenderer.mPrey.turn(TurnAngle.RIGHT_SMALL);
+//				}
+//			});
     		break;
     	case R.id.flopBack:
-    		mGLView.post(new Runnable() {
-				public void run() {
-					mGLView.mRenderer.mPrey.backFinMotion(TurnAngle.BACK_LARGE);
-				}
-			});
+//    		mGLView.post(new Runnable() {
+//				public void run() {
+//					mGLView.mRenderer.mPrey.backFinMotion(TurnAngle.BACK_LARGE);
+//				}
+//			});
     		break;
     	}
     }

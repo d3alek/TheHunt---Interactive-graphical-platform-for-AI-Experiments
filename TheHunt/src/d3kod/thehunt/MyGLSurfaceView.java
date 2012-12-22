@@ -34,67 +34,48 @@ class MyGLSurfaceView extends GLSurfaceView {
     	switch (action & MotionEvent.ACTION_MASK) {
     	case MotionEvent.ACTION_POINTER_DOWN:
     		count = event.getPointerCount(); // Number of 'fingers' in this time
-//    		Log.v(TAG, "Pointer Count down: " + count);
     		if (count == 2) {
-//    			final float x = event.getX(), y = event.getY();
-//    			if (prevDoubleTapX != -1 && prevDoubleTapY != -1) {
-//        			mRenderer.moveCamera(x - prevDoubleTapX, y - prevDoubleTapY);
-//    			}
-//    			prevDoubleTapX = x; prevDoubleTapY = y;
-//    			return true;
     			doubleFingerSwipe = true;
     		}
     		break;
     	case MotionEvent.ACTION_POINTER_UP:
     		count = event.getPointerCount(); // Number of 'fingers' in this time
-//    		Log.v(TAG, "Pointer Count up: " + count);
     		if (count == 2) {
     			doubleFingerSwipe = false;
-//    			prevDoubleTapX = prevDoubleTapY = -1;
     		}
     		break;
     	}
-//    	if (event.getAction() == MotionEvent.ACTION_POINTER_DOWN) {
-//    		Log.v(TAG, "Pointer Count: " + event.getPointerCount());
+//    	if (event.getAction() == MotionEvent.ACTION_DOWN) {
+//    		if (doubleFingerSwipe) return true;
+    		if (mRenderer != null) {
+    			queueEvent(new Runnable() {
+    				public void run() {
+    					mRenderer.handleTouch(event, doubleFingerSwipe);
+    					}
+    			});
+    			return true;
+    		}
 //    	}
-    	if (event.getAction() == MotionEvent.ACTION_DOWN) {
-    		if (doubleFingerSwipe) return true;
-//    		Log.v(TAG, "ACTION_DOWN");
-    		if (mRenderer != null) {
-    			final float x = event.getX(), y = event.getY();
-    			queueEvent(new Runnable() {
-    				public void run() {
-    					mRenderer.handleTouchDown(x, y);
-    					}
-    			});
-    		}
-    		return true;
-    	}
-    	if (event.getAction() == MotionEvent.ACTION_MOVE) {
-    		if (mRenderer != null) {
-    			final float x = event.getX(), y = event.getY();
-    			queueEvent(new Runnable() {
-    				public void run() {
-    					mRenderer.handleTouchMove(x, y, doubleFingerSwipe);
-    					}
-    			});
-//    			Log.v(TAG, "ACTION_MOVE");
-//    			Log.v(TAG, "Resetting prevDoubleTap");prevDoubleTapX = prevDoubleTapY = -1;
-    		}
-    		return true;
-    	}
-    	if (event.getAction() == MotionEvent.ACTION_UP) {
-//    		Log.v(TAG, "ACTION_UP");
-    		if (mRenderer != null) {
-    			final float x = event.getX(), y = event.getY();
-    			queueEvent(new Runnable() {
-    				public void run() {
-    					mRenderer.handleTouchUp(x, y);
-    					}
-    			});
-    		}
-    		return true;
-    	}
+//    	if (event.getAction() == MotionEvent.ACTION_MOVE) {
+//    		if (mRenderer != null) {
+//    			queueEvent(new Runnable() {
+//    				public void run() {
+//    					mRenderer.handleTouch(event, doubleFingerSwipe);
+//    					}
+//    			});
+//    		}
+//    		return true;
+//    	}
+//    	if (event.getAction() == MotionEvent.ACTION_UP) {
+//    		if (mRenderer != null) {
+//    			queueEvent(new Runnable() {
+//    				public void run() {
+//    					mRenderer.handleTouch(event, doubleFingerSwipe);
+//    					}
+//    			});
+//    		}
+//    		return true;
+//    	}
     	return super.onTouchEvent(event);
     }
     @Override

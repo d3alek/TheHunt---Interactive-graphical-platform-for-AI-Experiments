@@ -30,20 +30,20 @@
         	android:layout_height="wrap_content"
 			android:layout_alignParentRight="true"
         	android:layout_centerVertical="true"/>
-    	<TextView 
-		    android:id="@+id/preyEnergy"
-        	android:layout_width="wrap_content"
-        	android:layout_height="wrap_content"
-        	android:layout_toLeftOf="@id/caughtText"
-        	android:paddingRight="10dp"
-        	android:layout_centerVertical="true"/>
-    	<TextView 
-		    android:id="@+id/preyEnergyLabel"
-        	android:layout_width="wrap_content"
-        	android:layout_height="wrap_content"
-        	android:text="Energy: "
-        	android:layout_toLeftOf="@id/preyEnergy"
-        	android:layout_centerVertical="true"/>
+<!--     	<TextView  -->
+<!-- 		    android:id="@+id/preyEnergy" -->
+<!--         	android:layout_width="wrap_content" -->
+<!--         	android:layout_height="wrap_content" -->
+<!--         	android:layout_toLeftOf="@id/caughtText" -->
+<!--         	android:paddingRight="10dp" -->
+<!--         	android:layout_centerVertical="true"/> -->
+<!--     	<TextView  -->
+<!-- 		    android:id="@+id/preyEnergyLabel" -->
+<!--         	android:layout_width="wrap_content" -->
+<!--         	android:layout_height="wrap_content" -->
+<!--         	android:text="Energy: " -->
+<!--         	android:layout_toLeftOf="@id/preyEnergy" -->
+<!--         	android:layout_centerVertical="true"/> -->
     	
     </RelativeLayout>
     

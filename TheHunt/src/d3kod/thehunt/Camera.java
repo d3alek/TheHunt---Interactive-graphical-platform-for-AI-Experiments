@@ -33,7 +33,8 @@ public class Camera {
 	    
 	    mPreyPointer = new PreyPointer(d3gles20.getShaderManager());
 	    d3gles20.putShape(mPreyPointer);
-	    mPointerShown = true;
+//	    mPointerShown = true;
+	    hidePreyPointer();
 	    
 	    calcViewMatrix();
 	}

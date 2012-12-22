@@ -1,8 +1,9 @@
 package d3kod.thehunt;
 
+import android.graphics.PointF;
 import android.util.Log;
+import android.view.MotionEvent;
 import d3kod.d3gles20.D3GLES20;
-import d3kod.d3gles20.D3Maths;
 import d3kod.d3gles20.TextureManager;
 import d3kod.d3gles20.programs.Program;
 import d3kod.thehunt.environment.Environment;
@@ -10,7 +11,7 @@ import d3kod.thehunt.floating_text.PlokText;
 import d3kod.thehunt.floating_text.SnatchText;
 import d3kod.thehunt.prey.Prey;
 
-public class CatchNet {
+public class CatchNet implements Tool {
 	
 	D3CatchNetPath mPathGraphic;
 	
@@ -96,9 +97,11 @@ public class CatchNet {
 	
 	public void start(float x, float y) {
 		if (mPathGraphic != null) {
+			Log.v(TAG, "Returning from start as path graphic is null");
 			return;
 		}
 		if (mEnv.netObstacle(x, y)) {
+			Log.v(TAG, "Returing from start as there is obstacle");
 			return;
 		}
 		
@@ -115,8 +118,14 @@ public class CatchNet {
 	}
 
 	public void next(float x, float y) {
-		if (mPathGraphic == null || mPathGraphic.isInvalid() || mPathGraphic.isFinished()) return;
-		if (!mPathGraphic.isFarEnoughFromLast(x, y)) return;
+		if (mPathGraphic == null || mPathGraphic.isInvalid() || mPathGraphic.isFinished()) {
+			Log.v(TAG, "Returning from next 1");
+			return;
+		}
+		if (!mPathGraphic.isFarEnoughFromLast(x, y)) {
+			Log.v(TAG, "Returning from next 2");
+			return;
+		}
 		if (mEnv.netObstacle(x, y) || mPathGraphic.getLength() > MAX_NET_LENGTH) {
 			mPathGraphic.setInvalid();
 		}
@@ -173,5 +182,61 @@ public class CatchNet {
 	public boolean notShown() {
 		return notShown;
 	}
+
+//	public void handleTouchDown(float x, float y) {
+//		PointF converted = fromScreenToWorld(x, y);
+////		mNet.start(converted.x, converted.y);
+//	}
+//
+//	public void handleTouchMove(float x, float y, boolean doubleFingerSwipe) {
+//		PointF converted = fromScreenToWorld(x, y);
+//		if (doubleFingerSwipe) {
+//			if (prev == null) {
+//				prev = new Point((int)x, (int)y);
+////				mNet.finish(converted.x, converted.y);
+//			}
+//			else {
+//				float dx = -(x - prev.x)/(float)mScreenWidthPx;
+//				float dy = (y - prev.y)/(float)mScreenHeightPx;
+//				mCamera.move(dx, dy);
+//			}
+//			prev.set((int)x, (int)y);
+//		}
+////		else mNet.next(converted.x, converted.y);
+//	}
+//
+//	public void handleTouchUp(float x, float y) {
+//		PointF converted = fromScreenToWorld(x, y);
+//		if (prev != null) {
+//			prev = null;
+//			return;
+//		}
+////		mNet.finish(converted.x, converted.y);
+////		if (mNet.notShown()) {
+//			mD3GLES20.putExpiringShape(new PlokText(converted.x, converted.y, tm, mD3GLES20.getShaderManager()));
+//			mEnv.putNoise(converted.x, converted.y, Environment.LOUDNESS_PLOK);
+//			mEnv.putFoodGM(converted.x, converted.y);
+////		}
+//	}
 	
+	public boolean handleTouch(int action, PointF location) {
+		if (action == MotionEvent.ACTION_DOWN) {
+			Log.v(TAG, "Net received down " + location.x + " " + location.y);
+			start(location.x, location.y);
+			return true;
+		}
+		else if (action == MotionEvent.ACTION_MOVE) {
+			Log.v(TAG, "Net received move " + location.x + " " + location.y);
+			next(location.x, location.y);
+			return true;
+		}
+		else if (action == MotionEvent.ACTION_UP) {
+			Log.v(TAG, "Net received up " + location.x + " " + location.y);
+			finish(location.x, location.y);
+			if (notShown()) {
+				return false;
+			}
+		}
+		return false;
+	}
 }
