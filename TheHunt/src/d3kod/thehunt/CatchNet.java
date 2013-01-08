@@ -11,12 +11,8 @@ import d3kod.thehunt.floating_text.PlokText;
 import d3kod.thehunt.floating_text.SnatchText;
 import d3kod.thehunt.prey.Prey;
 
+//TODO: support multiple nets at the same time, refactor, interface to the graphics (similar to floating object)
 public class CatchNet implements Tool {
-	
-	D3CatchNetPath mPathGraphic;
-	
-	private int mPathGraphicIndex;
-
 	private static final String TAG = "CatchNet";
 	private static final float MAX_FOOD_PLACEMENT_LENGTH = 0.1f;
 
@@ -37,9 +33,13 @@ public class CatchNet implements Tool {
 	private Program mProgram;
 
 	private D3CatchNet mNetGraphic;
-
+	private D3CatchNetPath mPathGraphic;
+	
 	private int mNetGraphicIndex;
-
+	private int mPathGraphicIndex;
+	
+	private boolean mStarted;
+	
 	public CatchNet(Environment env, TextureManager tm, D3GLES20 d3GLES20) {
 		mD3GLES20 = d3GLES20;
 		mEnv = env;
@@ -97,7 +97,7 @@ public class CatchNet implements Tool {
 	
 	public void start(float x, float y) {
 		if (mPathGraphic != null) {
-			Log.v(TAG, "Returning from start as path graphic is null");
+			Log.v(TAG, "Returning from start as path graphic is not null");
 			return;
 		}
 		if (mEnv.netObstacle(x, y)) {
@@ -105,7 +105,8 @@ public class CatchNet implements Tool {
 			return;
 		}
 		
-		notShown = false;
+		mStarted = true;
+		notShown = true;
 		showSnatchText = false;
 		
 		mPathGraphic = new D3CatchNetPath(mProgram);
@@ -118,6 +119,12 @@ public class CatchNet implements Tool {
 	}
 
 	public void next(float x, float y) {
+		if (!mStarted) {
+			//TODO: not sure it is needed
+			Log.v(TAG, "Starting net from next now");
+			start(x, y);
+			return;
+		}		
 		if (mPathGraphic == null || mPathGraphic.isInvalid() || mPathGraphic.isFinished()) {
 			Log.v(TAG, "Returning from next 1");
 			return;
@@ -130,16 +137,14 @@ public class CatchNet implements Tool {
 			mPathGraphic.setInvalid();
 		}
 		mPathGraphic.addVertex(x, y);
-//		if (!ploked && mPathGraphic.getLength() >= MIN_LENGTH) {
-//			mD3GLES20.putExpiringShape(new PlokText(firstX, firstY, tm, mD3GLES20.getShaderManager()));
-//			mEnv.putNoise(x, y, Environment.LOUDNESS_PLOK);
-//			ploked = true;
-//		}
+		notShown = false;
 	}
 
 	public void finish(float x, float y) {
 		// TODO: remove restrictions on net placement, handle in game logic
+		mStarted = false;
 		if (mPathGraphic == null) {
+			Log.v(TAG, "Setting notShown to true because of 1");
 			notShown = true;
 			return;
 		}
@@ -151,6 +156,7 @@ public class CatchNet implements Tool {
 			// assume food placement was meant
 			mPathGraphic = null;
 			mD3GLES20.removeShape(mPathGraphicIndex);
+			Log.v(TAG, "Setting notShown to true because of 2");
 			notShown = true;
 			return;
 		}
@@ -182,44 +188,12 @@ public class CatchNet implements Tool {
 	public boolean notShown() {
 		return notShown;
 	}
-
-//	public void handleTouchDown(float x, float y) {
-//		PointF converted = fromScreenToWorld(x, y);
-////		mNet.start(converted.x, converted.y);
-//	}
-//
-//	public void handleTouchMove(float x, float y, boolean doubleFingerSwipe) {
-//		PointF converted = fromScreenToWorld(x, y);
-//		if (doubleFingerSwipe) {
-//			if (prev == null) {
-//				prev = new Point((int)x, (int)y);
-////				mNet.finish(converted.x, converted.y);
-//			}
-//			else {
-//				float dx = -(x - prev.x)/(float)mScreenWidthPx;
-//				float dy = (y - prev.y)/(float)mScreenHeightPx;
-//				mCamera.move(dx, dy);
-//			}
-//			prev.set((int)x, (int)y);
-//		}
-////		else mNet.next(converted.x, converted.y);
-//	}
-//
-//	public void handleTouchUp(float x, float y) {
-//		PointF converted = fromScreenToWorld(x, y);
-//		if (prev != null) {
-//			prev = null;
-//			return;
-//		}
-////		mNet.finish(converted.x, converted.y);
-////		if (mNet.notShown()) {
-//			mD3GLES20.putExpiringShape(new PlokText(converted.x, converted.y, tm, mD3GLES20.getShaderManager()));
-//			mEnv.putNoise(converted.x, converted.y, Environment.LOUDNESS_PLOK);
-//			mEnv.putFoodGM(converted.x, converted.y);
-////		}
-//	}
 	
 	public boolean handleTouch(int action, PointF location) {
+		//if (mPathGraphic != null && mPathGraphic.isFinished()) {
+		//	// Can't handle the touch right now
+		//	return false;
+		//}
 		if (action == MotionEvent.ACTION_DOWN) {
 			Log.v(TAG, "Net received down " + location.x + " " + location.y);
 			start(location.x, location.y);
@@ -232,11 +206,17 @@ public class CatchNet implements Tool {
 		}
 		else if (action == MotionEvent.ACTION_UP) {
 			Log.v(TAG, "Net received up " + location.x + " " + location.y);
-			finish(location.x, location.y);
-			if (notShown()) {
+			if (notShown) {
+				stop(location);
 				return false;
 			}
+			finish(location.x, location.y);
+			return true;
 		}
 		return false;
+	}
+	
+	public void stop(PointF location) {
+		finish(location.x, location.y);
 	}
 }

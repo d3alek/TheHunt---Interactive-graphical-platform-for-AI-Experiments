@@ -1,22 +1,19 @@
 package d3kod.thehunt;
 
-import javax.microedition.khronos.egl.EGLConfig;
-import javax.microedition.khronos.opengles.GL10;
+import android.content.*;
+import android.graphics.*;
+import android.hardware.*;
+import android.opengl.*;
+import android.util.*;
+import android.view.*;
+import d3kod.d3gles20.*;
+import d3kod.thehunt.environment.*;
+import d3kod.thehunt.floating_text.*;
+import javax.microedition.khronos.egl.*;
+import javax.microedition.khronos.opengles.*;
 
-import android.content.Context;
-import android.graphics.Point;
-import android.graphics.PointF;
-import android.hardware.SensorEvent;
-import android.opengl.GLES20;
-import android.opengl.GLSurfaceView;
 import android.opengl.Matrix;
-import android.util.Log;
-import android.view.MotionEvent;
-import d3kod.d3gles20.D3GLES20;
-import d3kod.d3gles20.ShaderManager;
-import d3kod.d3gles20.TextureManager;
-import d3kod.thehunt.environment.Environment;
-import d3kod.thehunt.floating_text.PlokText;
+import javax.microedition.khronos.egl.EGLConfig;
 //import d3kod.d3gles20.shapes.D3TempCircle;
 
 public class TheHuntRenderer implements GLSurfaceView.Renderer {
@@ -75,6 +72,7 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 	
 	protected static final int YELLOW_TEXT_ENERGY = 60;
 	protected static final int RED_TEXT_ENERGY = 30;
+	private boolean mScrolling = false;
 	
 	public void onSensorChanged(SensorEvent event) {
 		
@@ -244,59 +242,41 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 		mD3GLES20.drawAll(mVMatrix, mProjMatrix, interpolation);
 //		Log.v(TAG, "End drawing");
 	}
-//
-//	public void handleTouchDown(float x, float y) {
-//		PointF converted = fromScreenToWorld(x, y);
-////		mNet.start(converted.x, converted.y);
-//	}
-//
-//	public void handleTouchMove(float x, float y, boolean doubleFingerSwipe) {
-//		PointF converted = fromScreenToWorld(x, y);
-//		if (doubleFingerSwipe) {
-//			if (prev == null) {
-//				prev = new Point((int)x, (int)y);
-////				mNet.finish(converted.x, converted.y);
-//			}
-//			else {
-//				float dx = -(x - prev.x)/(float)mScreenWidthPx;
-//				float dy = (y - prev.y)/(float)mScreenHeightPx;
-//				mCamera.move(dx, dy);
-//			}
-//			prev.set((int)x, (int)y);
-//		}
-////		else mNet.next(converted.x, converted.y);
-//	}
-//
-//	public void handleTouchUp(float x, float y) {
-//		PointF converted = fromScreenToWorld(x, y);
-//		if (prev != null) {
-//			prev = null;
-//			return;
-//		}
-////		mNet.finish(converted.x, converted.y);
-////		if (mNet.notShown()) {
-//			mD3GLES20.putExpiringShape(new PlokText(converted.x, converted.y, tm, mD3GLES20.getShaderManager()));
-//			mEnv.putNoise(converted.x, converted.y, Environment.LOUDNESS_PLOK);
-//			mEnv.putFoodGM(converted.x, converted.y);
-////		}
-//	}
 
 	public void handleTouch(final MotionEvent me, boolean doubleTouch) {
-		//Log.v(TAG, "Double touch is true");
-//		MotionEvent worldMotionEvent = MotionEvent.obtain(me);
-		//MotionEvent worldMotionEvent = MotionEvent.obtain(me);
-		if (prev != null && prev.getX() == me.getX() && prev.getY() == me.getY()) return;
-		prev = MotionEvent.obtain(me);
+		//TODO: receive int, PointF instead of MotionEvent
+		if (prev != null && prev.getX() == me.getX() 
+			&& prev.getY() == me.getY() && prev.getAction() == me.getAction()) return;
+
 		PointF location = fromScreenToWorld(me.getX(), me.getY());
-		//me.setLocation(converted.x, converted.y);
-		if (mTool.handleTouch(me.getAction(), location)) {
-			return;
+		
+		if (doubleTouch && !mScrolling) {
+			mScrolling = true;
+			Log.v(TAG, "Scrolling is true");
+			mTool.stop(location);
+		}
+		else if (!doubleTouch && mScrolling) {
+			mScrolling = false;
+			Log.v(TAG, "Scrolling is false");
 		}
 		else {
-			mD3GLES20.putExpiringShape(new PlokText(location.x, location.y, tm, mD3GLES20.getShaderManager()));
-			mEnv.putNoise(location.x, location.y, Environment.LOUDNESS_PLOK);
-			mEnv.putFoodGM(location.x, location.y);
+			if (mScrolling) {
+				if (prev != null) {
+					PointF prevWorld = fromScreenToWorld(prev.getX(), prev.getY());
+					mCamera.move(prevWorld.x - location.x, prevWorld.y - location.y);				
+				}
+			}				
+		
+			if (!mScrolling && !mTool.handleTouch(me.getAction(), location)) {
+				if (me.getAction() == MotionEvent.ACTION_DOWN || // to place food while net is snatching
+					me.getAction() == MotionEvent.ACTION_UP) { // to place food otherwise
+					mD3GLES20.putExpiringShape(new PlokText(location.x, location.y, tm, mD3GLES20.getShaderManager()));
+					mEnv.putNoise(location.x, location.y, Environment.LOUDNESS_PLOK);
+					mEnv.putFoodGM(location.x, location.y);
+				}
+			}
 		}
+		prev = MotionEvent.obtain(me);
 	}
 	
 	public void pause() {

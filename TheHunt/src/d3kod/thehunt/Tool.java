@@ -7,5 +7,7 @@ public interface Tool {
 	boolean handleTouch(int action, PointF location);
 
 	void update();
+	
+	void stop(PointF location);
 
 }
