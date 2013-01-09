@@ -22,7 +22,7 @@ class MyGLSurfaceView extends GLSurfaceView {
         setEGLContextClientVersion(2);
         setEGLConfigChooser(new MultisampleConfigChooser());
         setDebugFlags(DEBUG_CHECK_GL_ERROR | DEBUG_LOG_GL_CALLS);
-        setRenderer(mRenderer = new TheHuntRenderer(context));
+        setRenderer(mRenderer = new TheHuntRenderer((TheHunt) context));
         setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
 //        prevDoubleTapX = prevDoubleTapY = -1;
         doubleFingerSwipe = false;
@@ -33,7 +33,7 @@ class MyGLSurfaceView extends GLSurfaceView {
     	int count;
     	switch (action & MotionEvent.ACTION_MASK) {
     	case MotionEvent.ACTION_POINTER_DOWN:
-    		count = event.getPointerCount(); // Number of 'fingers' in this time
+    		count = event.getPointerCount(); // Number of 'fingers' at this time
     		if (count == 2) {
     			doubleFingerSwipe = true;
     		}

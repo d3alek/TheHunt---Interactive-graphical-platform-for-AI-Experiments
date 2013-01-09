@@ -81,7 +81,7 @@ public abstract class FloatingObject {
 
 	public void clearGraphic() {
 		if (!mGraphicSet) Log.v(TAG, "Graphic not set, can't clear!");
-		mD3GLES20.removeShape(mKey);
+		else mD3GLES20.removeShape(mKey);
 		mRemove = true;
 	}
 

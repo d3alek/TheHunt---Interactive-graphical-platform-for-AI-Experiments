@@ -45,7 +45,7 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
     private final int MILLISEC_PER_TICK = 1000 / TICKS_PER_SECOND;
     private final int MAX_FRAMESKIP = 5;
 	private long next_game_tick;
-	private Context mContext;
+	private TheHunt mActivity;
 	private long mslf;
 	private long smoothMspf;
 	private int smoothingCount;
@@ -75,94 +75,98 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 	protected static final int RED_TEXT_ENERGY = 30;
 	private boolean mScrolling = false;
 	private int mIgnoreNextTouch;
+	public static enum PreyType {NONE, DEFAULT};
+//	private boolean mPreyGraphicInitialized;
 	
 	public void onSensorChanged(SensorEvent event) {
 		
 	}
 	
-	public TheHuntRenderer(Context context) {
-		mContext = context;
+	public TheHuntRenderer(TheHunt activity) {
+		mActivity = activity;
 	    mEnv = null;
 	    mTool = null;
-	    mPrey = new DummyPrey();
+    mPrey = new DummyPrey();
 //	    mNet = null;
-	    mIgnoreNextTouch = -1;
-	    mCaughtCounter = 0;
+    mIgnoreNextTouch = -1;
+    mCaughtCounter = 0;
 //	    mShapes = null;
-	    tm = new TextureManager(mContext);
-	}
+    tm = new TextureManager(mActivity);
+//    mPreyGraphicInitialized = false;
+}
 
-	/**
-	 * The Surface is created/init()
-	 */
-	public void onSurfaceCreated(GL10 unused, EGLConfig config) {
-		GLES20.glClearColor(bgColor[0], bgColor[1], bgColor[2], bgColor[3]);
-		GLES20.glEnable(GLES20.GL_BLEND);
-		GLES20.glBlendFunc(GLES20.GL_ONE, GL10.GL_ONE_MINUS_SRC_ALPHA);
-	}
-	/**
-	 * If the surface changes, reset the view
-	 */
-	public void onSurfaceChanged(GL10 unused, int width, int height) {
-		GLES20.glViewport(0, 0, width, height);
-		
-		mScreenWidthPx = width;
-		mScreenHeightPx = height;
-		
-		mScreenToWorldRatioWidth = mScreenWidthPx/(float)worldWidthPx;
-		mScreenToWorldRatioHeight = mScreenHeightPx/(float)worldHeightPx;
-		mCamera = new Camera(mScreenToWorldRatioWidth, 
-				mScreenToWorldRatioHeight, worldWidthPx/(float)worldHeightPx, mD3GLES20);
-		
-	    Log.v(TAG, "mScreenWidth " + mScreenWidthPx + " mScreenHeight " + mScreenHeightPx);
-	    
-	    // D3Shape.initDefaultShaders();
-	    
-		if (mEnv == null) mEnv = new Environment(worldWidthPx, worldHeightPx);
-		if (mTool == null) mTool = new CatchNet(mEnv, tm, mD3GLES20);
+/**
+ * The Surface is created/init()
+ */
+public void onSurfaceCreated(GL10 unused, EGLConfig config) {
+	GLES20.glClearColor(bgColor[0], bgColor[1], bgColor[2], bgColor[3]);
+	GLES20.glEnable(GLES20.GL_BLEND);
+	GLES20.glBlendFunc(GLES20.GL_ONE, GL10.GL_ONE_MINUS_SRC_ALPHA);
+}
+/**
+ * If the surface changes, reset the view
+ */
+public void onSurfaceChanged(GL10 unused, int width, int height) {
+	GLES20.glViewport(0, 0, width, height);
+	
+	mScreenWidthPx = width;
+	mScreenHeightPx = height;
+	
+	mScreenToWorldRatioWidth = mScreenWidthPx/(float)worldWidthPx;
+	mScreenToWorldRatioHeight = mScreenHeightPx/(float)worldHeightPx;
+	mCamera = new Camera(mScreenToWorldRatioWidth, 
+			mScreenToWorldRatioHeight, worldWidthPx/(float)worldHeightPx, mD3GLES20);
+	
+    Log.v(TAG, "mScreenWidth " + mScreenWidthPx + " mScreenHeight " + mScreenHeightPx);
+    
+    // D3Shape.initDefaultShaders();
+    
+	if (mEnv == null) mEnv = new Environment(worldWidthPx, worldHeightPx);
+	if (mTool == null) mTool = new CatchNet(mEnv, tm, mD3GLES20);
 //	    if (mPrey == null) mPrey = new DefaultPrey(EnvironmentData.mScreenWidth, EnvironmentData.mScreenHeight, mEnv, tm);
-	    if (mPrey == null) mPrey = new DefaultPrey(mEnv, tm);
-	    if (!mGraphicsInitialized ) {
-	    	//TODO why not initialize tool graphics as well?
-	    	mEnv.initGraphics(mContext, mD3GLES20);
-	    	mPrey.initGraphics(mD3GLES20);
-	    	mGraphicsInitialized = true;
-	    }
-	    
-	    float ratio = (float) worldWidthPx / worldHeightPx;
-	    
-	    if (width > height) Matrix.frustumM(mProjMatrix, 0, -ratio, ratio, -1, 1, 1, 10);
-	    else Matrix.frustumM(mProjMatrix, 0, -1, 1, -1/ratio, 1/ratio, 1, 10);
-	}
-	/**
-	 * Here we do our drawing
-	 */
-	public void onDrawFrame(GL10 unused) {
+    if (mPrey == null) mPrey = new DefaultPrey(mEnv, tm);
+    if (!mGraphicsInitialized ) {
+    	//TODO why not initialize tool graphics as well?
+    	mEnv.initGraphics(mActivity, mD3GLES20);
+    	mPrey.initGraphics(mD3GLES20);
+    	mGraphicsInitialized = true;
+//    	mPreyGraphicInitialized = true;
+    }
+    
+    float ratio = (float) worldWidthPx / worldHeightPx;
+    
+    if (width > height) Matrix.frustumM(mProjMatrix, 0, -ratio, ratio, -1, 1, 1, 10);
+    else Matrix.frustumM(mProjMatrix, 0, -1, 1, -1/ratio, 1/ratio, 1, 10);
+}
+/**
+ * Here we do our drawing
+ */
+public void onDrawFrame(GL10 unused) {
 
-		int loops = 0;
-		mslf = System.currentTimeMillis();
-		
-		while (next_game_tick < System.currentTimeMillis() && loops < MAX_FRAMESKIP) {
-			updateWorld();
-			next_game_tick += MILLISEC_PER_TICK;
-			loops++;
-		}
-		if (loops >= MAX_FRAMESKIP) {
-			Log.w(TAG, "Skipping " + loops + " frames!");
-		}
-		
-		float interpolation = (System.currentTimeMillis() + MILLISEC_PER_TICK - next_game_tick) / (float) MILLISEC_PER_TICK;
-		drawWorld(interpolation);
-		long mspf = System.currentTimeMillis() - mslf;
-		smoothMspf = (smoothMspf*smoothingCount + mspf)/(smoothingCount+1);
-		smoothingCount++;
-		if (smoothingCount >= SMOOTHING_SIZE) {
-			smoothingCount = 0;
-			((TheHunt) mContext).runOnUiThread(new Runnable() {
-				public void run() {
-					if (((TheHunt) mContext).mPreyState != null) 
+	int loops = 0;
+	mslf = System.currentTimeMillis();
+	
+	while (next_game_tick < System.currentTimeMillis() && loops < MAX_FRAMESKIP) {
+		updateWorld();
+		next_game_tick += MILLISEC_PER_TICK;
+		loops++;
+	}
+	if (loops >= MAX_FRAMESKIP) {
+		Log.w(TAG, "Skipping " + loops + " frames!");
+	}
+	
+	float interpolation = (System.currentTimeMillis() + MILLISEC_PER_TICK - next_game_tick) / (float) MILLISEC_PER_TICK;
+	drawWorld(interpolation);
+	long mspf = System.currentTimeMillis() - mslf;
+	smoothMspf = (smoothMspf*smoothingCount + mspf)/(smoothingCount+1);
+	smoothingCount++;
+	if (smoothingCount >= SMOOTHING_SIZE) {
+		smoothingCount = 0;
+		((TheHunt) mActivity).runOnUiThread(new Runnable() {
+			public void run() {
+				if (((TheHunt) mActivity).mPreyState != null) 
 //						((TheHunt) mContext).mPreyState.setText(mPrey.getStateString());
-					((TheHunt) mContext).mMSperFrame.setText(smoothMspf + "");
+				((TheHunt) mActivity).mMSperFrame.setText(smoothMspf + "");
 //					((TheHunt) mContext).mEnergyCounter.setText(mPrey.getEnergy()+"");
 //
 //					if (mPrey.getEnergy() < RED_TEXT_ENERGY) {
@@ -174,21 +178,21 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 //					else {
 //						((TheHunt) mContext).mEnergyCounter.setTextColor(Color.WHITE);
 //					}
-				}
-			});
-		}
-	}		
+			}
+		});
+	}
+}		
 
-	private void updateWorld() {
-		mEnv.update();
-		mTool.update();
-		PointF preyPos = mPrey.getPosition();
-	
-		if (preyPos != null) {
-			PointF curDirDelta = mEnv.data.getTileFromPos(preyPos).getDir().getDelta();
-			mPrey.update(curDirDelta.x * EnvironmentData.currentSpeed, 
-					curDirDelta.y * EnvironmentData.currentSpeed);
-		}
+private void updateWorld() {
+	mEnv.update();
+	mTool.update();
+	PointF preyPos = mPrey.getPosition();
+
+	if (preyPos != null) {
+		PointF curDirDelta = mEnv.data.getTileFromPos(preyPos).getDir().getDelta();
+		mPrey.update(curDirDelta.x * EnvironmentData.currentSpeed, 
+				curDirDelta.y * EnvironmentData.currentSpeed);
+	}
 
 //		preyPos = mPrey.getPosition();
 //		
@@ -218,9 +222,9 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 //				releaseCountdown = RELEASE_TICKS;
 //			}
 //		}
-		
-		if (!mCamera.contains(preyPos)) {
-			Log.v(TAG, "Camera does not contain preyPos!");
+	
+	if (!mCamera.contains(preyPos)) {
+//		Log.v(TAG, "Camera does not contain preyPos!");
 			mCamera.showPreyPointer();
 		}
 		else {
@@ -230,7 +234,19 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 
 	private void drawWorld(float interpolation) {
 		if (mState != State.PLAY) return;
+		
+		if (mPreyChange) {
+			mPreyChange = false;
+			mPrey.clearGraphic();
+			switch (mPreyChangeTo) {
+			case NONE: mPrey = new DummyPrey(); break;
+			case DEFAULT: mPrey = new DefaultPrey(mEnv, tm); break;
+			}
+			mPrey.initGraphics(mD3GLES20);
+		}
+		
 //		Log.v(TAG, "Drawing");
+		
 		int clearMask = GLES20.GL_COLOR_BUFFER_BIT;
 		
 		if (MultisampleConfigChooser.usesCoverageAa()) {
@@ -307,9 +323,9 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 		mslf = next_game_tick;
 		smoothMspf = 0;
 		smoothingCount = 0;
-		((TheHunt) mContext).runOnUiThread(new Runnable() {
+		((TheHunt) mActivity).runOnUiThread(new Runnable() {
 			public void run() {
-				((TheHunt) mContext).mScore.setText(mCaughtCounter + "");
+				((TheHunt) mActivity).mScore.setText(mCaughtCounter + "");
 			}
 		});
 		
@@ -336,6 +352,8 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 	float[] normalizedInPoint = new float[4];
 	float[] outPoint = new float[4];
 	float[] mPVMatrix = new float[16];
+	private boolean mPreyChange;
+	private PreyType mPreyChangeTo;
 	
 	public PointF fromScreenToWorld(float touchX, float touchY) {
 		normalizedInPoint[0] = 2f*touchX/mScreenWidthPx - 1;
@@ -347,5 +365,14 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 		Matrix.invertM(mPVMatrix, 0, mPVMatrix, 0);
 		Matrix.multiplyMV(outPoint, 0, mPVMatrix, 0, normalizedInPoint, 0);
 		return new PointF(outPoint[0], outPoint[1]);
+	}
+
+	public void changePrey(int which) {
+//		mPrey.clearGraphic();
+//		mPrey = null;
+//	    mPrey = new DefaultPrey(mEnv, tm);
+//	    mPrey.initGraphics(mD3GLES20);
+		mPreyChange = true;
+		mPreyChangeTo = PreyType.values()[which];
 	}
 }

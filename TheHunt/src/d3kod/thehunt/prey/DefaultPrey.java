@@ -47,6 +47,8 @@ public class DefaultPrey implements Prey {
 	private D3Prey mGraphic;
 
 	private D3GLES20 mD3GLES20;
+	private int mGraphicKey;
+	private boolean mGraphicSet;
 
 	public void update(float dx, float dy) {
 		if (mD.mIsCaught) return;
@@ -327,7 +329,7 @@ public class DefaultPrey implements Prey {
 		mD.mPosX = mD.mPosY = 0;
 		
 		mD.rotateSpeedHead = mD.rotateSpeedSmall;//Math.abs(TurnAngle.LEFT_SMALL.getValue())/SMALL_TICKS_PER_TURN;
-
+		mGraphicSet = false;
 		mD.mIsCaught = false;
 		mD.emotionText = null;
 	}
@@ -417,7 +419,8 @@ public class DefaultPrey implements Prey {
         mGraphic = new D3Prey(mD, d3GLES20.getShaderManager());
         mD3GLES20 = d3GLES20;
 		mPlanner = new Planner(mD3GLES20);
-        mD3GLES20.putShape(mGraphic);
+        mGraphicKey = mD3GLES20.putShape(mGraphic);
+        mGraphicSet = true;
 		if (Planner.SHOW_TARGET) {
 			mPlanner.makeTarget();
 		}
@@ -439,5 +442,14 @@ public class DefaultPrey implements Prey {
 
 	public D3Shape getGraphic() {
 		return mGraphic;
+	}
+
+	public void clearGraphic() {
+		if (!mGraphicSet) {
+			Log.w(TAG, "Cannot clear graphic because not set!");
+			return;
+		}
+		mD3GLES20.removeShape(mGraphicKey);
+		mGraphicSet = false;
 	}
 }

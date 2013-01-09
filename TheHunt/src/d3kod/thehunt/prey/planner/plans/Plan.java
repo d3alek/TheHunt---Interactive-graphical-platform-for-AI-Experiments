@@ -58,7 +58,7 @@ public class Plan {
 	}
 	public Action nextAction() {
 		if (mCurrentAction == -1 || mCurrentAction >= mActions.size()) {
-			Log.v(TAG, "Next action is null!");
+//			Log.v(TAG, "Next action is null!");
 			return null;
 		}
 		Action nextAction = mActions.get(mCurrentAction++);

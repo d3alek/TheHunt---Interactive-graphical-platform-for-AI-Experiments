@@ -1,7 +1,8 @@
 package d3kod.thehunt;
 
-import android.app.Activity;
 import android.os.Bundle;
+import android.support.v4.app.DialogFragment;
+import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
@@ -10,7 +11,7 @@ import android.widget.TextView;
 import android.widget.ToggleButton;
 import d3kod.thehunt.prey.PreyData;
 
-public class TheHunt extends Activity {
+public class TheHunt extends FragmentActivity implements PreyChangeDialog.PreyChangeDialogListener {
 
     private static final String TAG = "TheHunt";
 	private MyGLSurfaceView mGLView;
@@ -35,7 +36,7 @@ public class TheHunt extends Activity {
 //        mEnergyCounter = (TextView)findViewById(R.id.preyEnergy);
         mGLView = (MyGLSurfaceView)findViewById(R.id.glSurfaceView);
         mPreyState = (TextView)findViewById(R.id.preyState);
-        
+        showPreyChangeDialog(null);
 //        ErrorReporter.getInstance().handleException(null);
     }
     
@@ -101,4 +102,21 @@ public class TheHunt extends Activity {
     		break;
     	}
     }
+
+    public void showPreyChangeDialog(View view) {
+    	DialogFragment newFragment = new PreyChangeDialog();
+    	newFragment.show(getSupportFragmentManager(), "preyChangeDialog");
+//    	newFragment.show(getFragmentManager(), "yo");
+    }
+    
+	public void onPreyChanged(final int which) {
+		Log.v(TAG, "Prey changed to " + which);
+//		mGLView.mRenderer.changePrey(which);
+		mGLView.post(new Runnable() {
+			
+			public void run() {
+				mGLView.mRenderer.changePrey(which);
+			}
+		});
+	}
 }

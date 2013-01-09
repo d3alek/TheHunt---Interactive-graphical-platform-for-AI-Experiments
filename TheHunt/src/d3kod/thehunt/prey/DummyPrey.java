@@ -35,4 +35,9 @@ public class DummyPrey implements Prey {
 		return null;
 	}
 
+	public void clearGraphic() {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

@@ -3,18 +3,13 @@ package d3kod.d3gles20;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map.Entry;
-import java.util.concurrent.ConcurrentHashMap;
 
+import android.util.Log;
 import d3kod.d3gles20.shapes.D3Circle;
 import d3kod.d3gles20.shapes.D3FadingShape;
 import d3kod.d3gles20.shapes.D3Quad;
 import d3kod.d3gles20.shapes.D3Shape;
 import d3kod.d3gles20.shapes.D3TempCircle;
-import d3kod.thehunt.environment.FloatingObject;
-import d3kod.thehunt.floating_text.FlopText;
-
-import android.opengl.GLES20;
-import android.util.Log;
 
 public class D3GLES20 {
 	public static final int COORDS_PER_VERTEX = 3;
@@ -28,11 +23,16 @@ public class D3GLES20 {
 
 	private ShaderManager sm;
 	
+	ArrayList<Integer> toRemove = new ArrayList<Integer>();
+
+	private boolean removeShapeLater;
+	
 	public D3GLES20(ShaderManager shaderManager) {
 		shapes = new HashMap<Integer, D3Shape>();
 		expiringShapes = new HashMap<Integer, D3FadingShape>();
 		shapesNum = 0;
 		sm = shaderManager;
+		removeShapeLater = false;
 	}
 	
 //	public static void init() {
@@ -52,10 +52,15 @@ public class D3GLES20 {
 			Log.w(TAG, "Shapes are null in drawAll!");
 			return;
 		}
+		toRemove.clear();
+		removeShapeLater = true;
 		for (D3Shape shape: shapes.values()) {
 			shape.draw(mVMatrix, mProjMatrix, interpolation);
 		}
-		
+		removeShapeLater = false;
+		for (Integer key: toRemove) {
+			shapes.remove(key);
+		}
 		
 		D3FadingShape shape;
 		ArrayList<Integer> toRemove = new ArrayList<Integer>();
@@ -99,7 +104,12 @@ public class D3GLES20 {
 			Log.w(TAG, "Shapes are null in removeShape!");
 			return;
 		}
-		shapes.remove(key);
+//		shapes.remove(key);
+		if (removeShapeLater) {
+			toRemove.add(key);
+//			Log.v(TAG, "adding " + key + " to remove later");
+		}
+		else shapes.remove(key);
 	}
 
 //	public void setShapePosition(int key, float x,

@@ -17,4 +17,6 @@ public interface Prey {
 
 	PointF getPredictedPosition();
 
+	void clearGraphic();
+
 }
