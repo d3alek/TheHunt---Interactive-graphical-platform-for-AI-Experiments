@@ -2,15 +2,13 @@ package d3kod.thehunt;
 
 import android.graphics.PointF;
 import android.opengl.Matrix;
+import android.util.Log;
 import d3kod.d3gles20.D3GLES20;
 import d3kod.d3gles20.D3Maths;
-import d3kod.d3gles20.ShaderManager;
 import d3kod.thehunt.environment.Dir;
 import d3kod.thehunt.environment.EnvironmentData;
 
 public class Camera {
-
-	
 	private static final String TAG = "Camera";
 	private float mCenterX;
 	private float mCenterY;
@@ -83,6 +81,10 @@ public class Camera {
 	}
 
 	public boolean contains(PointF point) {
+		if (point == null) {
+			//Log.w(TAG, "Point is null in contains check!");
+			return true;
+		}
 		return D3Maths.rectContains(mCenterX, mCenterY, mWidth * mWidthToHeightRatio, mHeight, point.x, point.y);
 	}
 
@@ -97,7 +99,7 @@ public class Camera {
 	}
 	
 	public void setPreyPointerPosition(PointF preyPosition) {
-		if (mPointerShown == false) return;
+		if (mPointerShown == false || preyPosition == null) return;
 		float mLeftX = mCenterX - mWidth * mWidthToHeightRatio/2;
 		float mRightX = mLeftX + mWidth * mWidthToHeightRatio;
 		float mBottomY = mCenterY - mHeight/2;

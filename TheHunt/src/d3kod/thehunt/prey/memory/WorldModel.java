@@ -6,7 +6,6 @@ import android.util.Log;
 import d3kod.d3gles20.D3Maths;
 import d3kod.thehunt.TheHuntRenderer;
 import d3kod.thehunt.environment.Dir;
-import d3kod.thehunt.environment.FloatingObject.Type;
 import d3kod.thehunt.events.Event;
 import d3kod.thehunt.events.Event.EventType;
 import d3kod.thehunt.events.EventAlgae;
@@ -16,8 +15,6 @@ import d3kod.thehunt.events.EventLight;
 import d3kod.thehunt.events.EventNoise;
 import d3kod.thehunt.events.MovingEvent;
 import d3kod.thehunt.prey.D3Prey;
-import d3kod.thehunt.prey.Prey;
-import d3kod.thehunt.prey.PreyData;
 
 
 //TODO: Refractor - make getNearest{Algae,Food}() method of the memory, abstract away the concept of nearest things as well
@@ -66,7 +63,7 @@ public class WorldModel {
 	private EventType[] mFoodType = {EventType.FOOD, EventType.ALGAE};
 	
 	
-	public WorldModel(float screenWidth, float screenHeight) {
+	public WorldModel() {
 		mNearestFood = null;
 		mNearestAlgae = null;
 		mStressLevel = StressLevel.CALM;

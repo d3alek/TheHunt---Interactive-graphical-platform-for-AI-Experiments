@@ -153,11 +153,11 @@ public class EnvironmentData {
 		return mTiles[row][col]; 
 	}
 	
-	public FloatingObject removeFood(float x, float y) {
+	public FloatingObject removeFood(float x, float y, float radius) {
 		for (FloatingObject fo: mFloatingObjects) {
 			if (fo.getType() != Type.FOOD_GM) continue;
 			float foX = fo.getX(), foY = fo.getY();
-			if (D3Maths.circleContains(x, y, Prey.EAT_FOOD_RADIUS, foX, foY)) {
+			if (D3Maths.circleContains(x, y, radius, foX, foY)) {//Prey.EAT_FOOD_RADIUS
 				fo.clearGraphic();
 				mFloatingObjects.remove(fo);
 				return fo;

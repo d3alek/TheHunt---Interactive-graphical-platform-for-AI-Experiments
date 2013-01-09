@@ -37,7 +37,7 @@ public class MoveTowardsPlan extends Plan {
 		float angleToTarget = D3Maths.angleBetweenVectors(
 				bX - hX, bY - hY, //bodyToHead
 				bX - tX, bY - tY, //bodyToTarget
-				Prey.bodyToHeadLength, bodyFromTarget);
+				1, bodyFromTarget); // Prey.bodyToHeadLength
 //		Log.v(TAG, "angleToTarget is " + angleToTarget + " bht is " + bht);
 		if (bht > 0) {
 			//Target is to the left

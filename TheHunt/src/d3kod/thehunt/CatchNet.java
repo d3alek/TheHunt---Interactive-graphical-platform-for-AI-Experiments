@@ -19,6 +19,7 @@ public class CatchNet implements Tool {
 	private static final float MAX_NET_LENGTH = 2f;
 	
 	private Prey mCaughtPrey;
+	
 	private Environment mEnv;
 	private boolean notShown;
 	private TextureManager tm;

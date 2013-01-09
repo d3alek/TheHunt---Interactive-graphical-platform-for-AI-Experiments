@@ -1,19 +1,25 @@
 package d3kod.thehunt;
 
-import android.content.*;
-import android.graphics.*;
-import android.hardware.*;
-import android.opengl.*;
-import android.util.*;
-import android.view.*;
-import d3kod.d3gles20.*;
-import d3kod.thehunt.environment.*;
-import d3kod.thehunt.floating_text.*;
-import javax.microedition.khronos.egl.*;
-import javax.microedition.khronos.opengles.*;
-
-import android.opengl.Matrix;
 import javax.microedition.khronos.egl.EGLConfig;
+import javax.microedition.khronos.opengles.GL10;
+
+import android.content.Context;
+import android.graphics.PointF;
+import android.hardware.SensorEvent;
+import android.opengl.GLES20;
+import android.opengl.GLSurfaceView;
+import android.opengl.Matrix;
+import android.util.Log;
+import android.view.MotionEvent;
+import d3kod.d3gles20.D3GLES20;
+import d3kod.d3gles20.ShaderManager;
+import d3kod.d3gles20.TextureManager;
+import d3kod.thehunt.environment.Environment;
+import d3kod.thehunt.environment.EnvironmentData;
+import d3kod.thehunt.floating_text.PlokText;
+import d3kod.thehunt.prey.DefaultPrey;
+import d3kod.thehunt.prey.DummyPrey;
+import d3kod.thehunt.prey.Prey;
 //import d3kod.d3gles20.shapes.D3TempCircle;
 
 public class TheHuntRenderer implements GLSurfaceView.Renderer {
@@ -28,13 +34,10 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 
 //	private static final boolean SHOW_CIRCLE_CONTAINS_CHECKS = false;
 	
-	
 	private float[] mProjMatrix = new float[16]; 
 	private float[] mVMatrix = new float[16];
-//	private long timePreviousNS;
 	private Environment mEnv;
-//	public Prey mPrey;
-//	private CatchNet mNet;
+	public Prey mPrey;
 	
     public static final int TICKS_PER_SECOND = 30;
     private static final int RELEASE_DELAY = 1; // in seconds
@@ -47,9 +50,7 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 	private long smoothMspf;
 	private int smoothingCount;
 	private int mCaughtCounter;
-//	private D3TempCircle tempCircle;
 	private boolean mGraphicsInitialized = false;
-//	private HashMap<Integer, D3Shape> mShapes;
 	private TextureManager tm;
 	private int releaseCountdown;
 	private float mScreenToWorldRatioWidth;
@@ -73,18 +74,19 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 	protected static final int YELLOW_TEXT_ENERGY = 60;
 	protected static final int RED_TEXT_ENERGY = 30;
 	private boolean mScrolling = false;
+	private int mIgnoreNextTouch;
 	
 	public void onSensorChanged(SensorEvent event) {
 		
 	}
 	
-//	@SuppressLint("NewApi")
 	public TheHuntRenderer(Context context) {
 		mContext = context;
 	    mEnv = null;
 	    mTool = null;
-//	    mPrey = null;
+	    mPrey = new DummyPrey();
 //	    mNet = null;
+	    mIgnoreNextTouch = -1;
 	    mCaughtCounter = 0;
 //	    mShapes = null;
 	    tm = new TextureManager(mContext);
@@ -118,11 +120,12 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 	    
 		if (mEnv == null) mEnv = new Environment(worldWidthPx, worldHeightPx);
 		if (mTool == null) mTool = new CatchNet(mEnv, tm, mD3GLES20);
-//	    if (mPrey == null) mPrey = new Prey(EnvironmentData.mScreenWidth, EnvironmentData.mScreenHeight, mEnv, tm);
+//	    if (mPrey == null) mPrey = new DefaultPrey(EnvironmentData.mScreenWidth, EnvironmentData.mScreenHeight, mEnv, tm);
+	    if (mPrey == null) mPrey = new DefaultPrey(mEnv, tm);
 	    if (!mGraphicsInitialized ) {
 	    	//TODO why not initialize tool graphics as well?
 	    	mEnv.initGraphics(mContext, mD3GLES20);
-//	    	mPrey.initGraphics(mD3GLES20);
+	    	mPrey.initGraphics(mD3GLES20);
 	    	mGraphicsInitialized = true;
 	    }
 	    
@@ -179,22 +182,24 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 	private void updateWorld() {
 		mEnv.update();
 		mTool.update();
-//		PointF preyPos = mPrey.getPosition();
-		
-//		PointF curDirDelta = mEnv.data.getTileFromPos(preyPos).getDir().getDelta();
-//		mPrey.update(curDirDelta.x * EnvironmentData.currentSpeed, 
-//				curDirDelta.y * EnvironmentData.currentSpeed);
+		PointF preyPos = mPrey.getPosition();
+	
+		if (preyPos != null) {
+			PointF curDirDelta = mEnv.data.getTileFromPos(preyPos).getDir().getDelta();
+			mPrey.update(curDirDelta.x * EnvironmentData.currentSpeed, 
+					curDirDelta.y * EnvironmentData.currentSpeed);
+		}
 
 //		preyPos = mPrey.getPosition();
-		
+//		
 //		if (mPrey.getCaught()) {
 //			releaseCountdown--;
 //			if (releaseCountdown <= 0) {
 //				mPrey.release();
 //			}
 //		}
-		
-//		if (!mPrey.getCaught() && mNet.tryToCatch() && mD3GLES20.contains(mNet.getGraphicIndex(), preyPos.x, preyPos.y)) {
+//		
+//		if (!mPrey.getCaught() && mTool.tryToCatch() && mD3GLES20.contains(mNet.getGraphicIndex(), preyPos.x, preyPos.y)) {
 //			PointF preyHeadPos = mPrey.getHeadPositon();
 //			if (!mD3GLES20.contains(mNet.getGraphicIndex(), preyHeadPos.x, preyHeadPos.y)) {
 //				Log.v(TAG, "Net contains body but not head, not caught");
@@ -214,13 +219,13 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 //			}
 //		}
 		
-//		if (!mCamera.contains(preyPos)) {
-//			Log.v(TAG, "Camera does not contain preyPos!");
-//			mCamera.showPreyPointer();
-//		}
-//		else {
-//			mCamera.hidePreyPointer();
-//		}
+		if (!mCamera.contains(preyPos)) {
+			Log.v(TAG, "Camera does not contain preyPos!");
+			mCamera.showPreyPointer();
+		}
+		else {
+			mCamera.hidePreyPointer();
+		}
 	}
 
 	private void drawWorld(float interpolation) {
@@ -237,7 +242,7 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 		
 		mVMatrix = mCamera.toViewMatrix();
 		
-//		mCamera.setPreyPointerPosition(mPrey.getPredictedPosition());
+		mCamera.setPreyPointerPosition(mPrey.getPredictedPosition());
 		
 		mD3GLES20.drawAll(mVMatrix, mProjMatrix, interpolation);
 //		Log.v(TAG, "End drawing");
@@ -257,6 +262,7 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 		}
 		else if (!doubleTouch && mScrolling) {
 			mScrolling = false;
+			mIgnoreNextTouch = MotionEvent.ACTION_UP;
 			Log.v(TAG, "Scrolling is false");
 		}
 		else {
@@ -268,11 +274,13 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 			}				
 		
 			if (!mScrolling && !mTool.handleTouch(me.getAction(), location)) {
-				if (me.getAction() == MotionEvent.ACTION_DOWN || // to place food while net is snatching
-					me.getAction() == MotionEvent.ACTION_UP) { // to place food otherwise
+				if (mIgnoreNextTouch != me.getAction() && 
+						(me.getAction() == MotionEvent.ACTION_DOWN || // to place food while net is snatching
+						me.getAction() == MotionEvent.ACTION_UP)) { // to place food otherwise
 					mD3GLES20.putExpiringShape(new PlokText(location.x, location.y, tm, mD3GLES20.getShaderManager()));
 					mEnv.putNoise(location.x, location.y, Environment.LOUDNESS_PLOK);
 					mEnv.putFoodGM(location.x, location.y);
+					mIgnoreNextTouch = -1;
 				}
 			}
 		}
