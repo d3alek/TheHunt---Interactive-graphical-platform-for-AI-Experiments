@@ -145,8 +145,8 @@ public class CatchNet implements Tool {
 		// TODO: remove restrictions on net placement, handle in game logic
 		mStarted = false;
 		if (mPathGraphic == null) {
-			Log.v(TAG, "Setting notShown to true because of 1");
-			notShown = true;
+//			Log.v(TAG, "Setting notShown to true because of 1");
+//			notShown = true;
 			return;
 		}
 		if (mPathGraphic.isInvalid() || mPathGraphic.isFinished()) {
@@ -212,7 +212,8 @@ public class CatchNet implements Tool {
 				return false;
 			}
 			finish(location.x, location.y);
-			return true;
+			Log.v(TAG, "After up notshown is " + notShown);
+			return !notShown;
 		}
 		return false;
 	}

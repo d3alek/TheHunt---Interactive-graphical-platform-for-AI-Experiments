@@ -164,9 +164,9 @@ public void onDrawFrame(GL10 unused) {
 		smoothingCount = 0;
 		((TheHunt) mActivity).runOnUiThread(new Runnable() {
 			public void run() {
-				if (((TheHunt) mActivity).mPreyState != null) 
+//				if (((TheHunt) mActivity).mPreyState != null) 
 //						((TheHunt) mContext).mPreyState.setText(mPrey.getStateString());
-				((TheHunt) mActivity).mMSperFrame.setText(smoothMspf + "");
+//				((TheHunt) mActivity).mMSperFrame.setText(smoothMspf + "");
 //					((TheHunt) mContext).mEnergyCounter.setText(mPrey.getEnergy()+"");
 //
 //					if (mPrey.getEnergy() < RED_TEXT_ENERGY) {
@@ -289,15 +289,18 @@ private void updateWorld() {
 				}
 			}				
 		
-			if (!mScrolling && !mTool.handleTouch(me.getAction(), location)) {
-				if (mIgnoreNextTouch != me.getAction() && 
-						(me.getAction() == MotionEvent.ACTION_DOWN || // to place food while net is snatching
-						me.getAction() == MotionEvent.ACTION_UP)) { // to place food otherwise
-					mD3GLES20.putExpiringShape(new PlokText(location.x, location.y, tm, mD3GLES20.getShaderManager()));
-					mEnv.putNoise(location.x, location.y, Environment.LOUDNESS_PLOK);
-					mEnv.putFoodGM(location.x, location.y);
-					mIgnoreNextTouch = -1;
+			else {
+				if (!mTool.handleTouch(me.getAction(), location)) {
+					Log.v(TAG, "mTool can't handle touch. Ignoring if " + mIgnoreNextTouch);
+					if (mIgnoreNextTouch != me.getAction() && 
+							(me.getAction() == MotionEvent.ACTION_DOWN || // to place food while net is snatching
+							me.getAction() == MotionEvent.ACTION_UP)) { // to place food otherwise
+						mD3GLES20.putExpiringShape(new PlokText(location.x, location.y, tm, mD3GLES20.getShaderManager()));
+						mEnv.putNoise(location.x, location.y, Environment.LOUDNESS_PLOK);
+						mEnv.putFoodGM(location.x, location.y);
+					}
 				}
+				if (mIgnoreNextTouch == me.getAction()) mIgnoreNextTouch = -1;
 			}
 		}
 		prev = MotionEvent.obtain(me);
@@ -325,7 +328,7 @@ private void updateWorld() {
 		smoothingCount = 0;
 		((TheHunt) mActivity).runOnUiThread(new Runnable() {
 			public void run() {
-				((TheHunt) mActivity).mScore.setText(mCaughtCounter + "");
+//				((TheHunt) mActivity).mScore.setText(mCaughtCounter + "");
 			}
 		});
 		

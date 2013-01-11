@@ -15,13 +15,13 @@ public class TheHunt extends FragmentActivity implements PreyChangeDialog.PreyCh
 
     private static final String TAG = "TheHunt";
 	private MyGLSurfaceView mGLView;
-	private TextView mBodyBendDelay;
-	private TextView mActionDelay;
-	public TextView mPreyState;
-	protected TextView mMSperFrame;
+//	private TextView mBodyBendDelay;
+//	private TextView mActionDelay;
+//	public TextView mPreyState;
+//	protected TextView mMSperFrame;
 //	private ToggleButton mPosInterpolation;
 //	private ToggleButton mAngleInterpolation;
-	protected TextView mScore;
+//	protected TextView mScore;
 //	protected TextView mEnergyCounter;
 
     @Override
@@ -30,12 +30,12 @@ public class TheHunt extends FragmentActivity implements PreyChangeDialog.PreyCh
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
-        setContentView(R.layout.clean_release);
-        mMSperFrame = (TextView)findViewById(R.id.msPerFrame);
-        mScore = (TextView)findViewById(R.id.caughtCounter);
+        setContentView(R.layout.clean);
+//        mMSperFrame = (TextView)findViewById(R.id.msPerFrame);
+//        mScore = (TextView)findViewById(R.id.caughtCounter);
 //        mEnergyCounter = (TextView)findViewById(R.id.preyEnergy);
         mGLView = (MyGLSurfaceView)findViewById(R.id.glSurfaceView);
-        mPreyState = (TextView)findViewById(R.id.preyState);
+//        mPreyState = (TextView)findViewById(R.id.preyState);
         showPreyChangeDialog(null);
 //        ErrorReporter.getInstance().handleException(null);
     }
@@ -52,8 +52,8 @@ public class TheHunt extends FragmentActivity implements PreyChangeDialog.PreyCh
     	Log.v(TAG, "Resuming activity");
     	
     	if (findViewById(R.id.aiToggle) != null) ((ToggleButton)findViewById(R.id.aiToggle)).setChecked(PreyData.AI);
-    	if (mBodyBendDelay != null) mBodyBendDelay.setText(PreyData.BODY_BENDS_PER_SECOND+"");
-    	if (mActionDelay != null) mActionDelay.setText(PreyData.ACTIONS_PER_SECOND+"");
+//    	if (mBodyBendDelay != null) mBodyBendDelay.setText(PreyData.BODY_BENDS_PER_SECOND+"");
+//    	if (mActionDelay != null) mActionDelay.setText(PreyData.ACTIONS_PER_SECOND+"");
 //    	if (mPosInterpolation != null) mPosInterpolation.setChecked(Prey.posInterpolation);//mPosInterpolation = (ToggleButton)findViewById(R.id.posInterpolationToggle);
 //        if (mAngleInterpolation != null) mAngleInterpolation.setChecked(Prey.angleInterpolation);
 //    	
