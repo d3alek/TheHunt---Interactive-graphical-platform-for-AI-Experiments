@@ -130,6 +130,7 @@ public void onSurfaceChanged(GL10 unused, int width, int height) {
     if (!mGraphicsInitialized ) {
     	//TODO why not initialize tool graphics as well?
     	mPrey.initGraphic();
+    	mCamera.initGraphic();
     	mGraphicsInitialized = true;
 //    	mPreyGraphicInitialized = true;
     }
@@ -193,6 +194,7 @@ private void updateWorld() {
 		PointF curDirDelta = mEnv.data.getTileFromPos(preyPos).getDir().getDelta();
 //		mPrey.update(curDirDelta.x * EnvironmentData.currentSpeed, 
 //				curDirDelta.y * EnvironmentData.currentSpeed);
+		mPrey.updateVelocity(curDirDelta.x, curDirDelta.y);
 		mPrey.update(); // add friction somehow
 	}
 

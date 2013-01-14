@@ -56,11 +56,12 @@ public class D3GLES20 {
 		toRemove.clear();
 		removeSpriteLater = true;
 		for (D3Sprite sprite: sprites.values()) {
-			if (sprite.getGraphic() == null) {
-				Log.v(TAG, sprite.toString() + " graphic is not ready yet!");
-				continue;
-			}
-			sprite.getGraphic().draw(mVMatrix, mProjMatrix, interpolation);
+//			if (sprite.getGraphic() == null) {
+//				Log.v(TAG, sprite.toString() + " graphic is not ready yet!");
+//				continue;
+//			}
+//			sprite.getGraphic().draw(mVMatrix, mProjMatrix, interpolation);
+			sprite.draw(mVMatrix, mProjMatrix, interpolation);
 		}
 		removeSpriteLater = false;
 		for (Integer key: toRemove) {

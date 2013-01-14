@@ -3,6 +3,7 @@ package d3kod.thehunt;
 import android.graphics.PointF;
 import android.opengl.GLES20;
 import android.opengl.Matrix;
+import android.util.Log;
 import d3kod.d3gles20.D3GLES20;
 import d3kod.d3gles20.D3Maths;
 import d3kod.d3gles20.D3Sprite;
@@ -75,7 +76,9 @@ public class Camera extends D3Sprite {
 //	    mPreyPointer = new PreyPointer();
 //	    d3gles20.putSprite(mPreyPointer);
 //	    mPointerShown = true;
+	    
 	    hidePreyPointer();
+//	    showPreyPointer(); //
 	    
 	    calcViewMatrix();
 	}
@@ -83,15 +86,18 @@ public class Camera extends D3Sprite {
 	@Override
 	public void initGraphic() {
 		mGraphic = new PreyPointerShape();
+		initGraphic(mGraphic);
 	}
 	
 	public void update() {
 		if (contains(mPreyPos)) {
-//			Log.v(TAG, "Camera does not contain preyPos!");
-				showPreyPointer();
+//			Log.v(TAG, "Camera does contains preyPos!");
+////				showPreyPointer();
+				hidePreyPointer();
 			}
 			else {
-				hidePreyPointer();
+//				hidePreyPointer();
+				showPreyPointer();
 			}
 	}//		super.update();
 	
@@ -196,5 +202,6 @@ public class Camera extends D3Sprite {
 		}
 
 		if (mGraphic != null) mGraphic.setPosition(mPreyPointerX, mPreyPointerY, facingDir.getAngle());
+//			mGraphic.setPosition(0, 0);
 	}
 }

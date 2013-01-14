@@ -66,9 +66,11 @@ public class CatchNet extends D3Sprite implements Tool {
 //				mD3GLES20.putExpiringShape(new BlockedText(mNetGraphic.getCenterX(), mNetGraphic.getCenterY(), tm, mD3GLES20.getShaderManager()));
 			}
 			else {
-				mNetGraphic = new D3CatchNet(
-						mPathGraphic.getCenterX(), mPathGraphic.getCenterY(), mPathGraphic.getRadius());
-				initGraphic(mNetGraphic); // TODO: is this neccessary at all?
+//				mNetGraphic = new D3CatchNet(
+//						mPathGraphic.getCenterX(), mPathGraphic.getCenterY(), mPathGraphic.getRadius());
+				initNetGraphic();
+//				initGraphic(mNetGraphic); // TODO: is this neccessary at all?
+//				mGraphic = mNetGraphic;
 //				mNetGraphicIndex = mD3GLES20.putShape(mNetGraphic);
 				mD3GLES20.putExpiringShape(new PlokText(mPathGraphic.getCenterX(), mPathGraphic.getCenterY(), tm, mD3GLES20.getShaderManager()));
 				mEnv.putNoise(mPathGraphic.getCenterX(), mPathGraphic.getCenterY(), Environment.LOUDNESS_PLOK);				
@@ -171,9 +173,11 @@ public class CatchNet extends D3Sprite implements Tool {
 		}
 		if (mPathGraphic.canFinishWith(x, y)) {
 			mPathGraphic.setFinished();
-			mNetGraphic = new D3CatchNet(
-					mPathGraphic.getCenterX(), mPathGraphic.getCenterY(), mPathGraphic.getRadius());
-			initGraphic(mNetGraphic);
+			initNetGraphic();
+//			mNetGraphic = new D3CatchNet(
+//					mPathGraphic.getCenterX(), mPathGraphic.getCenterY(), mPathGraphic.getRadius());
+////			initGraphic(mNetGraphic);
+//			mNetGraphic.setProgram(mPathGraphic.getProgram());
 //			mNetGraphicIndex = mD3GLES20.putShape(mNetGraphic);
 			mD3GLES20.putExpiringShape(new PlokText(firstX, firstY, tm, mD3GLES20.getShaderManager()));
 			mEnv.putNoise(x, y, Environment.LOUDNESS_PLOK); //TODO: put noise in the center
@@ -187,6 +191,12 @@ public class CatchNet extends D3Sprite implements Tool {
 //		return mNetGraphicIndex;
 //	}
 
+	public void initNetGraphic() {
+		mNetGraphic = new D3CatchNet(
+				mPathGraphic.getCenterX(), mPathGraphic.getCenterY(), mPathGraphic.getRadius());
+		mNetGraphic.setProgram(mPathGraphic.getProgram());
+	}
+	
 	public void caughtPrey(Prey mPrey) {
 		mCaughtPrey = mPrey;
 	}
@@ -231,5 +241,11 @@ public class CatchNet extends D3Sprite implements Tool {
 		finish(location.x, location.y);
 	}
 
+	@Override
+	public void draw(float[] vMatrix, float[] projMatrix, float interpolation) {
+//		super.draw(vMatrix, projMatrix, interpolation);
+		if (mPathGraphic != null) mPathGraphic.draw(vMatrix, projMatrix, interpolation);
+		if (mNetGraphic != null) mNetGraphic.draw(vMatrix, projMatrix, interpolation);
+	}
 
 }

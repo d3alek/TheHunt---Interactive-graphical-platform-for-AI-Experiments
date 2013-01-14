@@ -68,8 +68,14 @@ public abstract class D3Sprite {
 //		vX = vx; vY = vy;
 		dirVector.x = vx; dirVector.y = vy;
 		if (mGraphic != null) {
-//			mD3GLES20.setShapeVelocity(mKey, vx, vy);
 			mGraphic.setVelocity(vx, vy);
+		}
+	}
+	
+	public void updateVelocity(float dVx, float dVy) {
+		dirVector.x += dVx; dirVector.y += dVy;
+		if (mGraphic != null) {
+			mGraphic.setVelocity(dirVector.x, dirVector.y);
 		}
 	}
 	
@@ -100,6 +106,12 @@ public abstract class D3Sprite {
 	@Override
 	public String toString() {
 		return "D3Sprite " +  mPos.toString();
+	}
+
+	public void draw(float[] vMatrix, float[] projMatrix, float interpolation) {
+		// TODO Auto-generated method stub
+		if (mGraphic != null) mGraphic.draw(vMatrix, projMatrix, interpolation);
+		
 	}
 
 

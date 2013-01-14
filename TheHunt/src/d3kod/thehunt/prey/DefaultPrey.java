@@ -50,7 +50,7 @@ public class DefaultPrey extends Prey {
 //	private int mGraphicKey;
 //	private boolean mGraphicSet;
 
-	public void update(float dx, float dy) {
+	public void update() {
 		if (mD.mIsCaught) return;
 		
 		calcPosHeadandTail();
@@ -60,7 +60,7 @@ public class DefaultPrey extends Prey {
 			doAction(mPlanner.nextAction(mWorldModel));
 			doAction(mPlanner.nextParallelAction());
 		}
-		move(dx, dy);
+		move();
 		
 		if (mWorldModel.getLightLevel() == 0) {
 			mGraphic.setHiddenColor();
@@ -123,7 +123,7 @@ public class DefaultPrey extends Prey {
 		mD.mPosTail = new PointF(posTail[0], posTail[1]);
 	}
 
-	public void move(float x, float y) {
+	public void move() {
 		if (mD.mIsCaught) return;
 //		Log.v(TAG, "Debug " + mD.bodyStartAngleTarget + " " + mD.bodyStartAngle + " " + mD.bodyBAngleTarget + " " + mD.bodyBAngle + " " + mD.bodyCAngleTarget + " " + mD.bodyCAngle + " " + mD.bodyEndAngleTarget + mD.bodyEndAngle);
 		if (mD.bodyBendCounter == 0) {
@@ -188,7 +188,7 @@ public class DefaultPrey extends Prey {
 //			bodyEndAngleRotated += bodyEndAngleRot;
 		}
 		
-		updateSpeed(x, y);
+//		updateSpeed();
 		applyFriction();
 		mD.mPosX += mD.vx ; mD.mPosY += mD.vy;
 	}
