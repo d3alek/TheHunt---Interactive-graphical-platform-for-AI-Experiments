@@ -174,7 +174,7 @@ public class D3Prey extends D3Shape {
 			+ "   gl_FragColor = u_Color;     \n"
 			+ "}                              \n";
 	
-	private int mProgramHandle;
+//	private int mProgramHandle;
 	private int mColorHandle;
 	
 	float[] mBodyStartRMatrix = new float[16];
@@ -203,8 +203,11 @@ public class D3Prey extends D3Shape {
 	
 	private PreyData mD;
 	
-	protected D3Prey(PreyData data, ShaderManager sm) {
-		super(preyColor, GLES20.GL_LINE_STRIP, sm.getDefaultProgram());
+	protected D3Prey(PreyData data) {
+//		super(preyColor, GLES20.GL_LINE_STRIP, sm.getDefaultProgram());
+		super();
+		super.setColor(preyColor);
+		super.setDrawType(GLES20.GL_LINE_STRIP);
 		mD = data;
 		Matrix.setIdentityM(mModelMatrix, 0);
 		
@@ -231,7 +234,7 @@ public class D3Prey extends D3Shape {
         rib1PosIndex = (1*bodyVerticesNum/4)*D3GLES20.COORDS_PER_VERTEX;
         rib2PosIndex = (3*bodyVerticesNum/4-2)*D3GLES20.COORDS_PER_VERTEX;
 		
-        mProgramHandle = sm.getDefaultProgram().getHandle();
+//        mProgramHandle = sm.getDefaultProgram().getHandle();
         
         eatingStep = -1;
 //        mMVPMatrixHandle = GLES20.glGetUniformLocation(mProgramHandle, "u_MVPMatrix");

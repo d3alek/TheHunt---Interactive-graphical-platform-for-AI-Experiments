@@ -124,7 +124,11 @@ public class D3AlgaeHatching extends D3Shape {
 	private float textureSizeX;
 	
 	protected D3AlgaeHatching(int textureDataHandle, Program program) {
-		super(algaeColor, GLES20.GL_TRIANGLE_FAN, program);
+//		super(algaeColor, GLES20.GL_TRIANGLE_FAN, program);
+		super();
+		super.setColor(algaeColor);
+		super.setDrawType(GLES20.GL_TRIANGLE_FAN);
+//		super.setProgram(program);
 		controlPointsData = null;
 		FloatBuffer[] vertAndTexBuffers = makeVerticesBuffer();
 		super.setVertexBuffer(vertAndTexBuffers[0]);

@@ -12,7 +12,10 @@ abstract public class D3FadingShape extends D3Shape {
 
 	protected D3FadingShape(float[] colorData, int drType,
 			Program program, float fadeSpeed, float maxFade) {
-		super(colorData, drType, program);
+		super();
+		setColor(colorData);
+		setDrawType(drType);
+		setProgram(program);
 		mExpired = false;
 		mFadeSpeed = fadeSpeed;
 		mMaxFade = maxFade;

@@ -4,6 +4,7 @@ import android.graphics.PointF;
 import android.util.Log;
 import android.view.MotionEvent;
 import d3kod.d3gles20.D3GLES20;
+import d3kod.d3gles20.D3Sprite;
 import d3kod.d3gles20.TextureManager;
 import d3kod.d3gles20.programs.Program;
 import d3kod.thehunt.environment.Environment;
@@ -12,7 +13,7 @@ import d3kod.thehunt.floating_text.SnatchText;
 import d3kod.thehunt.prey.Prey;
 
 //TODO: support multiple nets at the same time, refactor, interface to the graphics (similar to floating object)
-public class CatchNet implements Tool {
+public class CatchNet extends D3Sprite implements Tool {
 	private static final String TAG = "CatchNet";
 	private static final float MAX_FOOD_PLACEMENT_LENGTH = 0.1f;
 
@@ -31,28 +32,32 @@ public class CatchNet implements Tool {
 
 	private boolean showSnatchText;
 
-	private Program mProgram;
+//	private Program mProgram;
 
 	private D3CatchNet mNetGraphic;
 	private D3CatchNetPath mPathGraphic;
 	
-	private int mNetGraphicIndex;
-	private int mPathGraphicIndex;
+//	private int mNetGraphicIndex;
+//	private int mPathGraphicIndex;
 	
 	private boolean mStarted;
 	
 	public CatchNet(Environment env, TextureManager tm, D3GLES20 d3GLES20) {
+		super(new PointF(0, 0), d3GLES20);
 		mD3GLES20 = d3GLES20;
 		mEnv = env;
 		this.tm = tm;
-		mProgram = d3GLES20.getShaderManager().getDefaultProgram();
+//		mProgram = d3GLES20.getShaderManager().getDefaultProgram();
 	}
-	
+	@Override
+	public void initGraphic() {
+		// Do nothing. Instead, graphics are initialized at each press.
+	}
 	public void update() {
 		if (mPathGraphic == null) return;
 		if (mPathGraphic.fadeDone()) {
 			mPathGraphic = null;
-			mD3GLES20.removeShape(mPathGraphicIndex);
+//			mD3GLES20.removeShape(mPathGraphicIndex);
 		}
 		else if (mPathGraphic.isFinished() && !mPathGraphic.isInvalid() && mNetGraphic == null) {
 			if (mEnv.netIntersectsWithAlgae(mPathGraphic.getCenterX(), mPathGraphic.getCenterY(), mPathGraphic.getRadius())) {
@@ -62,8 +67,9 @@ public class CatchNet implements Tool {
 			}
 			else {
 				mNetGraphic = new D3CatchNet(
-						mPathGraphic.getCenterX(), mPathGraphic.getCenterY(), mPathGraphic.getRadius(), mProgram);
-				mNetGraphicIndex = mD3GLES20.putShape(mNetGraphic);
+						mPathGraphic.getCenterX(), mPathGraphic.getCenterY(), mPathGraphic.getRadius());
+				initGraphic(mNetGraphic); // TODO: is this neccessary at all?
+//				mNetGraphicIndex = mD3GLES20.putShape(mNetGraphic);
 				mD3GLES20.putExpiringShape(new PlokText(mPathGraphic.getCenterX(), mPathGraphic.getCenterY(), tm, mD3GLES20.getShaderManager()));
 				mEnv.putNoise(mPathGraphic.getCenterX(), mPathGraphic.getCenterY(), Environment.LOUDNESS_PLOK);				
 			}
@@ -79,10 +85,10 @@ public class CatchNet implements Tool {
 			}
 			if (mNetGraphic.fadeDone()) {
 				mPathGraphic = null;
-				mD3GLES20.removeShape(mPathGraphicIndex);
+//				mD3GLES20.removeShape(mPathGraphicIndex);
 				
 				mNetGraphic = null;
-				mD3GLES20.removeShape(mNetGraphicIndex);
+//				mD3GLES20.removeShape(mNetGraphicIndex);
 				
 				if (mCaughtPrey != null) {
 					Log.v(TAG, "Prey is in net!!! YAY");
@@ -110,8 +116,10 @@ public class CatchNet implements Tool {
 		notShown = true;
 		showSnatchText = false;
 		
-		mPathGraphic = new D3CatchNetPath(mProgram);
-		mPathGraphicIndex = mD3GLES20.putShape(mPathGraphic);
+//		initGraphic(new D3CatchNetPath());
+		mPathGraphic = new D3CatchNetPath();
+		initGraphic(mPathGraphic);
+//		mPathGraphicIndex = mD3GLES20.putShape(mPathGraphic);
 		
 		mCaughtPrey = null;
 		firstX = x; firstY = y;
@@ -156,7 +164,7 @@ public class CatchNet implements Tool {
 		if (mPathGraphic.getLength() < MAX_FOOD_PLACEMENT_LENGTH) {
 			// assume food placement was meant
 			mPathGraphic = null;
-			mD3GLES20.removeShape(mPathGraphicIndex);
+//			mD3GLES20.removeShape(mPathGraphicIndex);
 			Log.v(TAG, "Setting notShown to true because of 2");
 			notShown = true;
 			return;
@@ -164,8 +172,9 @@ public class CatchNet implements Tool {
 		if (mPathGraphic.canFinishWith(x, y)) {
 			mPathGraphic.setFinished();
 			mNetGraphic = new D3CatchNet(
-					mPathGraphic.getCenterX(), mPathGraphic.getCenterY(),mPathGraphic.getRadius(), mProgram);
-			mNetGraphicIndex = mD3GLES20.putShape(mNetGraphic);
+					mPathGraphic.getCenterX(), mPathGraphic.getCenterY(), mPathGraphic.getRadius());
+			initGraphic(mNetGraphic);
+//			mNetGraphicIndex = mD3GLES20.putShape(mNetGraphic);
 			mD3GLES20.putExpiringShape(new PlokText(firstX, firstY, tm, mD3GLES20.getShaderManager()));
 			mEnv.putNoise(x, y, Environment.LOUDNESS_PLOK); //TODO: put noise in the center
 		}
@@ -174,9 +183,9 @@ public class CatchNet implements Tool {
 		}
 	}
 
-	public int getGraphicIndex() {
-		return mNetGraphicIndex;
-	}
+//	public int getGraphicIndex() {
+//		return mNetGraphicIndex;
+//	}
 
 	public void caughtPrey(Prey mPrey) {
 		mCaughtPrey = mPrey;
@@ -221,4 +230,6 @@ public class CatchNet implements Tool {
 	public void stop(PointF location) {
 		finish(location.x, location.y);
 	}
+
+
 }

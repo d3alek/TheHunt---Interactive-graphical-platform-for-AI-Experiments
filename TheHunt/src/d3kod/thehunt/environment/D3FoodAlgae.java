@@ -14,7 +14,10 @@ public class D3FoodAlgae extends D3Shape {
 	private static int drawType = GLES20.GL_LINE_LOOP;
 	
 	protected D3FoodAlgae(ShaderManager sm) {
-		super(foodColor, drawType, sm.getDefaultProgram());
+//		super(foodColor, drawType, sm.getDefaultProgram());
+		super();
+		super.setColor(foodColor);
+		super.setDrawType(GLES20.GL_LINE_LOOP);
 		setVertexBuffer(makeVertexBuffer());
 	}
 

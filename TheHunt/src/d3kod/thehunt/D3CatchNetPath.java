@@ -52,8 +52,10 @@ public class D3CatchNetPath extends D3Path {
 
 //	private boolean snatched;
 	
-	public D3CatchNetPath(Program program) {
-		super(beingBuiltColor.clone(), program);
+	public D3CatchNetPath() {
+//		super(beingBuiltColor.clone(), program);
+		super();
+		setColor(beingBuiltColor.clone()); //TODO do we need clone?
 //		this.tm = tm;
 		mIsClosed = mIsInvalid = false;
 //		snatched = false;

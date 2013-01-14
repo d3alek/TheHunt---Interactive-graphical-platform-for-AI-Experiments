@@ -38,25 +38,28 @@ abstract public class D3Shape {
 	private static final float MIN_ALPHA = 0.1f;
 	
 	protected D3Shape(FloatBuffer vertBuffer, float[] colorData, int drType, Program program) {
-		this(colorData, drType, program);
+		this();
+		setColor(colorData);
+		setDrawType(drType);
 		setVertexBuffer(vertBuffer); //TODO: make this the default constructor without the vertBuffer argument and ssetVertexBuffer abstract
+		setProgram(program);
 	}
 	
-	protected D3Shape(float[] colorData, int drawType, Program program) {
-		setColor(colorData);
-		setDrawType(drawType);
+	protected D3Shape() {
+//		setColor(colorData);
+//		setDrawType(drawType);
 		mMMatrix = new float[16];
 		mCenterDefault = new float[] {0.0f, 0.0f, 0.0f, 1.0f};
 		mCenter = new float[4];
 		mVelocityX = mVelocityY = 0;
 		Matrix.setIdentityM(getMMatrix(), 0);
 		mScale = 1;
-		mProgram = program;
-		mMVPMatrixHandle = GLES20.glGetUniformLocation(mProgram.getHandle(), "u_MVPMatrix"); 
+//		mProgram = program;
+//		mMVPMatrixHandle = GLES20.glGetUniformLocation(mProgram.getHandle(), "u_MVPMatrix"); 
 	    mPositionHandle = AttribVariable.A_Position.getHandle();
-	    mColorHandle = GLES20.glGetUniformLocation(mProgram.getHandle(), "u_Color");
+//	    mColorHandle = GLES20.glGetUniformLocation(mProgram.getHandle(), "u_Color");
 	}
-	
+
 	public void setVertexBuffer(FloatBuffer vertBuffer) {
 		vertexBuffer = vertBuffer;
 		if (vertBuffer != null) VERTICES_NUM = vertBuffer.capacity()/D3GLES20.COORDS_PER_VERTEX;
@@ -78,7 +81,7 @@ abstract public class D3Shape {
 		}
 	}
 	
-	protected void setProgram(Program program) {
+	public void setProgram(Program program) {
 		mProgram = program;
 		mMVPMatrixHandle = GLES20.glGetUniformLocation(mProgram.getHandle(), "u_MVPMatrix");
         mColorHandle = GLES20.glGetUniformLocation(mProgram.getHandle(), "u_Color");

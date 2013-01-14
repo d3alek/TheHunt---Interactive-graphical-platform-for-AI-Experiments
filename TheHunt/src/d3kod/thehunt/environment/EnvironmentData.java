@@ -179,7 +179,7 @@ public class EnvironmentData {
 	public void logFloatingObjects() {
 		String log = "Floating objects log: ";
 		for (FloatingObject fo: mFloatingObjects) {
-			log += fo.getType() + " " + fo.getKey() + " ";
+			log += fo.getType() + " " + fo.getX() + " " + fo.getY() + " ";
 		}
 		Log.v(TAG, log);
 	}
@@ -210,7 +210,7 @@ public class EnvironmentData {
 						|| fo2 == fo1) {
 					continue;
 				}
-				if (mD3GLES20.shapesCollide(fo1.getGraphic(), fo2.getGraphic())) {
+				if (mD3GLES20.spritesCollide(fo1, fo2)) {
 					algae1 = ((NAlgae)fo1);
 					algae2 = ((NAlgae)fo2);
 					if (algae1.getN() > algae2.getN()) {
@@ -239,7 +239,7 @@ public class EnvironmentData {
 				if (fo2.toRemove() || fo2.getType() != Type.FOOD_GM) {
 					continue;
 				}
-				if (mD3GLES20.shapesCollide(fo1.getGraphic(), fo2.getGraphic())) {
+				if (mD3GLES20.spritesCollide(fo1, fo2)) {
 					algae1 = (NAlgae) fo1;
 					algae1.grow(FOOD_GM_SIZE_INCREMENT);
 					fo2.setToRemove();
@@ -257,10 +257,10 @@ public class EnvironmentData {
 		mFloatingObjects.addAll(mFloatingObjectsToAdd);
 		if (mGraphicsAreSet) {
 			for (FloatingObject fo: mFloatingObjectsToAdd) {
-				fo.setGraphic(mD3GLES20);
+				fo.initGraphic();
 			}
 			for (FloatingObject fo: mFloatingObjectsToSetGraphics) {
-				fo.setGraphic(mD3GLES20);
+				fo.initGraphic();
 			}
 			mFloatingObjectsToSetGraphics.clear();
 		}

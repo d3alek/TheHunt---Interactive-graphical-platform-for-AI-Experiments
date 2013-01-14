@@ -15,8 +15,8 @@ public class D3NAlgae extends D3Circle {
 	private static final int verticesNum = 50;
 	private static final float defaultSize = 25f;
 	
-	protected D3NAlgae(ShaderManager sm) {
-		super(algaeRad, algaeColor, verticesNum, sm.getDefaultProgram());
+	protected D3NAlgae() {
+		super(algaeRad, algaeColor, verticesNum);
 	}
 
 	@Override

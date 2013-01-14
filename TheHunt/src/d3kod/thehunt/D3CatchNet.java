@@ -16,11 +16,12 @@ public class D3CatchNet extends D3Circle {
 	private static final float START_RADIUS = 0.03f;
 //	private float mScale;
 
-	public D3CatchNet(float x, float y, float radius, Program program) {
-		super(radius, isBuiltColor, VERTICES_NUM, program);
+	public D3CatchNet(float x, float y, float radius) {
+		super(radius, isBuiltColor, VERTICES_NUM);
 		setPosition(x, y);
 		setScale(START_RADIUS/radius);
 	}
+
 
 	public void grow() {
 		super.grow(mGrowSpeed);

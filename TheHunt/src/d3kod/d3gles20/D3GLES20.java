@@ -56,6 +56,10 @@ public class D3GLES20 {
 		toRemove.clear();
 		removeSpriteLater = true;
 		for (D3Sprite sprite: sprites.values()) {
+			if (sprite.getGraphic() == null) {
+				Log.v(TAG, sprite.toString() + " graphic is not ready yet!");
+				continue;
+			}
 			sprite.getGraphic().draw(mVMatrix, mProjMatrix, interpolation);
 		}
 		removeSpriteLater = false;
@@ -84,6 +88,10 @@ public class D3GLES20 {
 			spritesNum++;
 		}
 		sprites.put(spritesNum, sprite);
+		if (sprite.getGraphic().getProgram() == null) {
+			Log.v(TAG, "Sprite program is not set, setting to default");
+			sprite.getGraphic().setProgram(sm.getDefaultProgram());
+		}
 		return spritesNum++;
 	}
 	

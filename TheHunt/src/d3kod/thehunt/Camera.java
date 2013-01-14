@@ -1,14 +1,55 @@
 package d3kod.thehunt;
 
 import android.graphics.PointF;
+import android.opengl.GLES20;
 import android.opengl.Matrix;
-import android.util.Log;
 import d3kod.d3gles20.D3GLES20;
 import d3kod.d3gles20.D3Maths;
+import d3kod.d3gles20.D3Sprite;
+import d3kod.d3gles20.Utilities;
+import d3kod.d3gles20.shapes.D3Shape;
 import d3kod.thehunt.environment.Dir;
 import d3kod.thehunt.environment.EnvironmentData;
 
-public class Camera {
+public class Camera extends D3Sprite {
+	
+	class PreyPointerShape extends D3Shape {
+		private final float[] pointerColor = {
+			0.0f, 0.0f, 0.0f, 1.0f };
+		private static final int drawType = GLES20.GL_LINE_LOOP;
+		
+		private static final float pointerSize = 0.1f;
+		private final float[] pointerVertexData = {
+			0.0f, pointerSize/2, 0.0f,
+			-pointerSize/2, -pointerSize/2, 0.0f,
+			pointerSize/2, -pointerSize/2, 0.0f };
+		
+		protected PreyPointerShape() {
+			super();
+			super.setDrawType(drawType);
+			super.setColor(pointerColor);
+			super.setVertexBuffer(Utilities.newFloatBuffer(pointerVertexData));
+		}
+
+		@Override
+		public void setPosition(float x, float y, float angleDeg) {
+			switch((int)angleDeg) {
+			case 0: y -= pointerSize/2; break; // dir is N
+			case 90: x += pointerSize/2; break; // dir is W
+			case -90: x -= pointerSize/2; break; // dir is E
+			case 180: y += pointerSize/2; break; // dir is S;
+			}
+			
+			super.setPosition(x, y, angleDeg);
+		}
+		
+		@Override
+		public float getRadius() {
+			throw new UnsupportedOperationException();
+		}
+
+	}
+	
 	private static final String TAG = "Camera";
 	private float mCenterX;
 	private float mCenterY;
@@ -19,24 +60,45 @@ public class Camera {
 	private float mWidth;
 	private float mHeight;
 	private float mWidthToHeightRatio;
-	private PreyPointer mPreyPointer;
 	private boolean mPointerShown;
+	private PointF mPreyPos;
 
 	public Camera(float screenToWorldWidth, float screenToWorldHeight, float widthToHeightRatio, D3GLES20 d3gles20) {
+		super(new PointF(0, 0), d3gles20);
 		mCenterX = mCenterY = 0;
 		mVMatrix = new float[16];
 		mWidth = 2*screenToWorldWidth;//*mScreenWidthPx/(float)mScreenHeightPx;
 	    mHeight = 2*screenToWorldHeight;
 	    mWidthToHeightRatio = widthToHeightRatio;
 	    
-	    mPreyPointer = new PreyPointer(d3gles20.getShaderManager());
-	    d3gles20.putShape(mPreyPointer);
+//	    D3Shape shape = new PreyPointerShape(d3gles20.getShaderManager());
+//	    mPreyPointer = new PreyPointer();
+//	    d3gles20.putSprite(mPreyPointer);
 //	    mPointerShown = true;
 	    hidePreyPointer();
 	    
 	    calcViewMatrix();
 	}
 
+	@Override
+	public void initGraphic() {
+		mGraphic = new PreyPointerShape();
+	}
+	
+	public void update() {
+		if (contains(mPreyPos)) {
+//			Log.v(TAG, "Camera does not contain preyPos!");
+				showPreyPointer();
+			}
+			else {
+				hidePreyPointer();
+			}
+	}//		super.update();
+	
+	public void setPreyPosition(PointF preyPos) {
+		mPreyPos = preyPos;
+	}
+	
 	public void move(float dx, float dy) {
 //		Log.v(TAG, "Moving " + dx + " " + dy + " "
 //				+ EnvironmentData.mScreenWidth + " "
@@ -90,16 +152,20 @@ public class Camera {
 
 	public void showPreyPointer() {
 		mPointerShown = true;
-		mPreyPointer.noFade();
+//		mGraphic.noFade();
 	}
 
 	public void hidePreyPointer() {
 		mPointerShown = false;
-		mPreyPointer.fade(1);
+//		mGraphic.fade(1);
 	}
 	
 	public void setPreyPointerPosition(PointF preyPosition) {
-		if (mPointerShown == false || preyPosition == null) return;
+		if (mPointerShown == false || preyPosition == null) {
+			if (mGraphic != null) mGraphic.fade(1);
+			return;
+		}
+		if (mGraphic != null) mGraphic.noFade();
 		float mLeftX = mCenterX - mWidth * mWidthToHeightRatio/2;
 		float mRightX = mLeftX + mWidth * mWidthToHeightRatio;
 		float mBottomY = mCenterY - mHeight/2;
@@ -129,6 +195,6 @@ public class Camera {
 			mPreyPointerY = preyPosition.y;
 		}
 
-		mPreyPointer.setPosition(mPreyPointerX, mPreyPointerY, facingDir.getAngle());
+		if (mGraphic != null) mGraphic.setPosition(mPreyPointerX, mPreyPointerY, facingDir.getAngle());
 	}
 }

@@ -19,12 +19,12 @@ public class Planner {
 	public static final boolean SHOW_TARGET = true;
 	private PlanState mState;
 	private Plan mPlan;
-	private int mPlanTarget;
-	private D3GLES20 mD3GLES20;
+//	private int mPlanTarget;
+//	private D3GLES20 mD3GLES20;
 	private ExplorePlan mExplorePlan;
 
-	public Planner(D3GLES20 d3GLES20) {
-		mD3GLES20 = d3GLES20;
+	public Planner() {
+//		mD3GLES20 = d3GLES20;
 		clear();
 	}
 
@@ -39,10 +39,10 @@ public class Planner {
 		if (mWorldModel.amOverweight()) mPlan.addParallelAction(Action.poop);
 		mPlan.update(mWorldModel);
 		if (!mPlan.isFinished()) {
-			if (SHOW_TARGET && !(mPlan instanceof ExplorePlan)) mD3GLES20.setShapePosition(mPlanTarget, mPlan.getTargetX(), mPlan.getTargetY());
+//			if (SHOW_TARGET && !(mPlan instanceof ExplorePlan)) mD3GLES20.setShapePosition(mPlanTarget, mPlan.getTargetX(), mPlan.getTargetY());
 			return mPlan.nextAction();
 		}
-		else if (SHOW_TARGET && !(mPlan instanceof ExplorePlan)) mD3GLES20.removeShape(mPlanTarget);
+//		else if (SHOW_TARGET && !(mPlan instanceof ExplorePlan)) mD3GLES20.removeShape(mPlanTarget);
 		
 		mState = checkForSomethingInteresting(mWorldModel);
 		Stack<ParallelAction> saveParallelActions = mPlan.getParallelActions();
@@ -53,9 +53,9 @@ public class Planner {
 		case DONOTHING: mPlan = new NoPlan(mWorldModel.getHeadX(), mWorldModel.getHeadY()); break;
 		}
 		mPlan.setParallelActions(saveParallelActions);
-		if (SHOW_TARGET && !(mPlan instanceof ExplorePlan)) makeTarget();
+//		if (SHOW_TARGET && !(mPlan instanceof ExplorePlan)) makeTarget();
 		mPlan.update(mWorldModel);
-		if (SHOW_TARGET && !(mPlan instanceof ExplorePlan)) mD3GLES20.setShapePosition(mPlanTarget, mPlan.getTargetX(), mPlan.getTargetY());
+//		if (SHOW_TARGET && !(mPlan instanceof ExplorePlan)) mD3GLES20.setShapePosition(mPlanTarget, mPlan.getTargetX(), mPlan.getTargetY());
 		return mPlan.nextAction();
 	}
 	
@@ -122,13 +122,13 @@ public class Planner {
 		return hidePlan;
 	}
 	
-	public void makeTarget() {
-		mPlanTarget = mD3GLES20.newDefaultCircle(mPlan.getTargetSize(), mPlan.getTargetColor(), 10);
-	}
+//	public void makeTarget() {
+//		mPlanTarget = mD3GLES20.newDefaultCircle(mPlan.getTargetSize(), mPlan.getTargetColor(), 10);
+//	}
 
-	public int getTarget() {
-		return mPlanTarget;
-	}
+//	public int getTarget() {
+//		return mPlanTarget;
+//	}
 
 	public void clear() {
 		mPlan = new NoPlan(0, 0);

@@ -18,8 +18,8 @@ public class NAlgae extends FloatingObject implements Eatable {
 	private D3NAlgae mGraphic;
 	private Environment mEnvironment;
 
-	public NAlgae(int n, PointF pos, float dirAngle, Environment environment) {
-		super(pos.x, pos.y, Type.ALGAE);
+	public NAlgae(int n, PointF pos, float dirAngle, Environment environment, D3GLES20 d3gles20) {
+		super(pos.x, pos.y, Type.ALGAE, d3gles20);
 		mSize = n;
 		setVelocity(FloatMath.cos(dirAngle)*getSpeed(), FloatMath.sin(dirAngle)*getSpeed());
 		mEnvironment = environment;
@@ -29,9 +29,9 @@ public class NAlgae extends FloatingObject implements Eatable {
 		return ALGAE_START_SPEED/mSize;
 	}
 
-	public void setGraphic(D3GLES20 d3gles20) {
-		mGraphic = new D3NAlgae(d3gles20.getShaderManager());
-		super.setGraphic(mGraphic, d3gles20);
+	public void initGraphic() {
+		mGraphic = new D3NAlgae();
+		super.initGraphic(mGraphic);
 		updateGraphicSize();
 	}
 

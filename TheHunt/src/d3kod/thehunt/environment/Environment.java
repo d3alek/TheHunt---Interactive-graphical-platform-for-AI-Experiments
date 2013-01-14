@@ -30,15 +30,17 @@ public class Environment {
 //	private static final float ALGAE_DROP_FOOD_CHANCE = 0.015f;
 	private static final float NET_INTERSECT_RAD_ADJ = 0.2f;
 	
-	public Environment(int width, int height) {
+	public Environment(int width, int height, D3GLES20 d3gles20) {
+		mD3GLES20 = d3gles20;
 		data = new EnvironmentData(width, height);
+		data.setGraphics(mD3GLES20);
 		mNoiseEvents = new ArrayList<EventNoise>();
 		mRandom = new Random();
 		seedAlgae();
 	}
 	
 	public void addNewAlgae(int n, PointF pos, float dirAngle) {
-		data.addFloatingObject(new NAlgae(n, pos, dirAngle, this));
+		data.addFloatingObject(new NAlgae(n, pos, dirAngle, this, mD3GLES20));
 	}
 	
 	private void seedAlgae() {
@@ -57,12 +59,6 @@ public class Environment {
 		data.updateFloatingObjects();
 
 	}
-	public void initGraphics(Context context, D3GLES20 d3GLES20) {
-		mD3GLES20 = d3GLES20;
-		data.setGraphics(mD3GLES20);
-	}
-	
-	
 	public void recalculateCurrents() {
 	}
 	
@@ -72,7 +68,7 @@ public class Environment {
 	public void putFoodGM(float x, float y) {
 //		Log.v(TAG, "Putting food at " + x +  " " + y);
 //		data.addFloatingObject(new FloatingObject(x, y, Type.FOOD, mD3GLES20), mD3GLES20.newDefaultCircle(0.01f, foodColor , 20));
-		data.addFloatingObject(new FoodGM(x, y));
+		data.addFloatingObject(new FoodGM(x, y, mD3GLES20));
 	}
 	
 //	public void putFoodAlgae(float x, float y) {
@@ -112,16 +108,18 @@ public class Environment {
 	}
 	
 	public Event senseLight(float hX, float hY) {
+		PointF at = new PointF(hX, hY);
 		for (FloatingObject fo: data.getFloatingObjects()) {
-			if (fo.getType() == Type.ALGAE && fo.contains(hX, hY)) {
+			if (fo.getType() == Type.ALGAE && fo.contains(at)) {
 				return new EventLight(0);
 			}
 		}
 		return new EventLight(1);
 	}
 	public boolean netObstacle(float x, float y) {
+		PointF at = new PointF(x, y);
 		for (FloatingObject fo: data.getFloatingObjects()) {
-			if (fo.getType() == Type.ALGAE && fo.contains(x, y)) 
+			if (fo.getType() == Type.ALGAE && fo.contains(at)) 
 				return true;
 		}
 		return false;

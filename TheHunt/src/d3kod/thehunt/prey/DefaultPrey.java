@@ -22,7 +22,7 @@ import d3kod.thehunt.prey.planner.PlanState;
 import d3kod.thehunt.prey.planner.Planner;
 import d3kod.thehunt.prey.sensor.Sensor;
 
-public class DefaultPrey implements Prey {
+public class DefaultPrey extends Prey {
 	
 	private static final String TAG = "Prey";
 	public static final float EAT_FOOD_RADIUS = 0.1f;
@@ -47,8 +47,8 @@ public class DefaultPrey implements Prey {
 	private D3Prey mGraphic;
 
 	private D3GLES20 mD3GLES20;
-	private int mGraphicKey;
-	private boolean mGraphicSet;
+//	private int mGraphicKey;
+//	private boolean mGraphicSet;
 
 	public void update(float dx, float dy) {
 		if (mD.mIsCaught) return;
@@ -319,7 +319,9 @@ public class DefaultPrey implements Prey {
 		mD.vy -= EnvironmentData.frictionCoeff*mD.vy;
 	}
 	
-	public DefaultPrey(Environment env, TextureManager texMan) {
+	public DefaultPrey(Environment env, TextureManager texMan, D3GLES20 d3gles20) {
+		super(d3gles20);
+		mD3GLES20 = d3gles20;
 		mD = new PreyData();
 		
 		tm = texMan;
@@ -329,7 +331,7 @@ public class DefaultPrey implements Prey {
 		mD.mPosX = mD.mPosY = 0;
 		
 		mD.rotateSpeedHead = mD.rotateSpeedSmall;//Math.abs(TurnAngle.LEFT_SMALL.getValue())/SMALL_TICKS_PER_TURN;
-		mGraphicSet = false;
+//		mGraphicSet = false;
 		mD.mIsCaught = false;
 		mD.emotionText = null;
 	}
@@ -415,15 +417,20 @@ public class DefaultPrey implements Prey {
 //		mD.mPosX = -EnvironmentData.mScreenWidth/2+rand.nextFloat()*EnvironmentData.mScreenWidth;
 //		mD.mPosY = -EnvironmentData.mScreenHeight/2+rand.nextFloat()*EnvironmentData.mScreenHeight;
 //	}
-	public void initGraphics(D3GLES20 d3GLES20) {
-        mGraphic = new D3Prey(mD, d3GLES20.getShaderManager());
-        mD3GLES20 = d3GLES20;
-		mPlanner = new Planner(mD3GLES20);
-        mGraphicKey = mD3GLES20.putShape(mGraphic);
-        mGraphicSet = true;
-		if (Planner.SHOW_TARGET) {
-			mPlanner.makeTarget();
-		}
+//	public void initGraphic() {
+//		throw (new UnsupportedOperationException());
+//	}
+	public void initGraphic() {
+//		mD3GLES20 = d3gles20;
+        mGraphic = new D3Prey(mD);
+//        mD3GLES20 = d3GLES20;
+		initGraphic(mGraphic);
+		mPlanner = new Planner();
+//        mGraphicKey = mD3GLES20.putShape(mGraphic);
+//        mGraphicSet = true;
+//		if (Planner.SHOW_TARGET) {
+//			mPlanner.makeTarget();
+//		}
 		PointF newPos = mEnv.randomPosInEnv();
 		mD.mPosX = newPos.x; mD.mPosY = newPos.y;
 	}
@@ -444,12 +451,12 @@ public class DefaultPrey implements Prey {
 		return mGraphic;
 	}
 
-	public void clearGraphic() {
-		if (!mGraphicSet) {
-			Log.w(TAG, "Cannot clear graphic because not set!");
-			return;
-		}
-		mD3GLES20.removeShape(mGraphicKey);
-		mGraphicSet = false;
-	}
+//	public void clearGraphic() {
+//		if (!mGraphicSet) {
+//			Log.w(TAG, "Cannot clear graphic because not set!");
+//			return;
+//		}
+//		mD3GLES20.removeShape(mGraphicKey);
+//		mGraphicSet = false;
+//	}
 }

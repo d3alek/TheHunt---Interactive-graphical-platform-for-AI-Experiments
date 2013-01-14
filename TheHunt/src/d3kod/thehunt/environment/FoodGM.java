@@ -8,12 +8,12 @@ public class FoodGM extends FloatingObject implements Eatable {
 	private static final int FOOD_GM_NUTRITION = 50;
 	private D3FoodGM mGraphic;
 	
-	public FoodGM(float x, float y) {
-		super(x, y, Type.FOOD_GM);
+	public FoodGM(float x, float y, D3GLES20 d3gles20) {
+		super(x, y, Type.FOOD_GM, d3gles20);
 	}
 	
-	public void setGraphic(D3GLES20 d3gles20) {
-		super.setGraphic(new D3FoodGM(d3gles20.getShaderManager()), d3gles20);
+	public void initGraphic() {
+		super.initGraphic(new D3FoodGM());
 	}
 
 	public int getNutrition() {

@@ -43,8 +43,10 @@ public class D3Algae extends D3Shape {
 
 	private int noFlip; 
 
-	protected D3Algae(ShaderManager sm) {
-		super(algaeColor, drawType, sm.getDefaultProgram());
+	protected D3Algae() {
+		super();
+		super.setColor(algaeColor);
+		super.setDrawType(drawType);
 		controPointsData = null;
 		setVertexBuffer(makeVerticesBuffer());
 	}
