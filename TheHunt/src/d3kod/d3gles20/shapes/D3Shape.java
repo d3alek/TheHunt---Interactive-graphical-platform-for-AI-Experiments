@@ -46,18 +46,13 @@ abstract public class D3Shape {
 	}
 	
 	protected D3Shape() {
-//		setColor(colorData);
-//		setDrawType(drawType);
 		mMMatrix = new float[16];
 		mCenterDefault = new float[] {0.0f, 0.0f, 0.0f, 1.0f};
 		mCenter = new float[4];
 		mVelocityX = mVelocityY = 0;
 		Matrix.setIdentityM(getMMatrix(), 0);
 		mScale = 1;
-//		mProgram = program;
-//		mMVPMatrixHandle = GLES20.glGetUniformLocation(mProgram.getHandle(), "u_MVPMatrix"); 
 	    mPositionHandle = AttribVariable.A_Position.getHandle();
-//	    mColorHandle = GLES20.glGetUniformLocation(mProgram.getHandle(), "u_Color");
 	}
 
 	public void setVertexBuffer(FloatBuffer vertBuffer) {

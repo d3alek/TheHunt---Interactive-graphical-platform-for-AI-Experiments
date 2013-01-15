@@ -320,7 +320,7 @@ public class DefaultPrey extends Prey {
 	}
 	
 	public DefaultPrey(Environment env, TextureManager texMan, D3GLES20 d3gles20) {
-		super(d3gles20);
+		super(env, d3gles20);
 		mD3GLES20 = d3gles20;
 		mD = new PreyData();
 		

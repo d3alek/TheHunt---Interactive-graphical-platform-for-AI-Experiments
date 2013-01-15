@@ -6,6 +6,7 @@ import java.util.Map.Entry;
 
 import android.graphics.PointF;
 import android.util.Log;
+import d3kod.d3gles20.programs.Program;
 import d3kod.d3gles20.shapes.D3Circle;
 import d3kod.d3gles20.shapes.D3FadingShape;
 import d3kod.d3gles20.shapes.D3Quad;
@@ -36,12 +37,6 @@ public class D3GLES20 {
 		removeSpriteLater = false;
 	}
 	
-//	public static void init() {
-//		shapes = new HashMap<Integer, D3Shape>();
-//		expiringShapes = new HashMap<Integer, D3FadingShape>();
-//		shapesNum = 0;
-//	}
-
 	public void draw(int key, float[] mMMatrix, float[] mVMatrix, float[] mProjMatrix) {
 		sprites.get(key).getGraphic().setModelMatrix(mMMatrix);
 		sprites.get(key).getGraphic().draw(mVMatrix, mProjMatrix);
@@ -56,11 +51,6 @@ public class D3GLES20 {
 		toRemove.clear();
 		removeSpriteLater = true;
 		for (D3Sprite sprite: sprites.values()) {
-//			if (sprite.getGraphic() == null) {
-//				Log.v(TAG, sprite.toString() + " graphic is not ready yet!");
-//				continue;
-//			}
-//			sprite.getGraphic().draw(mVMatrix, mProjMatrix, interpolation);
 			sprite.draw(mVMatrix, mProjMatrix, interpolation);
 		}
 		removeSpriteLater = false;
@@ -89,7 +79,7 @@ public class D3GLES20 {
 			spritesNum++;
 		}
 		sprites.put(spritesNum, sprite);
-		if (sprite.getGraphic().getProgram() == null) {
+		if (sprite.getGraphic() != null && sprite.getGraphic().getProgram() == null) {
 			Log.v(TAG, "Sprite program is not set, setting to default");
 			sprite.getGraphic().setProgram(sm.getDefaultProgram());
 		}
@@ -119,37 +109,6 @@ public class D3GLES20 {
 		}
 		else sprites.remove(key);
 	}
-
-//	public void setShapePosition(int key, float x,
-//			float y) {
-//		if (shapes == null) {
-//			Log.w(TAG, "Shapes are null in setShapePosition!");
-//			return;
-//		}
-//		shapes.get(key).setPosition(x, y);
-//	}
-
-//	public void clearGraphics() {
-//		shapes.clear();
-//		expiringShapes.clear();
-//		shapes = null;
-//		expiringShapes = null;
-//	}
-//	public void clean() {
-//		GLES20.glDeleteShader(defVertexShaderHandle);
-//		GLES20.glDeleteShader(defFragmentShaderHandle);
-//		defVertexShaderHandle = -1;
-//		defFragmentShaderHandle = -1;
-//	}
-
-//	public HashMap<Integer, D3Shape> getShapes() {
-//		return shapes;
-//	}
-
-//	public void setShapes(HashMap<Integer, D3Shape> savedShapes) {
-//		shapes.clear(); // maybe unnecessary
-//		shapes.putAll(savedShapes);
-//	}
 	
 	public boolean contains(int key, PointF point) {
 		if (sprites == null) {
@@ -159,19 +118,6 @@ public class D3GLES20 {
 		return sprites.get(key).contains(point);//D3Maths.circleContains(shapes.get(key).getCenterX(), shapes.get(key).getCenterY(), 
 				//shapes.get(key).getRadius(), hX, hY);
 	}
-
-//	public D3TempCircle newContainsCheckCircle(int key, float hX, float hY) {
-//		return new D3TempCircle(shapes.get(key).getCenterX(), shapes.get(key).getCenterY(), 
-//				shapes.get(key).getRadius(), TEMP_CIRCLE_TICKS, sm.getDefaultProgram());
-//	}
-//	
-//	public int newDefaultQuad(float width, float height, float[] color) {
-//		return putShape(new D3Quad(width, height, color, sm.getDefaultProgram()));
-//	}
-//
-//	public int newDefaultCircle(float r, float[] color, int vertices) {
-//		return putShape(new D3Circle(r, color, vertices, sm.getDefaultProgram()));
-//	}
 
 	public ShaderManager getShaderManager() {
 		return sm;
@@ -208,9 +154,11 @@ public class D3GLES20 {
 
 	public boolean spritesCollide(D3Sprite sprite1, D3Sprite sprite2) {
 		return D3Maths.circlesIntersect(
-//				sprite1.getCenterX(), sprite1.getCenterY(), sprite1.getRadius(), 
-//				sprite2.getCenterX(), sprite2.getCenterY(), sprite2.getRadius());
 				sprite1.getX(), sprite1.getY(), sprite1.getRadius(), 
 				sprite2.getX(), sprite2.getY(), sprite2.getRadius());
+	}
+
+	public Program getDefaultProgram() {
+		return sm.getDefaultProgram();
 	}
 }

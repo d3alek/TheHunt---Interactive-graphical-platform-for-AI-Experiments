@@ -1,6 +1,6 @@
 package d3kod.thehunt;
 
-import d3kod.d3gles20.programs.Program;
+import android.util.Log;
 import d3kod.d3gles20.shapes.D3Circle;
 
 public class D3CatchNet extends D3Circle {
@@ -14,7 +14,6 @@ public class D3CatchNet extends D3Circle {
 	private static final float mGrowSpeed = 0.05f;
 	private static final String TAG = "D3CatchNet";
 	private static final float START_RADIUS = 0.03f;
-//	private float mScale;
 
 	public D3CatchNet(float x, float y, float radius) {
 		super(radius, isBuiltColor, VERTICES_NUM);
@@ -30,6 +29,7 @@ public class D3CatchNet extends D3Circle {
 	@Override
 	public void draw(float[] mVMatrix, float[] mProjMatrix) {
 		if (getScale() >= 1) {
+//			Log.v(TAG, "Fading " + FADE_SPEED + " " + getColor()[3]);
 			fade(FADE_SPEED);
 		}
 		super.draw(mVMatrix, mProjMatrix);

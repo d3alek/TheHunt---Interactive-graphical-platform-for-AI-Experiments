@@ -72,6 +72,7 @@ public class WorldModel {
 		energyDepleteCounter = 0;
 		incrRiskCounter = 0;
 		mOverweight = false;
+		mMoodLevel = MoodLevel.NEUTRAL;
 	}
 	public void update(ArrayList<Event> sensorEvents) {
 		for (Event e: sensorEvents) {
@@ -163,6 +164,7 @@ public class WorldModel {
 			break;
 		case NOISE:
 			EventNoise noise = (EventNoise) e;
+			Log.v(TAG, "DEBUGGG " + mMoodLevel + " " + noise);
 			if (mMoodLevel.compareTo(MoodLevel.DESPAIR) < 0 && noise.getLoudness() >= LOUD_NOISE) {
 				Log.v(TAG, "Loud noise heard, panic!");
 				mStressLevel = StressLevel.PLOK_CLOSE;

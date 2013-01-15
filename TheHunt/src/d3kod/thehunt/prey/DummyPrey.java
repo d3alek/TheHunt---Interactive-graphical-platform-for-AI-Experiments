@@ -2,12 +2,12 @@ package d3kod.thehunt.prey;
 
 import android.graphics.PointF;
 import d3kod.d3gles20.D3GLES20;
+import d3kod.thehunt.environment.Environment;
 
 public class DummyPrey extends Prey {
 
-	public DummyPrey(D3GLES20 d3gles20) {
-		super(d3gles20);
-		// TODO Auto-generated constructor stub
+	public DummyPrey(Environment env, D3GLES20 d3gles20) {
+		super(env, d3gles20);
 	}
 
 	public void initGraphic() {
@@ -26,7 +26,6 @@ public class DummyPrey extends Prey {
 	}
 
 	public boolean getCaught() {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
@@ -42,6 +41,11 @@ public class DummyPrey extends Prey {
 
 	public void clearGraphic() {
 		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void setCaught(boolean b) {
 		
 	}
 }

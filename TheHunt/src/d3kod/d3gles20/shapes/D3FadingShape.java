@@ -5,7 +5,6 @@ import d3kod.d3gles20.programs.Program;
 
 abstract public class D3FadingShape extends D3Shape {
 
-//    private static final float MIN_ALPHA = 0.6f;
 	private boolean mExpired;
 	private float mFadeSpeed;
 	private float mMaxFade;

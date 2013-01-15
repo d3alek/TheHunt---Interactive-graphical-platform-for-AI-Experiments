@@ -48,17 +48,10 @@ public class D3CatchNetPath extends D3Path {
 
 	private boolean mIsInvalid;
 
-//	private TextureManager tm;
-
-//	private boolean snatched;
-	
 	public D3CatchNetPath() {
-//		super(beingBuiltColor.clone(), program);
 		super();
 		setColor(beingBuiltColor.clone()); //TODO do we need clone?
-//		this.tm = tm;
 		mIsClosed = mIsInvalid = false;
-//		snatched = false;
 		mCenterX = -100; mCenterY = -100; mRadius = 0;
 	}
 	
@@ -70,7 +63,6 @@ public class D3CatchNetPath extends D3Path {
 	public void setFinished() {
 		mIsClosed = true;
 		transformToClosedShape();
-//		setColor(isBuiltColor.clone());
 		super.setDrawType(isBuiltType);
 	}
 	
@@ -157,12 +149,6 @@ public class D3CatchNetPath extends D3Path {
 	
 	@Override
 	public void draw(float[] mVMatrix, float[] mProjMatrix) {
-//		if (mIsClosed) {
-////			if (getRadius() <= MIN_RADIUS) {
-////				fade(FADE_SPEED);
-////			}
-////			else shrink();
-//		}
 		if (mIsInvalid) {
 			fade(FADE_SPEED);
 		}

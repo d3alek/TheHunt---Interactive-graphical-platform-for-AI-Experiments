@@ -3,8 +3,8 @@ package d3kod.thehunt.environment;
 import java.util.ArrayList;
 import java.util.Random;
 
-import android.content.Context;
 import android.graphics.PointF;
+import android.util.Log;
 import d3kod.d3gles20.D3GLES20;
 import d3kod.d3gles20.D3Maths;
 import d3kod.thehunt.environment.FloatingObject.Type;
@@ -13,7 +13,6 @@ import d3kod.thehunt.events.Event;
 import d3kod.thehunt.events.EventCurrent;
 import d3kod.thehunt.events.EventLight;
 import d3kod.thehunt.events.EventNoise;
-import d3kod.thehunt.prey.D3Prey;
 import d3kod.thehunt.prey.Prey;
 public class Environment {
 	private static final String TAG = "Environment";
@@ -24,6 +23,7 @@ public class Environment {
 	private D3GLES20 mD3GLES20;
 	private ArrayList<EventNoise> mNoiseEvents;
 	private Random mRandom;
+	private Prey mPrey;
 	
 	
 	public static final int ALGAE_NUM = 300;
@@ -150,6 +150,15 @@ public class Environment {
 			}
 		}
 		return false;
+	}
+
+	public void addPrey(Prey prey) {
+//		Log.v(TAG, "Adding prey to environment");
+		mPrey = prey;
+	}
+	public Prey getPrey() {
+//		Log.v(TAG, "Getting prey from environment" + mPrey.getPosition().x + " " + mPrey.getPosition().y);
+		return mPrey;
 	}
 
 //	public void putNewAlgae(float x, float y) {

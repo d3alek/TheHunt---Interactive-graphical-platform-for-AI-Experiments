@@ -16,14 +16,10 @@ public class D3Path extends D3Shape {
 	protected ArrayList<Float> mVertexData = new ArrayList<Float>();
 	private float mLength;
 	
-//	public D3Path(float[] beingBuiltColor, Program program) {
-//		super(null, beingBuiltColor, drawType, program);
-//		mLength = 0;
-//	}
-
 	public D3Path() {
 		super();
 		setDrawType(drawType);
+//		setPosition(0, 0);
 		mLength = 0;
 	}
 

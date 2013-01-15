@@ -3,7 +3,6 @@ package d3kod.thehunt;
 import android.graphics.PointF;
 import android.opengl.GLES20;
 import android.opengl.Matrix;
-import android.util.Log;
 import d3kod.d3gles20.D3GLES20;
 import d3kod.d3gles20.D3Maths;
 import d3kod.d3gles20.D3Sprite;
@@ -72,13 +71,7 @@ public class Camera extends D3Sprite {
 	    mHeight = 2*screenToWorldHeight;
 	    mWidthToHeightRatio = widthToHeightRatio;
 	    
-//	    D3Shape shape = new PreyPointerShape(d3gles20.getShaderManager());
-//	    mPreyPointer = new PreyPointer();
-//	    d3gles20.putSprite(mPreyPointer);
-//	    mPointerShown = true;
-	    
 	    hidePreyPointer();
-//	    showPreyPointer(); //
 	    
 	    calcViewMatrix();
 	}
@@ -91,28 +84,18 @@ public class Camera extends D3Sprite {
 	
 	public void update() {
 		if (contains(mPreyPos)) {
-//			Log.v(TAG, "Camera does contains preyPos!");
-////				showPreyPointer();
 				hidePreyPointer();
 			}
 			else {
-//				hidePreyPointer();
 				showPreyPointer();
 			}
-	}//		super.update();
+	}
 	
 	public void setPreyPosition(PointF preyPos) {
 		mPreyPos = preyPos;
 	}
 	
 	public void move(float dx, float dy) {
-//		Log.v(TAG, "Moving " + dx + " " + dy + " "
-//				+ EnvironmentData.mScreenWidth + " "
-//				+ mWidth + " "
-//				+ mWidth * mWidthToHeightRatio + " " 
-//				+ EnvironmentData.mScreenHeight + " "
-//				+ mHeight + " " + mCenterX + " " +
-//				mCenterY);
 		recalcViewMatrix = false;
 		if (D3Maths.rectContains(0, 0, 
 				EnvironmentData.mScreenWidth - mWidth * mWidthToHeightRatio, 
@@ -125,7 +108,6 @@ public class Camera extends D3Sprite {
 				EnvironmentData.mScreenWidth - mWidth * mWidthToHeightRatio, 
 				EnvironmentData.mScreenHeight - mHeight, 
 				mCenterX, mCenterY+dy)) {
-//			Log.v(TAG, "Moving camera with " + dx + " " + dy);
 			mCenterY += dy;
 			recalcViewMatrix = true;
 		}
@@ -150,7 +132,6 @@ public class Camera extends D3Sprite {
 
 	public boolean contains(PointF point) {
 		if (point == null) {
-			//Log.w(TAG, "Point is null in contains check!");
 			return true;
 		}
 		return D3Maths.rectContains(mCenterX, mCenterY, mWidth * mWidthToHeightRatio, mHeight, point.x, point.y);
@@ -158,12 +139,10 @@ public class Camera extends D3Sprite {
 
 	public void showPreyPointer() {
 		mPointerShown = true;
-//		mGraphic.noFade();
 	}
 
 	public void hidePreyPointer() {
 		mPointerShown = false;
-//		mGraphic.fade(1);
 	}
 	
 	public void setPreyPointerPosition(PointF preyPosition) {
@@ -202,6 +181,5 @@ public class Camera extends D3Sprite {
 		}
 
 		if (mGraphic != null) mGraphic.setPosition(mPreyPointerX, mPreyPointerY, facingDir.getAngle());
-//			mGraphic.setPosition(0, 0);
 	}
 }

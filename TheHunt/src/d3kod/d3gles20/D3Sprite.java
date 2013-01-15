@@ -10,14 +10,12 @@ public abstract class D3Sprite {
 	private PointF mPos;
 	private PointF dirVector;
 	private D3GLES20 mD3GLES20;
-//	private boolean mGraphicSet;
 	
 	public D3Sprite(PointF position, D3GLES20 d3gles20) {
 		mD3GLES20 = d3gles20;
 		mPos = new PointF(position.x, position.y);
 		dirVector = new PointF();
-//		mGraphicSet = false; 
-//		mRemove = false;
+		mD3GLES20.putSprite(this);
 	}
 	
 	public void setPosition(PointF position) {
@@ -25,22 +23,17 @@ public abstract class D3Sprite {
 	}	
 	
 	public void update() {
-//		mX += vX; mY += vY;
-//		mPos.x += vX; mPos.y += vY;
 		mPos.x += dirVector.x;
 		mPos.y += dirVector.y;
 		mGraphic.setPosition(mPos.x, mPos.y);
 	}
 	
 	protected void initGraphic(D3Shape graphic) {
-//		mGraphicSet = true;
 		mGraphic = graphic;
-//		mD3GLES20 = d3GLES20;
-//		mKey = mD3GLES20.putShape(mGraphic);
-//		mD3GLES20.setShapePosition(mKey, mX, mY);
-//		mD3GLES20.setShapeVelocity(mKey, vX, vY);
 		mGraphic.setPosition(mPos.x, mPos.y); 
-		mD3GLES20.putSprite(this);
+		if (mGraphic.getProgram() == null) {
+			mGraphic.setProgram(mD3GLES20.getDefaultProgram());
+		}
 		Log.v(TAG, "Set graphic for d3sprite at " + mPos.x + " " + mPos.y);
 	}
 	
@@ -57,15 +50,11 @@ public abstract class D3Sprite {
 	}
 	
 	public void clearGraphic() {
-//		if (!mGraphicSet) Log.v(TAG, "Graphic not set, can't clear!");
 		if (mGraphic == null) Log.v(TAG, "Graphic not set, can't clear!");
-//		else mD3GLES20.removeShape(mKey);
 		mGraphic = null;
-//		mRemove = true;
 	}
 	
 	public void setVelocity(float vx, float vy) {
-//		vX = vx; vY = vy;
 		dirVector.x = vx; dirVector.y = vy;
 		if (mGraphic != null) {
 			mGraphic.setVelocity(vx, vy);
@@ -80,7 +69,6 @@ public abstract class D3Sprite {
 	}
 	
 	public float getRadius() {
-//		if (!mGraphicSet) return 0; //TODO: dirty fix
 		return mGraphic.getRadius();
 	}
 	
@@ -97,7 +85,10 @@ public abstract class D3Sprite {
 			Log.v(TAG, "Illegal contains call " + point.x +  " " + point.y + " because graphics are not set!");
 			return false;
 		}
-//		Log.v(TAG, "Contains check with center " + mX + " " + mY + " or should it be " + mGraphic.getCenterX() + " " + mGraphic.getCenterY());
+		if (point == null) {
+			Log.v(TAG, "Illegal contains call because point is null");
+			return false;
+		}
 		return D3Maths.circleContains(mPos.x, mPos.y, getRadius(), point.x, point.y); //TODO: fix getRadius() call, keep seperate radiuses for graphic and logic
 	}
 	public D3Shape getGraphic() {
@@ -109,7 +100,6 @@ public abstract class D3Sprite {
 	}
 
 	public void draw(float[] vMatrix, float[] projMatrix, float interpolation) {
-		// TODO Auto-generated method stub
 		if (mGraphic != null) mGraphic.draw(vMatrix, projMatrix, interpolation);
 		
 	}

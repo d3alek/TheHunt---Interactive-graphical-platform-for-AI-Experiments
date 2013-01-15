@@ -6,7 +6,6 @@ import android.view.MotionEvent;
 import d3kod.d3gles20.D3GLES20;
 import d3kod.d3gles20.D3Sprite;
 import d3kod.d3gles20.TextureManager;
-import d3kod.d3gles20.programs.Program;
 import d3kod.thehunt.environment.Environment;
 import d3kod.thehunt.floating_text.PlokText;
 import d3kod.thehunt.floating_text.SnatchText;
@@ -26,19 +25,13 @@ public class CatchNet extends D3Sprite implements Tool {
 	private TextureManager tm;
 	private float firstY;
 	private float firstX;
-//	private boolean ploked;
 
 	private D3GLES20 mD3GLES20;
 
 	private boolean showSnatchText;
 
-//	private Program mProgram;
-
 	private D3CatchNet mNetGraphic;
 	private D3CatchNetPath mPathGraphic;
-	
-//	private int mNetGraphicIndex;
-//	private int mPathGraphicIndex;
 	
 	private boolean mStarted;
 	
@@ -47,7 +40,6 @@ public class CatchNet extends D3Sprite implements Tool {
 		mD3GLES20 = d3GLES20;
 		mEnv = env;
 		this.tm = tm;
-//		mProgram = d3GLES20.getShaderManager().getDefaultProgram();
 	}
 	@Override
 	public void initGraphic() {
@@ -57,7 +49,6 @@ public class CatchNet extends D3Sprite implements Tool {
 		if (mPathGraphic == null) return;
 		if (mPathGraphic.fadeDone()) {
 			mPathGraphic = null;
-//			mD3GLES20.removeShape(mPathGraphicIndex);
 		}
 		else if (mPathGraphic.isFinished() && !mPathGraphic.isInvalid() && mNetGraphic == null) {
 			if (mEnv.netIntersectsWithAlgae(mPathGraphic.getCenterX(), mPathGraphic.getCenterY(), mPathGraphic.getRadius())) {
@@ -66,12 +57,7 @@ public class CatchNet extends D3Sprite implements Tool {
 //				mD3GLES20.putExpiringShape(new BlockedText(mNetGraphic.getCenterX(), mNetGraphic.getCenterY(), tm, mD3GLES20.getShaderManager()));
 			}
 			else {
-//				mNetGraphic = new D3CatchNet(
-//						mPathGraphic.getCenterX(), mPathGraphic.getCenterY(), mPathGraphic.getRadius());
 				initNetGraphic();
-//				initGraphic(mNetGraphic); // TODO: is this neccessary at all?
-//				mGraphic = mNetGraphic;
-//				mNetGraphicIndex = mD3GLES20.putShape(mNetGraphic);
 				mD3GLES20.putExpiringShape(new PlokText(mPathGraphic.getCenterX(), mPathGraphic.getCenterY(), tm, mD3GLES20.getShaderManager()));
 				mEnv.putNoise(mPathGraphic.getCenterX(), mPathGraphic.getCenterY(), Environment.LOUDNESS_PLOK);				
 			}
@@ -87,21 +73,26 @@ public class CatchNet extends D3Sprite implements Tool {
 			}
 			if (mNetGraphic.fadeDone()) {
 				mPathGraphic = null;
-//				mD3GLES20.removeShape(mPathGraphicIndex);
-				
 				mNetGraphic = null;
-//				mD3GLES20.removeShape(mNetGraphicIndex);
 				
 				if (mCaughtPrey != null) {
 					Log.v(TAG, "Prey is in net!!! YAY");
 					Log.v(TAG, "Let it go now...");
 				}
 			}
+			
+			if (tryToCatch()) {
+				// may be a redundant check
+				Log.v(TAG, "Tryign to catch!");
+				Prey prey = mEnv.getPrey();
+//				Log.v(TAG, "Prey is " + prey != null + " " + prey.getCaught() + " " + contains(prey.getPosition()));
+				if (prey != null && !prey.getCaught() && contains(prey.getPosition())) {
+					Log.v(TAG, "I caught the prey!");
+					prey.setCaught(true);
+				}
+				
+			}
 		}
-//		else if (!showSnatchText && mPathGraphic.isFinished()) {
-//			mD3GLES20.putExpiringShape(new SnatchText(mPathGraphic.getCenterX(), mPathGraphic.getCenterY(), tm, mD3GLES20.getShaderManager()));
-//			showSnatchText = true;
-//		}
 	}
 	
 	public void start(float x, float y) {
@@ -118,14 +109,12 @@ public class CatchNet extends D3Sprite implements Tool {
 		notShown = true;
 		showSnatchText = false;
 		
-//		initGraphic(new D3CatchNetPath());
 		mPathGraphic = new D3CatchNetPath();
+		setPosition(new PointF(0, 0));
 		initGraphic(mPathGraphic);
-//		mPathGraphicIndex = mD3GLES20.putShape(mPathGraphic);
 		
 		mCaughtPrey = null;
 		firstX = x; firstY = y;
-//		ploked = false;
 		mPathGraphic.addVertex(x, y);
 	}
 
@@ -155,8 +144,6 @@ public class CatchNet extends D3Sprite implements Tool {
 		// TODO: remove restrictions on net placement, handle in game logic
 		mStarted = false;
 		if (mPathGraphic == null) {
-//			Log.v(TAG, "Setting notShown to true because of 1");
-//			notShown = true;
 			return;
 		}
 		if (mPathGraphic.isInvalid() || mPathGraphic.isFinished()) {
@@ -174,11 +161,6 @@ public class CatchNet extends D3Sprite implements Tool {
 		if (mPathGraphic.canFinishWith(x, y)) {
 			mPathGraphic.setFinished();
 			initNetGraphic();
-//			mNetGraphic = new D3CatchNet(
-//					mPathGraphic.getCenterX(), mPathGraphic.getCenterY(), mPathGraphic.getRadius());
-////			initGraphic(mNetGraphic);
-//			mNetGraphic.setProgram(mPathGraphic.getProgram());
-//			mNetGraphicIndex = mD3GLES20.putShape(mNetGraphic);
 			mD3GLES20.putExpiringShape(new PlokText(firstX, firstY, tm, mD3GLES20.getShaderManager()));
 			mEnv.putNoise(x, y, Environment.LOUDNESS_PLOK); //TODO: put noise in the center
 		}
@@ -187,21 +169,19 @@ public class CatchNet extends D3Sprite implements Tool {
 		}
 	}
 
-//	public int getGraphicIndex() {
-//		return mNetGraphicIndex;
-//	}
-
 	public void initNetGraphic() {
 		mNetGraphic = new D3CatchNet(
 				mPathGraphic.getCenterX(), mPathGraphic.getCenterY(), mPathGraphic.getRadius());
-		mNetGraphic.setProgram(mPathGraphic.getProgram());
+		setPosition(mPathGraphic.getCenter());
+//		mNetGraphic.setProgram(mPathGraphic.getProgram());
+		initGraphic(mNetGraphic);
 	}
 	
 	public void caughtPrey(Prey mPrey) {
 		mCaughtPrey = mPrey;
 	}
 
-	public boolean tryToCatch() {
+	private boolean tryToCatch() {
 		return mNetGraphic != null && mNetGraphic.getScale() >= 1;
 	}
 
@@ -210,10 +190,6 @@ public class CatchNet extends D3Sprite implements Tool {
 	}
 	
 	public boolean handleTouch(int action, PointF location) {
-		//if (mPathGraphic != null && mPathGraphic.isFinished()) {
-		//	// Can't handle the touch right now
-		//	return false;
-		//}
 		if (action == MotionEvent.ACTION_DOWN) {
 			Log.v(TAG, "Net received down " + location.x + " " + location.y);
 			start(location.x, location.y);
@@ -243,7 +219,6 @@ public class CatchNet extends D3Sprite implements Tool {
 
 	@Override
 	public void draw(float[] vMatrix, float[] projMatrix, float interpolation) {
-//		super.draw(vMatrix, projMatrix, interpolation);
 		if (mPathGraphic != null) mPathGraphic.draw(vMatrix, projMatrix, interpolation);
 		if (mNetGraphic != null) mNetGraphic.draw(vMatrix, projMatrix, interpolation);
 	}

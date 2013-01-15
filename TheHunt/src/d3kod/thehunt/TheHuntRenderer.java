@@ -32,8 +32,6 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 	public static boolean FEED_WITH_TOUCH = false;
 	public static boolean NET_WITH_TOUCH = true;
 
-//	private static final boolean SHOW_CIRCLE_CONTAINS_CHECKS = false;
-	
 	private float[] mProjMatrix = new float[16]; 
 	private float[] mVMatrix = new float[16];
 	private Environment mEnv;
@@ -88,7 +86,7 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 		mTool = null;
 		sm = new ShaderManager();
 		mD3GLES20 = new D3GLES20(sm);
-		mPrey = new DummyPrey(mD3GLES20);
+		mPrey = null;
 		//	    mNet = null;
 		mIgnoreNextTouch = -1;
 		mCaughtCounter = 0;
@@ -126,10 +124,10 @@ public void onSurfaceChanged(GL10 unused, int width, int height) {
 	if (mEnv == null) mEnv = new Environment(worldWidthPx, worldHeightPx, mD3GLES20);
 	if (mTool == null) mTool = new CatchNet(mEnv, tm, mD3GLES20);
 //	    if (mPrey == null) mPrey = new DefaultPrey(EnvironmentData.mScreenWidth, EnvironmentData.mScreenHeight, mEnv, tm);
-    if (mPrey == null) mPrey = new DefaultPrey(mEnv, tm, mD3GLES20);
+//    if (mPrey == null) mPrey = new DefaultPrey(mEnv, tm, mD3GLES20);
     if (!mGraphicsInitialized ) {
     	//TODO why not initialize tool graphics as well?
-    	mPrey.initGraphic();
+//    	mPrey.initGraphic();
     	mCamera.initGraphic();
     	mGraphicsInitialized = true;
 //    	mPreyGraphicInitialized = true;
@@ -187,65 +185,70 @@ public void onDrawFrame(GL10 unused) {
 
 private void updateWorld() {
 	mEnv.update();
+	if (mPrey != null) {
+		PointF preyPos = mPrey.getPosition();
+		if (preyPos != null) {
+			PointF curDirDelta = mEnv.data.getTileFromPos(preyPos).getDir().getDelta();
+			//		mPrey.update(curDirDelta.x * EnvironmentData.currentSpeed, 
+			//				curDirDelta.y * EnvironmentData.currentSpeed);
+			mPrey.updateVelocity(curDirDelta.x, curDirDelta.y);
+			mPrey.update(); // add friction somehow
+		}
+
+		preyPos = mPrey.getPosition();
+		if (mPrey.getCaught()) {
+			if (releaseCountdown < 0) {
+				releaseCountdown = RELEASE_TICKS;
+			}
+			releaseCountdown--;
+			if (releaseCountdown == 0) {
+				mPrey.release();
+				releaseCountdown = -1;
+			}
+		}
+		mCamera.setPreyPosition(preyPos);
+	}
+
 	mTool.update();
-	PointF preyPos = mPrey.getPosition();
 
-	if (preyPos != null) {
-		PointF curDirDelta = mEnv.data.getTileFromPos(preyPos).getDir().getDelta();
-//		mPrey.update(curDirDelta.x * EnvironmentData.currentSpeed, 
-//				curDirDelta.y * EnvironmentData.currentSpeed);
-		mPrey.updateVelocity(curDirDelta.x, curDirDelta.y);
-		mPrey.update(); // add friction somehow
-	}
+	//		if (!mPrey.getCaught() && mTool.tryToCatch() && mD3GLES20.contains(mNet.getGraphicIndex(), preyPos.x, preyPos.y)) {
+	//			PointF preyHeadPos = mPrey.getHeadPositon();
+	//			if (!mD3GLES20.contains(mNet.getGraphicIndex(), preyHeadPos.x, preyHeadPos.y)) {
+	//				Log.v(TAG, "Net contains body but not head, not caught");
+	//			}
+	//			else {
+	//				Log.v(TAG, "Prey is caught!");
+	//				mPrey.setCaught(true);
+	//				mNet.caughtPrey(mPrey);
+	//				mCaughtCounter += 1;
+	//				((TheHunt) mContext).runOnUiThread(new Runnable() {
+	//					public void run() {
+	//						((TheHunt) mContext).mCaughtCounter.setText(mCaughtCounter + "");
+	//					}
+	//				});
+	//				mD3GLES20.putExpiringShape(new CatchText(preyPos.x, preyPos.y, tm, sm));
+	//				releaseCountdown = RELEASE_TICKS;
+	//			}
+	//		}
 
-//		preyPos = mPrey.getPosition();
-//		
-//		if (mPrey.getCaught()) {
-//			releaseCountdown--;
-//			if (releaseCountdown <= 0) {
-//				mPrey.release();
-//			}
-//		}
-//		
-//		if (!mPrey.getCaught() && mTool.tryToCatch() && mD3GLES20.contains(mNet.getGraphicIndex(), preyPos.x, preyPos.y)) {
-//			PointF preyHeadPos = mPrey.getHeadPositon();
-//			if (!mD3GLES20.contains(mNet.getGraphicIndex(), preyHeadPos.x, preyHeadPos.y)) {
-//				Log.v(TAG, "Net contains body but not head, not caught");
-//			}
-//			else {
-//				Log.v(TAG, "Prey is caught!");
-//				mPrey.setCaught(true);
-//				mNet.caughtPrey(mPrey);
-//				mCaughtCounter += 1;
-//				((TheHunt) mContext).runOnUiThread(new Runnable() {
-//					public void run() {
-//						((TheHunt) mContext).mCaughtCounter.setText(mCaughtCounter + "");
-//					}
-//				});
-//				mD3GLES20.putExpiringShape(new CatchText(preyPos.x, preyPos.y, tm, sm));
-//				releaseCountdown = RELEASE_TICKS;
-//			}
-//		}
-
-	mCamera.setPreyPosition(preyPos);
 	mCamera.update();
-//	if (!mCamera.contains(preyPos)) {
-////		Log.v(TAG, "Camera does not contain preyPos!");
-//			mCamera.showPreyPointer();
-//		}
-//		else {
-//			mCamera.hidePreyPointer();
-//		}
-	}
+	//	if (!mCamera.contains(preyPos)) {
+	////		Log.v(TAG, "Camera does not contain preyPos!");
+	//			mCamera.showPreyPointer();
+	//		}
+	//		else {
+	//			mCamera.hidePreyPointer();
+	//		}
+}
 
 	private void drawWorld(float interpolation) {
 		if (mState != State.PLAY) return;
 		
 		if (mPreyChange) {
 			mPreyChange = false;
-			mPrey.clearGraphic();
+			if (mPrey != null) mPrey.clearGraphic();
 			switch (mPreyChangeTo) {
-			case NONE: mPrey = new DummyPrey(mD3GLES20); break;
+			case NONE: mPrey = new DummyPrey(mEnv, mD3GLES20); break;
 			case DEFAULT: mPrey = new DefaultPrey(mEnv, tm, mD3GLES20); break;
 			}
 			mPrey.initGraphic();
@@ -264,7 +267,7 @@ private void updateWorld() {
 		
 		mVMatrix = mCamera.toViewMatrix();
 		
-		mCamera.setPreyPointerPosition(mPrey.getPredictedPosition());
+		if (mPrey != null) mCamera.setPreyPointerPosition(mPrey.getPredictedPosition());
 		
 		mD3GLES20.drawAll(mVMatrix, mProjMatrix, interpolation);
 //		Log.v(TAG, "End drawing");
