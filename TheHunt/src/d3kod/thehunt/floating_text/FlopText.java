@@ -14,6 +14,5 @@ public class FlopText extends D3FadingText {
 	public FlopText(float posX, float posY, float angleDeg, TextureManager tm, ShaderManager sm) {
 		super(textSize, FADE_SPEED, tm.getTextureHandle(Texture.FLOP_TEXT), sm, 0.6f);
 		super.setPosition(posX, posY, angleDeg);
-//		super.setTextureDataHandle();
 	}
 }

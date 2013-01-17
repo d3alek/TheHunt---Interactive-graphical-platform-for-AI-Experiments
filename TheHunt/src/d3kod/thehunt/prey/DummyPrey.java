@@ -11,18 +11,13 @@ public class DummyPrey extends Prey {
 	}
 
 	public void initGraphic() {
-		// TODO Auto-generated method stub
-		
 	}
 
 	public PointF getPosition() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	public void update(float f, float g) {
-		// TODO Auto-generated method stub
-		
 	}
 
 	public boolean getCaught() {
@@ -30,18 +25,13 @@ public class DummyPrey extends Prey {
 	}
 
 	public void release() {
-		// TODO Auto-generated method stub
-		
 	}
 
 	public PointF getPredictedPosition() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	public void clearGraphic() {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override

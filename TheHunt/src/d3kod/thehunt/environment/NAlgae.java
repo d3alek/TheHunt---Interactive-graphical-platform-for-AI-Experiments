@@ -65,10 +65,6 @@ public class NAlgae extends FloatingObject implements Eatable {
 	public void setN(int n) {
 		mSize = Math.min(n, MAX_N);
 		updateGraphicSize();
-		//if (n > MAX_N) {
-			//releaseSeeds(n - MAX_N);
-			//kreleaseSeed();
-		//}
 	}
 	
 	private void releaseSeeds(int number) {
@@ -86,7 +82,6 @@ public class NAlgae extends FloatingObject implements Eatable {
 				getY() + (getRadius()+0.01f)*FloatMath.sin(randAngle));
 		
 		mEnvironment.addNewAlgae(1, seedPos, randAngle);
-		//setN(getN()-1);
 	}
 
 	public void grow(int increment) {

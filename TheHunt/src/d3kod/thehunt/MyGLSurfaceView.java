@@ -3,15 +3,12 @@ package d3kod.thehunt;
 import android.content.Context;
 import android.opengl.GLSurfaceView;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
 
 class MyGLSurfaceView extends GLSurfaceView {
 
     private static final String TAG = null;
 	public TheHuntRenderer mRenderer;
-//	private float prevDoubleTapX;
-//	private float prevDoubleTapY;
 	private boolean doubleFingerSwipe;
 	
 	public MyGLSurfaceView(Context context, AttributeSet attrs){
@@ -24,7 +21,6 @@ class MyGLSurfaceView extends GLSurfaceView {
         setDebugFlags(DEBUG_CHECK_GL_ERROR | DEBUG_LOG_GL_CALLS);
         setRenderer(mRenderer = new TheHuntRenderer((TheHunt) context));
         setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
-//        prevDoubleTapX = prevDoubleTapY = -1;
         doubleFingerSwipe = false;
     }
     @Override
@@ -45,37 +41,14 @@ class MyGLSurfaceView extends GLSurfaceView {
     		}
     		break;
     	}
-//    	if (event.getAction() == MotionEvent.ACTION_DOWN) {
-//    		if (doubleFingerSwipe) return true;
-    		if (mRenderer != null) {
-    			queueEvent(new Runnable() {
-    				public void run() {
-    					mRenderer.handleTouch(event, doubleFingerSwipe);
-    					}
-    			});
-    			return true;
-    		}
-//    	}
-//    	if (event.getAction() == MotionEvent.ACTION_MOVE) {
-//    		if (mRenderer != null) {
-//    			queueEvent(new Runnable() {
-//    				public void run() {
-//    					mRenderer.handleTouch(event, doubleFingerSwipe);
-//    					}
-//    			});
-//    		}
-//    		return true;
-//    	}
-//    	if (event.getAction() == MotionEvent.ACTION_UP) {
-//    		if (mRenderer != null) {
-//    			queueEvent(new Runnable() {
-//    				public void run() {
-//    					mRenderer.handleTouch(event, doubleFingerSwipe);
-//    					}
-//    			});
-//    		}
-//    		return true;
-//    	}
+    	if (mRenderer != null) {
+    		queueEvent(new Runnable() {
+    			public void run() {
+    				mRenderer.handleTouch(event, doubleFingerSwipe);
+    			}
+    		});
+    		return true;
+    	}
     	return super.onTouchEvent(event);
     }
     @Override

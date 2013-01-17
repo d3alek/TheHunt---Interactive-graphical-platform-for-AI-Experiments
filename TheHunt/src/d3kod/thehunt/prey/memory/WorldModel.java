@@ -16,7 +16,6 @@ import d3kod.thehunt.events.EventNoise;
 import d3kod.thehunt.events.MovingEvent;
 import d3kod.thehunt.prey.D3Prey;
 
-
 //TODO: Refractor - make getNearest{Algae,Food}() method of the memory, abstract away the concept of nearest things as well
 public class WorldModel {
 	private static final String TAG = "WorldModel";
@@ -39,7 +38,6 @@ public class WorldModel {
 	private static final int INCR_RISK_TICKS = TheHuntRenderer.TICKS_PER_SECOND*SECONDS_FOR_INCR_RISK;
 	public static final float MINIMUM_HIDING_ALGAE_RADIUS = D3Prey.preyRadius;
 	
-	//MemoryGraph mNodes;
 	private float mHeadX;
 	private float mHeadY;
 	private float mBodyY;
@@ -55,7 +53,6 @@ public class WorldModel {
 	private int mHiddenFor;
 	private int mEnergy;
 	private int energyDepleteCounter;
-//	private boolean mPanic;
 	private int incrRiskCounter;
 	private MoodLevel mMoodLevel;
 	private boolean mOverweight;
@@ -138,8 +135,6 @@ public class WorldModel {
 			float foodY = food.getY();
 			float foodRadius = food.getRadius();
 			if (!knowFoodLocation() ||
-//					D3Maths.distance(mHeadX, mHeadY, mNearestFood.getX(), mNearestFood.getY()) > 
-//					D3Maths.distance(mHeadX, mHeadY, foodX, foodY)) {
 					D3Maths.distanceToCircle(mHeadX, mHeadY, mNearestFood.getX(), 
 							mNearestFood.getY(), mNearestFood.getRadius()) >
 					D3Maths.distanceToCircle(mHeadX, mHeadY, foodX, foodY, foodRadius))
@@ -227,9 +222,6 @@ public class WorldModel {
 			mEventMemory.remove(mNearestFood);
 		}
 		mEnergy += energy;
-//		if (mEnergy > MAX_ENERGY) {
-//			mEnergy = MAX_ENERGY;
-//		}
 		//TODO: Do we need this?
 		mNearestFood = recallClosest(mFoodType);
 	}

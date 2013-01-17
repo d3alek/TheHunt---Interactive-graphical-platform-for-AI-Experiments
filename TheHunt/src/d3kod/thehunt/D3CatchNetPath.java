@@ -105,7 +105,6 @@ public class D3CatchNetPath extends D3Path {
 		if (mRadius > MAX_RADIUS) {
 			mRadius = MAX_RADIUS;
 		}
-//		float[] center = {mCenterX, mCenterY, 0};
 		super.setVertexBuffer(Utilities.newFloatBuffer(D3Maths.circleVerticesData(mRadius, CLOSED_SHAPE_VERTICES_NUM)));
 		mVertexData.clear();
 		mModelMatrix = new float[16];

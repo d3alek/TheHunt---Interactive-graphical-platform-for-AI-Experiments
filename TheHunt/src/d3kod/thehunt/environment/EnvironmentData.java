@@ -7,7 +7,6 @@ import android.util.Log;
 import d3kod.d3gles20.D3GLES20;
 import d3kod.d3gles20.D3Maths;
 import d3kod.thehunt.environment.FloatingObject.Type;
-import d3kod.thehunt.prey.Prey;
 
 public class EnvironmentData {
 	public static final String TAG = "EnvironmentData";
@@ -21,8 +20,6 @@ public class EnvironmentData {
 
 	public static final float currentSpeed = 0.0005f;
 
-//	public static final int ALGAE_NUM = 5;
-	
 	public static final float[] AlGAE_HARDCODED_POS = {
 		-0.5f, 0.5f,
 		1.0f, -0.3f,
@@ -53,9 +50,7 @@ public class EnvironmentData {
 
 	private boolean mGraphicsAreSet;
 
-//	private ArrayList<EventNoise> mNoiseEvents;
 	public static Tile[][] mTiles;
-//	public Currents currents;
 
 	public static int realWidth;
 
@@ -65,21 +60,14 @@ public class EnvironmentData {
 
 	private static float mFoodY;
 
-//	public EnvironmentData() {
-//		this(1, 1);
-//	}
-	
 	public EnvironmentData(int width, int height) {
 		setSize(width, height);
 		createTiles();
-//		currents = new Currents(this);
-//		currents.initialize();
 		mFoodX = -1; mFoodY = -1;
 		mFloatingObjects = new ArrayList<FloatingObject>();
 		mFloatingObjectsToAdd = new ArrayList<FloatingObject>();
 		mFloatingObjectsToSetGraphics = new ArrayList<FloatingObject>();
 		mGraphicsAreSet = false;
-//		mNoiseEvents = new ArrayList<EventNoise>();
 	}
 	
 	public void setSize(int width, int height) {
@@ -93,9 +81,6 @@ public class EnvironmentData {
 	}
 	
 	public void createTiles() {
-
-//		tileRows = 24;
-//		tileCols = 40;
 		mTiles = new Tile[tileRows][tileCols];
 		Log.v(TAG, "Tiles width:" + tWidth + " height:" + tHeight);
 		// Make the corner and border tiles with currents pointing inwards
@@ -122,21 +107,10 @@ public class EnvironmentData {
 				mTiles[i][j] = new Tile(i, j);
 			}
 		}
-		
-		// Fill the buffers for drawing the tiles
-//		Tile.initBuffers();
 	}
-//
-//	@Deprecated
-//	public void addFloatingObject(FloatingObject floatingObject, int graphicKey) {
-//		floatingObject.setGraphic(graphicKey);
-//		mFloatingObjects.add(floatingObject);
-////		Log.v(TAG, "Floating object type " + floatingObject.getType() + " with key" + graphicKey);
-//	}
 
 	public void addFloatingObject(FloatingObject floatingObject) {
 		mFloatingObjectsToAdd.add(floatingObject);
-//		mFloatingObjects.add(floatingObject);
 	}
 	
 	public ArrayList<FloatingObject> getFloatingObjects() {
@@ -166,16 +140,6 @@ public class EnvironmentData {
 		return null;
 	}
 
-//	public void makeAlgae(D3GLES20 d3GLES20, Environment env) {
-//		float algaeX, algaeY;
-//		for (int i = 0; i < ALGAE_NUM; ++i) {
-//			algaeX = AlGAE_HARDCODED_POS[i*2]; algaeY = AlGAE_HARDCODED_POS[i*2+1];
-//			mFloatingObjects.add(new Algae(algaeX, algaeY, d3GLES20, env));
-////			addFloatingObject(
-////					new FloatingObject(D3GLES20.newDefaultCircle(ALGAE_SIZE, algaeColor, ALGAE_DETAILS), algaeX, algaeY, Type.ALGAE));
-//		}
-//	}
-	
 	public void logFloatingObjects() {
 		String log = "Floating objects log: ";
 		for (FloatingObject fo: mFloatingObjects) {
@@ -190,7 +154,6 @@ public class EnvironmentData {
 		for (FloatingObject fo: mFloatingObjects) {
 			fo.update();
 			if (fo.toRemove() || !environmentContains(fo)) {
-				//Log.v(TAG, "To remove " + fo.getKey());
 				fo.setToRemove();
 				toRemove.add(fo);
 			}
@@ -205,7 +168,6 @@ public class EnvironmentData {
 			for (int j = i; j < mFloatingObjects.size(); ++j) {
 				fo2 = mFloatingObjects.get(j);
 				if (fo2.toRemove() 
-						//|| (fo2.getType() != Type.ALGAE && fo1.getType() != Type.FOOD_GM) 
 						|| fo2.getType() != Type.ALGAE
 						|| fo2 == fo1) {
 					continue;
@@ -219,7 +181,6 @@ public class EnvironmentData {
 							algae2.setToRemove();
 							toRemove.add(algae2);
 						}
-						//Log.v(TAG, "Bigger " + algae1 + " new size " + algae1.getN() + " and to remove " + algae2);
 						break;
 					}
 					else {
@@ -228,8 +189,6 @@ public class EnvironmentData {
 							algae1.setToRemove();
 							toRemove.add(algae1);
 						}
-						//Log.v(TAG, "Bigger " + algae2 + " new size " + algae2.getN() + " and to remove " + algae1);
-		
 						break;
 					}
 				}
@@ -282,8 +241,5 @@ public class EnvironmentData {
 	public void setGraphics(D3GLES20 d3gles20) {
 		mGraphicsAreSet = true;
 		mD3GLES20 = d3gles20;
-//		for (FloatingObject fo: mFloatingObjects) {
-//			fo.setGraphic(mD3GLES20);
-//		}
 	}
 }

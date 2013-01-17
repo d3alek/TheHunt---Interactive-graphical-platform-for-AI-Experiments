@@ -11,7 +11,6 @@ public class Plan {
 	private static final String TAG = "Plan";
 	private static final int MAX_ACTIONS = 1000;
 	ArrayList<Action> mActions;
-//	ArrayList<Action> mParallelActions;
 	Stack<ParallelAction> mParallelActions;
 	int mCurrentAction;
 	private int mLastAction;
@@ -58,12 +57,10 @@ public class Plan {
 	}
 	public Action nextAction() {
 		if (mCurrentAction == -1 || mCurrentAction >= mActions.size()) {
-//			Log.v(TAG, "Next action is null!");
 			return null;
 		}
 		Action nextAction = mActions.get(mCurrentAction++);
 		mCurrentActionTicks = nextAction.getTicks();
-//		tickCurrentAction();
 		return nextAction;
 	}
 	public void addLastAction(Action action) {

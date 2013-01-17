@@ -51,7 +51,6 @@ public class Sensor {
 							break;
 							// no break - register it as food as well
 						}
-					//case FOOD_ALGAE: sensedEvents.add(new EventFood(fo.getX(), fo.getY(), fo.nutrition())); break;
 					case FOOD_GM: sensedEvents.add(new EventFood(fo.getX(), fo.getY(), ((Eatable)fo).getNutrition())); break;
 					}
 				}

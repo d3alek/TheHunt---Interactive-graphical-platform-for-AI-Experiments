@@ -8,10 +8,6 @@ import d3kod.thehunt.environment.Environment;
 public abstract class Prey extends D3Sprite {
 
 	public abstract void initGraphic();
-//
-//	PointF getPosition();
-
-//	void update(float f, float g);
 
 	public Prey(Environment env, D3GLES20 d3gles20) {
 		super(new PointF(0, 0), d3gles20);
@@ -25,7 +21,4 @@ public abstract class Prey extends D3Sprite {
 	public abstract PointF getPredictedPosition();
 
 	public abstract void setCaught(boolean b); 
-
-//	void clearGraphic();
-
 }

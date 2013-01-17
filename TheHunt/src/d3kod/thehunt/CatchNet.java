@@ -85,7 +85,6 @@ public class CatchNet extends D3Sprite implements Tool {
 				// may be a redundant check
 				Log.v(TAG, "Tryign to catch!");
 				Prey prey = mEnv.getPrey();
-//				Log.v(TAG, "Prey is " + prey != null + " " + prey.getCaught() + " " + contains(prey.getPosition()));
 				if (prey != null && !prey.getCaught() && contains(prey.getPosition())) {
 					Log.v(TAG, "I caught the prey!");
 					prey.setCaught(true);
@@ -173,7 +172,6 @@ public class CatchNet extends D3Sprite implements Tool {
 		mNetGraphic = new D3CatchNet(
 				mPathGraphic.getCenterX(), mPathGraphic.getCenterY(), mPathGraphic.getRadius());
 		setPosition(mPathGraphic.getCenter());
-//		mNetGraphic.setProgram(mPathGraphic.getProgram());
 		initGraphic(mNetGraphic);
 	}
 	

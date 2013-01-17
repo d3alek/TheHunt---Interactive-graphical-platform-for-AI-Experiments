@@ -15,7 +15,6 @@ public class D3FoodGM extends D3Shape {
 	private static final float radius = 0.01f;
 	
 	protected D3FoodGM() {
-//		super(foodColor, drawType, sm.getDefaultProgram());
 		super();
 		super.setColor(foodColor);
 		super.setDrawType(drawType);

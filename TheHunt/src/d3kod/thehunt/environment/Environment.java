@@ -27,7 +27,6 @@ public class Environment {
 	
 	
 	public static final int ALGAE_NUM = 300;
-//	private static final float ALGAE_DROP_FOOD_CHANCE = 0.015f;
 	private static final float NET_INTERSECT_RAD_ADJ = 0.2f;
 	
 	public Environment(int width, int height, D3GLES20 d3gles20) {
@@ -66,15 +65,8 @@ public class Environment {
 		return data.mTiles;
 	}
 	public void putFoodGM(float x, float y) {
-//		Log.v(TAG, "Putting food at " + x +  " " + y);
-//		data.addFloatingObject(new FloatingObject(x, y, Type.FOOD, mD3GLES20), mD3GLES20.newDefaultCircle(0.01f, foodColor , 20));
 		data.addFloatingObject(new FoodGM(x, y, mD3GLES20));
 	}
-	
-//	public void putFoodAlgae(float x, float y) {
-//		Log.v(TAG, "Putting food algae!");
-//		data.addFloatingObject(new FoodAlgae(x, y, mD3GLES20));
-//	}
 	
 	public Event senseCurrent(float x, float y) {
 		Dir tileDir = data.getTileFromPos(new PointF(x, y)).getDir();
@@ -86,7 +78,6 @@ public class Environment {
 			if (fo.getType() != Type.ALGAE && fo.getType() != Type.FOOD_GM) continue;
 			float foX = fo.getX(), foY = fo.getY();
 			if (D3Maths.circleContains(x, y, Math.max(fo.getRadius(), EatableEvent.MIN_RADIUS), foX, foY)) {
-//			if (mD3GLES20.shapesCollide(fo.getGraphic(), prey.getGraphic())) {
 				Eatable eatable = (Eatable) fo;
 				eatable.processBite();
 				return eatable.getNutrition();
@@ -153,15 +144,9 @@ public class Environment {
 	}
 
 	public void addPrey(Prey prey) {
-//		Log.v(TAG, "Adding prey to environment");
 		mPrey = prey;
 	}
 	public Prey getPrey() {
-//		Log.v(TAG, "Getting prey from environment" + mPrey.getPosition().x + " " + mPrey.getPosition().y);
 		return mPrey;
 	}
-
-//	public void putNewAlgae(float x, float y) {
-//		data.getFloatingObjectsToAdd().add(new Algae(x, y, mD3GLES20, this));
-//	}
 }

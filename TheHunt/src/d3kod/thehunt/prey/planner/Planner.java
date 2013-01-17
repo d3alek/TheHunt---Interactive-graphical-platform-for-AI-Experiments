@@ -19,30 +19,23 @@ public class Planner {
 	public static final boolean SHOW_TARGET = true;
 	private PlanState mState;
 	private Plan mPlan;
-//	private int mPlanTarget;
-//	private D3GLES20 mD3GLES20;
 	private ExplorePlan mExplorePlan;
 
 	public Planner() {
-//		mD3GLES20 = d3GLES20;
 		clear();
 	}
 
 	public Action nextAction(WorldModel mWorldModel) {
 		if (!mPlan.finishedCurrentAction()) {
-//			Log.v(TAG, "Ticking current action")
 			mPlan.tickCurrentAction();
 			//TODO: this looks like a good place for parallel actions
-			//if (mWorldModel.amOverweight()) return Action.poop;
 			return Action.none;
 		}
 		if (mWorldModel.amOverweight()) mPlan.addParallelAction(Action.poop);
 		mPlan.update(mWorldModel);
 		if (!mPlan.isFinished()) {
-//			if (SHOW_TARGET && !(mPlan instanceof ExplorePlan)) mD3GLES20.setShapePosition(mPlanTarget, mPlan.getTargetX(), mPlan.getTargetY());
 			return mPlan.nextAction();
 		}
-//		else if (SHOW_TARGET && !(mPlan instanceof ExplorePlan)) mD3GLES20.removeShape(mPlanTarget);
 		
 		mState = checkForSomethingInteresting(mWorldModel);
 		Stack<ParallelAction> saveParallelActions = mPlan.getParallelActions();
@@ -53,9 +46,7 @@ public class Planner {
 		case DONOTHING: mPlan = new NoPlan(mWorldModel.getHeadX(), mWorldModel.getHeadY()); break;
 		}
 		mPlan.setParallelActions(saveParallelActions);
-//		if (SHOW_TARGET && !(mPlan instanceof ExplorePlan)) makeTarget();
 		mPlan.update(mWorldModel);
-//		if (SHOW_TARGET && !(mPlan instanceof ExplorePlan)) mD3GLES20.setShapePosition(mPlanTarget, mPlan.getTargetX(), mPlan.getTargetY());
 		return mPlan.nextAction();
 	}
 	
@@ -87,7 +78,6 @@ public class Planner {
 		}
 	}
 	private Plan makeExplorePlan(WorldModel mWorldModel) {
-//		Log.v(TAG, "Making explore plan");
 		if (mWorldModel.getMoodLevel() == MoodLevel.DESPAIR) {
 			if (mExplorePlan == null || !mExplorePlan.isRapid()) {
 				mExplorePlan = new RapidExplorePlan(mWorldModel);
@@ -121,14 +111,6 @@ public class Planner {
 		}
 		return hidePlan;
 	}
-	
-//	public void makeTarget() {
-//		mPlanTarget = mD3GLES20.newDefaultCircle(mPlan.getTargetSize(), mPlan.getTargetColor(), 10);
-//	}
-
-//	public int getTarget() {
-//		return mPlanTarget;
-//	}
 
 	public void clear() {
 		mPlan = new NoPlan(0, 0);
@@ -142,5 +124,4 @@ public class Planner {
 	public Action nextParallelAction() {
 		return mPlan.getParallelAction();
 	}
-	
 }

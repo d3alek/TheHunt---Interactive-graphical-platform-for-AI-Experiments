@@ -3,7 +3,6 @@ package d3kod.thehunt;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
-import android.content.Context;
 import android.graphics.PointF;
 import android.hardware.SensorEvent;
 import android.opengl.GLES20;
@@ -15,7 +14,6 @@ import d3kod.d3gles20.D3GLES20;
 import d3kod.d3gles20.ShaderManager;
 import d3kod.d3gles20.TextureManager;
 import d3kod.thehunt.environment.Environment;
-import d3kod.thehunt.environment.EnvironmentData;
 import d3kod.thehunt.floating_text.PlokText;
 import d3kod.thehunt.prey.DefaultPrey;
 import d3kod.thehunt.prey.DummyPrey;
@@ -74,7 +72,6 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 	private boolean mScrolling = false;
 	private int mIgnoreNextTouch;
 	public static enum PreyType {NONE, DEFAULT};
-//	private boolean mPreyGraphicInitialized;
 	
 	public void onSensorChanged(SensorEvent event) {
 		
@@ -87,12 +84,9 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 		sm = new ShaderManager();
 		mD3GLES20 = new D3GLES20(sm);
 		mPrey = null;
-		//	    mNet = null;
 		mIgnoreNextTouch = -1;
 		mCaughtCounter = 0;
-		//	    mShapes = null;
 		tm = new TextureManager(mActivity);
-		//    mPreyGraphicInitialized = false;
 	}
 
 /**
@@ -119,18 +113,12 @@ public void onSurfaceChanged(GL10 unused, int width, int height) {
 	
     Log.v(TAG, "mScreenWidth " + mScreenWidthPx + " mScreenHeight " + mScreenHeightPx);
     
-    // D3Shape.initDefaultShaders();
-    
 	if (mEnv == null) mEnv = new Environment(worldWidthPx, worldHeightPx, mD3GLES20);
 	if (mTool == null) mTool = new CatchNet(mEnv, tm, mD3GLES20);
-//	    if (mPrey == null) mPrey = new DefaultPrey(EnvironmentData.mScreenWidth, EnvironmentData.mScreenHeight, mEnv, tm);
-//    if (mPrey == null) mPrey = new DefaultPrey(mEnv, tm, mD3GLES20);
     if (!mGraphicsInitialized ) {
     	//TODO why not initialize tool graphics as well?
-//    	mPrey.initGraphic();
     	mCamera.initGraphic();
     	mGraphicsInitialized = true;
-//    	mPreyGraphicInitialized = true;
     }
     
     float ratio = (float) worldWidthPx / worldHeightPx;
@@ -162,24 +150,7 @@ public void onDrawFrame(GL10 unused) {
 	smoothingCount++;
 	if (smoothingCount >= SMOOTHING_SIZE) {
 		smoothingCount = 0;
-		((TheHunt) mActivity).runOnUiThread(new Runnable() {
-			public void run() {
-//				if (((TheHunt) mActivity).mPreyState != null) 
-//						((TheHunt) mContext).mPreyState.setText(mPrey.getStateString());
-//				((TheHunt) mActivity).mMSperFrame.setText(smoothMspf + "");
-//					((TheHunt) mContext).mEnergyCounter.setText(mPrey.getEnergy()+"");
-//
-//					if (mPrey.getEnergy() < RED_TEXT_ENERGY) {
-//						((TheHunt) mContext).mEnergyCounter.setTextColor(Color.RED);
-//					}
-//					else if (mPrey.getEnergy() < YELLOW_TEXT_ENERGY) {
-//						((TheHunt) mContext).mEnergyCounter.setTextColor(Color.YELLOW);
-//					}
-//					else {
-//						((TheHunt) mContext).mEnergyCounter.setTextColor(Color.WHITE);
-//					}
-			}
-		});
+		// TODO: Set HUD details (prey state, ms per frame, energy
 	}
 }		
 
@@ -189,10 +160,8 @@ private void updateWorld() {
 		PointF preyPos = mPrey.getPosition();
 		if (preyPos != null) {
 			PointF curDirDelta = mEnv.data.getTileFromPos(preyPos).getDir().getDelta();
-			//		mPrey.update(curDirDelta.x * EnvironmentData.currentSpeed, 
-			//				curDirDelta.y * EnvironmentData.currentSpeed);
 			mPrey.updateVelocity(curDirDelta.x, curDirDelta.y);
-			mPrey.update(); // add friction somehow
+			mPrey.update();
 		}
 
 		preyPos = mPrey.getPosition();
@@ -211,34 +180,7 @@ private void updateWorld() {
 
 	mTool.update();
 
-	//		if (!mPrey.getCaught() && mTool.tryToCatch() && mD3GLES20.contains(mNet.getGraphicIndex(), preyPos.x, preyPos.y)) {
-	//			PointF preyHeadPos = mPrey.getHeadPositon();
-	//			if (!mD3GLES20.contains(mNet.getGraphicIndex(), preyHeadPos.x, preyHeadPos.y)) {
-	//				Log.v(TAG, "Net contains body but not head, not caught");
-	//			}
-	//			else {
-	//				Log.v(TAG, "Prey is caught!");
-	//				mPrey.setCaught(true);
-	//				mNet.caughtPrey(mPrey);
-	//				mCaughtCounter += 1;
-	//				((TheHunt) mContext).runOnUiThread(new Runnable() {
-	//					public void run() {
-	//						((TheHunt) mContext).mCaughtCounter.setText(mCaughtCounter + "");
-	//					}
-	//				});
-	//				mD3GLES20.putExpiringShape(new CatchText(preyPos.x, preyPos.y, tm, sm));
-	//				releaseCountdown = RELEASE_TICKS;
-	//			}
-	//		}
-
 	mCamera.update();
-	//	if (!mCamera.contains(preyPos)) {
-	////		Log.v(TAG, "Camera does not contain preyPos!");
-	//			mCamera.showPreyPointer();
-	//		}
-	//		else {
-	//			mCamera.hidePreyPointer();
-	//		}
 }
 
 	private void drawWorld(float interpolation) {
@@ -254,8 +196,6 @@ private void updateWorld() {
 			mPrey.initGraphic();
 		}
 		
-//		Log.v(TAG, "Drawing");
-		
 		int clearMask = GLES20.GL_COLOR_BUFFER_BIT;
 		
 		if (MultisampleConfigChooser.usesCoverageAa()) {
@@ -270,7 +210,6 @@ private void updateWorld() {
 		if (mPrey != null) mCamera.setPreyPointerPosition(mPrey.getPredictedPosition());
 		
 		mD3GLES20.drawAll(mVMatrix, mProjMatrix, interpolation);
-//		Log.v(TAG, "End drawing");
 	}
 
 	public void handleTouch(final MotionEvent me, boolean doubleTouch) {
@@ -318,13 +257,7 @@ private void updateWorld() {
 	public void pause() {
     	mState = State.PAUSE;
     	Log.v(TAG, "State is " + mState);
-//		mEnv.clean();
     	//TODO: use sparseArray
-//    	mShapes = new HashMap<Integer, D3Shape>();
-//    	mShapes.putAll(D3GLES20.getShapes());
-//    	Log.v(TAG, "Clearing graphics!");
-//    	D3GLES20.clearGraphics();
-//    	mD3GLES20.clean();
     	tm.clear();
     	sm.clear();
 	}
@@ -335,18 +268,8 @@ private void updateWorld() {
 		mslf = next_game_tick;
 		smoothMspf = 0;
 		smoothingCount = 0;
-		((TheHunt) mActivity).runOnUiThread(new Runnable() {
-			public void run() {
-//				((TheHunt) mActivity).mScore.setText(mCaughtCounter + "");
-			}
-		});
-		
-		
-//		D3GLES20.init();
-//		if (mShapes != null) {
-//			D3GLES20.setShapes(mShapes);
-//			mShapes = null;
-//		}
+		// TODO: restore caught counter
+	
 		if (sm == null) {
 			sm = new ShaderManager();
 		}
@@ -380,10 +303,6 @@ private void updateWorld() {
 	}
 
 	public void changePrey(int which) {
-//		mPrey.clearGraphic();
-//		mPrey = null;
-//	    mPrey = new DefaultPrey(mEnv, tm);
-//	    mPrey.initGraphics(mD3GLES20);
 		mPreyChange = true;
 		mPreyChangeTo = PreyType.values()[which];
 	}

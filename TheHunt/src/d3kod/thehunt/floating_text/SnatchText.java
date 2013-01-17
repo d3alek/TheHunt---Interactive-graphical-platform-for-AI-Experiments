@@ -22,6 +22,5 @@ public class SnatchText extends D3FadingText {
 		float rotAngle = RANDOM_ROT_MAX - 2*RANDOM_ROT_MAX*rand.nextFloat();
 		super.setPosition(x + FloatMath.sin(randAngle)*SHIFT_LENGTH, 
 				y - FloatMath.cos(randAngle)*SHIFT_LENGTH, rotAngle);
-//		super.setPosition(x, y, rotAngle);
 	}
 }

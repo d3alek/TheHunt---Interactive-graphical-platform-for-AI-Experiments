@@ -13,7 +13,6 @@ public class Currents {
 	public static final float[] OPTIMAL_DIR_SPREAD = 
 		{ 0.5f, 0.25f, 0, -0.0f, -0f, -0.0f, 0, 0.25f };
 	public static final float[] INITIAL_DIR_PROBS = {0.125f, 0.125f, 0.125f, 0.125f, 0.125f, 0.125f, 0.125f, 0.125f, 0};
-		//{0, 0, 0, 0, 0, 0, 0, 0, 0};
 	public static final int CURRENTS_COLOR = Color.CYAN;
 	private EnvironmentData data;
 	private final int numDirs = EnvironmentData.numDirs;
@@ -51,7 +50,6 @@ public class Currents {
 		}
 		public DirProb() {
 			prob = new float[] {0.125f, 0.125f, 0.125f, 0.125f, 0.125f, 0.125f, 0.125f, 0.125f, 0};
-//			prob = new float[] {0, 0, 0, 0, 0, 0, 0, 0, 0};
 		}
 		@Override
 		public String toString() {
@@ -66,21 +64,9 @@ public class Currents {
 	
 	public Currents(EnvironmentData envData) {
 		data = envData;
-//		dirMatrix = getDirSpreadMatrix(OPTIMAL_DIR_SPREAD);
 	}
 	
 	protected float[][] getDirSpreadMatrix(float[] dirSpread) {
-//		final float[][] dirSpreadMatrixPrim = {
-//				{ 0.5f, 0.25f, 0, 0, 0, 0, 0, 0.25f, 0 },
-//				{ 0.25f, 0.5f, 0.25f, 0, 0, 0, 0, 0, 0 },
-//				{ 0, 0.25f, 0.5f, 0.25f, 0, 0, 0, 0, 0 },
-//				{ 0, 0, 0.25f, 0.5f, 0.25f, 0, 0, 0, 0 },
-//				{ 0, 0, 0, 0.25f, 0.5f, 0.25f, 0, 0, 0 },
-//				{ 0, 0, 0, 0, 0.25f, 0.5f, 0.25f, 0, 0 },
-//				{ 0, 0, 0, 0, 0, 0.25f, 0.5f, 0.25f, 0 },
-//				{ 0.25f, 0, 0, 0, 0, 0, 0.25f, 0.5f, 0 },
-//				{ 0, 0, 0, 0, 0, 0, 0, 0 }
-//		};
 		float[][] dirSpreadMatrix = new float[numDirs][numDirs];
 		int start = 0; // which position of dirSpread do we start from
 		for (int i = 0; i < numDirs-1; ++i) {
@@ -101,24 +87,20 @@ public class Currents {
 		for (int i = 0; i < numDirs; ++i) {
 			dirSpreadMatrix[numDirs-1][i] = 0;
 		}
-//		if (dirSpreadMatrix.equals(dirSpreadMatrixPrim)) Log.v(TAG, "EQUALS!");
-//		else {
-			Log.v(TAG, "DirSpreadMatrix is:");
-			for (float[] r:dirSpreadMatrix) {
-				String line = "\t";
-				for (float c:r) {
-					line += c;
-				}
-				Log.v(TAG, line);
+		Log.v(TAG, "DirSpreadMatrix is:");
+		for (float[] r:dirSpreadMatrix) {
+			String line = "\t";
+			for (float c:r) {
+				line += c;
 			}
-//		}
+			Log.v(TAG, line);
+		}
 		return dirSpreadMatrix;
 	}
 	
 	Tile[] getNeighbors(Tile tile) {
 		ArrayList<Tile> neighbors = new ArrayList<Tile>(3);
 		int curR = tile.getR(), curC = tile.getC();
-//		Dir curDir = tile.getDir();
 		// For all neighbor tiles of curTile 
 		for (Dir dir:Dir.values()) {
 			int dirInd = dir.getIndex(),
@@ -153,7 +135,6 @@ public class Currents {
 		do {
 			while(!queue1.isEmpty()) {
 				Tile curTile = queue1.pollFirst();
-//				int curR = curTile.getR(), curC = curTile.getC();
 				Dir curDir = curTile.getDir();
 				for (Tile neighborTile: getNeighbors(curTile)) {
 					if (!neighborTile.getDir().equals(Dir.UNDEFINED)) continue;

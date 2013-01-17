@@ -21,8 +21,6 @@ public class D3Prey extends D3Shape {
 			0.0f, 0.0f, 0.0f, 1.0f };
 	protected static float[] preyColorHidden = {
 		0.0f, 0.0f, 0.0f, 0.5f };
-//	protected final static float[] preyColorDefault = {
-//			0.0f, 0.0f, 0.0f, 1.0f };
 	private static final float colorFadeSpeed = 0.01f;
 	
 	public static boolean angleInterpolation = true;
@@ -42,20 +40,6 @@ public class D3Prey extends D3Shape {
 	protected final float[] eyePosition = { -0.40f * headSize, 0.25f * headSize, 0.0f };
 	protected final float eyeSize = 0.25f*headSize;
 		
-	// this works
-//	protected final float[] headPart1Start = { 0.0f, 1.0f, 0.0f };
-//	protected final float[] headPart1B = { -0.5f, 0.75f, 0.0f };
-//	protected final float[] headPart1C = { -1.0f, 0.5f, 0.0f };
-//	protected final float[] headPart2Start = { -1.0f, -0.5f, 0.0f };
-//	protected final float[] headPart2B = { -0.2f, -0.3f, 0.0f };
-//	protected final float[] headPart2C = { 0.2f, -0.3f, 0.0f };
-//	protected final float[] headPart3Start = { 1.0f, -0.5f, 0.0f };
-//	protected final float[] headPart3B = { 1.0f, 0.5f, 0.0f };
-//	protected final float[] headPart3C = { 0.5f, 0.75f, 0.0f };
-//	protected final float[] headPart4Start = { 0.5f, 0.75f, 0.0f };
-//	protected final float[] headPart4B = { 0.5f, 0.5f, 0.0f };
-//	protected final float[] headPart4C = { 0.0f, 0.0f, 0.0f };
-	
 	protected final float[] headPart1Start = { 0.0f, 1.0f, 0.0f };
 	protected final float[] headPart1B = { -0.5f, 0.75f, 0.0f };
 	protected final float[] headPart1C = { -1.0f, 0.5f, 0.0f };
@@ -174,7 +158,6 @@ public class D3Prey extends D3Shape {
 			+ "   gl_FragColor = u_Color;     \n"
 			+ "}                              \n";
 	
-//	private int mProgramHandle;
 	private int mColorHandle;
 	
 	float[] mBodyStartRMatrix = new float[16];
@@ -204,7 +187,6 @@ public class D3Prey extends D3Shape {
 	private PreyData mD;
 	
 	protected D3Prey(PreyData data) {
-//		super(preyColor, GLES20.GL_LINE_STRIP, sm.getDefaultProgram());
 		super();
 		super.setColor(preyColor);
 		super.setDrawType(GLES20.GL_LINE_STRIP);
@@ -234,13 +216,7 @@ public class D3Prey extends D3Shape {
         rib1PosIndex = (1*bodyVerticesNum/4)*D3GLES20.COORDS_PER_VERTEX;
         rib2PosIndex = (3*bodyVerticesNum/4-2)*D3GLES20.COORDS_PER_VERTEX;
 		
-//        mProgramHandle = sm.getDefaultProgram().getHandle();
-        
         eatingStep = -1;
-//        mMVPMatrixHandle = GLES20.glGetUniformLocation(mProgramHandle, "u_MVPMatrix");
-        //TODO: fix visibility
-//        mPositionHandle = AttribVariable.A_Position.getHandle();
-//        mColorHandle = GLES20.glGetUniformLocation(mProgramHandle, "u_Color");
 	}
 
 	private float[] caclRibVerticesData() {
@@ -328,12 +304,9 @@ public class D3Prey extends D3Shape {
         super.setDrawVMatrix(mVMatrix);
         super.setDrawProjMatrix(mProjMatrix);
         
-//		GLES20.glUseProgram(mProgramHandle);
 		super.useProgram();
 		
 		super.useColor();
-//        GLES20.glUniform4fv(mColorHandle, 1, super.getColor(), 0);
-//        GLES20.glEnableVertexAttribArray(mColorHandle);
         
         // Calculate Model Matrix
         Matrix.setIdentityM(mModelMatrix, 0);
@@ -466,7 +439,6 @@ public class D3Prey extends D3Shape {
 			mMouthOpen = false;
 			if (eatingStep == -1) initEatingMotion();
 			headVerticesData = calcMoveHeadVerticesData(eatingMotionSteps-1);
-//			headVertexBuffer = Utilities.newFloatBuffer(headVerticesData);
 		}
 	}
 
