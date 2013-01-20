@@ -9,12 +9,12 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.TextView;
 import android.widget.ToggleButton;
-import d3kod.thehunt.prey.PreyData;
+import d3kod.thehunt.agent.prey.PreyData;
 
 public class TheHunt extends FragmentActivity implements PreyChangeDialog.PreyChangeDialogListener {
 
     private static final String TAG = "TheHunt";
-	private MyGLSurfaceView mGLView;
+	private D3GLSurfaceView mGLView;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -23,7 +23,7 @@ public class TheHunt extends FragmentActivity implements PreyChangeDialog.PreyCh
 		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
 		setContentView(R.layout.clean);
-		mGLView = (MyGLSurfaceView)findViewById(R.id.glSurfaceView);
+		mGLView = (D3GLSurfaceView)findViewById(R.id.glSurfaceView);
 		showPreyChangeDialog(null);
 	}
     
