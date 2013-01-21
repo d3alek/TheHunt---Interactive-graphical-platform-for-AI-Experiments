@@ -1,7 +1,6 @@
 package d3kod.thehunt.world.environment;
 
 
-
 public class Tile {
 	private Dir dir;
 	private int r, c;
@@ -33,6 +32,5 @@ public class Tile {
 	}
 	public void draw(float[] mVMatrix, float[] mProjMatrix, boolean showTiles, boolean showCurrents) {
         mTileQuad.draw(r, c, mVMatrix, mProjMatrix, showTiles, showCurrents, dir);
-
 	}
 }
