@@ -3,6 +3,7 @@ package d3kod.thehunt.world.logic;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
+import android.content.Context;
 import android.graphics.PointF;
 import android.hardware.SensorEvent;
 import android.opengl.GLES20;
@@ -21,9 +22,9 @@ import d3kod.thehunt.agent.prey.Prey;
 import d3kod.thehunt.world.Camera;
 import d3kod.thehunt.world.environment.Environment;
 import d3kod.thehunt.world.floating_text.PlokText;
-//import d3kod.d3gles20.shapes.D3TempCircle;
 import d3kod.thehunt.world.tools.CatchNet;
 import d3kod.thehunt.world.tools.Tool;
+//import d3kod.d3gles20.shapes.D3TempCircle;
 
 public class TheHuntRenderer implements GLSurfaceView.Renderer {
 	
@@ -46,7 +47,7 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
     private final int MILLISEC_PER_TICK = 1000 / TICKS_PER_SECOND;
     private final int MAX_FRAMESKIP = 5;
 	private long next_game_tick;
-	private TheHunt mActivity;
+//	private Context mContext;
 	private long mslf;
 	private long smoothMspf;
 	private int smoothingCount;
@@ -82,8 +83,8 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 		
 	}
 	
-	public TheHuntRenderer(TheHunt activity) {
-		mActivity = activity;
+	public TheHuntRenderer(Context context) {
+//		mContext = context;
 		mEnv = null;
 		mTool = null;
 		sm = new ShaderProgramManager();
@@ -91,104 +92,107 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 		mPrey = null;
 		mIgnoreNextTouch = -1;
 		mCaughtCounter = 0;
-		tm = new TextureManager(mActivity);
+		tm = new TextureManager(context);
 	}
 
-/**
- * The Surface is created/init()
- */
-public void onSurfaceCreated(GL10 unused, EGLConfig config) {
-	GLES20.glClearColor(bgColor[0], bgColor[1], bgColor[2], bgColor[3]);
-	GLES20.glEnable(GLES20.GL_BLEND);
-	GLES20.glBlendFunc(GLES20.GL_ONE, GL10.GL_ONE_MINUS_SRC_ALPHA);
-}
-/**
- * If the surface changes, reset the view
- */
-public void onSurfaceChanged(GL10 unused, int width, int height) {
-	GLES20.glViewport(0, 0, width, height);
-	
-	mScreenWidthPx = width;
-	mScreenHeightPx = height;
-	
-	mScreenToWorldRatioWidth = mScreenWidthPx/(float)worldWidthPx;
-	mScreenToWorldRatioHeight = mScreenHeightPx/(float)worldHeightPx;
-	mCamera = new Camera(mScreenToWorldRatioWidth, 
-			mScreenToWorldRatioHeight, worldWidthPx/(float)worldHeightPx, mD3GLES20);
-	
-    Log.v(TAG, "mScreenWidth " + mScreenWidthPx + " mScreenHeight " + mScreenHeightPx);
-    
-	if (mEnv == null) mEnv = new Environment(worldWidthPx, worldHeightPx, mD3GLES20);
-	if (mTool == null) mTool = new CatchNet(mEnv, tm, mD3GLES20);
-    if (!mGraphicsInitialized ) {
-    	//TODO why not initialize tool graphics as well?
-    	mCamera.initGraphic();
-    	mGraphicsInitialized = true;
-    }
-    
-    float ratio = (float) worldWidthPx / worldHeightPx;
-    
-    if (width > height) Matrix.frustumM(mProjMatrix, 0, -ratio, ratio, -1, 1, 1, 10);
-    else Matrix.frustumM(mProjMatrix, 0, -1, 1, -1/ratio, 1/ratio, 1, 10);
-}
-/**
- * Here we do our drawing
- */
-public void onDrawFrame(GL10 unused) {
+	/**
+	 * The Surface is created/init()
+	 */
+	public void onSurfaceCreated(GL10 unused, EGLConfig config) {
+		GLES20.glClearColor(bgColor[0], bgColor[1], bgColor[2], bgColor[3]);
+		GLES20.glEnable(GLES20.GL_BLEND);
+		GLES20.glBlendFunc(GLES20.GL_ONE, GL10.GL_ONE_MINUS_SRC_ALPHA);
+	}
+	/**
+	 * If the surface changes, reset the view
+	 */
+	public void onSurfaceChanged(GL10 unused, int width, int height) {
+		GLES20.glViewport(0, 0, width, height);
 
-	int loops = 0;
-	mslf = System.currentTimeMillis();
-	
-	while (next_game_tick < System.currentTimeMillis() && loops < MAX_FRAMESKIP) {
-		updateWorld();
-		next_game_tick += MILLISEC_PER_TICK;
-		loops++;
-	}
-	if (loops >= MAX_FRAMESKIP) {
-		Log.w(TAG, "Skipping " + loops + " frames!");
-	}
-	
-	float interpolation = (System.currentTimeMillis() + MILLISEC_PER_TICK - next_game_tick) / (float) MILLISEC_PER_TICK;
-	drawWorld(interpolation);
-	long mspf = System.currentTimeMillis() - mslf;
-	smoothMspf = (smoothMspf*smoothingCount + mspf)/(smoothingCount+1);
-	smoothingCount++;
-	if (smoothingCount >= SMOOTHING_SIZE) {
-		smoothingCount = 0;
-		// TODO: Set HUD details (prey state, ms per frame, energy
-	}
-}		
+		mScreenWidthPx = width;
+		mScreenHeightPx = height;
 
-private void updateWorld() {
-	mEnv.update();
-	if (mPrey != null) {
-		PointF preyPos = mPrey.getPosition();
-		if (preyPos != null) {
-			PointF curDirDelta = mEnv.data.getTileFromPos(preyPos).getDir().getDelta();
-			mPrey.updateVelocity(curDirDelta.x, curDirDelta.y);
-			mPrey.update();
+		mScreenToWorldRatioWidth = mScreenWidthPx/(float)worldWidthPx;
+		mScreenToWorldRatioHeight = mScreenHeightPx/(float)worldHeightPx;
+		mCamera = new Camera(mScreenToWorldRatioWidth, 
+				mScreenToWorldRatioHeight, worldWidthPx/(float)worldHeightPx, mD3GLES20);
+
+		Log.v(TAG, "mScreenWidth " + mScreenWidthPx + " mScreenHeight " + mScreenHeightPx);
+
+		if (mEnv == null) mEnv = new Environment(worldWidthPx, worldHeightPx, mD3GLES20);
+		if (mTool == null) mTool = new CatchNet(mEnv, tm, mD3GLES20);
+		if (!mGraphicsInitialized ) {
+			//TODO why not initialize tool graphics as well?
+			mCamera.initGraphic();
+			mGraphicsInitialized = true;
 		}
 
-		preyPos = mPrey.getPosition();
-		if (mPrey.getCaught()) {
-			if (releaseCountdown < 0) {
-				releaseCountdown = RELEASE_TICKS;
-			}
-			releaseCountdown--;
-			if (releaseCountdown == 0) {
-				mPrey.release();
-				releaseCountdown = -1;
-			}
+		float ratio = (float) worldWidthPx / worldHeightPx;
+
+		if (width > height) Matrix.frustumM(mProjMatrix, 0, -ratio, ratio, -1, 1, 1, 10);
+		else Matrix.frustumM(mProjMatrix, 0, -1, 1, -1/ratio, 1/ratio, 1, 10);
+	}
+	/**
+	 * Here we do our drawing
+	 */
+	public void onDrawFrame(GL10 unused) {
+		if (mState == State.PAUSE) {
+			return;
 		}
-		mCamera.setPreyPosition(preyPos);
+
+		int loops = 0;
+		mslf = System.currentTimeMillis();
+
+		while (next_game_tick < System.currentTimeMillis() && loops < MAX_FRAMESKIP) {
+			updateWorld();
+			next_game_tick += MILLISEC_PER_TICK;
+			loops++;
+		}
+		if (loops >= MAX_FRAMESKIP) {
+			Log.w(TAG, "Skipping " + loops + " frames!");
+		}
+
+		float interpolation = (System.currentTimeMillis() + MILLISEC_PER_TICK - next_game_tick) / (float) MILLISEC_PER_TICK;
+		drawWorld(interpolation);
+		long mspf = System.currentTimeMillis() - mslf;
+		smoothMspf = (smoothMspf*smoothingCount + mspf)/(smoothingCount+1);
+		smoothingCount++;
+		if (smoothingCount >= SMOOTHING_SIZE) {
+			smoothingCount = 0;
+			// TODO: Set HUD details (prey state, ms per frame, energy
+		}
+	}		
+
+	public void updateWorld() {
+		mEnv.update();
+		if (mPrey != null) {
+			PointF preyPos = mPrey.getPosition();
+			if (preyPos != null) {
+				PointF curDirDelta = mEnv.data.getTileFromPos(preyPos).getDir().getDelta();
+				mPrey.updateVelocity(curDirDelta.x, curDirDelta.y);
+				mPrey.update();
+			}
+
+			preyPos = mPrey.getPosition();
+			if (mPrey.getCaught()) {
+				if (releaseCountdown < 0) {
+					releaseCountdown = RELEASE_TICKS;
+				}
+				releaseCountdown--;
+				if (releaseCountdown == 0) {
+					mPrey.release();
+					releaseCountdown = -1;
+				}
+			}
+			mCamera.setPreyPosition(preyPos);
+		}
+
+		mTool.update();
+
+		mCamera.update();
 	}
 
-	mTool.update();
-
-	mCamera.update();
-}
-
-	private void drawWorld(float interpolation) {
+	public void drawWorld(float interpolation) {
 		if (mState != State.PLAY) return;
 		
 		if (mPreyChange) {
@@ -217,12 +221,13 @@ private void updateWorld() {
 		mD3GLES20.drawAll(mVMatrix, mProjMatrix, interpolation);
 	}
 
-	public void handleTouch(final MotionEvent me, boolean doubleTouch) {
+	public void handleTouch(final MotionEvent event, boolean doubleTouch) {
+		
 		//TODO: receive int, PointF instead of MotionEvent
-		if (prev != null && prev.getX() == me.getX() 
-			&& prev.getY() == me.getY() && prev.getAction() == me.getAction()) return;
+		if (prev != null && prev.getX() == event.getX() 
+			&& prev.getY() == event.getY() && prev.getAction() == event.getAction()) return;
 
-		PointF location = fromScreenToWorld(me.getX(), me.getY());
+		PointF location = fromScreenToWorld(event.getX(), event.getY());
 		
 		if (doubleTouch && !mScrolling) {
 			mScrolling = true;
@@ -243,20 +248,42 @@ private void updateWorld() {
 			}				
 		
 			else {
-				if (!mTool.handleTouch(me.getAction(), location)) {
+				if (!mTool.handleTouch(event.getAction(), location)) {
 					Log.v(TAG, "mTool can't handle touch. Ignoring if " + mIgnoreNextTouch);
-					if (mIgnoreNextTouch != me.getAction() && 
-							(me.getAction() == MotionEvent.ACTION_DOWN || // to place food while net is snatching
-							me.getAction() == MotionEvent.ACTION_UP)) { // to place food otherwise
+					if (mIgnoreNextTouch != event.getAction() && 
+							(event.getAction() == MotionEvent.ACTION_DOWN || // to place food while net is snatching
+							event.getAction() == MotionEvent.ACTION_UP)) { // to place food otherwise
 						mD3GLES20.putExpiringShape(new PlokText(location.x, location.y, tm, mD3GLES20.getShaderManager()));
 						mEnv.putNoise(location.x, location.y, Environment.LOUDNESS_PLOK);
 						mEnv.putFoodGM(location.x, location.y);
 					}
 				}
-				if (mIgnoreNextTouch == me.getAction()) mIgnoreNextTouch = -1;
+				if (mIgnoreNextTouch == event.getAction()) mIgnoreNextTouch = -1;
 			}
 		}
-		prev = MotionEvent.obtain(me);
+		prev = MotionEvent.obtain(event);
+	}
+	
+	public static boolean motionEventDoubleTouchChanged(MotionEvent event) {
+		int action = event.getAction();
+    	int count;
+    	switch (action & MotionEvent.ACTION_MASK) {
+    	case MotionEvent.ACTION_POINTER_DOWN:
+    		count = event.getPointerCount(); // Number of 'fingers' at this time
+    		Log.v(TAG, "Down Count is " + count);
+    		if (count == 2) {
+    			return true;
+    		}
+    		break;
+    	case MotionEvent.ACTION_POINTER_UP:
+    		count = event.getPointerCount(); // Number of 'fingers' in this time
+    		Log.v(TAG, "UP Count is " + count);
+    		if (count == 2) {
+    			return true;
+    		}
+    		break;
+    	}
+    	return false;
 	}
 	
 	public void pause() {

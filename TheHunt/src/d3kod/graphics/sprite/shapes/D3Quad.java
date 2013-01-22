@@ -57,6 +57,13 @@ public class D3Quad extends D3Shape {
 		super(verticesBuffer, drawColor, drawType, program);
 	}
 	
+	public D3Quad(float width, float height) {
+		super();
+		super.setVertexBuffer(makeVerticesBuffer(width, height, quadVerticesDefault));
+		super.setColor(colorDefault);
+		super.setDrawType(GLES20.GL_TRIANGLE_STRIP);
+	}
+
 	public float getRadius() {
 		return mRadius;
 	}
