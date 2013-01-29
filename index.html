@@ -1,77 +1,145 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
-
   <head>
-    <meta charset='utf-8' />
-    <meta http-equiv="X-UA-Compatible" content="chrome=1" />
-    <meta name="description" content="TheHunt- Interactive graphical platform for AI experiments : Game/Live wallpaper for Android trying to become an Interactive graphical platform for AI experiments" />
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>TheHunt - Interactive graphical platform for AI experiments by d3kod</title>
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script src="javascripts/main.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
 
-    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
-
-    <title>TheHunt- Interactive graphical platform for AI experiments</title>
   </head>
-
   <body>
 
-    <!-- HEADER -->
-    <div id="header_wrap" class="outer">
-        <header class="inner">
-          <a id="forkme_banner" href="https://github.com/d3kod/TheHunt---Interactive-graphical-platform-for-AI-Experiments">View on GitHub</a>
+      <header>
+        <h1>TheHunt - Interactive graphical platform for AI experiments</h1>
+        <p>A Game/Live wallpaper for Android featuring an AI agent</p>
+      </header>
 
-          <h1 id="project_title">TheHunt- Interactive graphical platform for AI experiments</h1>
-          <h2 id="project_tagline">Game/Live wallpaper for Android trying to become an Interactive graphical platform for AI experiments</h2>
+      <div id="banner">
+        <span id="logo"></span>
 
-            <section id="downloads">
-              <a class="zip_download_link" href="https://github.com/d3kod/TheHunt---Interactive-graphical-platform-for-AI-Experiments/zipball/master">Download this project as a .zip file</a>
-              <a class="tar_download_link" href="https://github.com/d3kod/TheHunt---Interactive-graphical-platform-for-AI-Experiments/tarball/master">Download this project as a tar.gz file</a>
-            </section>
-        </header>
-    </div>
+        <a href="https://github.com/d3kod/TheHunt---Interactive-graphical-platform-for-AI-Experiments" class="button fork"><strong>View On GitHub</strong></a>
+        <div class="downloads">
+          <span>Downloads:</span>
+          <ul>
+            <li><a href="https://github.com/d3kod/TheHunt---Interactive-graphical-platform-for-AI-Experiments/zipball/master" class="button">ZIP</a></li>
+            <li><a href="https://github.com/d3kod/TheHunt---Interactive-graphical-platform-for-AI-Experiments/tarball/master" class="button">TAR</a></li>
+          </ul>
+        </div>
+      </div><!-- end banner -->
 
-    <!-- MAIN CONTENT -->
-    <div id="main_content_wrap" class="outer">
-      <section id="main_content" class="inner">
+    <div class="wrapper">
+      <nav>
+        <ul></ul>
+      </nav>
+      <section>
         <h1>TheHunt</h1>
 
-<p>Game/Live wallpaper for Android trying to become an Interactive graphical platform for AI experiments</p>
+<p>Game/Live wallpaper for Android trying to become an Interactive graphical platform for AI experiments.</p>
 
-<p>Main features:</p>
+<p>TheHunt’s purpose is to be a convenient visual environment where you can put your own agent and test it’s brain! For instance, the example Prey eats as much as it can while hiding from the user who wields a net and looks forward to catch it.</p>
+
+<p>This leads to the other purpose - to be a fun Android game/an interesting Live Wallpaper.</p>
+
+<p>Feel free to use it for whatever comes to mind, and tell me about it! :-)</p>
+
+<h2>Main features</h2>
 
 <ul>
-<li>d3kod.graphics 
+<li>
+<strong>Graphics engine</strong>
+
+<ul>
+<li>Written from scratch on top of OpenGL ES 2</li>
+<li>Sprites and Shapes abstractions for more intuitive and easy graphics creation and manipulation</li>
+</ul>
+</li>
+<li>
+<strong>Scrollable world</strong>
+
+<ul>
+<li>Ecosystem featuring Currents and Algae</li>
+<li>Event system which the Agent can use to understand it’s surroundings</li>
+<li>Tools abstraction as means for the user to modify the environment
+
+<ul>
+<li>CatchNet tool implemented which releases a net that can catch the Agent</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<strong>Agent</strong>
+
+<ul>
+<li>Example agent (Prey), the main character in the game and live wallpaper, so far always hungry and cowardly</li>
+<li>Agent interface for easy implementation of various other agents </li>
+</ul>
+</li>
+</ul><h2>Current issues - many</h2>
+
+<ul>
+<li>Documentation is non existent - the code is supposed to be as readable as possible though. Still, a priority.</li>
+<li>Some game features are missing, like HUD and persistent state. As soon I develop these I will release the game to the Android Market for all to enjoy</li>
+<li>Some parts of the code require major refactoring, but it is work in progress!</li>
+</ul><h2>Project structure</h2>
+
+<ul>
+<li>
+<em>d3kod.graphics</em> 
 
 <ul>
 <li>Graphics engine on OpenGL ES 2.0</li>
 <li>Supports both Application and Live Wallpaper modes</li>
 </ul>
 </li>
-<li>d3kod.thehunt.world
+<li>
+<em>d3kod.thehunt.world</em>
 
 <ul>
 <li>Interactive graphical environment</li>
-<li>d3kod.thehunt.world.events - Agent Senses supported:<br>
-Algae, At, Current, Food, Light, Noise</li>
+<li>
+<em>events.</em> * - Agent Senses supported: Algae, At, Current, Food, Light, Noise</li>
 </ul>
 </li>
-<li>d3kod.thehunt.agent
+<li>
+<em>d3kod.thehunt.agent</em>
 
 <ul>
-<li>d3kod.thehunt.agent.Agent - Agent Template</li>
-<li>d3kod.thehunt.agent.prey - Agent example and main character in the game/live wallpaper</li>
+<li>Agent - Agent Template</li>
+<li>
+<em>prey.</em> * - Agent example and main character in the game/live wallpaper</li>
+</ul>
+</li>
+<li>
+<em>d3kod.thehunt</em>
+
+<ul>
+<li>Main Application context</li>
+<li>Android application Activity, GLSurfaceView and Dialogs </li>
+</ul>
+</li>
+<li>
+<em>d3kod.thehunt.livewallpaper</em>
+
+<ul>
+<li>Android Live Wallpaper Activity and GLSurfaceView</li>
 </ul>
 </li>
 </ul>
       </section>
-    </div>
-
-    <!-- FOOTER  -->
-    <div id="footer_wrap" class="outer">
-      <footer class="inner">
-        <p class="copyright">TheHunt- Interactive graphical platform for AI experiments maintained by <a href="https://github.com/d3kod">d3kod</a></p>
-        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
+      <footer>
+        <p>Project maintained by <a href="https://github.com/d3kod">d3kod</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="http://twitter.com/#!/michigangraham">mattgraham</a></small></p>
       </footer>
     </div>
-
+    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
               <script type="text/javascript">
             var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
             document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
@@ -82,7 +150,6 @@ Algae, At, Current, Food, Light, Noise</li>
             pageTracker._trackPageview();
             } catch(err) {}
           </script>
-
 
   </body>
 </html>
