@@ -24,7 +24,7 @@ public class TheHunt extends FragmentActivity implements PreyChangeDialog.PreyCh
 
 		setContentView(R.layout.clean);
 		mGLView = (D3GLSurfaceView)findViewById(R.id.glSurfaceView);
-		showPreyChangeDialog(null);
+//		showPreyChangeDialog(null);
 	}
     
     @Override

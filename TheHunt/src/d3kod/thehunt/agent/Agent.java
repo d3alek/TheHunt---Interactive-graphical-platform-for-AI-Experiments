@@ -3,9 +3,12 @@ package d3kod.thehunt.agent;
 import android.graphics.PointF;
 import d3kod.graphics.sprite.D3Sprite;
 import d3kod.graphics.sprite.SpriteManager;
+import d3kod.graphics.texture.TextureManager;
 import d3kod.thehunt.world.environment.Environment;
 
 public abstract class Agent extends D3Sprite {
+
+	transient protected TextureManager tm;
 
 	public abstract void initGraphic();
 
@@ -20,5 +23,9 @@ public abstract class Agent extends D3Sprite {
 
 	public abstract PointF getPredictedPosition();
 
-	public abstract void setCaught(boolean b); 
+	public abstract void setCaught(boolean b);
+
+	public void setTextureManager(TextureManager tm) {
+		this.tm = tm;
+	} 
 }

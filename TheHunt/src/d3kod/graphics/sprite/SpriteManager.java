@@ -39,6 +39,11 @@ public class SpriteManager {
 		removeSpriteLater = false;
 	}
 	
+	public SpriteManager(HashMap<Integer, D3Sprite> loadSprites, ShaderProgramManager shaderManager) {
+		this(shaderManager);
+		sprites = loadSprites;
+	}
+	
 	public void draw(int key, float[] mMMatrix, float[] mVMatrix, float[] mProjMatrix) {
 		sprites.get(key).getGraphic().setModelMatrix(mMMatrix);
 		sprites.get(key).getGraphic().draw(mVMatrix, mProjMatrix);

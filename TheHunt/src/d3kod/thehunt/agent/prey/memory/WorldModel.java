@@ -70,10 +70,13 @@ public class WorldModel {
 		incrRiskCounter = 0;
 		mOverweight = false;
 		mMoodLevel = MoodLevel.NEUTRAL;
+		mCurrentDir = Dir.UNDEFINED;
 	}
 	public void update(ArrayList<Event> sensorEvents) {
-		for (Event e: sensorEvents) {
-			processEvent(e);
+		if (sensorEvents != null) {
+			for (Event e: sensorEvents) {
+				processEvent(e);
+			}
 		}
 		// TODO: WTF SO LAME.. EVERY FUCKING TIME?!
 		mNearestAlgae = recallClosest(mAlgaeType);

@@ -42,11 +42,11 @@ public class Prey extends Agent {
 	public static int flopBackTicks = TheHuntRenderer.TICKS_PER_SECOND/flopBacksPerSecond;
 	private float flopBackSpeed;
 	private boolean floppedThird;
-	private TextureManager tm;
+//	transient private TextureManager tm;
 
-	private D3Prey mGraphic;
+	transient private D3Prey mGraphic;
 
-	private SpriteManager mD3GLES20;
+	transient private SpriteManager mD3GLES20;
 
 	public void update() {
 		if (mD.mIsCaught) return;
@@ -59,7 +59,7 @@ public class Prey extends Agent {
 			doAction(mPlanner.nextParallelAction());
 		}
 		move();
-
+		if (mGraphic == null) return;
 		if (mWorldModel.getLightLevel() == 0) {
 			mGraphic.setHiddenColor();
 		}
@@ -77,6 +77,7 @@ public class Prey extends Agent {
 
 	private void updateWorldModel() {
 		mWorldModel.update(mSensor.sense(mD.mPosHeadX, mD.mPosHeadY, mD.mPosX, mD.mPosY, mD.bodyStartAngle));
+//		mWorldModel.update(null);
 		expressEmotion();
 		if (mD.emotionText != null) {
 			if (mD.emotionText.isExpired()) {
@@ -88,11 +89,14 @@ public class Prey extends Agent {
 
 	private void expressEmotion() {
 		if (mWorldModel.getStressLevel().compareTo(StressLevel.CAUTIOS) > 0) {
+			Log.v(TAG, "Is cautious!");
 			if (mD.emotionText != null) {
 				mD.emotionText.noFade();
 			}
 
 			else {
+				Log.v(TAG, "IMHERE");
+				Log.v(TAG, "Texture manager is " + tm + " Shader manager is " + mD3GLES20.getShaderManager());
 				mD.emotionText = new PanicText(mD.mPosHeadX, mD.mPosHeadY, mD.bodyStartAngle, tm, mD3GLES20.getShaderManager());
 				mD3GLES20.putExpiringShape(mD.emotionText);
 			}
@@ -227,6 +231,7 @@ public class Prey extends Agent {
 	}
 	private void putFlopText(float angle) {
 		float radAngle = (float)Math.toRadians(angle);
+//		Log.v(TAG, "Put flop at " + D.mPosX + FloatMath.sin(radAngle)*D3Prey.finSize*2 + " " + (mD.mPosY - FloatMath.cos(radAngle)*D3Prey.finSize*2, angle));
 		mD3GLES20.putExpiringShape(new FlopText(mD.mPosX + FloatMath.sin(radAngle)*D3Prey.finSize*2, 
 				mD.mPosY - FloatMath.cos(radAngle)*D3Prey.finSize*2, angle, tm, mD3GLES20.getShaderManager()));
 	}
@@ -286,9 +291,11 @@ public class Prey extends Agent {
 		mD3GLES20 = d3gles20;
 		mD = new PreyData();
 
-		tm = texMan;
+//		tm = texMan; 
+		setTextureManager(texMan);
 		mWorldModel = new WorldModel();
 		mEnv = env;
+		mPlanner = new Planner();
 		mSensor = new Sensor(mEnv);
 		mD.mPosX = mD.mPosY = 0;
 
@@ -296,6 +303,8 @@ public class Prey extends Agent {
 		//		mGraphicSet = false;
 		mD.mIsCaught = false;
 		mD.emotionText = null;
+		PointF newPos = mEnv.randomPosInEnv();
+		mD.mPosX = newPos.x; mD.mPosY = newPos.y;
 	}
 
 	public PointF getPosition() {
@@ -373,9 +382,7 @@ public class Prey extends Agent {
 	public void initGraphic() {
 		mGraphic = new D3Prey(mD);
 		initGraphic(mGraphic);
-		mPlanner = new Planner();
-		PointF newPos = mEnv.randomPosInEnv();
-		mD.mPosX = newPos.x; mD.mPosY = newPos.y;
+		mD.emotionText = null; // fix for disappearing ! after db save while panicked
 	}
 
 	public int getEnergy() {
@@ -393,4 +400,11 @@ public class Prey extends Agent {
 	public D3Shape getGraphic() {
 		return mGraphic;
 	}
+	@Override
+	public void setSpriteManager(SpriteManager d3gles20) {
+		super.setSpriteManager(d3gles20);
+		mD3GLES20 = d3gles20;
+	}
+	
 }
+

@@ -46,7 +46,7 @@ public class EnvironmentData {
 
 	private ArrayList<FloatingObject> mFloatingObjectsToSetGraphics;
 	
-	private SpriteManager mD3GLES20;
+	transient private SpriteManager mD3GLES20;
 
 	private boolean mGraphicsAreSet;
 
@@ -219,6 +219,8 @@ public class EnvironmentData {
 				fo.initGraphic();
 			}
 			for (FloatingObject fo: mFloatingObjectsToSetGraphics) {
+//				Log.v(TAG, "Init graphic for fo " + fo.getX() + fo.getY() + fo.getRadius());
+				fo.setSpriteManager(mD3GLES20);
 				fo.initGraphic();
 			}
 			mFloatingObjectsToSetGraphics.clear();
@@ -241,5 +243,6 @@ public class EnvironmentData {
 	public void setGraphics(SpriteManager d3gles20) {
 		mGraphicsAreSet = true;
 		mD3GLES20 = d3gles20;
+	    mFloatingObjectsToSetGraphics.addAll(mFloatingObjects); // to reinit graphics on db restore
 	}
 }

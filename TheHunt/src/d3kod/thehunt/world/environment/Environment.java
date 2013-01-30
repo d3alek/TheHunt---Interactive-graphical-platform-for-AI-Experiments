@@ -1,11 +1,13 @@
 package d3kod.thehunt.world.environment;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Random;
 
 import android.graphics.PointF;
 import android.util.Log;
 import d3kod.graphics.extra.D3Maths;
+import d3kod.graphics.sprite.D3Sprite;
 import d3kod.graphics.sprite.SpriteManager;
 import d3kod.thehunt.agent.Agent;
 import d3kod.thehunt.world.environment.FloatingObject.Type;
@@ -19,11 +21,11 @@ public class Environment {
 	public static final float LOUDNESS_PLOK = 1f;
 	private static final int NOISE_EVENTS_CLEAR_FREQUENCY = 2;
 	public EnvironmentData data;
-	public int mTextureDataHandle;
-	private SpriteManager mD3GLES20;
+//	public int mTextureDataHandle;
+	transient private SpriteManager mD3GLES20;
 	private ArrayList<EventNoise> mNoiseEvents;
 	private Random mRandom;
-	private Agent mPrey;
+	transient private Agent mPrey;
 	
 	
 	public static final int ALGAE_NUM = 300;
@@ -149,4 +151,33 @@ public class Environment {
 	public Agent getPrey() {
 		return mPrey;
 	}
+
+	public void initGraphics(SpriteManager mD3GLES202) {
+		mD3GLES20 = mD3GLES202;
+		data.setGraphics(mD3GLES20);
+	}
+
+	
+	
+	// STORABLE_D3Sprite
+	
+	
+//	public void initSprites(ArrayList<D3Sprite> sprites) {
+//		for (D3Sprite sprite: sprites) {
+//			if (sprite instanceof FloatingObject) {
+//				sprite.
+//				data.addFloatingObject((FloatingObject)sprite);
+//			}
+//		}
+//	}
+//
+//	public ArrayList<D3Sprite> getSprites() {
+//		ArrayList<D3Sprite> sprites = new ArrayList<D3Sprite>();
+//		for (FloatingObject fo: data.getFloatingObjects()) {
+//			fo.clearGraphic();
+//			sprites.add((D3Sprite)fo);
+//		}
+////		return data.getFloatingObjects();
+//		return sprites;
+//	}
 }

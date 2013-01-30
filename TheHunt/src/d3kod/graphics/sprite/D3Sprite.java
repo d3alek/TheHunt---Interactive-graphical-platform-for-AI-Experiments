@@ -7,10 +7,10 @@ import d3kod.graphics.sprite.shapes.D3Shape;
 
 public abstract class D3Sprite {
 	private static final String TAG = "D3Sprite";
-	protected D3Shape mGraphic;
+	transient protected D3Shape mGraphic; 
 	private PointF mPos;
 	private PointF dirVector;
-	private SpriteManager mD3GLES20;
+	transient private SpriteManager mD3GLES20;
 	
 	public D3Sprite(PointF position, SpriteManager d3gles20) {
 		mD3GLES20 = d3gles20;
@@ -26,7 +26,10 @@ public abstract class D3Sprite {
 	public void update() {
 		mPos.x += dirVector.x;
 		mPos.y += dirVector.y;
-		mGraphic.setPosition(mPos.x, mPos.y);
+		if (mGraphic == null) {
+			Log.v(TAG, "Not updating graphic as it is null!");
+		}
+		else mGraphic.setPosition(mPos.x, mPos.y);
 	}
 	
 	protected void initGraphic(D3Shape graphic) {
@@ -35,7 +38,7 @@ public abstract class D3Sprite {
 		if (mGraphic.getProgram() == null) {
 			mGraphic.setProgram(mD3GLES20.getDefaultProgram());
 		}
-		Log.v(TAG, "Set graphic for d3sprite at " + mPos.x + " " + mPos.y);
+//		Log.v(TAG, "Set graphic for d3sprite at " + mPos.x + " " + mPos.y);
 	}
 	
 	public abstract void initGraphic();
@@ -53,6 +56,7 @@ public abstract class D3Sprite {
 	public void clearGraphic() {
 		if (mGraphic == null) Log.v(TAG, "Graphic not set, can't clear!");
 		mGraphic = null;
+		mD3GLES20 = null;
 	}
 	
 	public void setVelocity(float vx, float vy) {
@@ -103,6 +107,11 @@ public abstract class D3Sprite {
 	public void draw(float[] vMatrix, float[] projMatrix, float interpolation) {
 		if (mGraphic != null) mGraphic.draw(vMatrix, projMatrix, interpolation);
 		
+	}
+	
+	public void setSpriteManager(SpriteManager d3gles20) {
+		mD3GLES20 = d3gles20;
+		mD3GLES20.putSprite(this);
 	}
 
 

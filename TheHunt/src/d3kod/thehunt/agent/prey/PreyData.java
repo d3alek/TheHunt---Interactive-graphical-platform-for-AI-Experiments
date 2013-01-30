@@ -96,6 +96,6 @@ public class PreyData {
 	protected float flopBackAngle;
 	protected TurnAngle turningBackFinAngle;
 	
-	protected PanicText emotionText;
+	transient protected PanicText emotionText;
 	public PointF mPosTail;
 }

@@ -1,7 +1,12 @@
 package d3kod.thehunt.world.logic;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
+
+import com.db4o.foundation.Enum4;
 
 import android.content.Context;
 import android.graphics.PointF;
@@ -12,9 +17,11 @@ import android.opengl.Matrix;
 import android.util.Log;
 import android.view.MotionEvent;
 import d3kod.graphics.shader.ShaderProgramManager;
+import d3kod.graphics.sprite.D3Sprite;
 import d3kod.graphics.sprite.SpriteManager;
 import d3kod.graphics.texture.TextureManager;
 import d3kod.thehunt.MultisampleConfigChooser;
+import d3kod.thehunt.MyApplication;
 import d3kod.thehunt.TheHunt;
 import d3kod.thehunt.agent.Agent;
 import d3kod.thehunt.agent.DummyPrey;
@@ -77,6 +84,7 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 	protected static final int RED_TEXT_ENERGY = 30;
 	private boolean mScrolling = false;
 	private int mIgnoreNextTouch;
+	private MyApplication mContext;
 	public static enum PreyType {NONE, DEFAULT};
 	
 	public void onSensorChanged(SensorEvent event) {
@@ -84,15 +92,59 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 	}
 	
 	public TheHuntRenderer(Context context) {
-//		mContext = context;
+		mContext = ((MyApplication) context.getApplicationContext());
 		mEnv = null;
 		mTool = null;
 		sm = new ShaderProgramManager();
-		mD3GLES20 = new SpriteManager(sm);
-		mPrey = null;
+//		mD3GLES20 = new SpriteManager(sm);
+		tm = new TextureManager(context);
+		mD3GLES20 = loadSavedState(sm);
+		if (mPrey == null) {
+			((TheHunt) context).showPreyChangeDialog(null);
+		}
+		mTool = new CatchNet(mEnv, tm, mD3GLES20);
 		mIgnoreNextTouch = -1;
 		mCaughtCounter = 0;
-		tm = new TextureManager(context);
+	}
+
+	private SpriteManager loadSavedState(ShaderProgramManager shaderManager) {
+		Log.v(TAG, "Loading saved state");
+		SaveState state = mContext.getStateFromDB();
+		
+		if (state == null) {
+			Log.v(TAG, "SaveState is empty, creating new SaveState");
+			mD3GLES20 = new SpriteManager((shaderManager));
+			mEnv = new Environment(worldWidthPx, worldHeightPx, mD3GLES20);
+			mPrey = new Prey(mEnv, tm, mD3GLES20);
+//			mPrey = new DummyPrey(mEnv, mD3GLES20);
+//			saveState();
+	
+		}
+		else {
+//			mD3GLES20 = state.getSpriteManager();
+//			mEnv = state.getEnv();
+//			mPrey = state.getAgent();
+//			ArrayList<D3Sprite> sprites = state.getSprites();
+//			Enum4
+			mD3GLES20 = new SpriteManager(shaderManager);
+			mEnv = state.getEnv(); 
+//			mPrey = new DummyPrey(mEnv, mD3GLES20);
+			mPrey = mEnv.getPrey();
+//			mPrey.setTextureManager(tm);
+//			mEnv.initSprites(sprites);
+//			mPrey = mEnv.getPrey();
+			Log.v(TAG, "SaveState loaded!");
+		}
+
+		
+		return mD3GLES20;
+	}
+
+	private void saveState() {
+		Log.v(TAG, "Saving state!");
+//		SaveState state = new SaveState(mEnv.getSprites());
+		SaveState state = new SaveState(mEnv);
+		mContext.storeToDB(state);
 	}
 
 	/**
@@ -123,7 +175,11 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 		if (mTool == null) mTool = new CatchNet(mEnv, tm, mD3GLES20);
 		if (!mGraphicsInitialized ) {
 			//TODO why not initialize tool graphics as well?
+			mEnv.initGraphics(mD3GLES20);
 			mCamera.initGraphic();
+			mPrey.initGraphic();
+			mPrey.setSpriteManager(mD3GLES20);
+			mPrey.setTextureManager(tm);	
 			mGraphicsInitialized = true;
 		}
 
@@ -289,6 +345,7 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 	public void pause() {
     	mState = State.PAUSE;
     	Log.v(TAG, "State is " + mState);
+    	saveState();
     	//TODO: use sparseArray
     	tm.clear();
     	sm.clear();
@@ -305,9 +362,10 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 		if (sm == null) {
 			sm = new ShaderProgramManager();
 		}
-		if (mD3GLES20 == null) {
-			mD3GLES20 = new SpriteManager(sm);
-		}
+//		if (mD3GLES20 == null) {
+//			mD3GLES20 = new SpriteManager(sm);
+//		}
+		if (mD3GLES20 == null) loadSavedState(sm);
 		mState = State.PLAY;
 		Log.v(TAG, "State is " + mState);
 	}
