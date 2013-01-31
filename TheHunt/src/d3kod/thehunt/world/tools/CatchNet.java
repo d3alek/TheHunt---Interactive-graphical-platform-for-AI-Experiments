@@ -58,8 +58,6 @@ public class CatchNet extends D3Sprite implements Tool {
 			}
 			else {
 				initNetGraphic();
-				Log.v(TAG, "IMHERE");
-				Log.v(TAG, "Texture manager is " + tm + " Shader manager is " + mD3GLES20.getShaderManager());				
 				mD3GLES20.putExpiringShape(new PlokText(mPathGraphic.getCenterX(), mPathGraphic.getCenterY(), tm, mD3GLES20.getShaderManager()));
 				mEnv.putNoise(mPathGraphic.getCenterX(), mPathGraphic.getCenterY(), Environment.LOUDNESS_PLOK);				
 			}

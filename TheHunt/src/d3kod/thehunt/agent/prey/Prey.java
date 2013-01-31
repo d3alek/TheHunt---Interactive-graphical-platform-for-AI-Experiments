@@ -89,14 +89,11 @@ public class Prey extends Agent {
 
 	private void expressEmotion() {
 		if (mWorldModel.getStressLevel().compareTo(StressLevel.CAUTIOS) > 0) {
-			Log.v(TAG, "Is cautious!");
 			if (mD.emotionText != null) {
 				mD.emotionText.noFade();
 			}
 
 			else {
-				Log.v(TAG, "IMHERE");
-				Log.v(TAG, "Texture manager is " + tm + " Shader manager is " + mD3GLES20.getShaderManager());
 				mD.emotionText = new PanicText(mD.mPosHeadX, mD.mPosHeadY, mD.bodyStartAngle, tm, mD3GLES20.getShaderManager());
 				mD3GLES20.putExpiringShape(mD.emotionText);
 			}

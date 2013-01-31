@@ -15,7 +15,7 @@ public class NAlgae extends FloatingObject implements Eatable {
 	public static final int FOOD_ALGAE_BITE_NUTRITION = 20;
 	private static final String TAG = "Nalgae";
 	private int mSize;
-	private D3NAlgae mGraphic;
+	transient private D3NAlgae mGraphic;
 	private Environment mEnvironment;
 
 	public NAlgae(int n, PointF pos, float dirAngle, Environment environment, SpriteManager d3gles20) {
@@ -36,7 +36,8 @@ public class NAlgae extends FloatingObject implements Eatable {
 	}
 
 	private void updateGraphicSize() {
-		mGraphic.setSizeCategory(mSize);
+		if (mGraphic != null)
+			mGraphic.setSizeCategory(mSize);
 	}
 	
 	//TODO: Use grow here! 
@@ -90,10 +91,10 @@ public class NAlgae extends FloatingObject implements Eatable {
 		}
 		setN(mSize + increment);
 	}
-	
-	public float getRadius() {
-		return mGraphic.getRadius();
-	}
+//	
+//	public float getRadius() {
+//		return mGraphic.getRadius();
+//	}
 	
 	@Override
 	public void applyFriction() {

@@ -41,7 +41,7 @@ public abstract class FloatingObject extends D3Sprite {
 		mRemove = true;
 	}
 	
-	public float getRadius() {
-		return mGraphic.getRadius();
-	}
+//	public float getRadius() {
+//		return mGraphic.getRadius();
+//	}
 }

@@ -21,7 +21,7 @@ public class Sensor {
 	private Environment mEnv;
 	private float mSightRad = 0.5f;
 	private float mHearRad = 1f;
-	private ArrayList<Event> sensedEvents;
+	transient private ArrayList<Event> sensedEvents;
 	
 	public Sensor(Environment env) {
 		mEnv = env;

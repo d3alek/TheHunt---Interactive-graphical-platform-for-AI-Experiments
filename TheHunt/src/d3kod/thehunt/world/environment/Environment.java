@@ -23,9 +23,9 @@ public class Environment {
 	public EnvironmentData data;
 //	public int mTextureDataHandle;
 	transient private SpriteManager mD3GLES20;
-	private ArrayList<EventNoise> mNoiseEvents;
+	transient private ArrayList<EventNoise> mNoiseEvents;
 	private Random mRandom;
-	transient private Agent mPrey;
+	private Agent mPrey;
 	
 	
 	public static final int ALGAE_NUM = 300;

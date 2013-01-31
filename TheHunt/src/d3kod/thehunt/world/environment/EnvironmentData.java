@@ -216,10 +216,13 @@ public class EnvironmentData {
 		mFloatingObjects.addAll(mFloatingObjectsToAdd);
 		if (mGraphicsAreSet) {
 			for (FloatingObject fo: mFloatingObjectsToAdd) {
+//				fo.setSpriteManager(mD3GLES20);
+//				if (fo.spriteManagerNotSet()) fo.setSpriteManager(mD3GLES20);
 				fo.initGraphic();
 			}
 			for (FloatingObject fo: mFloatingObjectsToSetGraphics) {
 //				Log.v(TAG, "Init graphic for fo " + fo.getX() + fo.getY() + fo.getRadius());
+//				if (fo.spriteManagerNotSet()) fo.setSpriteManager(mD3GLES20);
 				fo.setSpriteManager(mD3GLES20);
 				fo.initGraphic();
 			}

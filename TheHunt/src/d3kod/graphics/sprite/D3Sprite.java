@@ -11,6 +11,7 @@ public abstract class D3Sprite {
 	private PointF mPos;
 	private PointF dirVector;
 	transient private SpriteManager mD3GLES20;
+	private float cachedRadius = -1;
 	
 	public D3Sprite(PointF position, SpriteManager d3gles20) {
 		mD3GLES20 = d3gles20;
@@ -74,7 +75,11 @@ public abstract class D3Sprite {
 	}
 	
 	public float getRadius() {
-		return mGraphic.getRadius();
+		if (mGraphic != null) {
+			cachedRadius = mGraphic.getRadius();
+		}
+//		return mGraphic.getRadius();
+		return cachedRadius;
 	}
 	
 	public float getVX() {
@@ -112,6 +117,10 @@ public abstract class D3Sprite {
 	public void setSpriteManager(SpriteManager d3gles20) {
 		mD3GLES20 = d3gles20;
 		mD3GLES20.putSprite(this);
+	}
+	
+	public boolean spriteManagerNotSet() {
+		return mD3GLES20 == null;
 	}
 
 

@@ -98,9 +98,16 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 		sm = new ShaderProgramManager();
 //		mD3GLES20 = new SpriteManager(sm);
 		tm = new TextureManager(context);
-		mD3GLES20 = loadSavedState(sm);
+//		while (mPrey == null) {
+			loadSavedState(sm);
+//		}
 		if (mPrey == null) {
-			((TheHunt) context).showPreyChangeDialog(null);
+			if (context instanceof TheHunt) {
+				((TheHunt) context).showPreyChangeDialog(null);
+			}
+			else {
+				mPrey = new DummyPrey(mEnv, mD3GLES20);
+			}
 		}
 		mTool = new CatchNet(mEnv, tm, mD3GLES20);
 		mIgnoreNextTouch = -1;
@@ -110,6 +117,7 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 	private SpriteManager loadSavedState(ShaderProgramManager shaderManager) {
 		Log.v(TAG, "Loading saved state");
 		SaveState state = mContext.getStateFromDB();
+//		SaveState state = null;
 		
 		if (state == null) {
 			Log.v(TAG, "SaveState is empty, creating new SaveState");
@@ -135,6 +143,9 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 //			mPrey = mEnv.getPrey();
 			Log.v(TAG, "SaveState loaded!");
 		}
+		
+		Log.v(TAG, "Finished loading saved state!");
+
 
 		
 		return mD3GLES20;
@@ -177,9 +188,12 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 			//TODO why not initialize tool graphics as well?
 			mEnv.initGraphics(mD3GLES20);
 			mCamera.initGraphic();
-			mPrey.initGraphic();
-			mPrey.setSpriteManager(mD3GLES20);
-			mPrey.setTextureManager(tm);	
+			if (mPrey != null) {
+				mPrey.initGraphic();
+				mPrey.setSpriteManager(mD3GLES20);
+				mPrey.setTextureManager(tm);	
+			}
+
 			mGraphicsInitialized = true;
 		}
 
@@ -343,9 +357,11 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 	}
 	
 	public void pause() {
+		if (mState == State.PLAY) {
+			saveState();
+		}
     	mState = State.PAUSE;
     	Log.v(TAG, "State is " + mState);
-    	saveState();
     	//TODO: use sparseArray
     	tm.clear();
     	sm.clear();
@@ -365,7 +381,7 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 //		if (mD3GLES20 == null) {
 //			mD3GLES20 = new SpriteManager(sm);
 //		}
-		if (mD3GLES20 == null) loadSavedState(sm);
+//		if (mD3GLES20 == null) loadSavedState(sm);
 		mState = State.PLAY;
 		Log.v(TAG, "State is " + mState);
 	}
