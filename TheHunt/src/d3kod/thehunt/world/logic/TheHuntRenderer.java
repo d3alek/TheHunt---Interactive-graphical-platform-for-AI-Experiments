@@ -9,6 +9,7 @@ import javax.microedition.khronos.opengles.GL10;
 import com.db4o.foundation.Enum4;
 
 import android.content.Context;
+import android.content.SyncResult;
 import android.graphics.PointF;
 import android.hardware.SensorEvent;
 import android.opengl.GLES20;
@@ -101,12 +102,15 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 		mContext = ((MyApplication) context.getApplicationContext());
 		mContext.setRunningRenderer(TAG);
 		mEnv = null;
-		mTool = null;
+//		mTool = null;
 		sm = new ShaderProgramManager();
 //		mD3GLES20 = new SpriteManager(sm);
 		tm = new TextureManager(context);
 //		while (mPrey == null) {
+		synchronized (mContext.stateLock) {
+//			Log.v(TAG, "Obtained stateLock!");
 			loadSavedState(sm);
+		}
 //		}
 //		if (mPrey == null) {
 //			if (context instanceof TheHunt) {
@@ -116,7 +120,7 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 //				mPrey = new DummyPrey(mEnv, mD3GLES20);
 //			}
 //		}
-//		mTool = new CatchNet(mEnv, tm, mD3GLES20);
+		mTool = new CatchNet(mEnv, tm, mD3GLES20);
 		mIgnoreNextTouch = -1;
 		mCaughtCounter = 0;
 	}
@@ -128,7 +132,7 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 
 		if (state == null) {
 			Log.v(TAG, "SaveState is empty, creating new SaveState");
-			mD3GLES20 = new SpriteManager((shaderManager));
+			mD3GLES20 = new SpriteManager(shaderManager);
 			mEnv = new Environment(worldWidthPx, worldHeightPx, mD3GLES20);
 			mPrey = new Prey(mEnv, tm, mD3GLES20);
 //			mPrey = new DummyPrey(mEnv, mD3GLES20);
@@ -229,27 +233,29 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 			return;
 		}
 		
+		synchronized (mContext.stateLock) {
+//			Log.v(TAG, "Obtained stateLock!");
+			int loops = 0;
+			mslf = System.currentTimeMillis();
 
-		int loops = 0;
-		mslf = System.currentTimeMillis();
+			while (next_game_tick < System.currentTimeMillis() && loops < MAX_FRAMESKIP) {
+				updateWorld();
+				next_game_tick += MILLISEC_PER_TICK;
+				loops++;
+			}
+			if (loops >= MAX_FRAMESKIP) {
+				Log.w(TAG, "Skipping " + loops + " frames!");
+			}
 
-		while (next_game_tick < System.currentTimeMillis() && loops < MAX_FRAMESKIP) {
-			updateWorld();
-			next_game_tick += MILLISEC_PER_TICK;
-			loops++;
-		}
-		if (loops >= MAX_FRAMESKIP) {
-			Log.w(TAG, "Skipping " + loops + " frames!");
-		}
-
-		float interpolation = (System.currentTimeMillis() + MILLISEC_PER_TICK - next_game_tick) / (float) MILLISEC_PER_TICK;
-		drawWorld(interpolation);
-		long mspf = System.currentTimeMillis() - mslf;
-		smoothMspf = (smoothMspf*smoothingCount + mspf)/(smoothingCount+1);
-		smoothingCount++;
-		if (smoothingCount >= SMOOTHING_SIZE) {
-			smoothingCount = 0;
-			// TODO: Set HUD details (prey state, ms per frame, energy
+			float interpolation = (System.currentTimeMillis() + MILLISEC_PER_TICK - next_game_tick) / (float) MILLISEC_PER_TICK;
+			drawWorld(interpolation);
+			long mspf = System.currentTimeMillis() - mslf;
+			smoothMspf = (smoothMspf*smoothingCount + mspf)/(smoothingCount+1);
+			smoothingCount++;
+			if (smoothingCount >= SMOOTHING_SIZE) {
+				smoothingCount = 0;
+				// TODO: Set HUD details (prey state, ms per frame, energy
+			}
 		}
 	}		
 
@@ -394,7 +400,7 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
     	Log.v(TAG, "State is " + mState);
     	//TODO: use sparseArray
     	tm.clear();
-    	sm.clear();
+//    	sm.clear();
 	}
 	
 	public void resume() {
@@ -409,13 +415,20 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 //		mEnv = null;
 //		mTool = null;	
 		if (sm == null) {
+			Log.v(TAG, "ShaderProgramManager is null!");
 			sm = new ShaderProgramManager();
 		}
-//		loadSavedState(sm);
+//		tm = new TextureManager(mContext);
+		// db4o does magic and synchronizes the environment with the one it loaded onCreate, so this is not neccessary
+		// loadSavedState(sm);
 //		if (mD3GLES20 == null) {
 //			mD3GLES20 = new SpriteManager(sm);
 //		}
 //		if (mDGLES20 == null) loadSavedState(sm);
+//		sm = new ShaderProgramManager();
+//		sm = new ShaderProgramManager();
+//		mD3GLES20.setShaderManager(sm);
+		Log.v(TAG, "ShaderProgramManager " + mD3GLES20.getShaderManager() + " " + sm);
 		mState = State.PLAY;
 		Log.v(TAG, "State is " + mState);
 	}

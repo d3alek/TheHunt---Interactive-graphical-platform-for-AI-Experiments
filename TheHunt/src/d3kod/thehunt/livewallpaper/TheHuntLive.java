@@ -66,10 +66,10 @@ public class TheHuntLive extends Wallpaper {
         @Override
         public void onVisibilityChanged(boolean visible) {
         	Log.i(TAG, "Visibility changed " + visible);
-        	if (!visible) {
-        		mRenderer.pause();
-        	}
-        	else mRenderer.resume();
+//        	if (!visible) {
+//        		mRenderer.pause();
+//        	}
+//        	else mRenderer.resume();
         	super.onVisibilityChanged(visible);
         }
 

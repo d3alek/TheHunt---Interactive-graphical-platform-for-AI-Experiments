@@ -26,6 +26,7 @@ public class MyApplication extends Application {
     ObjectContainer db;
 //    private String readID; // ID that read last in the current DB state
 	private String mRunningRenderer;
+	public Object stateLock = new Object();
     
 	@Override
     public void onCreate() {
@@ -75,7 +76,7 @@ public class MyApplication extends Application {
 			db.commit();
 			Log.v(TAG, "DB Commit success");
 //			db.close(); 
-			Log.v(TAG, "DB Close success");
+//			Log.v(TAG, "DB Close success");
 //			readID = "";
 //		}
 	}
@@ -111,7 +112,7 @@ public class MyApplication extends Application {
 			db.commit();
 			Log.v(TAG, "DB Commit success");	
 //			db.close();
-			Log.v(TAG, "DB closed!");
+//			Log.v(TAG, "DB closed!");
 		}
 	}
 	

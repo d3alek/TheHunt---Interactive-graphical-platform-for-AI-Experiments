@@ -25,7 +25,7 @@ public class SpriteManager {
 	private HashMap<Integer, D3FadingShape> expiringShapes;
 	private int spritesNum = 0;
 
-	private ShaderProgramManager sm;
+	transient private ShaderProgramManager sm;
 	
 	ArrayList<Integer> toRemove = new ArrayList<Integer>();
 
@@ -167,5 +167,9 @@ public class SpriteManager {
 
 	public Program getDefaultProgram() {
 		return sm.getDefaultProgram();
+	}
+
+	public void setShaderManager(ShaderProgramManager sm) {
+		this.sm = sm;
 	}
 }
