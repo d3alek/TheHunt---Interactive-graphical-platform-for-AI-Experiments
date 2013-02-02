@@ -10,7 +10,7 @@ import d3kod.thehunt.world.logic.TheHuntRenderer;
 
 public class TheHuntLive extends Wallpaper {
 
-	private final String TAG = "TheHunt";
+	private final String TAG = "TheHuntLive";
 	
 	private final Handler mHandler = new Handler();
 	@Override
@@ -66,9 +66,11 @@ public class TheHuntLive extends Wallpaper {
         @Override
         public void onVisibilityChanged(boolean visible) {
         	Log.i(TAG, "Visibility changed " + visible);
-        	if (!visible) mRenderer.pause();
+        	if (!visible) {
+        		mRenderer.pause();
+        	}
         	else mRenderer.resume();
-		
+        	super.onVisibilityChanged(visible);
         }
 
         @Override

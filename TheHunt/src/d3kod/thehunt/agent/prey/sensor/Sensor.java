@@ -2,6 +2,7 @@ package d3kod.thehunt.agent.prey.sensor;
 
 import java.util.ArrayList;
 
+import android.util.Log;
 import d3kod.thehunt.agent.prey.memory.WorldModel;
 import d3kod.thehunt.world.environment.Eatable;
 import d3kod.thehunt.world.environment.Environment;
@@ -17,11 +18,12 @@ public class Sensor {
 	enum Sensors {
 		CURRENT_SENSOR, SIGHT_SENSOR, HEARING_SENSOR;
 	}
+	private static final String TAG = "Sensor";
 	private ArrayList<Sensors> mSensors;
 	private Environment mEnv;
 	private float mSightRad = 0.5f;
 	private float mHearRad = 1f;
-	transient private ArrayList<Event> sensedEvents;
+	private ArrayList<Event> sensedEvents;
 	
 	public Sensor(Environment env) {
 		mEnv = env;
@@ -51,7 +53,9 @@ public class Sensor {
 							break;
 							// no break - register it as food as well
 						}
-					case FOOD_GM: sensedEvents.add(new EventFood(fo.getX(), fo.getY(), ((Eatable)fo).getNutrition())); break;
+					case FOOD_GM: 
+						sensedEvents.add(new EventFood(fo.getX(), fo.getY(), ((Eatable)fo).getNutrition())); break;
+					
 					}
 				}
 				break;

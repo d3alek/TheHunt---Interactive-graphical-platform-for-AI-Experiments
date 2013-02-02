@@ -110,6 +110,7 @@ public class EnvironmentData {
 	}
 
 	public void addFloatingObject(FloatingObject floatingObject) {
+//		Log.v(TAG, "Adding floatng object " + floatingObject.getType());
 		mFloatingObjectsToAdd.add(floatingObject);
 	}
 	
@@ -127,18 +128,18 @@ public class EnvironmentData {
 		return mTiles[row][col]; 
 	}
 	
-	public FloatingObject removeFood(float x, float y, float radius) {
-		for (FloatingObject fo: mFloatingObjects) {
-			if (fo.getType() != Type.FOOD_GM) continue;
-			float foX = fo.getX(), foY = fo.getY();
-			if (D3Maths.circleContains(x, y, radius, foX, foY)) {//Prey.EAT_FOOD_RADIUS
-				fo.clearGraphic();
-				mFloatingObjects.remove(fo);
-				return fo;
-			}
-		}
-		return null;
-	}
+//	public FloatingObject removeFood(float x, float y, float radius) {
+//		for (FloatingObject fo: mFloatingObjects) {
+//			if (fo.getType().compareTo(Type.FOOD_GM) != 0) continue;
+//			float foX = fo.getX(), foY = fo.getY();
+//			if (D3Maths.circleContains(x, y, radius, foX, foY)) {//Prey.EAT_FOOD_RADIUS
+//				fo.clearGraphic();
+//				mFloatingObjects.remove(fo);
+//				return fo;
+//			}
+//		}
+//		return null;
+//	}
 
 	public void logFloatingObjects() {
 		String log = "Floating objects log: ";
@@ -164,11 +165,11 @@ public class EnvironmentData {
 		NAlgae algae1, algae2;
 		for (int i = 0; i < mFloatingObjects.size(); ++i) {
 			fo1 = mFloatingObjects.get(i);
-			if (fo1.toRemove() || fo1.getType() != Type.ALGAE) continue;
+			if (fo1.toRemove() || fo1.getType().compareTo(Type.ALGAE) != 0) continue;
 			for (int j = i; j < mFloatingObjects.size(); ++j) {
 				fo2 = mFloatingObjects.get(j);
 				if (fo2.toRemove() 
-						|| fo2.getType() != Type.ALGAE
+						|| fo2.getType().compareTo(Type.ALGAE) != 0
 						|| fo2 == fo1) {
 					continue;
 				}
@@ -195,7 +196,7 @@ public class EnvironmentData {
 			}
 			for (int j = 0; j < mFloatingObjects.size(); ++j) {
 				fo2 = mFloatingObjects.get(j);
-				if (fo2.toRemove() || fo2.getType() != Type.FOOD_GM) {
+				if (fo2.toRemove() || fo2.getType().compareTo(Type.FOOD_GM) != 0) {
 					continue;
 				}
 				if (mD3GLES20.spritesCollide(fo1, fo2)) {
@@ -246,6 +247,7 @@ public class EnvironmentData {
 	public void setGraphics(SpriteManager d3gles20) {
 		mGraphicsAreSet = true;
 		mD3GLES20 = d3gles20;
+		logFloatingObjects();
 	    mFloatingObjectsToSetGraphics.addAll(mFloatingObjects); // to reinit graphics on db restore
 	}
 }

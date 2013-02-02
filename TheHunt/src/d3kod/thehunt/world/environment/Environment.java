@@ -1,13 +1,11 @@
 package d3kod.thehunt.world.environment;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Random;
 
 import android.graphics.PointF;
 import android.util.Log;
 import d3kod.graphics.extra.D3Maths;
-import d3kod.graphics.sprite.D3Sprite;
 import d3kod.graphics.sprite.SpriteManager;
 import d3kod.thehunt.agent.Agent;
 import d3kod.thehunt.world.environment.FloatingObject.Type;
@@ -23,7 +21,7 @@ public class Environment {
 	public EnvironmentData data;
 //	public int mTextureDataHandle;
 	transient private SpriteManager mD3GLES20;
-	transient private ArrayList<EventNoise> mNoiseEvents;
+	private ArrayList<EventNoise> mNoiseEvents;
 	private Random mRandom;
 	private Agent mPrey;
 	
@@ -57,6 +55,9 @@ public class Environment {
 	}
 	
 	public void update() {
+		if (mD3GLES20 == null) {
+			Log.e(TAG, "D3gles20 is null on env update!");
+		}
 		data.updateFloatingObjects();
 
 	}
@@ -77,9 +78,18 @@ public class Environment {
 	
 	public int eatFood(float x, float y) {
 		for (FloatingObject fo: data.getFloatingObjects()) {
-			if (fo.getType() != Type.ALGAE && fo.getType() != Type.FOOD_GM) continue;
+//			Log.v(TAG, "Eat food check fo type is " + fo.getType());
+			if (fo.getType().compareTo(Type.ALGAE) != 0 
+					&& fo.getType().compareTo(Type.FOOD_GM) != 0) {
+//				Log.v(TAG, "Eat food check fo type is " + fo.getType());
+//				Log.v(TAG, "Eat food check fo type is ")
+//				Log.v(TAG, "" + fo.getType().compareTo(Type.ALGAE));
+				continue;
+			}
 			float foX = fo.getX(), foY = fo.getY();
+//			Log.v(TAG, "Eat food circle contains check!");
 			if (D3Maths.circleContains(x, y, Math.max(fo.getRadius(), EatableEvent.MIN_RADIUS), foX, foY)) {
+//				Log.v(TAG, "Eat food check passed!");
 				Eatable eatable = (Eatable) fo;
 				eatable.processBite();
 				return eatable.getNutrition();
@@ -103,7 +113,7 @@ public class Environment {
 	public Event senseLight(float hX, float hY) {
 		PointF at = new PointF(hX, hY);
 		for (FloatingObject fo: data.getFloatingObjects()) {
-			if (fo.getType() == Type.ALGAE && fo.contains(at)) {
+			if (fo.getType().compareTo(Type.ALGAE) == 0 && fo.contains(at)) {
 				return new EventLight(0);
 			}
 		}
@@ -112,7 +122,7 @@ public class Environment {
 	public boolean netObstacle(float x, float y) {
 		PointF at = new PointF(x, y);
 		for (FloatingObject fo: data.getFloatingObjects()) {
-			if (fo.getType() == Type.ALGAE && fo.contains(at)) 
+			if (fo.getType().compareTo(Type.ALGAE) == 0 && fo.contains(at)) 
 				return true;
 		}
 		return false;
@@ -136,8 +146,10 @@ public class Environment {
 
 	public boolean netIntersectsWithAlgae(float centerX, float centerY,
 			float radius) {
+//		Log.v(TAG, "Net intersects test started with " + data.getFloatingObjects().size() + " fo");
 		for (FloatingObject fo: data.getFloatingObjects()) {
-			if (fo.getType() == Type.ALGAE &&
+//			Log.v(TAG, "Net intersects test fo radius is " + fo.getRadius());
+			if (fo.getType().compareTo(Type.ALGAE) == 0 &&
 					D3Maths.circlesIntersect(centerX, centerY, radius - NET_INTERSECT_RAD_ADJ, fo.getX(), fo.getY(), fo.getRadius())) {
 				return true;
 			}
@@ -149,12 +161,21 @@ public class Environment {
 		mPrey = prey;
 	}
 	public Agent getPrey() {
+		if (mPrey.getEnvironment() != this) {
+			Log.v(TAG, "Adjusting prey environment");
+			mPrey.setEnvironment(this);
+		}
 		return mPrey;
 	}
 
 	public void initGraphics(SpriteManager mD3GLES202) {
 		mD3GLES20 = mD3GLES202;
 		data.setGraphics(mD3GLES20);
+		Log.v(TAG, "Environment graphics initialized! " + mD3GLES20);
+	}
+
+	public SpriteManager getSpriteManager() {
+		return mD3GLES20;
 	}
 
 	

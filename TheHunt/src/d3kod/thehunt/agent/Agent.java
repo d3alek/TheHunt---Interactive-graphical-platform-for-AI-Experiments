@@ -9,6 +9,8 @@ import d3kod.thehunt.world.environment.Environment;
 public abstract class Agent extends D3Sprite {
 
 	transient protected TextureManager tm;
+	
+	transient protected Environment mEnv;
 
 	public abstract void initGraphic();
 
@@ -27,5 +29,13 @@ public abstract class Agent extends D3Sprite {
 
 	public void setTextureManager(TextureManager tm) {
 		this.tm = tm;
+	}
+
+	public Environment getEnvironment() {
+		return mEnv;
+	}
+
+	public void setEnvironment(Environment environment) {
+		mEnv = environment;
 	} 
 }

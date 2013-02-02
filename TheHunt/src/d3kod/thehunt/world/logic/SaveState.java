@@ -1,23 +1,19 @@
 package d3kod.thehunt.world.logic;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-
-import d3kod.graphics.sprite.D3Sprite;
-import d3kod.graphics.sprite.SpriteManager;
-import d3kod.thehunt.agent.Agent;
 import d3kod.thehunt.world.environment.Environment;
 
 public class SaveState {
 //	SpriteManager mSpriteManager;
 //	Agent mAgent;
 	Environment mEnv;
+//	private boolean sameAsLast;
 
 //	public SaveState(SpriteManager spriteManager, Environment env, Agent agent) {
 	public SaveState(Environment env) {
 //		mSpriteManager = spriteManager;
 //		mAgent = agent;
 		mEnv = env;
+//		sameAsLast = false;
 	}
 //	ArrayList<D3Sprite> mSprites;
 //	
@@ -44,4 +40,12 @@ public class SaveState {
 	public Environment getEnv() {
 		return mEnv;
 	}
+//	
+//	public void setSameAsLast(boolean sameAsLast) {
+//		this.sameAsLast = sameAsLast;
+//	}
+//	
+//	public boolean getSameAsLast() {
+//		return sameAsLast;
+//	}
 }

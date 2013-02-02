@@ -17,7 +17,10 @@ public abstract class D3Sprite {
 		mD3GLES20 = d3gles20;
 		mPos = new PointF(position.x, position.y);
 		dirVector = new PointF();
-		mD3GLES20.putSprite(this);
+		if (mD3GLES20 == null) {
+			Log.v(TAG, "mD3GlES20 is null on D3Sprite construct!");
+		}
+		else mD3GLES20.putSprite(this);
 	}
 	
 	public void setPosition(PointF position) {
@@ -37,7 +40,11 @@ public abstract class D3Sprite {
 		mGraphic = graphic;
 		mGraphic.setPosition(mPos.x, mPos.y); 
 		if (mGraphic.getProgram() == null) {
-			mGraphic.setProgram(mD3GLES20.getDefaultProgram());
+//			Log.v(TAG, "Setting program to default program " + mD3GLES20);
+			if (mD3GLES20 != null) mGraphic.setProgram(mD3GLES20.getDefaultProgram());
+			else {
+				Log.e(TAG, "D3Sprite graphic program is null and Sprite Manager is null");
+			}
 		}
 //		Log.v(TAG, "Set graphic for d3sprite at " + mPos.x + " " + mPos.y);
 	}
@@ -78,6 +85,9 @@ public abstract class D3Sprite {
 		if (mGraphic != null) {
 			cachedRadius = mGraphic.getRadius();
 		}
+//		else {
+////			Log.v(TAG, "mGraphic is null, return cached radius!");
+//		}
 //		return mGraphic.getRadius();
 		return cachedRadius;
 	}
@@ -123,5 +133,8 @@ public abstract class D3Sprite {
 		return mD3GLES20 == null;
 	}
 
+	public SpriteManager getSpriteManager() {
+		return mD3GLES20;
+	}
 
 }

@@ -82,6 +82,7 @@ public class NAlgae extends FloatingObject implements Eatable {
 				getX() + (getRadius()+0.01f)*FloatMath.cos(randAngle),
 				getY() + (getRadius()+0.01f)*FloatMath.sin(randAngle));
 		
+		Log.v(TAG, "Releasing seed!");
 		mEnvironment.addNewAlgae(1, seedPos, randAngle);
 	}
 

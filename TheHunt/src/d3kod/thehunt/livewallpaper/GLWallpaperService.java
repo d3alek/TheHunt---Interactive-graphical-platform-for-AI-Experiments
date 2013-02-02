@@ -174,6 +174,7 @@ public class GLWallpaperService extends WallpaperService {
 		}
 
 		public void onPause() {
+//			mGLThread.
 			mGLThread.onPause();
 		}
 
@@ -446,9 +447,10 @@ class EglHelper {
 }
 
 class GLThread extends Thread {
-	private final static boolean LOG_THREADS = false;
+	private final static boolean LOG_THREADS = true;
 	public final static int DEBUG_CHECK_GL_ERROR = 1;
 	public final static int DEBUG_LOG_GL_CALLS = 2;
+	private static final String TAG = "GLThread";
 
 	private final GLThreadManager sGLThreadManager = new GLThreadManager();
 	private GLThread mEglOwner;
@@ -546,6 +548,9 @@ class GLThread extends Thread {
 						// Manage acquiring and releasing the SurfaceView
 						// surface and the EGL surface.
 						if (mPaused) {
+							if (LOG_THREADS) {
+								Log.v(TAG, "mPaused, stoping EGL!");
+							}
 							stopEglLocked();
 						}
 						if (!mHasSurface) {

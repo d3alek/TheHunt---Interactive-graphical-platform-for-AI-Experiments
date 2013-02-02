@@ -34,8 +34,8 @@ import d3kod.thehunt.world.tools.Tool;
 //import d3kod.d3gles20.shapes.D3TempCircle;
 
 public class TheHuntRenderer implements GLSurfaceView.Renderer {
-	
-	private static final String TAG = "TheHuntRenderer";
+	private static final String DEFAULT_TAG = "TheHuntRenderer";
+	private String TAG;// = "TheHuntRenderer";
 	private static final int SMOOTHING_SIZE = 30;
 	public static boolean LOGGING_TIME = false;
 	public static boolean SHOW_TILES = false;
@@ -92,7 +92,14 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 	}
 	
 	public TheHuntRenderer(Context context) {
+		this(context, DEFAULT_TAG);
+	}
+	
+	public TheHuntRenderer(Context context, String tag) {
+		TAG = tag;
+		Log.v(TAG, "onCreate called!");
 		mContext = ((MyApplication) context.getApplicationContext());
+		mContext.setRunningRenderer(TAG);
 		mEnv = null;
 		mTool = null;
 		sm = new ShaderProgramManager();
@@ -101,24 +108,24 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 //		while (mPrey == null) {
 			loadSavedState(sm);
 //		}
-		if (mPrey == null) {
-			if (context instanceof TheHunt) {
-				((TheHunt) context).showPreyChangeDialog(null);
-			}
-			else {
-				mPrey = new DummyPrey(mEnv, mD3GLES20);
-			}
-		}
-		mTool = new CatchNet(mEnv, tm, mD3GLES20);
+//		if (mPrey == null) {
+//			if (context instanceof TheHunt) {
+//				((TheHunt) context).showPreyChangeDialog(null);
+//			}
+//			else {
+//				mPrey = new DummyPrey(mEnv, mD3GLES20);
+//			}
+//		}
+//		mTool = new CatchNet(mEnv, tm, mD3GLES20);
 		mIgnoreNextTouch = -1;
 		mCaughtCounter = 0;
 	}
 
 	private SpriteManager loadSavedState(ShaderProgramManager shaderManager) {
 		Log.v(TAG, "Loading saved state");
-		SaveState state = mContext.getStateFromDB();
+		SaveState state = mContext.getStateFromDB(TAG);
 //		SaveState state = null;
-		
+
 		if (state == null) {
 			Log.v(TAG, "SaveState is empty, creating new SaveState");
 			mD3GLES20 = new SpriteManager((shaderManager));
@@ -129,6 +136,10 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 	
 		}
 		else {
+//			if (state.getSameAsLast()) {
+//				Log.i(TAG, "SavedState is same as last, ignoring loadSavedState call");
+//				return mD3GLES20;
+//			}
 //			mD3GLES20 = state.getSpriteManager();
 //			mEnv = state.getEnv();
 //			mPrey = state.getAgent();
@@ -182,16 +193,16 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 
 		Log.v(TAG, "mScreenWidth " + mScreenWidthPx + " mScreenHeight " + mScreenHeightPx);
 
-		if (mEnv == null) mEnv = new Environment(worldWidthPx, worldHeightPx, mD3GLES20);
-		if (mTool == null) mTool = new CatchNet(mEnv, tm, mD3GLES20);
+//		if (mEnv == null) mEnv = new Environment(worldWidthPx, worldHeightPx, mD3GLES20);
+//		if (mTool == null) mTool = new CatchNet(mEnv, tm, mD3GLES20);
 		if (!mGraphicsInitialized ) {
 			//TODO why not initialize tool graphics as well?
 			mEnv.initGraphics(mD3GLES20);
 			mCamera.initGraphic();
 			if (mPrey != null) {
-				mPrey.initGraphic();
 				mPrey.setSpriteManager(mD3GLES20);
 				mPrey.setTextureManager(tm);	
+				mPrey.initGraphic();
 			}
 
 			mGraphicsInitialized = true;
@@ -208,7 +219,16 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 	public void onDrawFrame(GL10 unused) {
 		if (mState == State.PAUSE) {
 			return;
+		}
+		if (mContext.getRunningRenderer() != TAG) {
+			if (mContext.getRunningRenderer() == "") {
+				Log.v(TAG, "No renderer is running, let me run!");
+				mContext.setRunningRenderer(TAG);
+			}
+			else Log.v(TAG, "I'm not supposed to be running! Sorry...");
+			return;
 		}
+		
 
 		int loops = 0;
 		mslf = System.currentTimeMillis();
@@ -257,7 +277,7 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 			mCamera.setPreyPosition(preyPos);
 		}
 
-		mTool.update();
+		if (mTool != null) mTool.update();
 
 		mCamera.update();
 	}
@@ -286,7 +306,7 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 		
 		mVMatrix = mCamera.toViewMatrix();
 		
-		if (mPrey != null) mCamera.setPreyPointerPosition(mPrey.getPredictedPosition());
+		if (mPrey != null && mPrey.getGraphic() != null) mCamera.setPreyPointerPosition(mPrey.getPredictedPosition());
 		
 		mD3GLES20.drawAll(mVMatrix, mProjMatrix, interpolation);
 	}
@@ -302,7 +322,7 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 		if (doubleTouch && !mScrolling) {
 			mScrolling = true;
 			Log.v(TAG, "Scrolling is true");
-			mTool.stop(location);
+			if (mTool != null) mTool.stop(location);
 		}
 		else if (!doubleTouch && mScrolling) {
 			mScrolling = false;
@@ -318,7 +338,7 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 			}				
 		
 			else {
-				if (!mTool.handleTouch(event.getAction(), location)) {
+				if (mTool == null || !mTool.handleTouch(event.getAction(), location)) {
 					Log.v(TAG, "mTool can't handle touch. Ignoring if " + mIgnoreNextTouch);
 					if (mIgnoreNextTouch != event.getAction() && 
 							(event.getAction() == MotionEvent.ACTION_DOWN || // to place food while net is snatching
@@ -335,6 +355,7 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 	}
 	
 	public static boolean motionEventDoubleTouchChanged(MotionEvent event) {
+		String TAG = "motionEventDoubleTouchChanged";
 		int action = event.getAction();
     	int count;
     	switch (action & MotionEvent.ACTION_MASK) {
@@ -357,16 +378,27 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 	}
 	
 	public void pause() {
+		Log.v(TAG, "pause called!");
+		if (mContext.getRunningRenderer() == TAG) {
+			Log.v(TAG, "Telling the context I'm not running any more...");
+			mContext.setRunningRenderer("");
+		}
+		else {
+			Log.v(TAG, "Running renderer not changed as it is " + mContext.getRunningRenderer());
+		}
 		if (mState == State.PLAY) {
+			mState = State.PAUSE;
 			saveState();
 		}
-    	mState = State.PAUSE;
+		mState = State.PAUSE;
     	Log.v(TAG, "State is " + mState);
     	//TODO: use sparseArray
     	tm.clear();
     	sm.clear();
 	}
+	
 	public void resume() {
+		Log.v(TAG, "resume called!");
 		mState = State.RESUME;
 		Log.v(TAG, "State is " + mState);
 		next_game_tick = System.currentTimeMillis();
@@ -374,14 +406,16 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 		smoothMspf = 0;
 		smoothingCount = 0;
 		// TODO: restore caught counter
-	
+//		mEnv = null;
+//		mTool = null;	
 		if (sm == null) {
 			sm = new ShaderProgramManager();
 		}
+//		loadSavedState(sm);
 //		if (mD3GLES20 == null) {
 //			mD3GLES20 = new SpriteManager(sm);
 //		}
-//		if (mD3GLES20 == null) loadSavedState(sm);
+//		if (mDGLES20 == null) loadSavedState(sm);
 		mState = State.PLAY;
 		Log.v(TAG, "State is " + mState);
 	}

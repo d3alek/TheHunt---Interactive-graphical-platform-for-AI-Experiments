@@ -31,7 +31,6 @@ public class Prey extends Agent {
 	private Planner mPlanner;
 	private WorldModel mWorldModel;
 	private Sensor mSensor;
-	private Environment mEnv;
 	private PreyData mD;
 
 	public static final float bodyToHeadLength = 0.07f;
@@ -49,6 +48,9 @@ public class Prey extends Agent {
 	transient private SpriteManager mD3GLES20;
 
 	public void update() {
+		if (mEnv == null) {
+			Log.e(TAG, "Prey env is null! Prey needs env!");
+		}
 		if (mD.mIsCaught) return;
 
 		calcPosHeadandTail();
@@ -333,6 +335,9 @@ public class Prey extends Agent {
 
 	private void poop() {
 		//TODO D3Prey does not use getCenter... !!! 
+		if (mEnv.getSpriteManager() == null) {
+			Log.e(TAG, "Prey's env sprite manager is null!");
+		}
 		mEnv.addNewAlgae(1, new PointF(mD.mPosTail.x, mD.mPosTail.y), D3Maths.getRandAngle());
 		mWorldModel.reduceEnergy(NAlgae.FOOD_ALGAE_BITE_NUTRITION);
 	}
