@@ -1,6 +1,7 @@
 package d3kod.thehunt;
 
 import java.io.File;
+import java.util.concurrent.locks.ReentrantLock;
 
 import org.acra.ACRA;
 import org.acra.annotation.ReportsCrashes;
@@ -27,6 +28,7 @@ public class MyApplication extends Application {
 //    private String readID; // ID that read last in the current DB state
 	private String mRunningRenderer;
 	public Object stateLock = new Object();
+//	public ReentrantLock modeLock;
     
 	@Override
     public void onCreate() {

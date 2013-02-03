@@ -101,16 +101,14 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 		Log.v(TAG, "onCreate called!");
 		mContext = ((MyApplication) context.getApplicationContext());
 		mContext.setRunningRenderer(TAG);
-		mEnv = null;
-//		mTool = null;
-		sm = new ShaderProgramManager();
-//		mD3GLES20 = new SpriteManager(sm);
+		
 		tm = new TextureManager(context);
+//		prepareState();
+//		mEnv = null;
+//		mTool = null;
+//		mD3GLES20 = new SpriteManager(sm);
 //		while (mPrey == null) {
-		synchronized (mContext.stateLock) {
-//			Log.v(TAG, "Obtained stateLock!");
-			loadSavedState(sm);
-		}
+
 //		}
 //		if (mPrey == null) {
 //			if (context instanceof TheHunt) {
@@ -120,9 +118,17 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 //				mPrey = new DummyPrey(mEnv, mD3GLES20);
 //			}
 //		}
-		mTool = new CatchNet(mEnv, tm, mD3GLES20);
+
+	}
+
+	private void prepareState() {
+		sm = new ShaderProgramManager();
+		synchronized (mContext.stateLock) {
+			loadSavedState(sm);
+		}		mTool = new CatchNet(mEnv, tm, mD3GLES20);
 		mIgnoreNextTouch = -1;
 		mCaughtCounter = 0;
+		mGraphicsInitialized = false;
 	}
 
 	private SpriteManager loadSavedState(ShaderProgramManager shaderManager) {
@@ -199,8 +205,11 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 
 //		if (mEnv == null) mEnv = new Environment(worldWidthPx, worldHeightPx, mD3GLES20);
 //		if (mTool == null) mTool = new CatchNet(mEnv, tm, mD3GLES20);
+		synchronized (mContext.stateLock) {
+			
 		if (!mGraphicsInitialized ) {
 			//TODO why not initialize tool graphics as well?
+			tm = new TextureManager(mContext);
 			mEnv.initGraphics(mD3GLES20);
 			mCamera.initGraphic();
 			if (mPrey != null) {
@@ -210,6 +219,8 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 			}
 
 			mGraphicsInitialized = true;
+		}
+		
 		}
 
 		float ratio = (float) worldWidthPx / worldHeightPx;
@@ -221,19 +232,20 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 	 * Here we do our drawing
 	 */
 	public void onDrawFrame(GL10 unused) {
-		if (mState == State.PAUSE) {
-			return;
-		}
-		if (mContext.getRunningRenderer() != TAG) {
-			if (mContext.getRunningRenderer() == "") {
-				Log.v(TAG, "No renderer is running, let me run!");
-				mContext.setRunningRenderer(TAG);
-			}
-			else Log.v(TAG, "I'm not supposed to be running! Sorry...");
-			return;
-		}
 		
 		synchronized (mContext.stateLock) {
+			if (mState == State.PAUSE) {
+				return;
+			}
+			if (mContext.getRunningRenderer() != TAG) {
+				if (mContext.getRunningRenderer() == "") {
+					Log.v(TAG, "No renderer is running, let me run!");
+					mContext.setRunningRenderer(TAG);
+				}
+				else Log.v(TAG, "I'm not supposed to be running! Sorry...");
+				return;
+			}
+
 //			Log.v(TAG, "Obtained stateLock!");
 			int loops = 0;
 			mslf = System.currentTimeMillis();
@@ -260,6 +272,7 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 	}		
 
 	public void updateWorld() {
+//		Log.v(TAG, "Update world called!");
 		mEnv.update();
 		if (mPrey != null) {
 			PointF preyPos = mPrey.getPosition();
@@ -290,6 +303,8 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 
 	public void drawWorld(float interpolation) {
 		if (mState != State.PLAY) return;
+		
+//		tm.clear();
 		
 		if (mPreyChange) {
 			mPreyChange = false;
@@ -345,7 +360,7 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 		
 			else {
 				if (mTool == null || !mTool.handleTouch(event.getAction(), location)) {
-					Log.v(TAG, "mTool can't handle touch. Ignoring if " + mIgnoreNextTouch);
+//					Log.v(TAG, "mTool can't handle touch. Ignoring if " + mIgnoreNextTouch);
 					if (mIgnoreNextTouch != event.getAction() && 
 							(event.getAction() == MotionEvent.ACTION_DOWN || // to place food while net is snatching
 							event.getAction() == MotionEvent.ACTION_UP)) { // to place food otherwise
@@ -384,7 +399,8 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 	}
 	
 	public void pause() {
-		Log.v(TAG, "pause called!");
+
+//		Log.v(TAG, "pause called!");
 		if (mContext.getRunningRenderer() == TAG) {
 			Log.v(TAG, "Telling the context I'm not running any more...");
 			mContext.setRunningRenderer("");
@@ -392,6 +408,7 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 		else {
 			Log.v(TAG, "Running renderer not changed as it is " + mContext.getRunningRenderer());
 		}
+//    	tm.clear();
 		if (mState == State.PLAY) {
 			mState = State.PAUSE;
 			saveState();
@@ -399,11 +416,24 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 		mState = State.PAUSE;
     	Log.v(TAG, "State is " + mState);
     	//TODO: use sparseArray
-    	tm.clear();
 //    	sm.clear();
+//    	mContext.modeLock.unlock();
+//    	Log.v(TAG, Thread.currentThread().getName() + " released modeLock!");
 	}
 	
 	public void resume() {
+		synchronized (mContext.stateLock) {
+//			if (mContext.getRunningRenderer() != TAG) {
+//				if (mContext.getRunningRenderer() == "") {
+//					Log.v(TAG, "No renderer is running, let me run!");
+//					mContext.setRunningRenderer(TAG);
+//				}
+//				else Log.v(TAG, "I'm not supposed to be running! Sorry...");
+//				return;
+//			}			
+//		mContext.modeLock.lock();
+//		Log.v(TAG, Thread.currentThread().getName() + " aqcuired modeLock!");
+		mContext.setRunningRenderer(TAG);
 		Log.v(TAG, "resume called!");
 		mState = State.RESUME;
 		Log.v(TAG, "State is " + mState);
@@ -414,10 +444,10 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 		// TODO: restore caught counter
 //		mEnv = null;
 //		mTool = null;	
-		if (sm == null) {
-			Log.v(TAG, "ShaderProgramManager is null!");
-			sm = new ShaderProgramManager();
-		}
+//		if (sm == null) {
+//			Log.v(TAG, "ShaderProgramManager is null!");
+//			sm = new ShaderProgramManager();
+//		}
 //		tm = new TextureManager(mContext);
 		// db4o does magic and synchronizes the environment with the one it loaded onCreate, so this is not neccessary
 		// loadSavedState(sm);
@@ -428,9 +458,16 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 //		sm = new ShaderProgramManager();
 //		sm = new ShaderProgramManager();
 //		mD3GLES20.setShaderManager(sm);
-		Log.v(TAG, "ShaderProgramManager " + mD3GLES20.getShaderManager() + " " + sm);
+//		sm = new ShaderProgramManager();
+//		mD3GLES20 = new SpriteManager(sm);
+//		mGraphicsInitialized = false;
+		tm.printLoadedTextures();
+		prepareState();
+		tm.printLoadedTextures();
+//		Log.v(TAG, "ShaderProgramManager " + mD3GLES20.getShaderManager() + " " + sm);
 		mState = State.PLAY;
 		Log.v(TAG, "State is " + mState);
+		}
 	}
 	
 	public void release() {

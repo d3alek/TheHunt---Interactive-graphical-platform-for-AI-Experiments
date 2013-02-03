@@ -83,7 +83,7 @@ public class CatchNet extends D3Sprite implements Tool {
 			
 			if (tryToCatch()) {
 				// may be a redundant check
-				Log.v(TAG, "Tryign to catch!");
+//				Log.v(TAG, "Tryign to catch!");
 				Agent prey = mEnv.getPrey();
 				if (prey != null && !prey.getCaught() && contains(prey.getPosition())) {
 					Log.v(TAG, "I caught the prey!");
@@ -96,11 +96,9 @@ public class CatchNet extends D3Sprite implements Tool {
 	
 	public void start(float x, float y) {
 		if (mPathGraphic != null) {
-			Log.v(TAG, "Returning from start as path graphic is not null");
 			return;
 		}
 		if (mEnv.netObstacle(x, y)) {
-			Log.v(TAG, "Returing from start as there is obstacle");
 			return;
 		}
 		
@@ -120,16 +118,13 @@ public class CatchNet extends D3Sprite implements Tool {
 	public void next(float x, float y) {
 		if (!mStarted) {
 			//TODO: not sure it is needed
-			Log.v(TAG, "Starting net from next now");
 			start(x, y);
 			return;
 		}		
 		if (mPathGraphic == null || mPathGraphic.isInvalid() || mPathGraphic.isFinished()) {
-			Log.v(TAG, "Returning from next 1");
 			return;
 		}
 		if (!mPathGraphic.isFarEnoughFromLast(x, y)) {
-			Log.v(TAG, "Returning from next 2");
 			return;
 		}
 		if (mEnv.netObstacle(x, y) || mPathGraphic.getLength() > MAX_NET_LENGTH) {
@@ -153,15 +148,13 @@ public class CatchNet extends D3Sprite implements Tool {
 			// assume food placement was meant
 			mPathGraphic = null;
 //			mD3GLES20.removeShape(mPathGraphicIndex);
-			Log.v(TAG, "Setting notShown to true because of 2");
+//			Log.v(TAG, "Setting notShown to true because of 2");
 			notShown = true;
 			return;
 		}
 		if (mPathGraphic.canFinishWith(x, y)) {
 			mPathGraphic.setFinished();
 			initNetGraphic();
-			Log.v(TAG, "IMHERE");
-			Log.v(TAG, "Texture manager is " + tm + " Shader manager is " + mD3GLES20.getShaderManager());
 			mD3GLES20.putExpiringShape(new PlokText(firstX, firstY, tm, mD3GLES20.getShaderManager()));
 			mEnv.putNoise(x, y, Environment.LOUDNESS_PLOK); //TODO: put noise in the center
 		}
@@ -191,23 +184,19 @@ public class CatchNet extends D3Sprite implements Tool {
 	
 	public boolean handleTouch(int action, PointF location) {
 		if (action == MotionEvent.ACTION_DOWN) {
-			Log.v(TAG, "Net received down " + location.x + " " + location.y);
 			start(location.x, location.y);
 			return true;
 		}
 		else if (action == MotionEvent.ACTION_MOVE) {
-			Log.v(TAG, "Net received move " + location.x + " " + location.y);
 			next(location.x, location.y);
 			return true;
 		}
 		else if (action == MotionEvent.ACTION_UP) {
-			Log.v(TAG, "Net received up " + location.x + " " + location.y);
 			if (notShown) {
 				stop(location);
 				return false;
 			}
 			finish(location.x, location.y);
-			Log.v(TAG, "After up notshown is " + notShown);
 			return !notShown;
 		}
 		return false;

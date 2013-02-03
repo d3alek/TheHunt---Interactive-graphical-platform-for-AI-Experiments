@@ -189,7 +189,8 @@ public class Prey extends Agent {
 				mD.flopBackAngle = mD.flopBackTargetFirst;
 				mD.floppedFirst = true;
 				moveForward(Math.abs(mD.backFinAngle*flopBackSpeed)); // F = ma
-						putFlopText(mD.flopBackAngle + mD.bodyCAngle);
+//				Log.v(TAG, "Flop back!");
+				putFlopText(mD.flopBackAngle + mD.bodyCAngle);
 			}
 			mD.bodyEndAngleRot = mD.bodyCAngle + mD.flopBackAngle-mD.bodyEndAngle;
 			mD.bodyEndAngle = mD.bodyCAngle + mD.flopBackAngle;
@@ -201,6 +202,7 @@ public class Prey extends Agent {
 				mD.flopBackAngle = mD.flopBackTargetSecond;
 				mD.floppedSecond = true;
 				moveForward(Math.abs(2*mD.backFinAngle*flopBackSpeed)); // F = ma
+//				Log.v(TAG, "Flop back!");
 				putFlopText(mD.flopBackAngle + mD.bodyCAngle);
 			}
 			mD.bodyEndAngleRot = mD.bodyCAngle + mD.flopBackAngle-mD.bodyEndAngle;
@@ -326,7 +328,7 @@ public class Prey extends Agent {
 		case FORWARD_SMALL: backFinMotion(TurnAngle.BACK_SMALL); break;
 		case FORWARD_MEDIUM: backFinMotion(TurnAngle.BACK_MEDIUM); break;
 		case FORWARD_LARGE: backFinMotion(TurnAngle.BACK_LARGE); break;
-		case eat: Log.v(TAG, "Doing eat action!"); eat(); break; 
+		case eat: eat(); break; 
 		case poop: poop(); break;
 		case none: break;
 		default: Log.v(TAG, "Could not process action!");

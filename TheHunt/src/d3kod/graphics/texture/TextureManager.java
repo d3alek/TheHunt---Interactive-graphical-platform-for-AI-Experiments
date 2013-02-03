@@ -48,6 +48,14 @@ public class TextureManager {
 	}
 
 	public void clear() {
+		Log.v(TAG, "Clearing loaded textures");
 		mLoadedTextures.clear();
+	}
+	
+	public void printLoadedTextures() {
+		Log.v(TAG, "Loaded textures " + mLoadedTextures.size() + ":");
+		for (Texture tex: mLoadedTextures.keySet()) {
+			Log.v(TAG, tex.name());
+		}
 	}
 }
