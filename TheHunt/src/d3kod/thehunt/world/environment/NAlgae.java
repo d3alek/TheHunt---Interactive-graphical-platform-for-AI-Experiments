@@ -24,6 +24,15 @@ public class NAlgae extends FloatingObject implements Eatable {
 		setVelocity(FloatMath.cos(dirAngle)*getSpeed(), FloatMath.sin(dirAngle)*getSpeed());
 		mEnvironment = environment;
 	}
+	
+	@Override
+	public void update() {
+		if (Math.random() < mEnvironment.getAlgaeGrowthChance()) {
+			grow(1);
+			Log.v(TAG, "Growing algae due to growth chance! ");
+		}
+		super.update();
+	}
 
 	private float getSpeed() {
 		return ALGAE_START_SPEED/mSize;

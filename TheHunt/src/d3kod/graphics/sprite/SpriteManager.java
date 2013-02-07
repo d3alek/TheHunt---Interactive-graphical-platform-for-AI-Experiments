@@ -44,6 +44,13 @@ public class SpriteManager {
 		sprites = loadSprites;
 	}
 	
+	//TODO: use this instead of individual update calls
+//	public void updateAll() {
+//		for (D3Sprite sprite: sprites.values()) {
+//			sprite.update();
+//		}
+//	}
+	
 	public void draw(int key, float[] mMMatrix, float[] mVMatrix, float[] mProjMatrix) {
 		sprites.get(key).getGraphic().setModelMatrix(mMMatrix);
 		sprites.get(key).getGraphic().draw(mVMatrix, mProjMatrix);

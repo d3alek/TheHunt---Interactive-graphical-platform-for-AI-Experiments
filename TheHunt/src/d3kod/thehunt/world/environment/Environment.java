@@ -25,9 +25,15 @@ public class Environment {
 	private Random mRandom;
 	private Agent mPrey;
 	
+//	private int mBiomass;
+	private double algaeGrowthChance;
+//	private int mAlgaeNum;
+	
 	
 	public static final int ALGAE_NUM = 300;
 	private static final float NET_INTERSECT_RAD_ADJ = 0.2f;
+	private static final double GROWTH_THRESH = 250;
+	private static final double GROWTH_CONST = 0.1;
 	
 	public Environment(int width, int height, SpriteManager d3gles20) {
 		mD3GLES20 = d3gles20;
@@ -58,6 +64,7 @@ public class Environment {
 		if (mD3GLES20 == null) {
 			Log.e(TAG, "D3gles20 is null on env update!");
 		}
+		calculateAlgaeGrowthChance();
 		data.updateFloatingObjects();
 
 	}
@@ -176,6 +183,28 @@ public class Environment {
 
 	public SpriteManager getSpriteManager() {
 		return mD3GLES20;
+	}
+	
+	private void calculateAlgaeGrowthChance() {
+		int algaeNum = 0;
+		int biomass = 0;
+		double algaeGrowthRate = 0;
+		for (FloatingObject fo: data.getFloatingObjects()) {
+			if (fo.getType() == Type.ALGAE) {
+				algaeNum++;
+				biomass += ((NAlgae) fo).getN();
+			}
+		}
+		double m = 0; // specific growth rate
+		if (GROWTH_THRESH - biomass > 0)
+			m = GROWTH_CONST*Math.log(GROWTH_THRESH - biomass);
+		
+		algaeGrowthRate = m * biomass / algaeNum;
+		algaeGrowthChance = algaeGrowthRate / algaeNum;
+	}
+	
+	public double getAlgaeGrowthChance() {
+		return algaeGrowthChance;
 	}
 
 	
