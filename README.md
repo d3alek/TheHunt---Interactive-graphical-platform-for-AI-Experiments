@@ -27,8 +27,8 @@ Main features
 Current issues - many
 --------------------------------
   * Documentation is non existent - the code is supposed to be as readable as possible though. Still, a priority.
-  * Some game features are missing, like HUD and persistent state. As soon I develop these I will release the game to the Android Market for all to enjoy
-  * Some parts of the code require major refactoring, but it is work in progress!
+  * Some game features are missing, like a HUD. As soon as these are implemented I will release the game to the Android Market for all to enjoy
+  * Some parts of the code require major refactoring
 
 
 Project structure
