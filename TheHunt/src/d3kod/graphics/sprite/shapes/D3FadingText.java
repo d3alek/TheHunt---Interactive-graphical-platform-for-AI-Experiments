@@ -2,85 +2,118 @@ package d3kod.graphics.sprite.shapes;
 
 import java.nio.FloatBuffer;
 
+import android.graphics.PointF;
 import android.opengl.GLES20;
+import d3kod.graphics.extra.D3Maths;
 import d3kod.graphics.extra.Utilities;
 import d3kod.graphics.shader.ShaderProgramManager;
 import d3kod.graphics.shader.programs.AttribVariable;
+import d3kod.graphics.text.GLText;
 
-public class D3FadingText extends D3FadingShape {
+public class D3FadingText {
 
-	private FloatBuffer mTextureCoordinates;
-	private int mTextureCoordinateHandle;
-	private int mTextureUniformHandle;
-	private int mTextureDataHandle;
-	
+//	private FloatBuffer mTextureCoordinates;
+//	private int mTextureCoordinateHandle;
+//	private int mTextureUniformHandle;
+//	private int mTextureDataHandle;
+	private static final float sizeAdj = 0.002f;
 	private static final float[] colorData = {
 		0.0f, 0.0f, 0.0f, 1.0f
 	};
-	private static final int drawType = GLES20.GL_TRIANGLE_STRIP;
-
-	private final int mTextureCoordinateDataSize = 2;
+//	private static final int drawType = GLES20.GL_TRIANGLE_STRIP;
+//
+//	private final int mTextureCoordinateDataSize = 2;
+//	
+//	final float[] squareTextureCoordinateData = {
+//	        // Front face
+//	        0.0f, 0.0f,
+//	        0.0f, 1.0f,
+//	        1.0f, 0.0f,
+//	        1.0f, 1.0f
+//	};
+//	final float[] squarePositionDataDefault = {
+//			-0.5f, 0.5f, 0f,				
+//			-0.5f, -0.5f, 0f,
+//			0.5f, 0.5f, 0f,
+//			0.5f, -0.5f, 0f
+//	};
+//	float[] squarePositionData = new float[12];
+	private float mSize;
+	private String mText;
+	private float mFadeSpeed;
+	private float mAlpha = 1.0f;
+	private PointF mPos;
+	private float mAngle;
+//	private GLText mGLText;
 	
-	final float[] squareTextureCoordinateData = {
-	        // Front face
-	        0.0f, 0.0f,
-	        0.0f, 1.0f,
-	        1.0f, 0.0f,
-	        1.0f, 1.0f
-	};
-	final float[] squarePositionDataDefault = {
-			-0.5f, 0.5f, 0f,				
-			-0.5f, -0.5f, 0f,
-			0.5f, 0.5f, 0f,
-			0.5f, -0.5f, 0f
-	};
-	float[] squarePositionData = new float[12];
-	
-	protected D3FadingText(float textSize, float fadeSpeed, int textureHandle, ShaderProgramManager sm, float maxFade) {
-		super(colorData.clone(), drawType, sm.getTextProgram(), fadeSpeed, maxFade);
-		super.setVertexBuffer(makeVertexBuffer(textSize));
-		mTextureDataHandle = textureHandle;
-		mTextureCoordinates = Utilities.newFloatBuffer(squareTextureCoordinateData);
-        mTextureCoordinateHandle = AttribVariable.A_TexCoordinate.getHandle();//GLES20.glGetAttribLocation(mProgram, "a_TexCoordinate");
-        mTextureUniformHandle = GLES20.glGetUniformLocation(super.getProgram().getHandle(), "u_Texture");
-	}
-
-	private FloatBuffer makeVertexBuffer(float size) {
-		for (int i = 0; i < squarePositionData.length; ++i) {
-			squarePositionData[i] = squarePositionDataDefault[i]*size;
-		}
-		return Utilities.newFloatBuffer(squarePositionData);
+	public D3FadingText(String text, float size, float fadeSpeed) {
+		mText = text;
+		mSize = size;
+		mFadeSpeed = fadeSpeed;
+		mPos = new PointF(0, 0);
+		mAngle = 0;
+//		mGLText = glText;
+		//super(colorData.clone(), drawType, sm.getTextProgram(), fadeSpeed, maxFade);
+		//super.setVertexBuffer(makeVertexBuffer(textSize));
+//		mTextureDataHandle = textureHandle;
+//		mTextureCoordinates = Utilities.newFloatBuffer(squareTextureCoordinateData);
+//        mTextureCoordinateHandle = AttribVariable.A_TexCoordinate.getHandle();//GLES20.glGetAttribLocation(mProgram, "a_TexCoordinate");
+//        mTextureUniformHandle = GLES20.glGetUniformLocation(super.getProgram().getHandle(), "u_Texture");
 	}
 	
-	@Override
-	public float getRadius() {
-		throw (new UnsupportedOperationException());
+	public void setPosition(float x, float y, float angleDeg) {
+		mPos.x = x; mPos.y = y; mAngle = angleDeg;
+	}
+	
+	public float getX() {
+		return mPos.x;
+	}
+	
+	public float getY() {
+		return mPos.y;
+	}
+	
+	public float getAngle() {
+		return mAngle;
+	}
+	
+	public void draw(GLText glText, float[] vpMatrix) {
+		if (faded()) return;
+		glText.begin(0.0f, 0.0f, 0.0f, mAlpha, vpMatrix);
+		glText.setScale(sizeAdj*mSize);
+		glText.setSpace(1f);
+		glText.drawC(mText, mPos.x, mPos.y, mAngle);	
+		glText.end();
+	}
+	
+	public void fade() {
+		mAlpha -= mFadeSpeed;
+	}
+	
+	public boolean faded() {
+		return D3Maths.compareFloats(mAlpha, 0.1f) <= 0;
+	}
+	
+	public void noFade() {
+		mAlpha = 1.0f;
 	}
 
-	@Override
-	public void draw(float[] mVMatrix, float[] mProjMatrix) {
-		super.useProgram();
-		
-	     // Set the active texture unit to texture unit 0.
-	    GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
-		 
-	    // Bind the texture to this unit.
-	    GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, mTextureDataHandle);
-	 
-	    // Tell the texture uniform sampler to use this texture in the shader by binding to texture unit 0.
-	    GLES20.glUniform1i(mTextureUniformHandle, 0);
-
-	    mTextureCoordinates.position(0);
-	    GLES20.glVertexAttribPointer(mTextureCoordinateHandle, mTextureCoordinateDataSize, GLES20.GL_FLOAT, false, 
-       		0, mTextureCoordinates);
-       
-	    GLES20.glEnableVertexAttribArray(mTextureCoordinateHandle);
-	    mTextureCoordinates.position(0);
-	    GLES20.glVertexAttribPointer(mTextureCoordinateHandle, mTextureCoordinateDataSize, GLES20.GL_FLOAT, false, 
-       		0, mTextureCoordinates);
-       
-	    GLES20.glEnableVertexAttribArray(mTextureCoordinateHandle);
-		super.draw(mVMatrix, mProjMatrix);
+	public String getText() {
+		return mText;
 	}
+
+//	private FloatBuffer makeVertexBuffer(float size) {
+//		for (int i = 0; i < squarePositionData.length; ++i) {
+//			squarePositionData[i] = squarePositionDataDefault[i]*size;
+//		}
+//		return Utilities.newFloatBuffer(squarePositionData);
+//	}
+	
+//	@Override
+//	public float getRadius() {
+//		throw (new UnsupportedOperationException());
+//	}
+
+//	@Overrideu
 	
 }

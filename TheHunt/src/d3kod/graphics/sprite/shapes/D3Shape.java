@@ -111,6 +111,7 @@ abstract public class D3Shape {
         GLES20.glEnableVertexAttribArray(mPositionHandle);
         
         GLES20.glUniformMatrix4fv(mMVPMatrixHandle, 1, false, mMVPMatrix, 0);
+        //Matrix.m
         GLES20.glDrawArrays(drawType, 0, vertexBuffer.capacity()/SpriteManager.COORDS_PER_VERTEX);
 	}
 	

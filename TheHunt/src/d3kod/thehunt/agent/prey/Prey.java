@@ -82,7 +82,7 @@ public class Prey extends Agent {
 //		mWorldModel.update(null);
 		expressEmotion();
 		if (mD.emotionText != null) {
-			if (mD.emotionText.isExpired()) {
+			if (mD.emotionText.faded()) {
 				mD.emotionText = null;
 			}
 		}
@@ -96,8 +96,8 @@ public class Prey extends Agent {
 			}
 
 			else {
-				mD.emotionText = new PanicText(mD.mPosHeadX, mD.mPosHeadY, mD.bodyStartAngle, tm, mD3GLES20.getShaderManager());
-				mD3GLES20.putExpiringShape(mD.emotionText);
+				mD.emotionText = new PanicText(mD.mPosHeadX, mD.mPosHeadY, mD.bodyStartAngle);
+				mD3GLES20.putText(mD.emotionText);
 			}
 		}
 	}
@@ -233,8 +233,8 @@ public class Prey extends Agent {
 	private void putFlopText(float angle) {
 		float radAngle = (float)Math.toRadians(angle);
 //		Log.v(TAG, "Put flop at " + D.mPosX + FloatMath.sin(radAngle)*D3Prey.finSize*2 + " " + (mD.mPosY - FloatMath.cos(radAngle)*D3Prey.finSize*2, angle));
-		mD3GLES20.putExpiringShape(new FlopText(mD.mPosX + FloatMath.sin(radAngle)*D3Prey.finSize*2, 
-				mD.mPosY - FloatMath.cos(radAngle)*D3Prey.finSize*2, angle, tm, mD3GLES20.getShaderManager()));
+		mD3GLES20.putText(new FlopText(mD.mPosX + FloatMath.sin(radAngle)*D3Prey.finSize*2, 
+				mD.mPosY - FloatMath.cos(radAngle)*D3Prey.finSize*2, angle));
 	}
 
 	public void turn(TurnAngle angle) {
@@ -353,7 +353,7 @@ public class Prey extends Agent {
 		else {
 			mWorldModel.eatFood(nutrition);
 			mGraphic.initEatingMotion();
-			mD3GLES20.putExpiringShape(new CrunchText(mD.mPosHeadX, mD.mPosHeadY, tm, mD3GLES20.getShaderManager()));
+			mD3GLES20.putText(new CrunchText(mD.mPosHeadX, mD.mPosHeadY));
 		}
 	}
 
@@ -379,7 +379,7 @@ public class Prey extends Agent {
 		updateWorldModel();
 		mWorldModel.refillEnergy();
 		mWorldModel.recalcNearestFood();
-		mD3GLES20.putExpiringShape(new PlokText(mD.mPosX, mD.mPosY, tm, mD3GLES20.getShaderManager()));
+		mD3GLES20.putText(new PlokText(mD.mPosX, mD.mPosY));
 		mGraphic.resetColor();
 	}
 

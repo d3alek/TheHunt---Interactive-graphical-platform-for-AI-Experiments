@@ -1,15 +1,9 @@
 package d3kod.thehunt.world.logic;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
-import com.db4o.foundation.Enum4;
-
 import android.content.Context;
-import android.content.SyncResult;
 import android.graphics.PointF;
 import android.hardware.SensorEvent;
 import android.opengl.GLES20;
@@ -18,12 +12,13 @@ import android.opengl.Matrix;
 import android.util.Log;
 import android.view.MotionEvent;
 import d3kod.graphics.shader.ShaderProgramManager;
-import d3kod.graphics.sprite.D3Sprite;
 import d3kod.graphics.sprite.SpriteManager;
+import d3kod.graphics.sprite.shapes.D3FadingShape;
+import d3kod.graphics.sprite.shapes.D3FadingText;
+import d3kod.graphics.text.GLText;
 import d3kod.graphics.texture.TextureManager;
 import d3kod.thehunt.MultisampleConfigChooser;
 import d3kod.thehunt.MyApplication;
-import d3kod.thehunt.TheHunt;
 import d3kod.thehunt.agent.Agent;
 import d3kod.thehunt.agent.DummyPrey;
 import d3kod.thehunt.agent.prey.Prey;
@@ -32,7 +27,6 @@ import d3kod.thehunt.world.environment.Environment;
 import d3kod.thehunt.world.floating_text.PlokText;
 import d3kod.thehunt.world.tools.CatchNet;
 import d3kod.thehunt.world.tools.Tool;
-//import d3kod.d3gles20.shapes.D3TempCircle;
 
 public class TheHuntRenderer implements GLSurfaceView.Renderer {
 	private static final String DEFAULT_TAG = "TheHuntRenderer";
@@ -86,6 +80,7 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 	private boolean mScrolling = false;
 	private int mIgnoreNextTouch;
 	private MyApplication mContext;
+//	private GLText mGLText;
 	public static enum PreyType {NONE, DEFAULT};
 	
 	public void onSensorChanged(SensorEvent event) {
@@ -138,7 +133,7 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 
 		if (state == null) {
 			Log.v(TAG, "SaveState is empty, creating new SaveState");
-			mD3GLES20 = new SpriteManager(shaderManager);
+			mD3GLES20 = new SpriteManager(shaderManager, mContext);
 			mEnv = new Environment(worldWidthPx, worldHeightPx, mD3GLES20);
 			mPrey = new Prey(mEnv, tm, mD3GLES20);
 //			mPrey = new DummyPrey(mEnv, mD3GLES20);
@@ -155,7 +150,7 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 //			mPrey = state.getAgent();
 //			ArrayList<D3Sprite> sprites = state.getSprites();
 //			Enum4
-			mD3GLES20 = new SpriteManager(shaderManager);
+			mD3GLES20 = new SpriteManager(shaderManager, mContext);
 			mEnv = state.getEnv(); 
 //			mPrey = new DummyPrey(mEnv, mD3GLES20);
 			mPrey = mEnv.getPrey();
@@ -186,6 +181,7 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 		GLES20.glClearColor(bgColor[0], bgColor[1], bgColor[2], bgColor[3]);
 		GLES20.glEnable(GLES20.GL_BLEND);
 		GLES20.glBlendFunc(GLES20.GL_ONE, GL10.GL_ONE_MINUS_SRC_ALPHA);
+		
 	}
 	/**
 	 * If the surface changes, reset the view
@@ -209,6 +205,9 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 			
 		if (!mGraphicsInitialized ) {
 			//TODO why not initialize tool graphics as well?
+			mD3GLES20.init(mContext);
+//			mD3GLES20.putText1(new D3FadingText("Fafa", 1000.0f, 0)); 
+				
 			tm = new TextureManager(mContext);
 			mEnv.initGraphics(mD3GLES20);
 			mCamera.initGraphic();
@@ -299,6 +298,8 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 		if (mTool != null) mTool.update();
 
 		mCamera.update();
+		
+		mD3GLES20.updateAll();
 	}
 
 	public void drawWorld(float interpolation) {
@@ -324,6 +325,17 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 		}
 		
 		GLES20.glClear(clearMask);
+		
+		float[] vpMatrix = new float[16];
+		Matrix.multiplyMM(vpMatrix, 0, mProjMatrix, 0, mVMatrix, 0);
+		
+//		mGLText.drawTexture( 100, 100, vpMatrix);            // Draw the Entire Texture
+		
+//		mGLText.begin(0.0f, 0.0f, 0.0f, 1.0f, vpMatrix);
+//		mGLText.setScale(0.003f);
+//		mGLText.setSpace(1f);
+//		mGLText.drawC( "Test String :)", 0, 0, 10);	
+//		mGLText.end();
 		
 		mVMatrix = mCamera.toViewMatrix();
 		
@@ -364,7 +376,7 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 					if (mIgnoreNextTouch != event.getAction() && 
 							(event.getAction() == MotionEvent.ACTION_DOWN || // to place food while net is snatching
 							event.getAction() == MotionEvent.ACTION_UP)) { // to place food otherwise
-						mD3GLES20.putExpiringShape(new PlokText(location.x, location.y, tm, mD3GLES20.getShaderManager()));
+						mD3GLES20.putText(new PlokText(location.x, location.y));
 						mEnv.putNoise(location.x, location.y, Environment.LOUDNESS_PLOK);
 						mEnv.putFoodGM(location.x, location.y);
 					}

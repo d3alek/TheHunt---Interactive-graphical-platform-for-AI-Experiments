@@ -16,6 +16,9 @@ public class TheHunt extends FragmentActivity implements PreyChangeDialog.PreyCh
     private static final String TAG = "TheHunt";
 	private D3GLSurfaceView mGLView;
 
+	/* (non-Javadoc)
+	 * @see android.support.v4.app.FragmentActivity#onCreate(android.os.Bundle)
+	 */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -24,15 +27,20 @@ public class TheHunt extends FragmentActivity implements PreyChangeDialog.PreyCh
 
 		setContentView(R.layout.clean);
 		mGLView = (D3GLSurfaceView)findViewById(R.id.glSurfaceView);
-//		showPreyChangeDialog(null);
 	}
     
+    /* (non-Javadoc)
+     * @see android.support.v4.app.FragmentActivity#onPause()
+     */
     @Override
     protected void onPause() {
     	mGLView.onPause();
     	super.onPause();
     }
     
+    /* (non-Javadoc)
+     * @see android.support.v4.app.FragmentActivity#onResume()
+     */
     @Override
     protected void onResume() {
     	Log.v(TAG, "Resuming activity");
@@ -42,26 +50,25 @@ public class TheHunt extends FragmentActivity implements PreyChangeDialog.PreyCh
     	super.onResume();
     }
     
+    /* (non-Javadoc)
+     * @see android.support.v4.app.FragmentActivity#onStop()
+     */
     @Override
     protected void onStop() {
     	super.onStop();
     }
     
-    public void onToggleClicked(View view) {
-    	boolean checked = ((ToggleButton) view).isChecked();
-    	
-    	switch(view.getId()) {
-    	case R.id.aiToggle:
-    		PreyData.AI = checked;
-    		break;
-    	}
-    }
-    
+    /**
+     * @param view
+     */
     public void showPreyChangeDialog(View view) {
     	DialogFragment newFragment = new PreyChangeDialog();
     	newFragment.show(getSupportFragmentManager(), "preyChangeDialog");
     }
     
+	/* (non-Javadoc)
+	 * @see d3kod.thehunt.PreyChangeDialog.PreyChangeDialogListener#onPreyChanged(int)
+	 */
 	public void onPreyChanged(final int which) {
 		Log.v(TAG, "Prey changed to " + which);
 		mGLView.post(new Runnable() {

@@ -4,16 +4,16 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
+import android.content.Context;
 import android.graphics.PointF;
+import android.opengl.Matrix;
 import android.util.Log;
 import d3kod.graphics.extra.D3Maths;
 import d3kod.graphics.shader.ShaderProgramManager;
 import d3kod.graphics.shader.programs.Program;
-import d3kod.graphics.sprite.shapes.D3Circle;
 import d3kod.graphics.sprite.shapes.D3FadingShape;
-import d3kod.graphics.sprite.shapes.D3Quad;
-import d3kod.graphics.sprite.shapes.D3Shape;
-import d3kod.graphics.sprite.shapes.D3TempCircle;
+import d3kod.graphics.sprite.shapes.D3FadingText;
+import d3kod.graphics.text.GLText;
 
 public class SpriteManager {
 	public static final int COORDS_PER_VERTEX = 3;
@@ -23,6 +23,7 @@ public class SpriteManager {
 	
 	private HashMap<Integer, D3Sprite> sprites;
 	private HashMap<Integer, D3FadingShape> expiringShapes;
+	private ArrayList<D3FadingText> mTexts;
 	private int spritesNum = 0;
 
 	transient private ShaderProgramManager sm;
@@ -30,17 +31,20 @@ public class SpriteManager {
 	ArrayList<Integer> toRemove = new ArrayList<Integer>();
 
 	private boolean removeSpriteLater;
+
+	private GLText mGLText;
 	
-	public SpriteManager(ShaderProgramManager shaderManager) {
+	public SpriteManager(ShaderProgramManager shaderManager, Context context) {
 		sprites = new HashMap<Integer, D3Sprite>();
 		expiringShapes = new HashMap<Integer, D3FadingShape>();
+		mTexts = new ArrayList<D3FadingText>();
 		spritesNum = 0;
 		sm = shaderManager;
 		removeSpriteLater = false;
 	}
 	
-	public SpriteManager(HashMap<Integer, D3Sprite> loadSprites, ShaderProgramManager shaderManager) {
-		this(shaderManager);
+	public SpriteManager(HashMap<Integer, D3Sprite> loadSprites, ShaderProgramManager shaderManager, Context context) {
+		this(shaderManager, context);
 		sprites = loadSprites;
 	}
 	
@@ -56,8 +60,22 @@ public class SpriteManager {
 		sprites.get(key).getGraphic().draw(mVMatrix, mProjMatrix);
 	}
 	
-	public void drawAll(float[] mVMatrix, float[] mProjMatrix,
-			float interpolation) {
+	public void updateAll() {
+		ArrayList<Integer> toRemove = new ArrayList<Integer>();
+		int index = 0;
+		for (D3FadingText text: mTexts) {
+			text.fade();
+			if (text.faded()) {
+				toRemove.add(index);
+			}
+			index++;
+		}	
+		for (int key: toRemove) {
+			mTexts.remove(key);
+		}
+	}
+	
+	public void drawAll(float[] mVMatrix, float[] mProjMatrix, float interpolation) {
 		if (sprites == null) {
 			Log.w(TAG, "Sprites are null in drawAll!");
 			return;
@@ -81,6 +99,14 @@ public class SpriteManager {
 		}
 		for (Integer key: toRemove) {
 			expiringShapes.remove(key);
+		}
+		toRemove.clear();
+		
+		float[] vpMatrix = new float[16];
+		Matrix.multiplyMM(vpMatrix, 0, mProjMatrix, 0, mVMatrix, 0);
+		
+		for (D3FadingText text: mTexts) {
+			text.draw(mGLText, vpMatrix);
 		}
 	}
 	
@@ -178,5 +204,15 @@ public class SpriteManager {
 
 	public void setShaderManager(ShaderProgramManager sm) {
 		this.sm = sm;
+	}
+	
+	public void init(Context context) {
+		mGLText = new GLText(sm.getBatchTextProgram(), context.getAssets());
+		mGLText.load( "Roboto-Regular.ttf", 12, 2, 2 );  
+
+	}
+
+	public void putText(D3FadingText text) {
+		mTexts.add(text);
 	}
 }

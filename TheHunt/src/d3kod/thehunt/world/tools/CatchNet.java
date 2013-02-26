@@ -58,7 +58,7 @@ public class CatchNet extends D3Sprite implements Tool {
 			}
 			else {
 				initNetGraphic();
-				mD3GLES20.putExpiringShape(new PlokText(mPathGraphic.getCenterX(), mPathGraphic.getCenterY(), tm, mD3GLES20.getShaderManager()));
+				mD3GLES20.putText(new PlokText(mPathGraphic.getCenterX(), mPathGraphic.getCenterY()));
 				mEnv.putNoise(mPathGraphic.getCenterX(), mPathGraphic.getCenterY(), Environment.LOUDNESS_PLOK);				
 			}
 		}
@@ -68,7 +68,7 @@ public class CatchNet extends D3Sprite implements Tool {
 		}
 		else {
 			if (!showSnatchText) {
-				mD3GLES20.putExpiringShape(new SnatchText(mNetGraphic.getCenterX(), mNetGraphic.getCenterY(), tm, mD3GLES20.getShaderManager()));
+				mD3GLES20.putText(new SnatchText(mNetGraphic.getCenterX(), mNetGraphic.getCenterY()));
 				showSnatchText = true;
 			}
 			if (mNetGraphic.fadeDone()) {
@@ -155,7 +155,7 @@ public class CatchNet extends D3Sprite implements Tool {
 		if (mPathGraphic.canFinishWith(x, y)) {
 			mPathGraphic.setFinished();
 			initNetGraphic();
-			mD3GLES20.putExpiringShape(new PlokText(firstX, firstY, tm, mD3GLES20.getShaderManager()));
+			mD3GLES20.putText(new PlokText(firstX, firstY));
 			mEnv.putNoise(x, y, Environment.LOUDNESS_PLOK); //TODO: put noise in the center
 		}
 		else {
