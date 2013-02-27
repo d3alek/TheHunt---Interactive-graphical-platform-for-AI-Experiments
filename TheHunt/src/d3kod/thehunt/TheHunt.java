@@ -7,16 +7,30 @@ import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.TextView;
-import android.widget.ToggleButton;
-import d3kod.thehunt.agent.prey.PreyData;
 
+/**
+ * <strong>TheHunt - Interactive graphical platform for AI Experiments</strong>
+ * 
+ * <p>
+ * <a href="http://d3kod.github.com/TheHunt---Interactive-graphical-platform-for-AI-Experiments/">Official Website</a>
+ * </p>
+ * 
+ * <p>
+ * Open source under The MIT License, full source available on <a href="https://github.com/d3kod/TheHunt---Interactive-graphical-platform-for-AI-Experiments">Github</a>.
+ * </p>
+ * <p>
+ * Feel free to fork, file a bug report, submit a pull request, or just tell me what you think!
+ * </p>
+ * 
+ * @author Aleksandar Kodzhabashev (d3kod) 
+ *
+ */
 public class TheHunt extends FragmentActivity implements PreyChangeDialog.PreyChangeDialogListener {
 
     private static final String TAG = "TheHunt";
 	private D3GLSurfaceView mGLView;
 
-	/* (non-Javadoc)
+	/** Instantiate the GLView 
 	 * @see android.support.v4.app.FragmentActivity#onCreate(android.os.Bundle)
 	 */
 	@Override
@@ -29,7 +43,7 @@ public class TheHunt extends FragmentActivity implements PreyChangeDialog.PreyCh
 		mGLView = (D3GLSurfaceView)findViewById(R.id.glSurfaceView);
 	}
     
-    /* (non-Javadoc)
+    /** Pause the GLView
      * @see android.support.v4.app.FragmentActivity#onPause()
      */
     @Override
@@ -38,19 +52,19 @@ public class TheHunt extends FragmentActivity implements PreyChangeDialog.PreyCh
     	super.onPause();
     }
     
-    /* (non-Javadoc)
+    /** Resume the GLView
      * @see android.support.v4.app.FragmentActivity#onResume()
      */
     @Override
     protected void onResume() {
     	Log.v(TAG, "Resuming activity");
     	
-    	if (findViewById(R.id.aiToggle) != null) ((ToggleButton)findViewById(R.id.aiToggle)).setChecked(PreyData.AI);
+//    	if (findViewById(R.id.aiToggle) != null) ((ToggleButton)findViewById(R.id.aiToggle)).setChecked(PreyData.AI);
     	mGLView.onResume();
     	super.onResume();
     }
     
-    /* (non-Javadoc)
+    /**
      * @see android.support.v4.app.FragmentActivity#onStop()
      */
     @Override
@@ -58,7 +72,8 @@ public class TheHunt extends FragmentActivity implements PreyChangeDialog.PreyCh
     	super.onStop();
     }
     
-    /**
+    /** Pop up a dialog to choose a prey from a predefined list of preys
+     * @see d3kod.thehunt.PreyChangeDialog#PreyChangeDialog()
      * @param view
      */
     public void showPreyChangeDialog(View view) {
@@ -66,7 +81,7 @@ public class TheHunt extends FragmentActivity implements PreyChangeDialog.PreyCh
     	newFragment.show(getSupportFragmentManager(), "preyChangeDialog");
     }
     
-	/* (non-Javadoc)
+	/**
 	 * @see d3kod.thehunt.PreyChangeDialog.PreyChangeDialogListener#onPreyChanged(int)
 	 */
 	public void onPreyChanged(final int which) {

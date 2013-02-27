@@ -19,6 +19,7 @@ import d3kod.graphics.text.GLText;
 import d3kod.graphics.texture.TextureManager;
 import d3kod.thehunt.MultisampleConfigChooser;
 import d3kod.thehunt.MyApplication;
+import d3kod.thehunt.PreyChangeDialog;
 import d3kod.thehunt.agent.Agent;
 import d3kod.thehunt.agent.DummyPrey;
 import d3kod.thehunt.agent.prey.Prey;
@@ -81,6 +82,13 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 	private int mIgnoreNextTouch;
 	private MyApplication mContext;
 //	private GLText mGLText;
+	/**
+	 * The possible Prey type values (for example, returned from a {@link PreyChangeDialog}.
+	 * 
+	 * @author Aleksandar Kodzhabashev (d3kod) 
+	 * @see PreyChangeDialog
+	 *
+	 */
 	public static enum PreyType {NONE, DEFAULT};
 	
 	public void onSensorChanged(SensorEvent event) {
