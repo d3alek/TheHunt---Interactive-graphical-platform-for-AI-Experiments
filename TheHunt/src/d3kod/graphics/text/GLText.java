@@ -16,6 +16,7 @@ import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.opengl.GLES20;
 import android.opengl.Matrix;
+import android.util.Log;
 import d3kod.graphics.shader.programs.BatchTextProgram;
 import d3kod.graphics.shader.programs.Program;
 import d3kod.graphics.texture.TextureHelper;
@@ -128,8 +129,14 @@ public class GLText {
 		fontPadX = padX;                                // Set Requested X Axis Padding
 		fontPadY = padY;                                // Set Requested Y Axis Padding
 
+		Typeface tf;
 		// load the font and setup paint instance for drawing
-		Typeface tf = Typeface.createFromAsset( assets, file );  // Create the Typeface from Font File
+		try {
+			tf = Typeface.createFromAsset( assets, file );  // Create the Typeface from Font File
+		} catch (Exception e) {
+			Log.e(TAG, "Could not get typeface " + file + " because " + e.getMessage());
+			tf = Typeface.DEFAULT;
+		}
 		Paint paint = new Paint();                      // Create Android Paint Instance
 		paint.setAntiAlias( true );                     // Enable Anti Alias
 		paint.setTextSize( size );                      // Set Text Size
