@@ -106,7 +106,7 @@ public class SpriteManager {
 		Matrix.multiplyMM(vpMatrix, 0, mProjMatrix, 0, mVMatrix, 0);
 		
 		for (D3FadingText text: mTexts) {
-			text.draw(mGLText, vpMatrix);
+			text.draw(mGLText, mProjMatrix, mVMatrix);
 		}
 	}
 	
@@ -208,7 +208,7 @@ public class SpriteManager {
 	
 	public void init(Context context) {
 		mGLText = new GLText(sm.getBatchTextProgram(), context.getAssets());
-		mGLText.load( "Roboto-Regular.ttf", 12, 2, 2 );  
+		mGLText.load( "Roboto-Regular.ttf", 30, 2, 2 );  
 
 	}
 

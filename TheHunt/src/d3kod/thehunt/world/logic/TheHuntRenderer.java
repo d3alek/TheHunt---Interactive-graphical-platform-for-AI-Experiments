@@ -24,6 +24,7 @@ import d3kod.thehunt.agent.Agent;
 import d3kod.thehunt.agent.DummyPrey;
 import d3kod.thehunt.agent.prey.Prey;
 import d3kod.thehunt.world.Camera;
+import d3kod.thehunt.world.HUD;
 import d3kod.thehunt.world.environment.Environment;
 import d3kod.thehunt.world.floating_text.PlokText;
 import d3kod.thehunt.world.tools.CatchNet;
@@ -81,6 +82,8 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 	private boolean mScrolling = false;
 	private int mIgnoreNextTouch;
 	private MyApplication mContext;
+	private HUD mHUD;
+	private int mScore;
 //	private GLText mGLText;
 	/**
 	 * The possible Prey type values (for example, returned from a {@link PreyChangeDialog}.
@@ -204,6 +207,7 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 		mScreenToWorldRatioHeight = mScreenHeightPx/(float)worldHeightPx;
 		mCamera = new Camera(mScreenToWorldRatioWidth, 
 				mScreenToWorldRatioHeight, worldWidthPx/(float)worldHeightPx, mD3GLES20);
+		mHUD = new HUD(mCamera, mD3GLES20);
 
 		Log.v(TAG, "mScreenWidth " + mScreenWidthPx + " mScreenHeight " + mScreenHeightPx);
 
@@ -219,6 +223,8 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 			tm = new TextureManager(mContext);
 			mEnv.initGraphics(mD3GLES20);
 			mCamera.initGraphic();
+			mHUD.initGraphics();
+			mHUD.setCaught(mCaughtCounter);
 			if (mPrey != null) {
 				mPrey.setSpriteManager(mD3GLES20);
 				mPrey.setTextureManager(tm);	
@@ -293,6 +299,8 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 			if (mPrey.getCaught()) {
 				if (releaseCountdown < 0) {
 					releaseCountdown = RELEASE_TICKS;
+					++mCaughtCounter;
+					mHUD.setCaught(mCaughtCounter);
 				}
 				releaseCountdown--;
 				if (releaseCountdown == 0) {
@@ -301,6 +309,7 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 				}
 			}
 			mCamera.setPreyPosition(preyPos);
+			mHUD.setPreyEnergy(mPrey.getEnergy());
 		}
 
 		if (mTool != null) mTool.update();

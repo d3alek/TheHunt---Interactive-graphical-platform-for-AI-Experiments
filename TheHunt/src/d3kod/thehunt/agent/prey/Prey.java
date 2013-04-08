@@ -389,6 +389,7 @@ public class Prey extends Agent {
 		mD.emotionText = null; // fix for disappearing ! after db save while panicked
 	}
 
+	@Override
 	public int getEnergy() {
 		return mWorldModel.getEnergy();
 	}

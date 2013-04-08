@@ -125,6 +125,18 @@ public class Camera extends D3Sprite {
 				mViewBottom, 
 				mViewBottom+mHeight, 0.1f, 100f);
 	}
+	
+	public float[] toCenteredViewMatrix() {
+		float[] viewMatrix = new float[16];
+		mViewLeft = -mWidth/2;
+		mViewBottom = -mHeight/2;
+		Matrix.orthoM(viewMatrix, 0, 
+				mViewLeft,
+				mViewLeft+mWidth, 
+				mViewBottom, 
+				mViewBottom+mHeight, 0.1f, 100f);
+		return viewMatrix;
+	}
 
 	public float[] toViewMatrix() {
 		return mVMatrix;
@@ -135,6 +147,12 @@ public class Camera extends D3Sprite {
 			return true;
 		}
 		return D3Maths.rectContains(mCenterX, mCenterY, mWidth * mWidthToHeightRatio, mHeight, point.x, point.y);
+	}
+	public float getWidth() {
+		return mWidth * mWidthToHeightRatio;
+	}
+	public float getHeight() {
+		return mHeight;
 	}
 
 	public void showPreyPointer() {
