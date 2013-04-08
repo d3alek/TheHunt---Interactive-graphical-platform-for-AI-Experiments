@@ -42,7 +42,6 @@ public class D3FadingText {
 	private PointF mPos;
 	private float mAngle;
 //	private GLText mGLText;
-	private float mLength;
 	private float mG;
 	private float mR;
 	private float mB;
@@ -71,6 +70,10 @@ public class D3FadingText {
 		mR = r; mG = g; mB = b;
 	}
 	
+	public void setAlpha(float alpha) {
+		mAlpha = alpha;
+	}
+	
 	public float getX() {
 		return mPos.x;
 	}
@@ -84,11 +87,15 @@ public class D3FadingText {
 	}
 	
 	public float getLength(GLText glText) {
-		Log.v(TAG, "Getting length " + mLength);
 		glText.setScale(sizeAdj*mSize);
 		glText.setSpace(1f);
 		return glText.getLength(mText);
-//		return mLength;
+	}
+	
+	public float getHeight(GLText glText) {
+		glText.setScale(sizeAdj*mSize);
+		glText.setSpace(1f);
+		return glText.getCharHeight();
 	}
 	
 	public void draw(GLText glText, float[] vpMatrix) {
@@ -97,7 +104,6 @@ public class D3FadingText {
 		glText.setScale(sizeAdj*mSize);
 		glText.setSpace(1f);
 		drawText(glText, mText, mPos.x, mPos.y, mAngle);
-//		mLength = glText.getLength(mText);
 		glText.end();
 	}
 	

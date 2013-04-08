@@ -5,6 +5,7 @@ import java.util.Random;
 
 import android.graphics.PointF;
 import android.util.Log;
+import d3kod.graphics.extra.D3Color;
 import d3kod.graphics.extra.D3Maths;
 import d3kod.graphics.sprite.SpriteManager;
 import d3kod.thehunt.agent.Agent;
@@ -203,31 +204,15 @@ public class Environment {
 		algaeGrowthChance = algaeGrowthRate / algaeNum;
 	}
 	
+	public String getStateString() {
+		return String.format("Good %.2f", algaeGrowthChance);
+	}
+	
+	public D3Color getStateColor() {
+		return D3Color.DARK_GREEN;
+	}
+	
 	public double getAlgaeGrowthChance() {
 		return algaeGrowthChance;
 	}
-
-	
-	
-	// STORABLE_D3Sprite
-	
-	
-//	public void initSprites(ArrayList<D3Sprite> sprites) {
-//		for (D3Sprite sprite: sprites) {
-//			if (sprite instanceof FloatingObject) {
-//				sprite.
-//				data.addFloatingObject((FloatingObject)sprite);
-//			}
-//		}
-//	}
-//
-//	public ArrayList<D3Sprite> getSprites() {
-//		ArrayList<D3Sprite> sprites = new ArrayList<D3Sprite>();
-//		for (FloatingObject fo: data.getFloatingObjects()) {
-//			fo.clearGraphic();
-//			sprites.add((D3Sprite)fo);
-//		}
-////		return data.getFloatingObjects();
-//		return sprites;
-//	}
 }

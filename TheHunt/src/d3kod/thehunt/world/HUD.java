@@ -1,6 +1,5 @@
 package d3kod.thehunt.world;
 
-import android.graphics.Color;
 import android.graphics.PointF;
 import d3kod.graphics.extra.D3Color;
 import d3kod.graphics.sprite.SpriteManager;
@@ -11,6 +10,7 @@ public class HUD {
 	class HUDText extends D3FadingText {
 		public HUDText(String text, float size) {
 			super(text, size, 0);
+			setAlpha(0.6f);
 		}
 		public HUDText(String text, float size, PointF pos) {
 			this(text, size);
@@ -46,8 +46,13 @@ public class HUD {
 	private HUDText mPreyEnergyText;
 	private HUDText mCaught;
 	private HUDText mPreyEnergy;
+	private HUDText mEnvText;
+	private HUDText mEnv;
+	private HUDText mPreyStateText;
+	private HUDText mPreyState;
 	
 	private PointF mPreyEnergyPos;
+	
 	
 	public HUD(Camera camera, SpriteManager spriteManager) {
 		mSpriteManager = spriteManager;
@@ -59,11 +64,15 @@ public class HUD {
 		float preyEnergyPosY = camera.getHeight()/2 - posYAdj;
 		
 		mCaughtTextPos = new PointF(caughtTextPosX, caughtTextPosY);
-		mCaughtText = new HUDText("Times caught: ", mCaughtTextSize, mCaughtTextPos);
+		mCaughtText = new HUDText("Times Caught: ", mCaughtTextSize, mCaughtTextPos);
 		mCaught = new HUDText("undef", mCaughtTextSize);
 		mPreyEnergyPos = new PointF(preyEnergyPosX, preyEnergyPosY);
-		mPreyEnergyText = new HUDText("Prey energy: ", mPreyEnergyTextSize, mPreyEnergyPos);
+		mPreyEnergyText = new HUDText("Prey Energy: ", mPreyEnergyTextSize, mPreyEnergyPos);
 		mPreyEnergy = new HUDText("undef", mPreyEnergyTextSize);
+		mEnvText = new HUDText("Environment State: ", mCaughtTextSize);
+		mEnv = new HUDText("undef", mCaughtTextSize);
+		mPreyStateText = new HUDText("Prey State: ", mPreyEnergyTextSize);
+		mPreyState = new HUDText("undef", mPreyEnergyTextSize);
 	}
 	public void initGraphics() {
 		mSpriteManager.putText(mCaughtText);
@@ -74,6 +83,18 @@ public class HUD {
 		mPreyEnergy.setPosition(mPreyEnergyPos.x + mPreyEnergyText.getLength(mSpriteManager.getTextManager()),
 				mPreyEnergyPos.y, 0);
 		mSpriteManager.putText(mPreyEnergy);
+		mEnvText.setPosition(mCaughtTextPos.x, 
+				mCaughtTextPos.y - mCaughtText.getHeight(mSpriteManager.getTextManager()), 0);
+		mSpriteManager.putText(mEnvText);
+		mEnv.setPosition(mEnvText.getX() + mEnvText.getLength(mSpriteManager.getTextManager())
+				,mEnvText.getY(), 0);
+		mSpriteManager.putText(mEnv);
+		mPreyStateText.setPosition(mPreyEnergyPos.x, 
+				mPreyEnergyPos.y - mPreyStateText.getHeight(mSpriteManager.getTextManager()), 0);
+		mSpriteManager.putText(mPreyStateText);
+		mPreyState.setPosition(mPreyStateText.getX() + mPreyStateText.getLength(mSpriteManager.getTextManager()), 
+				mPreyStateText.getY(), 0);
+		mSpriteManager.putText(mPreyState);
 	}
 	public void setCaught(int caught) {
 		mCaught.setText(""+caught);
@@ -81,6 +102,13 @@ public class HUD {
 	public void setPreyEnergy(int energy, D3Color color) {
 		mPreyEnergy.setText(""+energy);
 		mPreyEnergy.setColor(color.getR(), color.getG(), color.getB());
+	}
+	public void setEnvState(String stateString, D3Color stateColor) {
+		mEnv.setText(stateString);
+		mEnv.setColor(stateColor.getR(), stateColor.getG(), stateColor.getB());
+	}
+	public void setPreyState(String stateString) {
+		mPreyState.setText(stateString);
 	}
 
 }

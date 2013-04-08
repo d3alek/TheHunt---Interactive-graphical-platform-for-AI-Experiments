@@ -288,6 +288,7 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 	public void updateWorld() {
 //		Log.v(TAG, "Update world called!");
 		mEnv.update();
+		mHUD.setEnvState(mEnv.getStateString(), mEnv.getStateColor());
 		if (mPrey != null) {
 			PointF preyPos = mPrey.getPosition();
 			if (preyPos != null) {
@@ -311,6 +312,7 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 			}
 			mCamera.setPreyPosition(preyPos);
 			mHUD.setPreyEnergy(mPrey.getEnergy(), mPrey.getMoodColor());
+			mHUD.setPreyState(mPrey.getStateString());
 		}
 
 		if (mTool != null) mTool.update();

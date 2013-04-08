@@ -46,5 +46,9 @@ public abstract class Agent extends D3Sprite {
 
 	public D3Color getMoodColor() {
 		return D3Color.BLACK;
+	}
+
+	public String getStateString() {
+		return "None";
 	} 
 }

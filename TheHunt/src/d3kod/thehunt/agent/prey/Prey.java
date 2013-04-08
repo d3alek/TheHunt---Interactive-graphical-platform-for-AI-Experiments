@@ -395,6 +395,7 @@ public class Prey extends Agent {
 		return mWorldModel.getEnergy();
 	}
 
+	@Override
 	public String getStateString() {
 		return mPlanner.getState().toString();
 	}
@@ -415,8 +416,8 @@ public class Prey extends Agent {
 	public D3Color getMoodColor() {
 		switch (mWorldModel.getMoodLevel()) {
 			case DESPAIR: return D3Color.RED;
-			case NEUTRAL: return D3Color.GREEN;
-			case RISK: return D3Color.YELLOW;
+			case NEUTRAL: return D3Color.DARK_GREEN;
+			case RISK: return D3Color.ORANGE;
 			default:
 				return D3Color.BLACK;
 		}
