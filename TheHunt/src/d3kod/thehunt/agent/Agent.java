@@ -1,6 +1,7 @@
 package d3kod.thehunt.agent;
 
 import android.graphics.PointF;
+import d3kod.graphics.extra.D3Color;
 import d3kod.graphics.sprite.D3Sprite;
 import d3kod.graphics.sprite.SpriteManager;
 import d3kod.graphics.texture.TextureManager;
@@ -41,5 +42,9 @@ public abstract class Agent extends D3Sprite {
 
 	public int getEnergy() {
 		return -1;
+	}
+
+	public D3Color getMoodColor() {
+		return D3Color.BLACK;
 	} 
 }

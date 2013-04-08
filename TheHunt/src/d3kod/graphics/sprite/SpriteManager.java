@@ -215,4 +215,8 @@ public class SpriteManager {
 	public void putText(D3FadingText text) {
 		mTexts.add(text);
 	}
+
+	public GLText getTextManager() {
+		return mGLText;
+	}
 }

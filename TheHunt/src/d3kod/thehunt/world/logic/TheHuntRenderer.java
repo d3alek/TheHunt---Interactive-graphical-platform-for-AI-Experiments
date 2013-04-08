@@ -207,8 +207,9 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 		mScreenToWorldRatioHeight = mScreenHeightPx/(float)worldHeightPx;
 		mCamera = new Camera(mScreenToWorldRatioWidth, 
 				mScreenToWorldRatioHeight, worldWidthPx/(float)worldHeightPx, mD3GLES20);
-		mHUD = new HUD(mCamera, mD3GLES20);
 
+		mHUD = new HUD(mCamera, mD3GLES20);
+		
 		Log.v(TAG, "mScreenWidth " + mScreenWidthPx + " mScreenHeight " + mScreenHeightPx);
 
 //		if (mEnv == null) mEnv = new Environment(worldWidthPx, worldHeightPx, mD3GLES20);
@@ -309,7 +310,7 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 				}
 			}
 			mCamera.setPreyPosition(preyPos);
-			mHUD.setPreyEnergy(mPrey.getEnergy());
+			mHUD.setPreyEnergy(mPrey.getEnergy(), mPrey.getMoodColor());
 		}
 
 		if (mTool != null) mTool.update();

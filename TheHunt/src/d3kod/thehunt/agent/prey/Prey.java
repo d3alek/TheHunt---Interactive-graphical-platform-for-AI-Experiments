@@ -4,6 +4,7 @@ import android.graphics.PointF;
 import android.opengl.Matrix;
 import android.util.FloatMath;
 import android.util.Log;
+import d3kod.graphics.extra.D3Color;
 import d3kod.graphics.extra.D3Maths;
 import d3kod.graphics.sprite.SpriteManager;
 import d3kod.graphics.sprite.shapes.D3Shape;
@@ -409,6 +410,16 @@ public class Prey extends Agent {
 	public void setSpriteManager(SpriteManager d3gles20) {
 		super.setSpriteManager(d3gles20);
 		mD3GLES20 = d3gles20;
+	}
+	@Override
+	public D3Color getMoodColor() {
+		switch (mWorldModel.getMoodLevel()) {
+			case DESPAIR: return D3Color.RED;
+			case NEUTRAL: return D3Color.GREEN;
+			case RISK: return D3Color.YELLOW;
+			default:
+				return D3Color.BLACK;
+		}
 	}
 	
 }
