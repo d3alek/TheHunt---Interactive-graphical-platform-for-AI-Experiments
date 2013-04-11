@@ -208,7 +208,7 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 		mCamera = new Camera(mScreenToWorldRatioWidth, 
 				mScreenToWorldRatioHeight, worldWidthPx/(float)worldHeightPx, mD3GLES20);
 
-		mHUD = new HUD(mCamera, mD3GLES20);
+		mHUD = new HUD(mCamera);
 		
 		Log.v(TAG, "mScreenWidth " + mScreenWidthPx + " mScreenHeight " + mScreenHeightPx);
 
@@ -224,7 +224,7 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 			tm = new TextureManager(mContext);
 			mEnv.initGraphics(mD3GLES20);
 			mCamera.initGraphic();
-			mHUD.initGraphics();
+			mHUD.initGraphics(mD3GLES20);
 			mHUD.setCaught(mCaughtCounter);
 			if (mPrey != null) {
 				mPrey.setSpriteManager(mD3GLES20);

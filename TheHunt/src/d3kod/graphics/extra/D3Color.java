@@ -6,7 +6,7 @@ public enum D3Color {
 	GREEN(0.0f, 1.0f, 0.0f),
 	DARK_GREEN(0.0f, 0.4f, 0.0f),
 	YELLOW(1f, 1f, 0.0f),
-	ORANGE(1.0f, 0.6f, 0.0f);
+	ORANGE(1.0f, 0.2f, 0.0f);
 	
 	float r, g, b;
 	private D3Color(float r, float g, float b) {

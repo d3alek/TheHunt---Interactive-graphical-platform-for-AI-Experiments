@@ -54,8 +54,7 @@ public class HUD {
 	private PointF mPreyEnergyPos;
 	
 	
-	public HUD(Camera camera, SpriteManager spriteManager) {
-		mSpriteManager = spriteManager;
+	public HUD(Camera camera) {
 		mViewMatrix = camera.toCenteredViewMatrix();
 		
 		float caughtTextPosX = -camera.getWidth()/2 + posXAdj;
@@ -74,7 +73,8 @@ public class HUD {
 		mPreyStateText = new HUDText("Prey State: ", mPreyEnergyTextSize);
 		mPreyState = new HUDText("undef", mPreyEnergyTextSize);
 	}
-	public void initGraphics() {
+	public void initGraphics(SpriteManager spriteManager) {
+		mSpriteManager = spriteManager;
 		mSpriteManager.putText(mCaughtText);
 		mSpriteManager.putText(mPreyEnergyText);
 		mCaught.setPosition(mCaughtTextPos.x + mCaughtText.getLength(mSpriteManager.getTextManager())
