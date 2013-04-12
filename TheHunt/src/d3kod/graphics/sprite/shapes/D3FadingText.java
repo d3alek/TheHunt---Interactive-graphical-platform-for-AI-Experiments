@@ -45,6 +45,12 @@ public class D3FadingText {
 	private float mG;
 	private float mR;
 	private float mB;
+	private boolean mAmCentered;
+	
+	public D3FadingText(String text, float size, float fadeSpeed, boolean drawCentered) {
+		this(text, size, fadeSpeed);
+		setCentered(drawCentered);
+	}
 	
 	public D3FadingText(String text, float size, float fadeSpeed) {
 		mText = text;
@@ -114,7 +120,8 @@ public class D3FadingText {
 	}
 	
 	protected void drawText(GLText glText, String text, float x, float y, float angle) {
-		glText.drawC(text, x, y, angle);	
+		if (mAmCentered) glText.drawC(text, x, y, angle);	
+		else glText.draw(text, x, y, angle);
 	}	
 	
 	public void fade() {
@@ -135,6 +142,10 @@ public class D3FadingText {
 	
 	public void setText(String text) {
 		mText = text;
+	}
+
+	public void setCentered(boolean drawCentered) {
+		mAmCentered = drawCentered;
 	}
 
 //	private FloatBuffer makeVertexBuffer(float size) {

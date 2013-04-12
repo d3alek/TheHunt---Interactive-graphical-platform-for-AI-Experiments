@@ -225,7 +225,8 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 			mEnv.initGraphics(mD3GLES20);
 			mCamera.initGraphic();
 			mHUD.initGraphics(mD3GLES20);
-			mHUD.setCaught(mCaughtCounter);
+//			mHUD.setCaught(mCaughtCounter);
+			mHUD.setScore(mCaughtCounter);
 			if (mPrey != null) {
 				mPrey.setSpriteManager(mD3GLES20);
 				mPrey.setTextureManager(tm);	
@@ -288,7 +289,7 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 	public void updateWorld() {
 //		Log.v(TAG, "Update world called!");
 		mEnv.update();
-		mHUD.setEnvState(mEnv.getStateString(), mEnv.getStateColor());
+//		mHUD.setEnvState(mEnv.getStateString(), mEnv.getStateColor());
 		if (mPrey != null) {
 			PointF preyPos = mPrey.getPosition();
 			if (preyPos != null) {
@@ -302,7 +303,8 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 				if (releaseCountdown < 0) {
 					releaseCountdown = RELEASE_TICKS;
 					++mCaughtCounter;
-					mHUD.setCaught(mCaughtCounter);
+//					mHUD.setCaught(mCaughtCounter);
+					mHUD.setScore(mCaughtCounter);
 				}
 				releaseCountdown--;
 				if (releaseCountdown == 0) {
@@ -311,8 +313,8 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 				}
 			}
 			mCamera.setPreyPosition(preyPos);
-			mHUD.setPreyEnergy(mPrey.getEnergy(), mPrey.getMoodColor());
-			mHUD.setPreyState(mPrey.getStateString());
+//			mHUD.setPreyEnergy(mPrey.getEnergy(), mPrey.getMoodColor());
+//			mHUD.setPreyState(mPrey.getStateString());
 		}
 
 		if (mTool != null) mTool.update();
