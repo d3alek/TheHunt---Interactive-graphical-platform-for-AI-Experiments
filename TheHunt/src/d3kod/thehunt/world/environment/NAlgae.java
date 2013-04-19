@@ -125,4 +125,51 @@ public class NAlgae extends FloatingObject implements Eatable {
 		setN(mSize-1);
 		if (getN() < 1) setToRemove();
 	}
+
+//	public void cut(float a, float b) {
+//		Log.v(TAG, "Cutting algae slope " + a + " adj " +  b);
+//		float rad = getRadius(), centerX = getX();
+//		float x, y, xOrthPos, xOrthNeg, yOrthPos, yOrthNeg, aOrth, bOrth;
+//		for (x = centerX - rad; x < centerX + rad; x += 2*rad/getN()) {
+//			y = a*x + b;
+//			aOrth = -(1/a);
+//			bOrth = -aOrth*x+y;
+//			yOrthPos = xOrthPos*CUT_ADJ + bOrth;
+//			
+//			
+//		}
+//	} 
+	public void cut(PointF dir) {
+		PointF center = new PointF(getX(), getY());
+		PointF putAlgaePoint = new PointF(getX(), getY()), putAlgaePos = new PointF(0, 0), putAlgaeNeg = new PointF(0, 0);
+//		float angleAdj = (float)Math.toDegrees(Math.atan(-dir.y/dir.x));
+//		float angleNeg = (float)Math.toDegrees(Math.atan(dir.y/-dir.x));
+		float angleBase = (float)Math.toDegrees(Math.atan(dir.y/ dir.x));
+		float distanceBetweenSpawns = Math.max(getRadius()/getN(), 2*D3NAlgae.algaeStartSize + 0.01f);
+//		float distanceBetweenSpawns = 0.1f;
+		float SPAWN_ADJ = 0.04f;
+		Log.v(TAG, "Angle is " + angleBase);
+		int i, j, n = getN();
+		PointF newAlgaeSpeed = new PointF(0.001f, 0.001f);
+		int n4;
+		if (n < 4) n4 = 1;
+		else n4 = n/4;
+		for (j = 0; j < 2; ++j) {
+			for (i = 0; i < n4; ++i) {
+				putAlgaePos.set(putAlgaePoint);
+				putAlgaePos.offset(-SPAWN_ADJ*dir.y, SPAWN_ADJ*dir.x);
+				mEnvironment.addNewAlgae(1, putAlgaePos, D3Maths.getRandAngle(), newAlgaeSpeed);
+				putAlgaeNeg.set(putAlgaePoint);
+				putAlgaeNeg.offset(SPAWN_ADJ*dir.y, -SPAWN_ADJ*dir.x);
+				mEnvironment.addNewAlgae(1, putAlgaeNeg, D3Maths.getRandAngle(), newAlgaeSpeed);
+
+				putAlgaePoint.offset(distanceBetweenSpawns*dir.x, distanceBetweenSpawns*dir.y);
+			}
+			putAlgaePoint.set(center);
+//			dir.negate();
+			distanceBetweenSpawns = -distanceBetweenSpawns;
+			putAlgaePoint.offset(distanceBetweenSpawns*dir.x, distanceBetweenSpawns*dir.y);
+		}
+		setToRemove();
+	}
 }

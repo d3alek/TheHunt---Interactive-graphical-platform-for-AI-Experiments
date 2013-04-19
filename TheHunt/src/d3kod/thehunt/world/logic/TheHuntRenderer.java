@@ -29,6 +29,7 @@ import d3kod.thehunt.world.HUD;
 import d3kod.thehunt.world.environment.Environment;
 import d3kod.thehunt.world.floating_text.PlokText;
 import d3kod.thehunt.world.tools.CatchNet;
+import d3kod.thehunt.world.tools.Knife;
 import d3kod.thehunt.world.tools.Tool;
 
 public class TheHuntRenderer implements GLSurfaceView.Renderer {
@@ -133,7 +134,8 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 		sm = new ShaderProgramManager();
 		synchronized (mContext.stateLock) {
 			loadSavedState(sm);
-		}		mTool = new CatchNet(mEnv, tm, mD3GLES20);
+		}		mTool = new CatchNet(mEnv, mD3GLES20);
+//		mTool = new Knife(mEnv, mD3GLES20);
 		mIgnoreNextTouch = -1;
 		mCaughtCounter = 0;
 		mGraphicsInitialized = false;
@@ -404,6 +406,14 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 				if (event.getAction() == MotionEvent.ACTION_UP) {
 					Log.v(TAG, "Stopping long press");
 					mLongPress = false;
+					
+					switch(mContextMenu.getChange()) {
+					case 0:
+						mTool = new CatchNet(mEnv, mD3GLES20); break;
+					case 1:
+						mTool = new Knife(mEnv, mD3GLES20); break;
+					}
+					
 					mContextMenu.hide();
 				}
 //				mTool.cancel();

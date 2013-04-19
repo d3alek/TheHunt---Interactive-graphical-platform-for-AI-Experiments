@@ -22,7 +22,6 @@ public class CatchNet extends D3Sprite implements Tool {
 	
 	private Environment mEnv;
 	private boolean notShown;
-	private TextureManager tm;
 	private float firstY;
 	private float firstX;
 
@@ -35,11 +34,10 @@ public class CatchNet extends D3Sprite implements Tool {
 	
 	private boolean mStarted;
 	
-	public CatchNet(Environment env, TextureManager tm, SpriteManager d3GLES20) {
+	public CatchNet(Environment env, SpriteManager d3GLES20) {
 		super(new PointF(0, 0), d3GLES20);
 		mD3GLES20 = d3GLES20;
 		mEnv = env;
-		this.tm = tm;
 	}
 	@Override
 	public void initGraphic() {

@@ -14,6 +14,7 @@ public class D3NAlgae extends D3Circle {
 	private static final float algaeRad = 0.3f;
 	private static final int verticesNum = 50;
 	private static final float defaultSize = 25f;
+	public static final float algaeStartSize = 0.3f/25;
 	
 	protected D3NAlgae() {
 		super(algaeRad, algaeColor, verticesNum);

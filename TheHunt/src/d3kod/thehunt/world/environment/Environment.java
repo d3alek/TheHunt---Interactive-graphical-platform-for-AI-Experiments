@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Random;
 
 import android.graphics.PointF;
+import android.util.FloatMath;
 import android.util.Log;
 import d3kod.graphics.extra.D3Color;
 import d3kod.graphics.extra.D3Maths;
@@ -47,6 +48,12 @@ public class Environment {
 	
 	public void addNewAlgae(int n, PointF pos, float dirAngle) {
 		data.addFloatingObject(new NAlgae(n, pos, dirAngle, this, mD3GLES20));
+	}
+	
+	public void addNewAlgae(int n, PointF pos, float dirAngle, PointF velocity) {
+		NAlgae algae = new NAlgae(n, pos, dirAngle, this, mD3GLES20);
+		data.addFloatingObject(algae);
+		algae.setVelocity(FloatMath.cos(dirAngle)*velocity.x, FloatMath.sin(dirAngle)*velocity.y);
 	}
 	
 	private void seedAlgae() {
@@ -163,6 +170,16 @@ public class Environment {
 			}
 		}
 		return false;
+	}
+	
+	public NAlgae knifeIntersectsWithAlgae(float knifeX, float knifeY) {
+		for (FloatingObject fo: data.getFloatingObjects()) {
+			if (fo.getType().compareTo(Type.ALGAE) == 0 &&
+					D3Maths.circleContains(fo.getX(), fo.getY(), fo.getRadius(), knifeX, knifeY)) {
+				return (NAlgae)fo;
+			}
+		}
+		return null;
 	}
 
 	public void addPrey(Agent prey) {
