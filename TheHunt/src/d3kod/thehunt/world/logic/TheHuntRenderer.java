@@ -11,6 +11,7 @@ import android.opengl.GLSurfaceView;
 import android.opengl.Matrix;
 import android.util.Log;
 import android.view.MotionEvent;
+import d3kod.graphics.extra.D3Maths;
 import d3kod.graphics.shader.ShaderProgramManager;
 import d3kod.graphics.sprite.SpriteManager;
 import d3kod.graphics.sprite.shapes.D3FadingShape;
@@ -84,6 +85,7 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 	private MyApplication mContext;
 	private HUD mHUD;
 	private int mScore;
+	private TheHuntContextMenu mContextMenu;
 //	private GLText mGLText;
 	/**
 	 * The possible Prey type values (for example, returned from a {@link PreyChangeDialog}.
@@ -180,7 +182,7 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 
 	private void saveState() {
 		Log.v(TAG, "Saving state!");
-//		SaveState state = new SaveState(mEnv.getSprites());
+//		SaveState state = new SeventaveState(mEnv.getSprites());
 		SaveState state = new SaveState(mEnv);
 		mContext.storeToDB(state);
 	}
@@ -227,6 +229,10 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 			mHUD.initGraphics(mD3GLES20);
 //			mHUD.setCaught(mCaughtCounter);
 			mHUD.setScore(mCaughtCounter);
+			
+			mContextMenu = new TheHuntContextMenu(mD3GLES20);
+			mContextMenu.initGraphic();
+			
 			if (mPrey != null) {
 				mPrey.setSpriteManager(mD3GLES20);
 				mPrey.setTextureManager(tm);	
@@ -289,6 +295,7 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 	public void updateWorld() {
 //		Log.v(TAG, "Update world called!");
 		mEnv.update();
+		if (!mContextMenu.isHidden()) mContextMenu.update();
 //		mHUD.setEnvState(mEnv.getStateString(), mEnv.getStateColor());
 		if (mPrey != null) {
 			PointF preyPos = mPrey.getPosition();
@@ -391,13 +398,29 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 					mCamera.move(prevWorld.x - location.x, prevWorld.y - location.y);				
 				}
 			}				
-		
+			
+			else if (mLongPress) {
+				Log.v(TAG, "In long press!");
+				if (event.getAction() == MotionEvent.ACTION_UP) {
+					Log.v(TAG, "Stopping long press");
+					mLongPress = false;
+					mContextMenu.hide();
+				}
+//				mTool.cancel();
+				else {
+					Log.v(TAG, "Handling long press");
+					mContextMenu.handleTouch(location);
+				}
+			}
+				
+//			if (D3Maths.distance(location, locationMean) >)
+//			setFaded
 			else {
 				if (mTool == null || !mTool.handleTouch(event.getAction(), location)) {
 //					Log.v(TAG, "mTool can't handle touch. Ignoring if " + mIgnoreNextTouch);
 					if (mIgnoreNextTouch != event.getAction() && 
-							(event.getAction() == MotionEvent.ACTION_DOWN || // to place food while net is snatching
-							event.getAction() == MotionEvent.ACTION_UP)) { // to place food otherwise
+//							(event.getAction() == MotionEvent.ACTION_DOWN || // to place food while net is snatching
+							event.getAction() == MotionEvent.ACTION_UP) { // to place food otherwise
 						mD3GLES20.putText(new PlokText(location.x, location.y));
 						mEnv.putNoise(location.x, location.y, Environment.LOUDNESS_PLOK);
 						mEnv.putFoodGM(location.x, location.y);
@@ -513,6 +536,7 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 	float[] mPVMatrix = new float[16];
 	private boolean mPreyChange;
 	private PreyType mPreyChangeTo;
+	private boolean mLongPress;
 	
 	public PointF fromScreenToWorld(float touchX, float touchY) {
 		normalizedInPoint[0] = 2f*touchX/mScreenWidthPx - 1;
@@ -529,5 +553,14 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 	public void changePrey(int which) {
 		mPreyChange = true;
 		mPreyChangeTo = PreyType.values()[which];
+	}
+
+	public void reportLongPress(MotionEvent event) {
+		Log.v(TAG, "Long press reported");
+		mLongPress = true;
+		PointF location = fromScreenToWorld(event.getX(), event.getY());
+		mTool.stop(location);
+		mContextMenu.show(location);
+		Log.v(TAG, "Long press registered");
 	}
 }

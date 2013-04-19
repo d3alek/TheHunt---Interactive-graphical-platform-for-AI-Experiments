@@ -222,4 +222,8 @@ abstract public class D3Shape {
 		mScale = mScale*(1-shrinkSpeed);
 		Matrix.scaleM(mMMatrix, 0, (1-shrinkSpeed), (1-shrinkSpeed), 0);
 	}
+
+	public void setFaded() {
+		mColor[3] = 0;
+	}
 }
