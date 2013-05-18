@@ -55,7 +55,6 @@ public class Sensor {
 						}
 					case FOOD_GM: 
 						sensedEvents.add(new EventFood(fo.getX(), fo.getY(), ((Eatable)fo).getNutrition())); break;
-					
 					}
 				}
 				break;

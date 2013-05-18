@@ -10,7 +10,7 @@ import d3kod.graphics.sprite.shapes.D3Shape;
 
 public class D3FoodGM extends D3Shape {
 
-	private static float[] foodColor = {0.2f, 0.2f, 0.2f, 1.0f};
+	private static float[] foodColor = {0.0f, 0.8f, 0.0f, 1.0f};
 	private static int drawType = GLES20.GL_LINE_LOOP;
 	private static final float radius = 0.01f;
 	

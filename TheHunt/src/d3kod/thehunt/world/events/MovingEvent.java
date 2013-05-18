@@ -47,4 +47,10 @@ public abstract class MovingEvent extends Event {
 	public String toString() {
 		return super.toString() + " " + mX + " " + mY;
 	}
+	
+	public int compare(MovingEvent other, float x, float y) {
+		float distOther = D3Maths.distanceToCircle(x, y, other.getX(), other.getY(), other.getRadius());
+		float distThis = D3Maths.distanceToCircle(x, y, this.getX(), this.getY(), this.getRadius());
+		return D3Maths.compareFloats(distThis, distOther);
+	}
 }

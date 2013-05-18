@@ -17,6 +17,12 @@ public class D3Maths {
 		return (float) Math.toDegrees(Math.acos((x1*x2 + y1*y2)/(len1*len2)));
 	}
 
+	/**
+	 * 
+	 * @param f first float number
+	 * @param g second float number
+	 * @return -1 if the first float number is less than the second, 1 if bigger, 0 otherwise
+	 */
 	public static int compareFloats(float f, float g) {
 		if (f < g + EPSILON && f > g - EPSILON) return 0;
 		if (f < g - EPSILON) return -1;

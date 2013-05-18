@@ -6,10 +6,12 @@ import android.util.Log;
 import d3kod.graphics.extra.D3Maths;
 import d3kod.thehunt.agent.prey.D3Prey;
 import d3kod.thehunt.world.environment.Dir;
+import d3kod.thehunt.world.events.EatableEvent;
 import d3kod.thehunt.world.events.Event;
 import d3kod.thehunt.world.events.EventAlgae;
 import d3kod.thehunt.world.events.EventAt;
 import d3kod.thehunt.world.events.EventCurrent;
+import d3kod.thehunt.world.events.EventFood;
 import d3kod.thehunt.world.events.EventLight;
 import d3kod.thehunt.world.events.EventNoise;
 import d3kod.thehunt.world.events.MovingEvent;
@@ -137,10 +139,12 @@ public class WorldModel {
 			float foodX = food.getX();
 			float foodY = food.getY();
 			float foodRadius = food.getRadius();
-			if (!knowFoodLocation() ||
-					D3Maths.distanceToCircle(mHeadX, mHeadY, mNearestFood.getX(), 
+			if (!knowFoodLocation() || 
+					((EatableEvent)mNearestFood).getNutri() < ((EatableEvent)food).getNutri() ||
+					((EatableEvent)mNearestFood).getNutri() == ((EatableEvent)food).getNutri() &&
+					(D3Maths.distanceToCircle(mHeadX, mHeadY, mNearestFood.getX(), 
 							mNearestFood.getY(), mNearestFood.getRadius()) >
-					D3Maths.distanceToCircle(mHeadX, mHeadY, foodX, foodY, foodRadius))
+					D3Maths.distanceToCircle(mHeadX, mHeadY, foodX, foodY, foodRadius)))
 				mNearestFood = food; //TODO: make sure this updates the fish target as well
 				//TODO cache current food distance
 			break;
@@ -229,21 +233,15 @@ public class WorldModel {
 		mNearestFood = recallClosest(mFoodType);
 	}
 	
+	// assumes EventType elements in types are comparable
 	private MovingEvent recallClosest(EventType[] types) {
-		float closestX = INF, closestY = INF, closestRadius = 0;
 		float x, y, radius;
 		MovingEvent closest = null;
 		for (MovingEvent e: mEventMemory) {
 				if (!e.isOfType(types)) continue;
-				x = e.getX();
-				y = e.getY();
-				radius = e.getRadius();
-				if (D3Maths.distanceToCircle(mHeadX, mHeadY, x, y, radius) <
-						D3Maths.distanceToCircle(mHeadX, mHeadY, closestX, closestY, closestRadius)) {
+				if (closest == null) closest = e;
+				else if (e.compare(closest, mHeadX, mHeadY) < 0) {
 					closest = e;
-					closestX = x; 
-					closestY = y;
-					closestRadius = radius;
 				}
 		}
 		
