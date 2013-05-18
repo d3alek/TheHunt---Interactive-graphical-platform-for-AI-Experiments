@@ -312,8 +312,6 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 				if (releaseCountdown < 0) {
 					releaseCountdown = RELEASE_TICKS;
 					++mCaughtCounter;
-//					mHUD.setCaught(mCaughtCounter);
-					mHUD.setScore(mCaughtCounter);
 				}
 				releaseCountdown--;
 				if (releaseCountdown == 0) {
@@ -331,6 +329,8 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 		mCamera.update();
 		
 		mD3GLES20.updateAll();
+		
+		mHUD.setScore(mCaughtCounter*10-mEnv.getPlayerPenalty());
 	}
 
 	public void drawWorld(float interpolation) {

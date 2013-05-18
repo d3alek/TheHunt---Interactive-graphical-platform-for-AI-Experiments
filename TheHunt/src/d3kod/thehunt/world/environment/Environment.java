@@ -30,14 +30,18 @@ public class Environment {
 //	private int mBiomass;
 	private double algaeGrowthChance;
 //	private int mAlgaeNum;
+	private int mPlayerPenalty;
 	
 	
 	public static final int ALGAE_NUM = 300;
 	private static final float NET_INTERSECT_RAD_ADJ = 0.2f;
 	private static final double GROWTH_THRESH = 250;
 	private static final double GROWTH_CONST = 0.1;
+	private static final int ALGAE_NEGATIVE_SCORE = 2;
+	private static final int FOOD_NEGATIVE_SCORE = 1;
 	
 	public Environment(int width, int height, SpriteManager d3gles20) {
+		mPlayerPenalty = 0;
 		mD3GLES20 = d3gles20;
 		data = new EnvironmentData(width, height);
 		data.setGraphics(mD3GLES20);
@@ -231,5 +235,19 @@ public class Environment {
 	
 	public double getAlgaeGrowthChance() {
 		return algaeGrowthChance;
+	}
+
+	public void playerRemoves(FloatingObject fo) {
+		fo.setToRemove();
+		switch(fo.getType()) {
+		case ALGAE:
+			mPlayerPenalty += ((NAlgae)fo).getN()*ALGAE_NEGATIVE_SCORE; break;
+		case FOOD_GM:
+			mPlayerPenalty += FOOD_NEGATIVE_SCORE; break;
+		}
+	}
+
+	public int getPlayerPenalty() {
+		return mPlayerPenalty;
 	}
 }

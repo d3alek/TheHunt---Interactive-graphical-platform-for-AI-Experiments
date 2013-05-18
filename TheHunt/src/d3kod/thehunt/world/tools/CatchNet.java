@@ -1,13 +1,16 @@
 package d3kod.thehunt.world.tools;
 
+import java.util.ArrayList;
+
 import android.graphics.PointF;
 import android.util.Log;
 import android.view.MotionEvent;
 import d3kod.graphics.sprite.D3Sprite;
 import d3kod.graphics.sprite.SpriteManager;
-import d3kod.graphics.texture.TextureManager;
 import d3kod.thehunt.agent.Agent;
 import d3kod.thehunt.world.environment.Environment;
+import d3kod.thehunt.world.environment.FloatingObject;
+import d3kod.thehunt.world.environment.NAlgae;
 import d3kod.thehunt.world.floating_text.PlokText;
 import d3kod.thehunt.world.floating_text.SnatchText;
 
@@ -17,6 +20,7 @@ public class CatchNet extends D3Sprite implements Tool {
 	private static final float MAX_FOOD_PLACEMENT_LENGTH = 0.1f;
 
 	private static final float MAX_NET_LENGTH = 2f;
+
 	
 	private Agent mCaughtPrey;
 	
@@ -33,6 +37,8 @@ public class CatchNet extends D3Sprite implements Tool {
 	private D3CatchNetPath mPathGraphic;
 	
 	private boolean mStarted;
+	private int mNegativeScore;
+	private ArrayList<FloatingObject> mCaughtObjects;
 	
 	public CatchNet(Environment env, SpriteManager d3GLES20) {
 		super(new PointF(0, 0), d3GLES20);
@@ -43,6 +49,7 @@ public class CatchNet extends D3Sprite implements Tool {
 	public void initGraphic() {
 		// Do nothing. Instead, graphics are initialized at each press.
 	}
+	@Override
 	public void update() {
 		if (mPathGraphic == null) return;
 		if (mPathGraphic.fadeDone()) {
@@ -87,6 +94,12 @@ public class CatchNet extends D3Sprite implements Tool {
 					Log.v(TAG, "I caught the prey!");
 					prey.setCaught(true);
 				}
+				for (FloatingObject fo:mEnv.seeObjects(getX(), getY(), getRadius())) {
+					if (mCaughtObjects.contains(fo)) continue;
+					Log.v(TAG, "catching floating object " + fo.getType());
+					mCaughtObjects.add(fo);
+					mEnv.playerRemoves(fo);
+				}
 				
 			}
 		}
@@ -103,6 +116,8 @@ public class CatchNet extends D3Sprite implements Tool {
 		mStarted = true;
 		notShown = true;
 		showSnatchText = false;
+		mNegativeScore = 0;
+		mCaughtObjects = new ArrayList<FloatingObject>();
 		
 		mPathGraphic = new D3CatchNetPath();
 		setPosition(new PointF(0, 0));
