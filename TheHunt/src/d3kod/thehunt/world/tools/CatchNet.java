@@ -56,16 +56,9 @@ public class CatchNet extends D3Sprite implements Tool {
 			mPathGraphic = null;
 		}
 		else if (mPathGraphic.isFinished() && !mPathGraphic.isInvalid() && mNetGraphic == null) {
-			if (mEnv.netIntersectsWithAlgae(mPathGraphic.getCenterX(), mPathGraphic.getCenterY(), mPathGraphic.getRadius())) {
-				mPathGraphic.setInvalid();
-				//TODO: block text
-//				mD3GLES20.putExpiringShape(new BlockedText(mNetGraphic.getCenterX(), mNetGraphic.getCenterY(), tm, mD3GLES20.getShaderManager()));
-			}
-			else {
-				initNetGraphic();
-				mD3GLES20.putText(new PlokText(mPathGraphic.getCenterX(), mPathGraphic.getCenterY()));
-				mEnv.putNoise(mPathGraphic.getCenterX(), mPathGraphic.getCenterY(), Environment.LOUDNESS_PLOK);				
-			}
+			initNetGraphic();
+			mD3GLES20.putText(new PlokText(mPathGraphic.getCenterX(), mPathGraphic.getCenterY()));
+			mEnv.putNoise(mPathGraphic.getCenterX(), mPathGraphic.getCenterY(), Environment.LOUDNESS_PLOK);				
 		}
 		if (mNetGraphic == null) return;
 		if (mNetGraphic.getScale() < 1) {

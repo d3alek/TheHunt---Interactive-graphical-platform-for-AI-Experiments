@@ -162,19 +162,19 @@ public class Environment {
 	public void putNoise(float x, float y, float loudness) {
 		mNoiseEvents.add(new EventNoise(x, y, loudness));
 	}
-
-	public boolean netIntersectsWithAlgae(float centerX, float centerY,
-			float radius) {
-//		Log.v(TAG, "Net intersects test started with " + data.getFloatingObjects().size() + " fo");
-		for (FloatingObject fo: data.getFloatingObjects()) {
-//			Log.v(TAG, "Net intersects test fo radius is " + fo.getRadius());
-			if (fo.getType().compareTo(Type.ALGAE) == 0 &&
-					D3Maths.circlesIntersect(centerX, centerY, radius - NET_INTERSECT_RAD_ADJ, fo.getX(), fo.getY(), fo.getRadius())) {
-				return true;
-			}
-		}
-		return false;
-	}
+//
+//	public boolean netIntersectsWithAlgae(float centerX, float centerY,
+//			float radius) {
+////		Log.v(TAG, "Net intersects test started with " + data.getFloatingObjects().size() + " fo");
+//		for (FloatingObject fo: data.getFloatingObjects()) {
+////			Log.v(TAG, "Net intersects test fo radius is " + fo.getRadius());
+//			if (fo.getType().compareTo(Type.ALGAE) == 0 &&
+//					D3Maths.circlesIntersect(centerX, centerY, radius, fo.getX(), fo.getY(), fo.getRadius())) {
+//				return true;
+//			}
+//		}
+//		return false;
+//	}
 	
 	public NAlgae knifeIntersectsWithAlgae(float knifeX, float knifeY) {
 		for (FloatingObject fo: data.getFloatingObjects()) {
