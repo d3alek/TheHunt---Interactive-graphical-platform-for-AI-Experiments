@@ -1,8 +1,11 @@
 package d3kod.thehunt.world;
 
+import java.util.Arrays;
+
 import android.graphics.PointF;
 import android.opengl.GLES20;
 import android.opengl.Matrix;
+import android.util.Log;
 import d3kod.graphics.extra.D3Maths;
 import d3kod.graphics.extra.Utilities;
 import d3kod.graphics.sprite.D3Sprite;
@@ -51,6 +54,7 @@ public class Camera extends D3Sprite {
 	}
 	
 	private static final String TAG = "Camera";
+	private static final float ZOOM_SPACING_THRESH = 8.0f;
 	private float mCenterX;
 	private float mCenterY;
 	private float mViewLeft;
@@ -59,23 +63,40 @@ public class Camera extends D3Sprite {
 	private boolean recalcViewMatrix;
 	private float mWidth;
 	private float mHeight;
+	private float mWidthScaled, mHeightScaled;
+	private float mScale;
 	private float mWidthToHeightRatio;
 	private boolean mPointerShown;
 	private PointF mPreyPos;
+	private float[] mProjMatrix;
+	private float mRatio;
 
 	public Camera(float screenToWorldWidth, float screenToWorldHeight, float widthToHeightRatio, SpriteManager d3gles20) {
 		super(new PointF(0, 0), d3gles20);
 		mCenterX = mCenterY = 0;
 		mVMatrix = new float[16];
+		mProjMatrix = new float[16];
 		mWidth = 2*screenToWorldWidth;//*mScreenWidthPx/(float)mScreenHeightPx;
 	    mHeight = 2*screenToWorldHeight;
+	    mWidthScaled = mWidth; 
+	    mHeightScaled = mHeight;
 	    mWidthToHeightRatio = widthToHeightRatio;
+	    mScale = 1;
+	    mRatio = widthToHeightRatio;
 	    
 	    hidePreyPointer();
 	    
+	    calcProjMatrix();
 	    calcViewMatrix();
 	}
 
+	private void calcProjMatrix() {
+	    if (mWidth > mHeight) Matrix.frustumM(mProjMatrix, 0, -mRatio*mScale, mRatio*mScale, -mScale, mScale, 1, 10);
+		else Matrix.frustumM(mProjMatrix, 0, -mScale, mScale, -mScale*mRatio, mScale*mRatio, 1, 10);
+//	    mWidthScaled = mWidth/mScale;
+//	    mHeightScaled = mHeight/mScale;
+	}
+	
 	@Override
 	public void initGraphic() {
 		mGraphic = new PreyPointerShape();
@@ -95,64 +116,131 @@ public class Camera extends D3Sprite {
 		mPreyPos = preyPos;
 	}
 	
-	public void move(float dx, float dy) {
+	public void move(float dx, float dy, float prevSpacing, float thisSpacing) {
 		recalcViewMatrix = false;
-		if (D3Maths.rectContains(0, 0, 
-				EnvironmentData.mScreenWidth - mWidth * mWidthToHeightRatio, 
-				EnvironmentData.mScreenHeight - mHeight, 
-				mCenterX + dx, mCenterY)) {
-			mCenterX += dx;
-			recalcViewMatrix = true;
-		}
-		if (D3Maths.rectContains(0, 0, 
-				EnvironmentData.mScreenWidth - mWidth * mWidthToHeightRatio, 
-				EnvironmentData.mScreenHeight - mHeight, 
-				mCenterX, mCenterY+dy)) {
-			mCenterY += dy;
-			recalcViewMatrix = true;
-		}
-		if (recalcViewMatrix) {
+		
+		if (Math.abs(prevSpacing - thisSpacing) > ZOOM_SPACING_THRESH) {
+			//ZOOM
+			Log.v(TAG, "Init zoom!");
+			if (prevSpacing > thisSpacing && mWidthScaled*mWidthToHeightRatio*mScale >= EnvironmentData.mScreenWidth) {
+				Log.v(TAG, "Changing center from " + mCenterX + " " + mCenterY + " to " + EnvironmentData.mScreenWidth/2
+						+ " " + EnvironmentData.mScreenHeight/2);
+				mCenterX = 0;
+				mCenterY = 0;
+				mScale = EnvironmentData.mScreenHeight/mHeight;
+					
+				calcViewMatrix();
+				calcProjMatrix();
+				return;
+			}
+			mScale *= prevSpacing/thisSpacing;
+			Log.v(TAG, "mScale is " + mScale);
+			
+			float mLeftX = mCenterX - mWidthScaled * mWidthToHeightRatio * mScale/2;
+			float mRightX = mLeftX + mWidthScaled * mWidthToHeightRatio * mScale;
+			float mBottomY = mCenterY - mHeightScaled * mScale/2;
+			float mTopY = mBottomY + mHeightScaled * mScale;
+			
+			Log.v(TAG, "Coords " + mLeftX + " " + mRightX + " " + mBottomY + " " + mTopY);
+			
+			if (mLeftX < -EnvironmentData.mScreenWidth/2) {
+				Log.v(TAG, "Adjusting centerX because of left");
+				mCenterX = -EnvironmentData.mScreenWidth/2 + mWidthScaled * mWidthToHeightRatio * mScale/2;
+			}
+			
+			else if (mRightX > EnvironmentData.mScreenWidth/2) {
+				Log.v(TAG, "Adjusting centerX because of right");
+				mCenterX = EnvironmentData.mScreenWidth/2 - mWidthScaled * mWidthToHeightRatio * mScale/2;
+			}
+			
+			if (mBottomY < -EnvironmentData.mScreenHeight/2) {
+				Log.v(TAG, "Adjusting centerY because of bottom");
+				mCenterY = -EnvironmentData.mScreenHeight/2 + mHeightScaled * mScale/2;
+			}
+			
+			else if (mTopY > EnvironmentData.mScreenHeight/2) {
+				Log.v(TAG, "Adjusting centerY because of top");
+				mCenterY = EnvironmentData.mScreenHeight/2 - mHeightScaled * mScale / 2;
+			}
+			
+			if (!D3Maths.rectContains(0, 0, 
+					EnvironmentData.mScreenWidth - mWidthScaled * mWidthToHeightRatio*mScale, 
+					EnvironmentData.mScreenHeight - mHeightScaled*mScale, 
+					mCenterX, mCenterY)) {
+				mCenterX += dx;
+				recalcViewMatrix = true;
+			}
+			if (D3Maths.rectContains(0, 0, 
+					EnvironmentData.mScreenWidth - mWidthScaled * mWidthToHeightRatio*mScale, 
+					EnvironmentData.mScreenHeight - mHeightScaled*mScale, 
+					mCenterX, mCenterY+dy)) {
+				mCenterY += dy;
+				recalcViewMatrix = true;
+			}
 			calcViewMatrix();
+			calcProjMatrix();
+		}
+		else {
+			if (D3Maths.rectContains(0, 0, 
+					EnvironmentData.mScreenWidth - mWidthScaled * mWidthToHeightRatio*mScale, 
+					EnvironmentData.mScreenHeight - mHeightScaled*mScale, 
+					mCenterX + dx, mCenterY)) {
+				mCenterX += dx;
+				recalcViewMatrix = true;
+			}
+			if (D3Maths.rectContains(0, 0, 
+					EnvironmentData.mScreenWidth - mWidthScaled * mWidthToHeightRatio*mScale, 
+					EnvironmentData.mScreenHeight - mHeightScaled*mScale, 
+					mCenterX, mCenterY+dy)) {
+				mCenterY += dy;
+				recalcViewMatrix = true;
+			}
+			if (recalcViewMatrix) {
+				calcViewMatrix();
+			}
 		}
 	}
 	
 	private void calcViewMatrix() {
-		mViewLeft = -mWidth/2 + mCenterX;
-		mViewBottom = -mHeight/2 + mCenterY;
+		mViewLeft = -mWidthScaled/2 + mCenterX;
+		mViewBottom = -mHeightScaled/2 + mCenterY;
 		Matrix.orthoM(mVMatrix, 0, 
 				mViewLeft,
-				mViewLeft+mWidth, 
+				mViewLeft+mWidthScaled, 
 				mViewBottom, 
-				mViewBottom+mHeight, 0.1f, 100f);
+				mViewBottom+mHeightScaled, 0.1f, 100f);
 	}
 	
 	public float[] toCenteredViewMatrix() {
 		float[] viewMatrix = new float[16];
-		mViewLeft = -mWidth/2;
-		mViewBottom = -mHeight/2;
+		mViewLeft = -mWidthScaled/2;
+		mViewBottom = -mHeightScaled/2;
 		Matrix.orthoM(viewMatrix, 0, 
 				mViewLeft,
-				mViewLeft+mWidth, 
+				mViewLeft+mWidthScaled, 
 				mViewBottom, 
-				mViewBottom+mHeight, 0.1f, 100f);
+				mViewBottom+mHeightScaled, 0.1f, 100f);
 		return viewMatrix;
 	}
 
 	public float[] toViewMatrix() {
 		return mVMatrix;
 	}
+	public float[] toProjMatrix() {
+		return mProjMatrix;
+	}
 
 	public boolean contains(PointF point) {
 		if (point == null) {
 			return true;
 		}
-		return D3Maths.rectContains(mCenterX, mCenterY, mWidth * mWidthToHeightRatio, mHeight, point.x, point.y);
+		return D3Maths.rectContains(mCenterX, mCenterY, mWidthScaled * mWidthToHeightRatio * mScale, mHeightScaled * mScale, point.x, point.y);
 	}
 	public float getWidth() {
-		return mWidth * mWidthToHeightRatio;
+		return mWidthScaled * mWidthToHeightRatio;
 	}
 	public float getHeight() {
-		return mHeight;
+		return mHeightScaled;
 	}
 
 	public void showPreyPointer() {
@@ -169,10 +257,10 @@ public class Camera extends D3Sprite {
 			return;
 		}
 		if (mGraphic != null) mGraphic.noFade();
-		float mLeftX = mCenterX - mWidth * mWidthToHeightRatio/2;
-		float mRightX = mLeftX + mWidth * mWidthToHeightRatio;
-		float mBottomY = mCenterY - mHeight/2;
-		float mTopY = mBottomY + mHeight;
+		float mLeftX = mCenterX - mWidthScaled * mWidthToHeightRatio * mScale/2;
+		float mRightX = mLeftX + mWidthScaled * mWidthToHeightRatio * mScale;
+		float mBottomY = mCenterY - mHeightScaled * mScale/2;
+		float mTopY = mBottomY + mHeightScaled * mScale;
 		float mPreyPointerX, mPreyPointerY;
 		Dir facingDir = Dir.UNDEFINED;
 		if (preyPosition.x < mLeftX) {
@@ -199,5 +287,15 @@ public class Camera extends D3Sprite {
 		}
 
 		if (mGraphic != null) mGraphic.setPosition(mPreyPointerX, mPreyPointerY, facingDir.getAngle());
+	}
+
+	public float[] getUnscaledProjMatrix() {
+		float saveScale = mScale;
+		mScale = 1f;
+		calcProjMatrix();
+		float[] mat = Arrays.copyOf(toProjMatrix(), 16);
+		mScale = saveScale;
+		calcProjMatrix();
+		return mat;
 	}
 }

@@ -1,14 +1,12 @@
 package d3kod.thehunt;
 
 import java.io.File;
-import java.util.concurrent.locks.ReentrantLock;
 
 import org.acra.ACRA;
 import org.acra.annotation.ReportsCrashes;
 
 import android.app.Application;
 import android.content.Context;
-import android.hardware.Camera.PreviewCallback;
 import android.util.Log;
 
 import com.db4o.Db4oEmbedded;

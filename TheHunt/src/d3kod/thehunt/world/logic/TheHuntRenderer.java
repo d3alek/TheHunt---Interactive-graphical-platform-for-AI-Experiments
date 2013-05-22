@@ -87,6 +87,7 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 	private HUD mHUD;
 	private int mScore;
 	private TheHuntContextMenu mContextMenu;
+	private float mScale;
 //	private GLText mGLText;
 	/**
 	 * The possible Prey type values (for example, returned from a {@link PreyChangeDialog}.
@@ -139,6 +140,7 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 		mIgnoreNextTouch = -1;
 		mCaughtCounter = 0;
 		mGraphicsInitialized = false;
+		mScale = 1;
 	}
 
 	private SpriteManager loadSavedState(ShaderProgramManager shaderManager) {
@@ -247,9 +249,9 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 		}
 
 		float ratio = (float) worldWidthPx / worldHeightPx;
-
-		if (width > height) Matrix.frustumM(mProjMatrix, 0, -ratio, ratio, -1, 1, 1, 10);
-		else Matrix.frustumM(mProjMatrix, 0, -1, 1, -1/ratio, 1/ratio, 1, 10);
+//
+//		if (width > height) Matrix.frustumM(mProjMatrix, 0, -ratio/mScale, ratio/mScale, mScale, mScale, 1, 10);
+//		else Matrix.frustumM(mProjMatrix, 0, -mScale, mScale, -mScale/ratio, mScale/ratio, 1, 10);
 	}
 	/**
 	 * Here we do our drawing
@@ -357,8 +359,8 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 		
 		GLES20.glClear(clearMask);
 		
-		float[] vpMatrix = new float[16];
-		Matrix.multiplyMM(vpMatrix, 0, mProjMatrix, 0, mVMatrix, 0);
+//		float[] vpMatrix = new float[16];
+//		Matrix.multiplyMM(vpMatrix, 0, mProjMatrix, 0, mVMatrix, 0);
 		
 //		mGLText.drawTexture( 100, 100, vpMatrix);            // Draw the Entire Texture
 		
@@ -369,6 +371,7 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 //		mGLText.end();
 		
 		mVMatrix = mCamera.toViewMatrix();
+		mProjMatrix = mCamera.toProjMatrix();
 		
 		if (mPrey != null && mPrey.getGraphic() != null) mCamera.setPreyPointerPosition(mPrey.getPredictedPosition());
 		
@@ -396,8 +399,17 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 		else {
 			if (mScrolling) {
 				if (prev != null) {
+					float prevSpacing, thisSpacing;
+					try {
+						prevSpacing = D3Maths.distance(prev.getX(0), prev.getY(0), prev.getX(1), prev.getY(1));
+						thisSpacing = D3Maths.distance(event.getX(0), event.getY(0), event.getX(1), event.getY(1));
+					} catch (IllegalArgumentException e) {
+						Log.e(TAG, "Illegal argument while scrolling/zooming " + e.getStackTrace());
+						prevSpacing = 0;
+						thisSpacing = 0;
+					}
 					PointF prevWorld = fromScreenToWorld(prev.getX(), prev.getY());
-					mCamera.move(prevWorld.x - location.x, prevWorld.y - location.y);				
+					mCamera.move(prevWorld.x - location.x, prevWorld.y - location.y, prevSpacing, thisSpacing);				
 				}
 			}				
 			

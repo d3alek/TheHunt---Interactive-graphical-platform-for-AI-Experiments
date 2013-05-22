@@ -19,7 +19,7 @@ public class HUD {
 		public void draw(GLText glText, float[] projMatrix, float[] viewMatrix) {
 //			float[] idMatrix = new float[16];
 //			Matrix.setIdentityM(idMatrix, 0);
-			super.draw(glText, projMatrix, mViewMatrix);
+			super.draw(glText, mProjMatrix, mViewMatrix);
 		}
 //		@Override
 //		protected void drawText(GLText glText, String text, float x, float y,
@@ -43,6 +43,8 @@ public class HUD {
 
 	private HUDText mScoreText;
 	private HUDText mScore;
+	private Camera mCamera;
+	private float[] mProjMatrix;
 	
 	private static final float NORMAL_TEXT_SIZE = 2.0f;
 	private static final float SCORE_VERTICAL_ADJ = 0.15f;
@@ -69,6 +71,7 @@ public class HUD {
 		
 		mScoreText = new HUDText("Score: ", NORMAL_TEXT_SIZE, mScoreTextPos, true);
 		mScore = new HUDText("undef", NORMAL_TEXT_SIZE, false);
+		mCamera = camera;
 		
 //		float caughtTextPosX = -camera.getWidth()/2 + posXAdj;
 //		float caughtTextPosY = camera.getHeight()/2 - posYAdj;
@@ -88,6 +91,7 @@ public class HUD {
 	}
 	public void initGraphics(SpriteManager spriteManager) {
 		mSpriteManager = spriteManager;
+		mProjMatrix = mCamera.getUnscaledProjMatrix();
 		spriteManager.putText(mScoreText);
 		mScore.setPosition(mScoreText.getX() + mScoreText.getLength(spriteManager.getTextManager())/2, 
 				mScoreText.getY() - mScoreText.getHeight(spriteManager.getTextManager())/2, 0);
