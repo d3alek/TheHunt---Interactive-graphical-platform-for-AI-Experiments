@@ -54,6 +54,14 @@ public class Environment {
 		data.addFloatingObject(new NAlgae(n, pos, dirAngle, this, mD3GLES20));
 	}
 	
+	public void addNewAlgae(int n, PointF pos, PointF dirVector,
+			PointF velocity) {
+		NAlgae algae = new NAlgae(n, pos, dirVector, this, mD3GLES20);
+		data.addFloatingObject(algae);
+		algae.setVelocity(dirVector.x*velocity.x, dirVector.y*velocity.y);
+//		algae.setVelocity(vx, vy)
+		
+	}
 	public void addNewAlgae(int n, PointF pos, float dirAngle, PointF velocity) {
 		NAlgae algae = new NAlgae(n, pos, dirAngle, this, mD3GLES20);
 		data.addFloatingObject(algae);
@@ -250,4 +258,5 @@ public class Environment {
 	public int getPlayerPenalty() {
 		return mPlayerPenalty;
 	}
+
 }

@@ -19,9 +19,18 @@ public class NAlgae extends FloatingObject implements Eatable {
 	private Environment mEnvironment;
 
 	public NAlgae(int n, PointF pos, float dirAngle, Environment environment, SpriteManager d3gles20) {
+		this(n, pos, environment, d3gles20);
+		setVelocity(FloatMath.cos(dirAngle)*getSpeed(), FloatMath.sin(dirAngle)*getSpeed());
+	}
+	
+	public NAlgae(int n, PointF pos, PointF dirVector, Environment environment, SpriteManager d3gles20) {
+		this(n, pos, environment, d3gles20);
+		setVelocity(dirVector.x*getSpeed(), dirVector.y*getSpeed());
+	}
+	
+	public NAlgae(int n, PointF pos, Environment environment, SpriteManager d3gles20) {
 		super(pos.x, pos.y, Type.ALGAE, d3gles20);
 		mSize = n;
-		setVelocity(FloatMath.cos(dirAngle)*getSpeed(), FloatMath.sin(dirAngle)*getSpeed());
 		mEnvironment = environment;
 	}
 	
@@ -139,7 +148,7 @@ public class NAlgae extends FloatingObject implements Eatable {
 //			
 //		}
 //	} 
-	public void cut(PointF dir) {
+	public void cut(PointF dir) { 
 		PointF center = new PointF(getX(), getY());
 		PointF putAlgaePoint = new PointF(getX(), getY()), putAlgaePos = new PointF(0, 0), putAlgaeNeg = new PointF(0, 0);
 //		float angleAdj = (float)Math.toDegrees(Math.atan(-dir.y/dir.x));
@@ -147,29 +156,46 @@ public class NAlgae extends FloatingObject implements Eatable {
 		float angleBase = (float)Math.toDegrees(Math.atan(dir.y/ dir.x));
 		float distanceBetweenSpawns = Math.max(getRadius()/getN(), 2*D3NAlgae.algaeStartSize + 0.01f);
 //		float distanceBetweenSpawns = 0.1f;
-		float SPAWN_ADJ = 0.04f;
-		Log.v(TAG, "Angle is " + angleBase);
+//		float SPAWN_ADJ = 0.02f;
+		Log.v(TAG, "Angle is " + angleBase + " dir is " + dir.x + " " + dir.y);
 		int i, j, n = getN();
+		float SPAWN_ADJ = D3NAlgae.algaeStartSize*(n+1)/2; 
 		PointF newAlgaeSpeed = new PointF(0.001f, 0.001f);
 		int n4;
 		if (n < 4) n4 = 1;
 		else n4 = n/4;
-		for (j = 0; j < 2; ++j) {
-			for (i = 0; i < n4; ++i) {
+		int n1 = n / 2, n2 = n / 2;
+		if (n % 2 == 0) {
+			if (Math.random() % 2 == 0) {
+				n1 += 1;
+			}
+			else n2 += 1;
+		}
+		else {
+		}
+		Log.v(TAG, "Angles are " + Math.toDegrees(Math.atan(-dir.x/dir.y)) + " " + Math.toDegrees(Math.atan(dir.x/-dir.y)));
+//		for (j = 0; j < 2; ++j) { //TODO: Make it split on 2
+//			for (i = 0; i < n4; ++i) {
 				putAlgaePos.set(putAlgaePoint);
 				putAlgaePos.offset(-SPAWN_ADJ*dir.y, SPAWN_ADJ*dir.x);
-				mEnvironment.addNewAlgae(1, putAlgaePos, D3Maths.getRandAngle(), newAlgaeSpeed);
+//				mEnvironment.addNewAlgae(1, putAlgaePos, D3Maths.getRandAngle(), newAlgaeSpeed);
+//				mEnvironment.addNewAlgae(1, putAlgaePos, 0, newAlgaeSpeed);
+				mEnvironment.addNewAlgae(n1, putAlgaePos, new PointF(-dir.y, dir.x), newAlgaeSpeed);
+				
+//				mEnvironment.add
 				putAlgaeNeg.set(putAlgaePoint);
 				putAlgaeNeg.offset(SPAWN_ADJ*dir.y, -SPAWN_ADJ*dir.x);
-				mEnvironment.addNewAlgae(1, putAlgaeNeg, D3Maths.getRandAngle(), newAlgaeSpeed);
+//				mEnvironment.addNewAlgae(1, putAlgaeNeg, D3Maths.getRandAngle(), newAlgaeSpeed);
+//				mEnvironment.addNewAlgae(1, putAlgaeNeg, 0, newAlgaeSpeed);
+				mEnvironment.addNewAlgae(n2, putAlgaeNeg, new PointF(dir.y, -dir.x), newAlgaeSpeed);
 
 				putAlgaePoint.offset(distanceBetweenSpawns*dir.x, distanceBetweenSpawns*dir.y);
-			}
-			putAlgaePoint.set(center);
-//			dir.negate();
-			distanceBetweenSpawns = -distanceBetweenSpawns;
-			putAlgaePoint.offset(distanceBetweenSpawns*dir.x, distanceBetweenSpawns*dir.y);
-		}
+//			}
+//			putAlgaePoint.set(center);
+////			dir.negate();
+//			distanceBetweenSpawns = -distanceBetweenSpawns;
+//			putAlgaePoint.offset(distanceBetweenSpawns*dir.x, distanceBetweenSpawns*dir.y);
+//		}
 		setToRemove();
 	}
 }
