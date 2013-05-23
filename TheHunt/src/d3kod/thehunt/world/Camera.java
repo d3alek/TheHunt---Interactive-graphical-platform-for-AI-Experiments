@@ -37,10 +37,10 @@ public class Camera extends D3Sprite {
 		@Override
 		public void setPosition(float x, float y, float angleDeg) {
 			switch((int)angleDeg) {
-			case 0: y -= pointerSize/2; break; // dir is N
-			case 90: x += pointerSize/2; break; // dir is W
-			case -90: x -= pointerSize/2; break; // dir is E
-			case 180: y += pointerSize/2; break; // dir is S;
+			case 0: y -= pointerSize*getScale()/2; break; // dir is N
+			case 90: x += pointerSize*getScale()/2; break; // dir is W
+			case -90: x -= pointerSize*getScale()/2; break; // dir is E
+			case 180: y += pointerSize*getScale()/2; break; // dir is S;
 			}
 			
 			super.setPosition(x, y, angleDeg);
@@ -49,6 +49,12 @@ public class Camera extends D3Sprite {
 		@Override
 		public float getRadius() {
 			throw new UnsupportedOperationException();
+		}
+		
+		@Override
+		public void draw(float[] mVMatrix, float[] mProjMatrix,
+				float interpolation) {
+			super.draw(mVMatrix, mProjMatrix, interpolation);
 		}
 
 	}
@@ -69,6 +75,7 @@ public class Camera extends D3Sprite {
 	private boolean mPointerShown;
 	private PointF mPreyPos;
 	private float[] mProjMatrix;
+	private float[] mUnscaledProjMatrix;
 	private float mRatio;
 
 	public Camera(float screenToWorldWidth, float screenToWorldHeight, float widthToHeightRatio, SpriteManager d3gles20) {
@@ -83,7 +90,7 @@ public class Camera extends D3Sprite {
 	    mWidthToHeightRatio = widthToHeightRatio;
 	    mScale = 1;
 	    mRatio = widthToHeightRatio;
-	    
+	    mUnscaledProjMatrix = getUnscaledProjMatrix();
 	    hidePreyPointer();
 	    
 	    calcProjMatrix();
@@ -93,6 +100,7 @@ public class Camera extends D3Sprite {
 	private void calcProjMatrix() {
 	    if (mWidth > mHeight) Matrix.frustumM(mProjMatrix, 0, -mRatio*mScale, mRatio*mScale, -mScale, mScale, 1, 10);
 		else Matrix.frustumM(mProjMatrix, 0, -mScale, mScale, -mScale*mRatio, mScale*mRatio, 1, 10);
+	    if (mGraphic != null) mGraphic.setScale(mScale);
 //	    mWidthScaled = mWidth/mScale;
 //	    mHeightScaled = mHeight/mScale;
 	}
