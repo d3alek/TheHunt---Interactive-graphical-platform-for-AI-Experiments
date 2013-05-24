@@ -413,32 +413,32 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 				}
 			}				
 			
-			else if (mLongPress) {
-				Log.v(TAG, "In long press!");
-				if (event.getAction() == MotionEvent.ACTION_UP) {
-					Log.v(TAG, "Stopping long press");
-					mLongPress = false;
-					
-					switch(mContextMenu.getChange()) {
-					case 0:
-						mTool = new CatchNet(mEnv, mD3GLES20); break;
-					case 1:
-						mTool = new Knife(mEnv, mD3GLES20); break;
-					}
-					
-					mContextMenu.hide();
-				}
-//				mTool.cancel();
-				else {
-					Log.v(TAG, "Handling long press");
-					mContextMenu.handleTouch(location);
-				}
-			}
+//			else if (mLongPress) {
+//				Log.v(TAG, "In long press!");
+//				if (event.getAction() == MotionEvent.ACTION_UP) {
+//					Log.v(TAG, "Stopping long press");
+//					mLongPress = false;
+//					
+//					switch(mContextMenu.getChange()) {
+//					case 0:
+//						mTool = new CatchNet(mEnv, mD3GLES20); break;
+//					case 1:
+//						mTool = new Knife(mEnv, mD3GLES20); break;
+//					}
+//					
+//					mContextMenu.hide();
+//				}
+////				mTool.cancel();
+//				else {
+//					Log.v(TAG, "Handling long press");
+//					mContextMenu.handleTouch(location);
+//				}
+//			}
 				
 //			if (D3Maths.distance(location, locationMean) >)
 //			setFaded
 			else {
-				if (mTool == null || !mTool.handleTouch(event.getAction(), location)) {
+				if (!mHUD.handleTouch(new PointF(event.getX(), event.getY()), event.getAction()) && (mTool == null || !mTool.handleTouch(event.getAction(), location))) {
 //					Log.v(TAG, "mTool can't handle touch. Ignoring if " + mIgnoreNextTouch);
 					if (mIgnoreNextTouch != event.getAction() && 
 //							(event.getAction() == MotionEvent.ACTION_DOWN || // to place food while net is snatching
@@ -577,12 +577,12 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 		mPreyChangeTo = PreyType.values()[which];
 	}
 
-	public void reportLongPress(MotionEvent event) {
-		Log.v(TAG, "Long press reported");
-		mLongPress = true;
-		PointF location = fromScreenToWorld(event.getX(), event.getY());
-		mTool.stop(location);
-		mContextMenu.show(location);
-		Log.v(TAG, "Long press registered");
-	}
+//	public void reportLongPress(MotionEvent event) {
+//		Log.v(TAG, "Long press reported");
+//		mLongPress = true;
+//		PointF location = fromScreenToWorld(event.getX(), event.getY());
+//		mTool.stop(location);
+//		mContextMenu.show(location);
+//		Log.v(TAG, "Long press registered");
+//	}
 }

@@ -1,6 +1,8 @@
 package d3kod.thehunt.world;
 
 import android.graphics.PointF;
+import android.util.Log;
+import android.view.MotionEvent;
 import d3kod.graphics.sprite.SpriteManager;
 import d3kod.graphics.sprite.shapes.D3FadingText;
 import d3kod.graphics.text.GLText;
@@ -43,11 +45,14 @@ public class HUD {
 
 	private HUDText mScoreText;
 	private HUDText mScore;
+	private Palette mPalette;
 	private Camera mCamera;
 	private float[] mProjMatrix;
+	private Object prevTouch;
 	
 	private static final float NORMAL_TEXT_SIZE = 2.0f;
 	private static final float SCORE_VERTICAL_ADJ = 0.15f;
+	private static final String TAG = "HUD";
 	
 //	private HUDText mCaughtText;
 //	private HUDText mPreyEnergyText;
@@ -63,7 +68,7 @@ public class HUD {
 	
 	public HUD(Camera camera) {
 		mViewMatrix = camera.toCenteredViewMatrix();
-		
+		mProjMatrix = camera.getUnscaledProjMatrix();
 		float scoreTextPosX = 0;
 		float scoreTextPosY = camera.getHeight()/2 - SCORE_VERTICAL_ADJ;
 		
@@ -91,11 +96,13 @@ public class HUD {
 	}
 	public void initGraphics(SpriteManager spriteManager) {
 		mSpriteManager = spriteManager;
-		mProjMatrix = mCamera.getUnscaledProjMatrix();
+		
 		spriteManager.putText(mScoreText);
 		mScore.setPosition(mScoreText.getX() + mScoreText.getLength(spriteManager.getTextManager())/2, 
 				mScoreText.getY() - mScoreText.getHeight(spriteManager.getTextManager())/2, 0);
 		spriteManager.putText(mScore);
+		mPalette = new Palette(new PointF(0, 0), spriteManager, mProjMatrix, mViewMatrix);
+		mPalette.initGraphic();
 		
 //		mSpriteManager.putText(mCaughtText);
 //		mSpriteManager.putText(mPreyEnergyText);
@@ -134,6 +141,25 @@ public class HUD {
 //	}
 	public void setScore(int mCaughtCounter) {
 		mScore.setText("" + mCaughtCounter);
+	}
+	
+	public void showPalette(PointF pos) {
+		mPalette.setPosition(pos);
+		mPalette.show();
+	}
+	
+	public void hidePalette() {
+		mPalette.hide();
+	}
+	public boolean handleTouch(PointF touch, int action) {
+		if (action == MotionEvent.ACTION_DOWN) {
+			Log.v(TAG, "Showing palette");
+			showPalette(touch);
+			prevTouch = touch;
+			return true;
+		}
+		
+		return false;
 	}
 
 }

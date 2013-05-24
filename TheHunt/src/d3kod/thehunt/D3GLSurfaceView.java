@@ -33,7 +33,7 @@ public class D3GLSurfaceView extends GLSurfaceView {
     			public void run() {
     				
     				Log.v(TAG, "Long press detected!");
-    				mRenderer.reportLongPress(e);
+//    				mRenderer.reportLongPress(e);
     			}
     		});
         	}
