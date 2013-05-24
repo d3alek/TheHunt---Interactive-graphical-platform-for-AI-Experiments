@@ -50,7 +50,6 @@ public class Palette extends D3Sprite {
 
 	public boolean handleTouch(PointF touch) {
 		if (mGraphic.fadeDone()) return false;
-		if (contains(touch)) return true;
 		if (net.contains(touch)) {
 			net.setActive(true);
 			knife.setActive(false);
@@ -63,6 +62,7 @@ public class Palette extends D3Sprite {
 			mActiveElement = knife;
 			return true;
 		}
+		if (contains(touch)) return true;
 //		if (net.handleTouch(touch)) return true;
 //		if (knife.handleTouch(touch)) return true;
 		hide();
