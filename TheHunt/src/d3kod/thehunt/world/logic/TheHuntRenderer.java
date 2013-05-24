@@ -461,7 +461,7 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 							
 					}
 				}
-				else if (!mHUD.handleTouch(location, event.getAction()) && (mTool == null || !mTool.handleTouch(event.getAction(), location))) {
+				if (!mHUD.handleTouch(location, event.getAction()) && (mTool == null || !mTool.handleTouch(event.getAction(), location))) {
 //					Log.v(TAG, "mTool can't handle touch. Ignoring if " + mIgnoreNextTouch);
 					if (mIgnoreNextTouch != event.getAction() && 
 //							(event.getAction() == MotionEvent.ACTION_DOWN || // to place food while net is snatching
