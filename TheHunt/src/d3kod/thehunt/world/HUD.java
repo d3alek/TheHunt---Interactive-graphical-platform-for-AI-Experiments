@@ -49,6 +49,7 @@ public class HUD {
 	private Camera mCamera;
 	private float[] mProjMatrix;
 	private Object prevTouch;
+	private String activePaletteElement;
 	
 	private static final float NORMAL_TEXT_SIZE = 2.0f;
 	private static final float SCORE_VERTICAL_ADJ = 0.15f;
@@ -67,8 +68,7 @@ public class HUD {
 	
 	
 	public HUD(Camera camera) {
-		mViewMatrix = camera.toCenteredViewMatrix();
-		mProjMatrix = camera.getUnscaledProjMatrix();
+		
 		float scoreTextPosX = 0;
 		float scoreTextPosY = camera.getHeight()/2 - SCORE_VERTICAL_ADJ;
 		
@@ -95,6 +95,8 @@ public class HUD {
 //		mPreyState = new HUDText("undef", mPreyEnergyTextSize);
 	}
 	public void initGraphics(SpriteManager spriteManager) {
+		mViewMatrix = mCamera.toCenteredViewMatrix();
+		mProjMatrix = mCamera.getUnscaledProjMatrix();
 		mSpriteManager = spriteManager;
 		
 		spriteManager.putText(mScoreText);
@@ -103,6 +105,7 @@ public class HUD {
 		spriteManager.putText(mScore);
 		mPalette = new Palette(new PointF(0, 0), spriteManager, mProjMatrix, mViewMatrix);
 		mPalette.initGraphic();
+		hidePalette();
 		
 //		mSpriteManager.putText(mCaughtText);
 //		mSpriteManager.putText(mPreyEnergyText);
@@ -152,14 +155,38 @@ public class HUD {
 		mPalette.hide();
 	}
 	public boolean handleTouch(PointF touch, int action) {
-		if (action == MotionEvent.ACTION_DOWN) {
+//		Log.v(TAG, "Action is " + action);
+		if (prevTouch == null && (action == MotionEvent.ACTION_DOWN || action == MotionEvent.ACTION_MOVE)) {
 			Log.v(TAG, "Showing palette");
 			showPalette(touch);
 			prevTouch = touch;
+			activePaletteElement = null;
 			return true;
 		}
 		
-		return false;
+		if (action == MotionEvent.ACTION_UP && mPalette.handleTouch(touch)) {
+			activePaletteElement = mPalette.getActiveElement();
+			prevTouch = null;
+			hidePalette();
+			if (activePaletteElement == null) {
+				Log.v(TAG, "Active element is null, returning false!");
+				return false;
+			}
+			Log.v(TAG, "Active element is not null, return true!");
+			return true;
+		}
+		if (action == MotionEvent.ACTION_UP) {
+			prevTouch = null;
+			hidePalette();
+			return false;
+		}
+		return mPalette.handleTouch(touch);
+	}
+	public void update() {
+		mPalette.update();
+	}
+	public String getActivePaletteElement() {
+		return activePaletteElement;
 	}
 
 }

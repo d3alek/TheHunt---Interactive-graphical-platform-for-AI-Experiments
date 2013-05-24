@@ -64,6 +64,10 @@ public class SpriteManager {
 		ArrayList<Integer> toRemove = new ArrayList<Integer>();
 		int index = 0;
 		for (D3FadingText text: mTexts) {
+			if (!text.fades()) {
+				index++;
+				continue;
+			}
 			text.fade();
 			if (text.faded()) {
 				toRemove.add(index);

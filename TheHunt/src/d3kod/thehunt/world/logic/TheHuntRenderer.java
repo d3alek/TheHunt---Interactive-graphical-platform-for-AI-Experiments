@@ -28,6 +28,7 @@ import d3kod.thehunt.world.Camera;
 import d3kod.thehunt.world.HUD;
 import d3kod.thehunt.world.environment.Environment;
 import d3kod.thehunt.world.floating_text.PlokText;
+import d3kod.thehunt.world.floating_text.ToolText;
 import d3kod.thehunt.world.tools.CatchNet;
 import d3kod.thehunt.world.tools.Knife;
 import d3kod.thehunt.world.tools.Tool;
@@ -333,6 +334,7 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 		mD3GLES20.updateAll();
 		
 		mHUD.setScore(mCaughtCounter*10-mEnv.getPlayerPenalty());
+		mHUD.update();
 	}
 
 	public void drawWorld(float interpolation) {
@@ -438,7 +440,28 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 //			if (D3Maths.distance(location, locationMean) >)
 //			setFaded
 			else {
-				if (!mHUD.handleTouch(new PointF(event.getX(), event.getY()), event.getAction()) && (mTool == null || !mTool.handleTouch(event.getAction(), location))) {
+				if (event.getAction() == MotionEvent.ACTION_UP && mHUD.handleTouch(location, event.getAction())) {
+					// there is an HUD action request
+					String active = mHUD.getActivePaletteElement();
+					if (active == null) {
+						Log.e(TAG, "Expected active pallete element, got null instead");
+					}
+					else {
+						Log.v(TAG, "Gonna change tool, class is " + mTool.getClass());
+						if (active == "Net" && mTool.getClass() != CatchNet.class) {
+							Log.v(TAG, "Changing tool to Net");
+							mD3GLES20.putText(new ToolText("Net!", location.x, location.y));
+							mTool = new CatchNet(mEnv, mD3GLES20);
+						}
+						else if (active == "Knife" && mTool.getClass() != Knife.class) {
+							mD3GLES20.putText(new ToolText("Knife!", location.x, location.y));
+							Log.v(TAG, "Changing tool to Knife");
+							mTool = new Knife(mEnv, mD3GLES20);
+						}
+							
+					}
+				}
+				else if (!mHUD.handleTouch(location, event.getAction()) && (mTool == null || !mTool.handleTouch(event.getAction(), location))) {
 //					Log.v(TAG, "mTool can't handle touch. Ignoring if " + mIgnoreNextTouch);
 					if (mIgnoreNextTouch != event.getAction() && 
 //							(event.getAction() == MotionEvent.ACTION_DOWN || // to place food while net is snatching

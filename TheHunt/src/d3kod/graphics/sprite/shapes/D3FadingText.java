@@ -148,6 +148,10 @@ public class D3FadingText {
 		mAmCentered = drawCentered;
 	}
 
+	public boolean fades() {
+		return D3Maths.compareFloats(mFadeSpeed, 0) != 0;
+	}
+
 //	private FloatBuffer makeVertexBuffer(float size) {
 //		for (int i = 0; i < squarePositionData.length; ++i) {
 //			squarePositionData[i] = squarePositionDataDefault[i]*size;

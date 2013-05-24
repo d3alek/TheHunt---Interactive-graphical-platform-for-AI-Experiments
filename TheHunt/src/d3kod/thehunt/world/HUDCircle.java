@@ -1,6 +1,7 @@
 package d3kod.thehunt.world;
 
 import android.graphics.PointF;
+import android.util.Log;
 import d3kod.graphics.sprite.D3Sprite;
 import d3kod.graphics.sprite.shapes.D3Circle;
 import d3kod.graphics.sprite.shapes.D3Shape;
@@ -21,13 +22,14 @@ public class HUDCircle extends D3Circle {
 	public void draw(float[] projMatrix, float[] viewMatrix) {
 		//			float[] idMatrix = new float[16];
 		//			Matrix.setIdentityM(idMatrix, 0);
-		super.draw(mProjMatrix, mViewMatrix);
+//		Log.v("HUDCircle", "Drawing");
+		//TODO: scale!
+		super.draw(projMatrix, viewMatrix);
 	}
 
 	@Override
 	public float getRadius() {
 		return super.getRadius();
 	}
-
 
 }
