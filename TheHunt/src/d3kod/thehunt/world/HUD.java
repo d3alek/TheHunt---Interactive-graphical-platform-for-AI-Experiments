@@ -183,7 +183,7 @@ public class HUD {
 		return mPalette.handleTouch(touch);
 	}
 	public void update() {
-		mPalette.update();
+		if (mPalette != null) mPalette.update();
 	}
 	public String getActivePaletteElement() {
 		return activePaletteElement;

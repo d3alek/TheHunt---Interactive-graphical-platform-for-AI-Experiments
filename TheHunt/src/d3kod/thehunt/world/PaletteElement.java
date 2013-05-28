@@ -7,6 +7,7 @@ import d3kod.graphics.sprite.D3Sprite;
 import d3kod.graphics.sprite.SpriteManager;
 import d3kod.graphics.sprite.shapes.D3FadingText;
 import d3kod.graphics.sprite.shapes.D3Quad;
+import d3kod.graphics.sprite.shapes.D3TriangleFill;
 import d3kod.thehunt.world.logic.TheHuntRenderer;
 
 public class PaletteElement extends D3Sprite {
@@ -26,43 +27,57 @@ public class PaletteElement extends D3Sprite {
 
 //	private static final float[] textActiveColor = {1.0f, 1.0f, 1.0f, 1.0f};
 
-	private static float mWidth = 0.1f;
-	private static float mHeight = 0.06f;
+//	private static float mWidth = 0.1f;
+//	private static float mHeight = 0.06f;
+	private static float mWidth = 0.3f;
+	private static float mHeight = 0.3f;
 	private static double mAngleStart = Math.toRadians(45);
 	private static double numberAngleTurn = Math.toRadians(90);
 	private String mText;
 	private PointF mRelativePos;
 	private PaletteText mTextGraphic;
+	private PointF mPos = new PointF();
+
+	private float mAngle;
+
+	private PointF mPalettePosition;
 
 
 	public PaletteElement(PointF palettePosition, float paletteRadius, int numberInPalette, String text, SpriteManager d3gles20) {
 		super(calcPosition(palettePosition, paletteRadius, numberInPalette), d3gles20);
-		mRelativePos = new PointF(getPosition().x - palettePosition.x, getPosition().y - palettePosition.y);
+//		mPos = calcPosition(palettePosition, paletteRadius, numberInPalette);
 		mText = text;
+		mPalettePosition = palettePosition;
+		switch(numberInPalette) {
+		case 0: mAngle = 90; break;
+		case 1: mAngle = -90; break;
+		}
 	}
 
 	private static PointF calcPosition(PointF palettePosition, float paletteRadius,
 			int numberInPalette) {
 		PointF pos = new PointF();
 		//TODO: fix once you have labels
-		pos.x = palettePosition.x + paletteRadius * (float)Math.cos(-mAngleStart + numberAngleTurn*numberInPalette); //+ mWidth/2;
-		pos.y = palettePosition.y - paletteRadius * (float)Math.sin(-mAngleStart + numberAngleTurn*numberInPalette); //+ mHeight/2;
+		pos.x = palettePosition.x + paletteRadius * (float)Math.cos(-mAngleStart + numberAngleTurn*numberInPalette) + mWidth/4;
+		pos.y = palettePosition.y - paletteRadius * (float)Math.sin(-mAngleStart + numberAngleTurn*numberInPalette) + mHeight/4;
 		return pos;
 	}
 
 	@Override
 	public void initGraphic() {
-		mGraphic = new D3Quad(mWidth, mHeight);
+		mGraphic = new D3TriangleFill(mWidth, mHeight);
 		mGraphic.setColor(TheHuntRenderer.bgColor);
 		initGraphic(mGraphic);
 		mTextGraphic = new PaletteText(mText);
 		getSpriteManager().putText(mTextGraphic);
+		mRelativePos = new PointF((float)Math.cos(Math.toRadians(mAngle-90))*mGraphic.getRadius(), (float)Math.sin(Math.toRadians(mAngle-90))*mGraphic.getRadius());
 	}
 
 	public void update(PointF palettePosition) {
 		setPosition(new PointF(palettePosition.x + mRelativePos.x, palettePosition.y + mRelativePos.y));
 		mTextGraphic.setPosition(getPosition().x, getPosition().y, 0);
-		super.update();
+		mGraphic.setPosition(getX(), getY(), mAngle);
+//		super.update();
 	}
 
 	public void hide() {
