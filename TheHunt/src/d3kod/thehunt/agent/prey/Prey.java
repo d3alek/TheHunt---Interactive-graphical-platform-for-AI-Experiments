@@ -34,7 +34,7 @@ public class Prey extends Agent {
 	private Sensor mSensor;
 	private PreyData mD;
 
-	public static final float bodyToHeadLength = 0.07f;
+//	public static final float bodyToHeadLength = 0.07f;
 
 	private static final float FORCE_TO_DISTANCE = 0.00002f;
 
@@ -47,6 +47,7 @@ public class Prey extends Agent {
 	transient private D3Prey mGraphic;
 
 	transient private SpriteManager mD3GLES20;
+	private Head mHead;
 
 	public void update() {
 		if (mEnv == null) {
@@ -79,7 +80,9 @@ public class Prey extends Agent {
 	}
 
 	private void updateWorldModel() {
-		mWorldModel.update(mSensor.sense(mD.mPosHeadX, mD.mPosHeadY, mD.mPosX, mD.mPosY, mD.bodyStartAngle));
+//		mWorldModel.update(mSensor.sense(mD.mPosHeadX, mD.mPosHeadY, mD.mPosX, mD.mPosY, mD.bodyStartAngle));
+		
+		mWorldModel.update(mSensor.sense(mHead.getX(), mHead.getY(), mD.mPosX, mD.mPosY, mD.bodyStartAngle));
 //		mWorldModel.update(null);
 		expressEmotion();
 		if (mD.emotionText != null) {
@@ -97,27 +100,28 @@ public class Prey extends Agent {
 			}
 
 			else {
-				mD.emotionText = new PanicText(mD.mPosHeadX, mD.mPosHeadY, mD.bodyStartAngle);
+				mD.emotionText = new PanicText(mHead.getX(), mHead.getY(), mD.bodyStartAngle);
 				mD3GLES20.putText(mD.emotionText);
 			}
 		}
 	}
 
 	private void calcPosHeadandTail() {
-		float[] posTemp = { 0.0f, bodyToHeadLength, 0.0f, 1.0f };
+//		float[] posTemp = { 0.0f, bodyToHeadLength, 0.0f, 1.0f };
 		float[] posTail = { D3Prey.tailPosition[0], D3Prey.tailPosition[1], 0.0f, 1.0f };
-
-		Matrix.setIdentityM(mD.mHeadPosMatrix, 0);
-		Matrix.translateM(mD.mHeadPosMatrix, 0, mD.mPosX, mD.mPosY, 0);
-		Matrix.rotateM(mD.mHeadPosMatrix, 0, mD.bodyStartAngle, 0, 0, 1);
-		Matrix.multiplyMV(posTemp, 0, mD.mHeadPosMatrix, 0, posTemp, 0);
+//
+//		Matrix.setIdentityM(mD.mHeadPosMatrix, 0);
+//		Matrix.translateM(mD.mHeadPosMatrix, 0, mD.mPosX, mD.mPosY, 0);
+//		Matrix.rotateM(mD.mHeadPosMatrix, 0, mD.bodyStartAngle, 0, 0, 1);
+//		Matrix.multiplyMV(posTemp, 0, mD.mHeadPosMatrix, 0, posTemp, 0);
 
 		Matrix.setIdentityM(mD.mTailPosPatrix, 0);
 		Matrix.translateM(mD.mTailPosPatrix, 0, mD.mPosX, mD.mPosY, 0);
 		Matrix.multiplyMV(posTail, 0, mD.mTailPosPatrix, 0, posTail, 0);
-		mD.mPosHeadX = posTemp[0]; 
-		mD.mPosHeadY = posTemp[1];
+//		mD.mPosHeadX = posTemp[0]; 
+//		mD.mPosHeadY = posTemp[1];
 		mD.mPosTail = new PointF(posTail[0], posTail[1]);
+		mHead.updatePos(mD.mPosX, mD.mPosY, mD.bodyStartAngle);
 	}
 
 	public void move() {
@@ -307,6 +311,7 @@ public class Prey extends Agent {
 		mD.emotionText = null;
 		PointF newPos = mEnv.randomPosInEnv();
 		mD.mPosX = newPos.x; mD.mPosY = newPos.y;
+		mHead = new Head();
 	}
 
 	public PointF getPosition() {
@@ -346,7 +351,8 @@ public class Prey extends Agent {
 	}
 
 	private void eat() {
-		int nutrition = mEnv.eatFood(mD.mPosHeadX, mD.mPosHeadY);
+//		int nutrition = mEnv.eatFood(mD.mPosHeadX, mD.mPosHeadY);
+		int nutrition = mEnv.eatFood(mHead.getX(), mHead.getY());
 		if (nutrition == 0) {
 			Log.v(TAG, "I thought I ate something, but it felt like thin air :?");
 			mWorldModel.eatFood(0);
@@ -354,7 +360,8 @@ public class Prey extends Agent {
 		else {
 			mWorldModel.eatFood(nutrition);
 			mGraphic.initEatingMotion();
-			mD3GLES20.putText(new CrunchText(mD.mPosHeadX, mD.mPosHeadY));
+//			mD3GLES20.putText(new CrunchText(mD.mPosHeadX, mD.mPosHeadY));
+			mD3GLES20.putText(new CrunchText(mHead.getX(), mHead.getY()));
 		}
 	}
 
@@ -385,7 +392,7 @@ public class Prey extends Agent {
 	}
 
 	public void initGraphic() {
-		mGraphic = new D3Prey(mD);
+		mGraphic = new D3Prey(mD, mHead);
 		initGraphic(mGraphic);
 		mD.emotionText = null; // fix for disappearing ! after db save while panicked
 	}

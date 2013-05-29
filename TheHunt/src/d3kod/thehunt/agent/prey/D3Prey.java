@@ -29,59 +29,13 @@ public class D3Prey extends D3Shape {
 	protected final int STRIDE_BYTES = SpriteManager.COORDS_PER_VERTEX * Utilities.BYTES_PER_FLOAT;
 	public static final float preySize = 0.8f;
 	protected static final float bodyLength = 0.1f * preySize;
-//	protected final int eyeDetailsLevel = 10;
 	
-//	//Head
+	// Head
 	protected static final float headSize = 0.04f * preySize;
 	protected final float[] headPosition = {
 			0, bodyLength/2 + headSize*0.4f, 0
 	};
-//	
-//	protected final float[] eyePosition = { -0.40f * headSize, 0.25f * headSize, 0.0f };
-//	protected final float eyeSize = 0.25f*headSize;
-//		
-//	protected final float[] headPart1Start = { 0.0f, 1.0f, 0.0f };
-//	protected final float[] headPart1B = { -0.5f, 0.75f, 0.0f };
-//	protected final float[] headPart1C = { -1.0f, 0.5f, 0.0f };
-//	protected final float[] headPart2Start = { -1.0f, -0.5f, 0.0f };
-//	protected final float[] headPart2B = { -0.2f, -0.3f, 0.0f };
-//	protected final float[] headPart2C = { 0.2f, -0.3f, 0.0f };
-//	protected final float[] headPart3Start = { 1.0f, -0.5f, 0.0f };
-//	protected final float[] headPart3B = { 1.0f, 0.0f, 0.0f };
-//	protected final float[] headPart3C = { 1.0f, 0.5f, 0.0f };
-//	protected final float[] headPart4Start = { 0.7f, 0.7f, 0.0f };
-//	protected final float[] headPart4B = { 0.5f, 0.5f, 0.0f };
-//	protected final float[] headPart4C = { 0.0f, 0.0f, 0.0f };
-//	
-//
-//	protected final float eatingMotionLengthSeconds = 0.5f;
-//	protected final int eatingMotionSteps = 8;
-//	protected int eatingStep;
-//	protected final int eatingMotionStepTicks = (int)(eatingMotionLengthSeconds*TheHuntRenderer.TICKS_PER_SECOND/eatingMotionSteps);
-//	protected int eatingMotionStepCounter;
-//	
-//	protected final float[][] headPart4StartEatingMotion = 
-//		{ 	
-//			{ 	0.7f,	0.7f, 	0.0f },
-//			{ 	0.6f,	0.75f, 	0.0f },
-//			{ 	0.5f,	0.8f, 	0.0f },
-//			{ 	0.4f,	0.85f, 	0.0f },
-//			{ 	0.3f,	0.9f, 	0.0f },
-//			{ 	0.2f,	0.95f, 	0.0f },
-//			{ 	0.1f,	0.95f, 	0.0f },
-//			{ 	0f, 	1f, 	0.0f }
-//		};
-//	protected final float[][] headPart4BEatingMotion = 
-//		{	
-//			{	0.5f, 	0.5f, 	0.0f },
-//			{	0.42f, 	0.5f, 	0.0f },
-//			{	0.35f, 	0.5f, 	0.0f },
-//			{	0.28f, 	0.5f, 	0.0f },
-//			{	0.2f, 	0.5f, 	0.0f },
-//			{	0.12f, 	0.5f, 	0.0f },
-//			{	0.05f, 	0.5f, 	0.0f },
-//			{	0f, 	0.5f, 	0.0f }
-//		};
+
 	// Body
 
 	protected final float[] bodyStart4 = { 0, 0.5f, 0, 0};
@@ -186,22 +140,20 @@ public class D3Prey extends D3Shape {
 	
 	private PreyData mD;
 
-	private Head mHead;
+	private HeadGraphic mHeadGraphic;
 	
-	protected D3Prey(PreyData data) {
+	protected D3Prey(PreyData data, Head head) {
 		super();
 		super.setColor(preyColor);
 		super.setDrawType(GLES20.GL_LINE_STRIP);
 		mD = data;
 		Matrix.setIdentityM(mModelMatrix, 0);
 		
-		mHead = new Head(this, headSize);
+//		mHeadGraphic = new HeadGraphic(this, headSize);
+		mHeadGraphic = head.getGraphic(this, headSize);
 		
-//		mMouthOpen = true;
-//		headVerticesData = calcHeadVerticesData();
 		leftFinVerticesData = calcLeftFinVerticesData();
 		rightFinVerticesData = calcRightFinVerticesData();
-//		eyeVertexData = D3Maths.circleVerticesData(eyeSize, eyeDetailsLevel);
 		
 		ribVerticesData = caclRibVerticesData();
 		
@@ -210,8 +162,6 @@ public class D3Prey extends D3Shape {
 		
 		leftFinVertexBuffer = Utilities.newFloatBuffer(leftFinVerticesData);
 		rightFinVertexBuffer = Utilities.newFloatBuffer(rightFinVerticesData);
-//		headVertexBuffer = Utilities.newFloatBuffer(headVerticesData);
-//		eyeVertexBuffer = Utilities.newFloatBuffer(eyeVertexData);
 		ribVertexBuffer = Utilities.newFloatBuffer(ribVerticesData);
 		
 		bodyVerticesData = D3Maths.quadBezierCurveVertices(bodyStart4, bodyB4, bodyC4, bodyEnd4, detailsStep, bodyLength);
@@ -221,7 +171,6 @@ public class D3Prey extends D3Shape {
         rib1PosIndex = (1*bodyVerticesNum/4)*SpriteManager.COORDS_PER_VERTEX;
         rib2PosIndex = (3*bodyVerticesNum/4-2)*SpriteManager.COORDS_PER_VERTEX;
 		
-//        eatingStep = -1;
 	}
 
 	private float[] caclRibVerticesData() {
@@ -238,48 +187,6 @@ public class D3Prey extends D3Shape {
 		return D3Maths.quadBezierCurveVertices(
 				leftFinStart, leftFinB, leftFinC, leftFinEnd, detailsStep, finSize);
 	}
-
-//	private float[] calcHeadVerticesData() {
-//		float[] part1 = D3Maths.quadBezierCurveVertices(
-//				headPart1Start, headPart1B, headPart1C, headPart2Start, detailsStep, headSize);
-//		float[] part2 = D3Maths.quadBezierCurveVertices(
-//				headPart2Start, headPart2B, headPart2C, headPart3Start, detailsStep, headSize);
-//		float[] part3 = D3Maths.quadBezierCurveVertices(
-//				headPart3Start, headPart3B, headPart3C, headPart4Start, detailsStep, headSize);
-//		float[] part4 = D3Maths.quadBezierCurveVertices(
-//				headPart4Start, headPart4B, headPart4C, headPart1Start, detailsStep, headSize);
-//		float[] headVerticesData = new float[part1.length + part2.length + part3.length + part4.length];
-//		for (int i = 0; i < part1.length; ++i) {
-//			headVerticesData[i] = part1[i];
-//		}
-//		for (int i = 0; i < part2.length; ++i) {
-//			headVerticesData[part1.length + i] = part2[i];
-//		}
-//		for (int i = 0; i < part3.length; ++i) {
-//			headVerticesData[part1.length + part2.length + i] = part3[i];
-//		}
-//		for (int i = 0; i < part4.length; ++i) {
-//			headVerticesData[part1.length + part2.length + part3.length + i] = part4[i];
-//		}
-//		headVerticesNum = headVerticesData.length / SpriteManager.COORDS_PER_VERTEX;
-//		return headVerticesData;
-//	}
-
-//	private float[] calcMoveHeadVerticesData(int step) {
-//		float[] part4Modif = D3Maths.quadBezierCurveVertices(
-//				headPart4StartEatingMotion[step], headPart4BEatingMotion[step], headPart4C, headPart1Start, detailsStep, headSize);
-//		float[] headVerticesData = new float[this.headVerticesData.length];//Arrays.copyOf(this.headVerticesData, this.headVerticesData.length);
-//	
-//		for (int i = 0; i < headVerticesData.length; ++i) {
-//			headVerticesData[i] = this.headVerticesData[i];
-//		}
-//		
-//		for (int i = 0; i < part4Modif.length; ++i) {
-//			headVerticesData[SpriteManager.COORDS_PER_VERTEX * ((int)(3/detailsStep) + 3) + i] = part4Modif[i];
-//		}
-//		
-//		return headVerticesData;
-//	}
 	
 	float bodyStartAnglePredicted, bodyBAnglePredicted, bodyCAnglePredicted, bodyEndAnglePredicted;
     float mPredictedPosX, mPredictedPosY;
@@ -349,26 +256,7 @@ public class D3Prey extends D3Shape {
         Matrix.rotateM(mHeadModelMatrix, 0, mModelMatrix, 0, bodyStartAnglePredicted, 0, 0, 1);
         Matrix.translateM(mHeadModelMatrix , 0, 
         		headPosition[0], headPosition[1], 0);
-        mHead.draw(mHeadModelMatrix);
-//        if (eatingStep != -1) {
-//        	headVertexBuffer = Utilities.newFloatBuffer(calcMoveHeadVerticesData(eatingStep));
-//        	if (eatingMotionStepCounter >= eatingMotionStepTicks) {
-//        		eatingStep++;
-//        		eatingMotionStepCounter = 0;
-//        	}
-//        	else eatingMotionStepCounter++;
-//        	if (eatingStep >= eatingMotionSteps) {
-//        		eatingStep = -1;
-//        		headVertexBuffer = Utilities.newFloatBuffer(headVerticesData);
-//        	}
-//        }
-//        
-        
-//        super.drawBuffer(headVertexBuffer, mHeadModelMatrix);
-//        
-//        Matrix.translateM(mEyeModelMatrix, 0, mHeadModelMatrix , 0, eyePosition[0], eyePosition[1], 0);
-//        super.setDrawType(GLES20.GL_LINE_LOOP);
-//        super.drawBuffer(eyeVertexBuffer, mEyeModelMatrix);
+        mHeadGraphic.draw(mHeadModelMatrix);
 	}
 	
 	private void calcPredicted(float interpolation) {
@@ -430,26 +318,6 @@ public class D3Prey extends D3Shape {
 		super.setColor(preyColorHidden);
 	}
 	
-//	public void initEatingMotion() {
-//		eatingStep = 0;
-//	}
-
-//	public void openMouth() {
-//		if (!mMouthOpen) {
-//			mMouthOpen = true;
-//			headVerticesData = calcMoveHeadVerticesData(0);
-//			headVertexBuffer = Utilities.newFloatBuffer(headVerticesData);
-//		}
-//	}
-//	
-//	public void closeMouth() {
-//		if (mMouthOpen) {
-//			mMouthOpen = false;
-//			if (eatingStep == -1) initEatingMotion();
-//			headVerticesData = calcMoveHeadVerticesData(eatingMotionSteps-1);
-//		}
-//	}
-
 	public float getPredictedX() {
 		return mPredictedPosX;
 	}
@@ -462,14 +330,14 @@ public class D3Prey extends D3Shape {
 	}
 
 	public void openMouth() {
-		mHead.openMouth();
+		mHeadGraphic.openMouth();
 	}
 
 	public void closeMouth() {
-		mHead.closeMouth();
+		mHeadGraphic.closeMouth();
 	}
 
 	public void initEatingMotion() {
-		mHead.initEatingMotion();
+		mHeadGraphic.initEatingMotion();
 	}
 }
