@@ -106,13 +106,14 @@ public class Prey extends Agent {
 	}
 
 	private void calcPosHeadandTail() {
-		float[] posTail = { D3Prey.tailPosition[0], D3Prey.tailPosition[1], 0.0f, 1.0f };
-
-		Matrix.setIdentityM(mD.mTailPosMatrix, 0);
-		Matrix.translateM(mD.mTailPosMatrix, 0, mD.mPosX, mD.mPosY, 0);
-		Matrix.multiplyMV(posTail, 0, mD.mTailPosMatrix, 0, posTail, 0);
-		
-		mD.mPosTail = new PointF(posTail[0], posTail[1]);
+//		float[] posTail = { D3Prey.tailPosition[0], D3Prey.tailPosition[1], 0.0f, 1.0f };
+//
+//		Matrix.setIdentityM(mD.mTailPosMatrix, 0);
+//		Matrix.translateM(mD.mTailPosMatrix, 0, mD.mPosX, mD.mPosY, 0);
+//		Matrix.multiplyMV(posTail, 0, mD.mTailPosMatrix, 0, posTail, 0);
+//		
+//		mD.mPosTail = new PointF(posTail[0], posTail[1]);
+		mTail.updatePos(mD.mPosX, mD.mPosY);
 		mHead.updatePos(mD.mPosX, mD.mPosY, mD.bodyStartAngle);
 	}
 
@@ -339,7 +340,7 @@ public class Prey extends Agent {
 		if (mEnv.getSpriteManager() == null) {
 			Log.e(TAG, "Prey's env sprite manager is null!");
 		}
-		mEnv.addNewAlgae(1, new PointF(mD.mPosTail.x, mD.mPosTail.y), D3Maths.getRandAngle());
+		mEnv.addNewAlgae(1, new PointF(mTail.getX(), mTail.getY()), D3Maths.getRandAngle());
 		mWorldModel.reduceEnergy(NAlgae.FOOD_ALGAE_BITE_NUTRITION);
 	}
 
