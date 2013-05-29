@@ -1,9 +1,11 @@
 package d3kod.thehunt.agent.prey;
 
 import java.nio.FloatBuffer;
+import java.util.Arrays;
 
 import android.opengl.GLES20;
 import android.opengl.Matrix;
+import android.util.Log;
 import d3kod.graphics.extra.D3Maths;
 import d3kod.graphics.extra.Utilities;
 import d3kod.graphics.sprite.SpriteManager;
@@ -17,22 +19,23 @@ public class HeadGraphic extends BodyPartGraphic {
 //				0, bodyLength/2 + headSize*0.4f, 0
 //		};
 		
+		private static final String TAG = "HeadGraphic";
 		protected final int eyeDetailsLevel = 10;
 		protected final float[] eyePosition = { -0.40f, 0.25f, 0.0f };
 		protected final float eyeSize = 0.25f;
 			
-		protected final float[] headPart1Start = { 0.0f, 1.0f, 0.0f };
-		protected final float[] headPart1B = { -0.5f, 0.75f, 0.0f };
-		protected final float[] headPart1C = { -1.0f, 0.5f, 0.0f };
-		protected final float[] headPart2Start = { -1.0f, -0.5f, 0.0f };
-		protected final float[] headPart2B = { -0.2f, -0.3f, 0.0f };
-		protected final float[] headPart2C = { 0.2f, -0.3f, 0.0f };
-		protected final float[] headPart3Start = { 1.0f, -0.5f, 0.0f };
-		protected final float[] headPart3B = { 1.0f, 0.0f, 0.0f };
-		protected final float[] headPart3C = { 1.0f, 0.5f, 0.0f };
-		protected final float[] headPart4Start = { 0.7f, 0.7f, 0.0f };
-		protected final float[] headPart4B = { 0.5f, 0.5f, 0.0f };
-		protected final float[] headPart4C = { 0.0f, 0.0f, 0.0f };
+		protected final static float[] headPart1Start = { 0.0f, 1.0f, 0.0f };
+		protected final static float[] headPart1B = { -0.5f, 0.75f, 0.0f };
+		protected final static float[] headPart1C = { -1.0f, 0.5f, 0.0f };
+		protected final static float[] headPart2Start = { -1.0f, -0.5f, 0.0f };
+		protected final static float[] headPart2B = { -0.2f, -0.3f, 0.0f };
+		protected final static float[] headPart2C = { 0.2f, -0.3f, 0.0f };
+		protected final static float[] headPart3Start = { 1.0f, -0.5f, 0.0f };
+		protected final static float[] headPart3B = { 1.0f, 0.0f, 0.0f };
+		protected final static float[] headPart3C = { 1.0f, 0.5f, 0.0f };
+		protected final static float[] headPart4Start = { 0.7f, 0.7f, 0.0f };
+		protected final static float[] headPart4B = { 0.5f, 0.5f, 0.0f };
+		protected final static float[] headPart4C = { 0.0f, 0.0f, 0.0f };
 		
 
 		protected final float eatingMotionLengthSeconds = 0.5f;
@@ -100,7 +103,9 @@ public class HeadGraphic extends BodyPartGraphic {
         eatingStep = -1;
 	}
 
+	@Override
 	protected float[] calcVerticesData() {
+		Log.v(TAG, "headPart1Start is " + Arrays.toString(headPart1Start));
 		float[] part1 = D3Maths.quadBezierCurveVertices(
 				headPart1Start, headPart1B, headPart1C, headPart2Start, mDetailsStep, mSize);
 		float[] part2 = D3Maths.quadBezierCurveVertices(
