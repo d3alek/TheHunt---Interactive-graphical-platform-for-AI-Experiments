@@ -83,7 +83,7 @@ public class PreyData {
 	protected float bodyEndAngleRot;
 	
 	protected float[] mHeadPosMatrix = new float[16];
-	protected float[] mTailPosPatrix = new float[16];
+	protected float[] mTailPosMatrix = new float[16];
 	protected int bodyBendCounter;
 	protected int backFinAngle;
 	

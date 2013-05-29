@@ -9,7 +9,7 @@ import d3kod.graphics.extra.Utilities;
 import d3kod.graphics.sprite.SpriteManager;
 import d3kod.thehunt.world.logic.TheHuntRenderer;
 
-public class HeadGraphic {
+public class HeadGraphic extends BodyPartGraphic {
 	
 	//Head
 //		protected static final float headSize = 0.04f;
@@ -65,41 +65,42 @@ public class HeadGraphic {
 			};
 
 	private boolean mMouthOpen;
-	private float[] headVerticesData;
+//	private float[] mVerticesData;
 	private float[] eyeVertexData;
 
-	private float mDetailsStep;
+//	private float mDetailsStep;
 
 	private int headVerticesNum;
 
-	private FloatBuffer headVertexBuffer;
+//	private FloatBuffer mVertexBuffer;
 //	private float[] mHeadModelMatrix = new float[16];
 	private float[] mEyeModelMatrix = new float[16];
 
-	private D3Prey mGraphic;
+//	private D3Prey mGraphic;
 
 	private FloatBuffer eyeVertexBuffer;
-	private float mSize;	
+//	private float mSize;	
 
 	public HeadGraphic(D3Prey graphic, float size) {
-		mSize = size;
-		mDetailsStep = graphic.getDetailsStep();
+		super(graphic, size); // initialize mGraphic, mSize, mVertexBuffer using calcVerticesData
+//		mSize = size;
+//		mDetailsStep = graphic.getDetailsStep();
 		
 		mMouthOpen = true;
-		headVerticesData = calcHeadVerticesData();
+//		mVerticesData = calcVerticesData();
 		eyeVertexData = D3Maths.circleVerticesData(eyeSize*mSize, eyeDetailsLevel);
-		mGraphic = graphic;
+//		mGraphic = graphic;
 		
 		
 		
-		headVertexBuffer = Utilities.newFloatBuffer(headVerticesData);
+//		mVertexBuffer = Utilities.newFloatBuffer(mVerticesData);
 		eyeVertexBuffer = Utilities.newFloatBuffer(eyeVertexData);
 		
 		
         eatingStep = -1;
 	}
 
-	private float[] calcHeadVerticesData() {
+	protected float[] calcVerticesData() {
 		float[] part1 = D3Maths.quadBezierCurveVertices(
 				headPart1Start, headPart1B, headPart1C, headPart2Start, mDetailsStep, mSize);
 		float[] part2 = D3Maths.quadBezierCurveVertices(
@@ -127,10 +128,10 @@ public class HeadGraphic {
 	private float[] calcMoveHeadVerticesData(int step) {
 		float[] part4Modif = D3Maths.quadBezierCurveVertices(
 				headPart4StartEatingMotion[step], headPart4BEatingMotion[step], headPart4C, headPart1Start, mDetailsStep, mSize);
-		float[] headVerticesData = new float[this.headVerticesData.length];//Arrays.copyOf(this.headVerticesData, this.headVerticesData.length);
+		float[] headVerticesData = new float[this.mVerticesData.length];//Arrays.copyOf(this.headVerticesData, this.headVerticesData.length);
 	
 		for (int i = 0; i < headVerticesData.length; ++i) {
-			headVerticesData[i] = this.headVerticesData[i];
+			headVerticesData[i] = this.mVerticesData[i];
 		}
 		
 		for (int i = 0; i < part4Modif.length; ++i) {
@@ -143,8 +144,8 @@ public class HeadGraphic {
 	public void openMouth() {
 		if (!mMouthOpen) {
 			mMouthOpen = true;
-			headVerticesData = calcMoveHeadVerticesData(0);
-			headVertexBuffer = Utilities.newFloatBuffer(headVerticesData);
+			mVerticesData = calcMoveHeadVerticesData(0);
+			mVertexBuffer = Utilities.newFloatBuffer(mVerticesData);
 		}
 	}
 	
@@ -152,13 +153,13 @@ public class HeadGraphic {
 		if (mMouthOpen) {
 			mMouthOpen = false;
 			if (eatingStep == -1) initEatingMotion();
-			headVerticesData = calcMoveHeadVerticesData(eatingMotionSteps-1);
+			mVerticesData = calcMoveHeadVerticesData(eatingMotionSteps-1);
 		}
 	}
 
 	public void draw(float[] modelMatrix) {
 		if (eatingStep != -1) {
-        	headVertexBuffer = Utilities.newFloatBuffer(calcMoveHeadVerticesData(eatingStep));
+        	mVertexBuffer = Utilities.newFloatBuffer(calcMoveHeadVerticesData(eatingStep));
         	if (eatingMotionStepCounter >= eatingMotionStepTicks) {
         		eatingStep++;
         		eatingMotionStepCounter = 0;
@@ -166,11 +167,11 @@ public class HeadGraphic {
         	else eatingMotionStepCounter++;
         	if (eatingStep >= eatingMotionSteps) {
         		eatingStep = -1;
-        		headVertexBuffer = Utilities.newFloatBuffer(headVerticesData);
+        		mVertexBuffer = Utilities.newFloatBuffer(mVerticesData);
         	}
         }
         
-        mGraphic.drawBuffer(headVertexBuffer, modelMatrix);
+		super.draw(modelMatrix);
         
         
         Matrix.translateM(mEyeModelMatrix, 0, modelMatrix , 0, eyePosition[0]*mSize, eyePosition[1]*mSize, 0);

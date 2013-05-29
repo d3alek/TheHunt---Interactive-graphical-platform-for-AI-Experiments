@@ -149,7 +149,6 @@ public class D3Prey extends D3Shape {
 		mD = data;
 		Matrix.setIdentityM(mModelMatrix, 0);
 		
-//		mHeadGraphic = new HeadGraphic(this, headSize);
 		mHeadGraphic = head.getGraphic(this, headSize);
 		
 		leftFinVerticesData = calcLeftFinVerticesData();
