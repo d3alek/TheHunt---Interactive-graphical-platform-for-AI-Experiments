@@ -47,7 +47,7 @@ public class Environment {
 		data.setGraphics(mD3GLES20);
 		mNoiseEvents = new ArrayList<EventNoise>();
 		mRandom = new Random();
-		seedAlgae();
+//		seedAlgae();
 	}
 	
 	public void addNewAlgae(int n, PointF pos, float dirAngle) {
