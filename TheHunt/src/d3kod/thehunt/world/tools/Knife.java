@@ -32,6 +32,7 @@ public class Knife extends D3Sprite implements Tool {
 			cuttingAlgae = mEnv.knifeIntersectsWithAlgae(location.x, location.y);
 			if (cuttingAlgae == null) {
 				// invalid cut, ignore this action
+				didCut = false;
 				return true;
 			}
 			else {
@@ -52,6 +53,7 @@ public class Knife extends D3Sprite implements Tool {
 //			}
 //			else return true;
 			mStarted = false;
+			didCut = false;
 			return true;
 		}
 		if (action == MotionEvent.ACTION_MOVE) {
@@ -115,6 +117,14 @@ public class Knife extends D3Sprite implements Tool {
 	@Override
 	public void initGraphic() {
 		// no graphics for knife yet
+	}
+
+	public boolean isActive() {
+		return false;
+	}
+
+	public boolean didAction() {
+		return didCut;
 	}
 
 }

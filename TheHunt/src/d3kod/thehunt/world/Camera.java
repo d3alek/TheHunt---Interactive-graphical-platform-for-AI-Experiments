@@ -1,5 +1,6 @@
 package d3kod.thehunt.world;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 
 import android.graphics.PointF;
@@ -77,12 +78,14 @@ public class Camera extends D3Sprite {
 	private float[] mProjMatrix;
 	private float[] mUnscaledProjMatrix;
 	private float mRatio;
+	private ArrayList<D3Sprite> mScaleDependentSprites;
 
 	public Camera(float screenToWorldWidth, float screenToWorldHeight, float widthToHeightRatio, SpriteManager d3gles20) {
 		super(new PointF(0, 0), d3gles20);
 		mCenterX = mCenterY = 0;
 		mVMatrix = new float[16];
 		mProjMatrix = new float[16];
+		mScaleDependentSprites = new ArrayList<D3Sprite>();
 		mWidth = 2*screenToWorldWidth;//*mScreenWidthPx/(float)mScreenHeightPx;
 	    mHeight = 2*screenToWorldHeight;
 	    mWidthScaled = mWidth; 
@@ -97,10 +100,20 @@ public class Camera extends D3Sprite {
 	    calcViewMatrix();
 	}
 
+	public void addScaleDependentSprite(D3Sprite sprite) {
+		mScaleDependentSprites.add(sprite);
+	}
+	public void removeScaleDependentSprite(D3Sprite sprite) {
+		mScaleDependentSprites.remove(sprite);
+	}
+	
 	private void calcProjMatrix() {
 	    if (mWidth > mHeight) Matrix.frustumM(mProjMatrix, 0, -mRatio*mScale, mRatio*mScale, -mScale, mScale, 1, 10);
 		else Matrix.frustumM(mProjMatrix, 0, -mScale, mScale, -mScale*mRatio, mScale*mRatio, 1, 10);
 	    if (mGraphic != null) mGraphic.setScale(mScale);
+	    for (D3Sprite sprite: mScaleDependentSprites) {
+	    	sprite.getGraphic().setScale(mScale);
+	    }
 //	    mWidthScaled = mWidth/mScale;
 //	    mHeightScaled = mHeight/mScale;
 	}

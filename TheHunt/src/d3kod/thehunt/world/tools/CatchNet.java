@@ -39,6 +39,7 @@ public class CatchNet extends D3Sprite implements Tool {
 	private boolean mStarted;
 	private int mNegativeScore;
 	private ArrayList<FloatingObject> mCaughtObjects;
+	private boolean mDidAction;
 	
 	public CatchNet(Environment env, SpriteManager d3GLES20) {
 		super(new PointF(0, 0), d3GLES20);
@@ -58,7 +59,8 @@ public class CatchNet extends D3Sprite implements Tool {
 		else if (mPathGraphic.isFinished() && !mPathGraphic.isInvalid() && mNetGraphic == null) {
 			initNetGraphic();
 			mD3GLES20.putText(new PlokText(mPathGraphic.getCenterX(), mPathGraphic.getCenterY()));
-			mEnv.putNoise(mPathGraphic.getCenterX(), mPathGraphic.getCenterY(), Environment.LOUDNESS_PLOK);				
+			mEnv.putNoise(mPathGraphic.getCenterX(), mPathGraphic.getCenterY(), Environment.LOUDNESS_PLOK);
+			mDidAction = true;
 		}
 		if (mNetGraphic == null) return;
 		if (mNetGraphic.getScale() < 1) {
@@ -106,6 +108,7 @@ public class CatchNet extends D3Sprite implements Tool {
 			return;
 		}
 		
+		mDidAction = false;
 		mStarted = true;
 		notShown = true;
 		showSnatchText = false;
@@ -199,7 +202,8 @@ public class CatchNet extends D3Sprite implements Tool {
 		}
 		else if (action == MotionEvent.ACTION_UP) {
 			if (notShown) {
-				stop(location);
+//				stop(location);
+				finish(location.x, location.y);
 				return false;
 			}
 			finish(location.x, location.y);
@@ -208,14 +212,32 @@ public class CatchNet extends D3Sprite implements Tool {
 		return false;
 	}
 	
+	public boolean isActive() {
+		return mNetGraphic != null;
+	}
+	
 	public void stop(PointF location) {
-		finish(location.x, location.y);
+		Log.i(TAG, "Stop initiated!");
+//		finish(location.x, location.y);
+		if (mPathGraphic != null) {
+			getSpriteManager().removeShape(mPathGraphic);
+			mPathGraphic = null;
+			getSpriteManager().putSprite(this);
+		}
+		if (mNetGraphic != null) {
+			getSpriteManager().removeShape(mNetGraphic);
+			mNetGraphic = null;
+			getSpriteManager().putSprite(this);
+		}
 	}
 
 	@Override
 	public void draw(float[] vMatrix, float[] projMatrix, float interpolation) {
 		if (mPathGraphic != null) mPathGraphic.draw(vMatrix, projMatrix, interpolation);
 		if (mNetGraphic != null) mNetGraphic.draw(vMatrix, projMatrix, interpolation);
+	}
+	public boolean didAction() {
+		return mDidAction;
 	}
 
 }

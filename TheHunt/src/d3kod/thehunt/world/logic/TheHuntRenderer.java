@@ -215,15 +215,16 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 		mCamera = new Camera(mScreenToWorldRatioWidth, 
 				mScreenToWorldRatioHeight, worldWidthPx/(float)worldHeightPx, mD3GLES20);
 
-		mHUD = new HUD(mCamera);
-		
+//		mGraphicsInitialized
 		Log.v(TAG, "mScreenWidth " + mScreenWidthPx + " mScreenHeight " + mScreenHeightPx);
 
 //		if (mEnv == null) mEnv = new Environment(worldWidthPx, worldHeightPx, mD3GLES20);
 //		if (mTool == null) mTool = new CatchNet(mEnv, tm, mD3GLES20);
 		synchronized (mContext.stateLock) {
 			
+		
 		if (!mGraphicsInitialized ) {
+//			Log.v(TAG, "Initializing graphics");
 			//TODO why not initialize tool graphics as well?
 			mD3GLES20.init(mContext);
 //			mD3GLES20.putText1(new D3FadingText("Fafa", 1000.0f, 0)); 
@@ -231,6 +232,7 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 			tm = new TextureManager(mContext);
 			mEnv.initGraphics(mD3GLES20);
 			mCamera.initGraphic();
+			mHUD = new HUD(mCamera);
 			mHUD.initGraphics(mD3GLES20);
 //			mHUD.setCaught(mCaughtCounter);
 			mHUD.setScore(mCaughtCounter);
@@ -392,6 +394,7 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 			mScrolling = true;
 			Log.v(TAG, "Scrolling is true");
 			if (mTool != null) mTool.stop(location);
+			if (mHUD != null) mHUD.hidePalette();
 		}
 		else if (!doubleTouch && mScrolling) {
 			mScrolling = false;
@@ -440,36 +443,46 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 //			if (D3Maths.distance(location, locationMean) >)
 //			setFaded
 			else {
-				if (event.getAction() == MotionEvent.ACTION_UP && mHUD.handleTouch(location, event.getAction())) {
-					// there is an HUD action request
-					String active = mHUD.getActivePaletteElement();
-					if (active == null) {
-						Log.e(TAG, "Expected active pallete element, got null instead");
-					}
-					else {
-						Log.v(TAG, "Gonna change tool, class is " + mTool.getClass());
-						if (active == "Net" && mTool.getClass() != CatchNet.class) {
-							Log.v(TAG, "Changing tool to Net");
-							mD3GLES20.putText(new ToolText("Net!", location.x, location.y));
-							mTool = new CatchNet(mEnv, mD3GLES20);
+				if (mHUD.handleTouch(location, event.getAction())) {
+					if (event.getAction() != mIgnoreNextTouch && event.getAction() == MotionEvent.ACTION_UP) {
+						// there is an HUD action request
+						String active = mHUD.getActivePaletteElement();
+						if (mTool.isActive()) {
+							Log.v(TAG, "Ignore HUD action request because tool is active");
 						}
-						else if (active == "Knife" && mTool.getClass() != Knife.class) {
-							mD3GLES20.putText(new ToolText("Knife!", location.x, location.y));
-							Log.v(TAG, "Changing tool to Knife");
-							mTool = new Knife(mEnv, mD3GLES20);
+						else if (active == null) {
+							Log.e(TAG, "Expected active pallete element, got null instead");
 						}
-							
+						else {
+							Log.v(TAG, "Gonna change tool, class is " + mTool.getClass());
+							if (active == "Net" && mTool.getClass() != CatchNet.class) {
+								Log.v(TAG, "Changing tool to Net");
+								mTool.stop(location);
+								mD3GLES20.putText(new ToolText("Net!", location.x, location.y));
+								mTool = new CatchNet(mEnv, mD3GLES20);
+								
+							}
+							else if (active == "Knife" && mTool.getClass() != Knife.class) {
+								mTool.stop(location);
+								mD3GLES20.putText(new ToolText("Knife!", location.x, location.y));
+								Log.v(TAG, "Changing tool to Knife");
+								mTool = new Knife(mEnv, mD3GLES20);
+							}
+
+						}
 					}
 				}
-				if (!mHUD.handleTouch(location, event.getAction()) && (mTool == null || !mTool.handleTouch(event.getAction(), location))) {
-//					Log.v(TAG, "mTool can't handle touch. Ignoring if " + mIgnoreNextTouch);
-					if (mIgnoreNextTouch != event.getAction() && 
-//							(event.getAction() == MotionEvent.ACTION_DOWN || // to place food while net is snatching
-							event.getAction() == MotionEvent.ACTION_UP) { // to place food otherwise
-						mD3GLES20.putText(new PlokText(location.x, location.y));
-						mEnv.putNoise(location.x, location.y, Environment.LOUDNESS_PLOK);
-						mEnv.putFoodGM(location.x, location.y);
+				if (mTool != null && mTool.handleTouch(event.getAction(), location)) {
+					if (mTool.didAction()) {
+						mHUD.hidePalette();
 					}
+				}
+				else if (mIgnoreNextTouch != event.getAction() && 
+						//							(event.getAction() == MotionEvent.ACTION_DOWN || // to place food while net is snatching
+						event.getAction() == MotionEvent.ACTION_UP) { // to place food otherwise
+					mD3GLES20.putText(new PlokText(location.x, location.y));
+					mEnv.putNoise(location.x, location.y, Environment.LOUDNESS_PLOK);
+					mEnv.putFoodGM(location.x, location.y);
 				}
 				if (mIgnoreNextTouch == event.getAction()) mIgnoreNextTouch = -1;
 			}

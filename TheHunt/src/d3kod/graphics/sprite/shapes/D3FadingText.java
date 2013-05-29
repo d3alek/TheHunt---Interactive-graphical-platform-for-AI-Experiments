@@ -46,6 +46,7 @@ public class D3FadingText {
 	private float mR;
 	private float mB;
 	private boolean mAmCentered;
+	private float mScale;
 	
 	public D3FadingText(String text, float size, float fadeSpeed, boolean drawCentered) {
 		this(text, size, fadeSpeed);
@@ -59,6 +60,7 @@ public class D3FadingText {
 		mPos = new PointF(0, 0);
 		mAngle = 0;
 		mR = 0; mG = 0; mB = 0;
+		mScale = 1f;
 //		mGLText = glText;
 		//super(colorData.clone(), drawType, sm.getTextProgram(), fadeSpeed, maxFade);
 		//super.setVertexBuffer(makeVertexBuffer(textSize));
@@ -93,13 +95,13 @@ public class D3FadingText {
 	}
 	
 	public float getLength(GLText glText) {
-		glText.setScale(sizeAdj*mSize);
+		glText.setScale(sizeAdj*mSize*mScale);
 		glText.setSpace(1f);
 		return glText.getLength(mText);
 	}
 	
 	public float getHeight(GLText glText) {
-		glText.setScale(sizeAdj*mSize);
+		glText.setScale(sizeAdj*mSize*mScale);
 		glText.setSpace(1f);
 		return glText.getCharHeight();
 	}
@@ -107,7 +109,7 @@ public class D3FadingText {
 	public void draw(GLText glText, float[] vpMatrix) {
 		if (faded()) return;
 		glText.begin(mR, mG, mB, mAlpha, vpMatrix);
-		glText.setScale(sizeAdj*mSize);
+		glText.setScale(sizeAdj*mSize*mScale);
 		glText.setSpace(1f);
 		drawText(glText, mText, mPos.x, mPos.y, mAngle);
 		glText.end();
@@ -150,6 +152,11 @@ public class D3FadingText {
 
 	public boolean fades() {
 		return D3Maths.compareFloats(mFadeSpeed, 0) != 0;
+	}
+	
+	public void setScale(float scale) {
+
+		mScale = scale;
 	}
 
 //	private FloatBuffer makeVertexBuffer(float size) {

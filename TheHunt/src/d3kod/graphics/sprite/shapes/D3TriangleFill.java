@@ -46,7 +46,7 @@ public class D3TriangleFill extends D3Shape {
 
 	@Override
 	public float getRadius() {
-		return mRadius;
+		return mRadius*getScale();
 	}
 
 }

@@ -10,4 +10,7 @@ public interface Tool {
 	
 	void stop(PointF location);
 
+	boolean isActive();
+
+	boolean didAction();
 }

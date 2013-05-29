@@ -103,9 +103,7 @@ public class HUD {
 		mScore.setPosition(mScoreText.getX() + mScoreText.getLength(spriteManager.getTextManager())/2, 
 				mScoreText.getY() - mScoreText.getHeight(spriteManager.getTextManager())/2, 0);
 		spriteManager.putText(mScore);
-		mPalette = new Palette(new PointF(0, 0), spriteManager, mProjMatrix, mViewMatrix);
-		mPalette.initGraphic();
-		hidePalette();
+		initPalette();
 		
 //		mSpriteManager.putText(mCaughtText);
 //		mSpriteManager.putText(mPreyEnergyText);
@@ -128,6 +126,11 @@ public class HUD {
 //				mPreyStateText.getY(), 0);
 //		mSpriteManager.putText(mPreyState);
 	}
+	private void initPalette() {
+		mPalette = new Palette(new PointF(0, 0), mSpriteManager, mProjMatrix, mViewMatrix, mCamera);
+		mPalette.initGraphic();
+		hidePalette();
+	}
 //	public void setCaught(int caught) {
 //		mCaught.setText(""+caught);
 //	}
@@ -147,6 +150,10 @@ public class HUD {
 	}
 	
 	public void showPalette(PointF pos) {
+		if (mPalette == null) {
+			Log.e(TAG, "Palette is null!");
+//			initPalette();
+		}
 		mPalette.setPosition(pos);
 		mPalette.show();
 	}

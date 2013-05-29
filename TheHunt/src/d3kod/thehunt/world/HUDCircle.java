@@ -29,7 +29,7 @@ public class HUDCircle extends D3Circle {
 
 	@Override
 	public float getRadius() {
-		return super.getRadius();
+		return super.getRadius()*getScale();
 	}
 
 }

@@ -13,7 +13,9 @@ import d3kod.graphics.shader.ShaderProgramManager;
 import d3kod.graphics.shader.programs.Program;
 import d3kod.graphics.sprite.shapes.D3FadingShape;
 import d3kod.graphics.sprite.shapes.D3FadingText;
+import d3kod.graphics.sprite.shapes.D3Shape;
 import d3kod.graphics.text.GLText;
+import d3kod.thehunt.world.tools.D3CatchNetPath;
 
 public class SpriteManager {
 	public static final int COORDS_PER_VERTEX = 3;
@@ -222,5 +224,30 @@ public class SpriteManager {
 
 	public GLText getTextManager() {
 		return mGLText;
+	}
+
+	public void removeShape(D3Shape searchShape) {
+		D3Sprite sprite;
+		boolean found = false;
+		int foundIndex = 0;
+		
+		for (Entry<Integer, D3Sprite> spriteEntry: sprites.entrySet()) {
+			sprite = spriteEntry.getValue();
+			if (sprite.getGraphic() == searchShape) {
+				Log.v(TAG, "Shape found! Deleting it");
+				found = true;
+				foundIndex = spriteEntry.getKey();
+				break;
+//				removeShape(key)
+			}
+		}
+		
+		if (found) {
+			removeShape(foundIndex);
+		}
+		else {
+			Log.v(TAG, "Shape not found!");
+		}
+		
 	}
 }

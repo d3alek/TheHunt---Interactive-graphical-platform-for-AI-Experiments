@@ -17,6 +17,7 @@ public class PaletteElement extends D3Sprite {
 			super(text, 2.0f, 0);
 			setCentered(true);
 		}
+
 	}
 
 	private static final float[] bgActiveColor = {0.0f, 0.0f, 0.0f, 1.0f};
@@ -69,14 +70,16 @@ public class PaletteElement extends D3Sprite {
 		mGraphic.setColor(TheHuntRenderer.bgColor);
 		initGraphic(mGraphic);
 		mTextGraphic = new PaletteText(mText);
+//		mTextGraphic.setScale()
 		getSpriteManager().putText(mTextGraphic);
-		mRelativePos = new PointF((float)Math.cos(Math.toRadians(mAngle-90))*mGraphic.getRadius(), (float)Math.sin(Math.toRadians(mAngle-90))*mGraphic.getRadius());
 	}
 
 	public void update(PointF palettePosition) {
+		mRelativePos = new PointF((float)Math.cos(Math.toRadians(mAngle-90))*mGraphic.getRadius(), (float)Math.sin(Math.toRadians(mAngle-90))*mGraphic.getRadius());
 		setPosition(new PointF(palettePosition.x + mRelativePos.x, palettePosition.y + mRelativePos.y));
 		mTextGraphic.setPosition(getPosition().x, getPosition().y, 0);
 		mGraphic.setPosition(getX(), getY(), mAngle);
+		mTextGraphic.setScale(mGraphic.getScale());
 //		super.update();
 	}
 
@@ -93,7 +96,7 @@ public class PaletteElement extends D3Sprite {
 	}
 
 	public void setActive(boolean active) {
-		Log.v(TAG, "Set to active " + active + " " + mText);
+//		Log.v(TAG, "Set to active " + active + " " + mText);
 		if (active) {
 			mGraphic.setColor(bgActiveColor);
 			mTextGraphic.setColor(1, 1, 1);
@@ -106,7 +109,7 @@ public class PaletteElement extends D3Sprite {
 	
 	@Override
 	public boolean contains(PointF point) {
-		return D3Maths.rectContains(getX(), getY(), mWidth, mHeight, point.x, point.y);
+		return D3Maths.rectContains(getX(), getY(), mWidth*mGraphic.getScale(), mHeight*mGraphic.getScale(), point.x, point.y);
 	}
 
 	public String getText() {

@@ -13,14 +13,16 @@ public class Palette extends D3Sprite {
 	private float mTouchRadius = 0.06f;
 	private PaletteElement net, knife;
 	private PaletteElement mActiveElement;
+	private Camera mCamera;
 
-	public Palette(PointF position, SpriteManager d3gles20, float[] hudProjMatrix, float[] hudViewMatrix) {
+	public Palette(PointF position, SpriteManager d3gles20, float[] hudProjMatrix, float[] hudViewMatrix, Camera camera) {
 		super(position, d3gles20);
 		mHudProjMatrix = hudProjMatrix;
 		mHudViewMatrix = hudViewMatrix;
 		net = new PaletteElement(position, mTouchRadius, 0, "Net", d3gles20);
 		knife = new PaletteElement(position, mTouchRadius, 1, "Knife", d3gles20);
 		mActiveElement = null;
+		mCamera = camera;
 	}
 
 	@Override
@@ -32,6 +34,9 @@ public class Palette extends D3Sprite {
 		mGraphic.setPosition(0, 0);
 		net.initGraphic();
 		knife.initGraphic();
+		mCamera.addScaleDependentSprite(this);
+		mCamera.addScaleDependentSprite(net);
+		mCamera.addScaleDependentSprite(knife);
 //		net.setActive();
 	}
 
@@ -50,6 +55,7 @@ public class Palette extends D3Sprite {
 
 	public boolean handleTouch(PointF touch) {
 		if (mGraphic.fadeDone()) return false;
+		if (contains(touch)) return true;
 		if (net.contains(touch)) {
 			net.setActive(true);
 			knife.setActive(false);
@@ -62,7 +68,6 @@ public class Palette extends D3Sprite {
 			mActiveElement = knife;
 			return true;
 		}
-		if (contains(touch)) return true;
 //		if (net.handleTouch(touch)) return true;
 //		if (knife.handleTouch(touch)) return true;
 		hide();
