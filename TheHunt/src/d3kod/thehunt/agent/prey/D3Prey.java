@@ -55,17 +55,17 @@ public class D3Prey extends D3Shape {
 	// Fins
 	protected final static float finSize = 0.05f * preySize;
 	
-	protected final float[] rightFinStart = { 0.0f, 0.0f, 0.0f };
-	protected final float[] rightFinB = { 0.55f, -0.4f, 0.0f };
-	protected final float[] rightFinC = { 0.7f, -0.6f, 0.0f };
-	protected final float[] rightFinEnd = { 0.8f, -1.0f, 0.0f };
+//	protected final float[] rightFinStart = { 0.0f, 0.0f, 0.0f };
+//	protected final float[] rightFinB = { 0.55f, -0.4f, 0.0f };
+//	protected final float[] rightFinC = { 0.7f, -0.6f, 0.0f };
+//	protected final float[] rightFinEnd = { 0.8f, -1.0f, 0.0f };
+//	
+//	protected final float[] leftFinStart = { rightFinStart[0], rightFinStart[1], 0.0f };
+//	protected final float[] leftFinB = { -rightFinB[0], rightFinB[1], 0.0f };
+//	protected final float[] leftFinC = { -rightFinC[0], rightFinC[1], 0.0f };
+//	protected final float[] leftFinEnd = { -rightFinEnd[0], rightFinEnd[1], 0.0f };
 	
-	protected final float[] leftFinStart = { rightFinStart[0], rightFinStart[1], 0.0f };
-	protected final float[] leftFinB = { -rightFinB[0], rightFinB[1], 0.0f };
-	protected final float[] leftFinC = { -rightFinC[0], rightFinC[1], 0.0f };
-	protected final float[] leftFinEnd = { -rightFinEnd[0], rightFinEnd[1], 0.0f };
-	
-	protected int finVerticesNum;
+//	protected int finVerticesNum;
 	protected int headVerticesNum;
 	private int ribVerticesNum;
 	private int bodyVerticesNum;
@@ -141,8 +141,10 @@ public class D3Prey extends D3Shape {
 	private PreyData mD;
 
 	private HeadGraphic mHeadGraphic;
+
+	private BodyPartGraphic mTailGraphic;
 	
-	protected D3Prey(PreyData data, Head head) {
+	protected D3Prey(PreyData data, Head head, Tail tail) {
 		super();
 		super.setColor(preyColor);
 		super.setDrawType(GLES20.GL_LINE_STRIP);
@@ -150,17 +152,18 @@ public class D3Prey extends D3Shape {
 		Matrix.setIdentityM(mModelMatrix, 0);
 		
 		mHeadGraphic = head.getGraphic(this, headSize);
+		mTailGraphic = tail.getGraphic(this, finSize);
 		
-		leftFinVerticesData = calcLeftFinVerticesData();
-		rightFinVerticesData = calcRightFinVerticesData();
+//		leftFinVerticesData = calcLeftFinVerticesData();
+//		rightFinVerticesData = calcRightFinVerticesData();
 		
 		ribVerticesData = caclRibVerticesData();
 		
-		finVerticesNum = rightFinVerticesData.length / SpriteManager.COORDS_PER_VERTEX;
+//		finVerticesNum = rightFinVerticesData.length / SpriteManager.COORDS_PER_VERTEX;
 		ribVerticesNum = ribVerticesData.length / SpriteManager.COORDS_PER_VERTEX;
 		
-		leftFinVertexBuffer = Utilities.newFloatBuffer(leftFinVerticesData);
-		rightFinVertexBuffer = Utilities.newFloatBuffer(rightFinVerticesData);
+//		leftFinVertexBuffer = Utilities.newFloatBuffer(leftFinVerticesData);
+//		rightFinVertexBuffer = Utilities.newFloatBuffer(rightFinVerticesData);
 		ribVertexBuffer = Utilities.newFloatBuffer(ribVerticesData);
 		
 		bodyVerticesData = D3Maths.quadBezierCurveVertices(bodyStart4, bodyB4, bodyC4, bodyEnd4, detailsStep, bodyLength);
@@ -177,15 +180,15 @@ public class D3Prey extends D3Shape {
 				ribA, ribB, ribC, ribD, detailsStep, ribSize);
 	}
 
-	private float[] calcRightFinVerticesData() {
-		return D3Maths.quadBezierCurveVertices(
-				rightFinStart, rightFinB, rightFinC, rightFinEnd, detailsStep, finSize);
-	}
-
-	private float[] calcLeftFinVerticesData() {
-		return D3Maths.quadBezierCurveVertices(
-				leftFinStart, leftFinB, leftFinC, leftFinEnd, detailsStep, finSize);
-	}
+//	private float[] calcRightFinVerticesData() {
+//		return D3Maths.quadBezierCurveVertices(
+//				rightFinStart, rightFinB, rightFinC, rightFinEnd, detailsStep, finSize);
+//	}
+//
+//	private float[] calcLeftFinVerticesData() {
+//		return D3Maths.quadBezierCurveVertices(
+//				leftFinStart, leftFinB, leftFinC, leftFinEnd, detailsStep, finSize);
+//	}
 	
 	float bodyStartAnglePredicted, bodyBAnglePredicted, bodyCAnglePredicted, bodyEndAnglePredicted;
     float mPredictedPosX, mPredictedPosY;
@@ -243,14 +246,15 @@ public class D3Prey extends D3Shape {
         Matrix.rotateM(mFeetModelMatrix, 0, mModelMatrix, 0, bodyEndAnglePredicted, 0, 0, 1);
         Matrix.translateM(mFeetModelMatrix, 0, 
         		tailPosition[0], tailPosition[1], 0);
-        Matrix.rotateM(mFeetModelMatrix, 0, mLeftFootAngle, 0, 0, 1);
-        super.drawBuffer(leftFinVertexBuffer, mFeetModelMatrix);
-        
-        Matrix.rotateM(mFeetModelMatrix, 0, mModelMatrix, 0, bodyEndAnglePredicted, 0, 0, 1);
-        Matrix.translateM(mFeetModelMatrix, 0, 
-        		tailPosition[0], tailPosition[1], 0);
-        Matrix.rotateM(mFeetModelMatrix, 0, mRightFootAngle, 0, 0, 1);
-        super.drawBuffer(rightFinVertexBuffer, mFeetModelMatrix);
+//        Matrix.rotateM(mFeetModelMatrix, 0, mLeftFootAngle, 0, 0, 1);
+//        super.drawBuffer(leftFinVertexBuffer, mFeetModelMatrix);
+        mTailGraphic.draw(mFeetModelMatrix);
+//        
+//        Matrix.rotateM(mFeetModelMatrix, 0, mModelMatrix, 0, bodyEndAnglePredicted, 0, 0, 1);
+//        Matrix.translateM(mFeetModelMatrix, 0, 
+//        		tailPosition[0], tailPosition[1], 0);
+//        Matrix.rotateM(mFeetModelMatrix, 0, mRightFootAngle, 0, 0, 1);
+//        super.drawBuffer(rightFinVertexBuffer, mFeetModelMatrix);
         
         Matrix.rotateM(mHeadModelMatrix, 0, mModelMatrix, 0, bodyStartAnglePredicted, 0, 0, 1);
         Matrix.translateM(mHeadModelMatrix , 0, 

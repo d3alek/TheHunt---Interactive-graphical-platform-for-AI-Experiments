@@ -48,6 +48,7 @@ public class Prey extends Agent {
 
 	transient private SpriteManager mD3GLES20;
 	private Head mHead;
+	private Tail mTail;
 
 	public void update() {
 		if (mEnv == null) {
@@ -303,6 +304,7 @@ public class Prey extends Agent {
 		PointF newPos = mEnv.randomPosInEnv();
 		mD.mPosX = newPos.x; mD.mPosY = newPos.y;
 		mHead = new Head();
+		mTail = new Tail();
 	}
 
 	public PointF getPosition() {
@@ -381,7 +383,7 @@ public class Prey extends Agent {
 	}
 
 	public void initGraphic() {
-		mGraphic = new D3Prey(mD, mHead);
+		mGraphic = new D3Prey(mD, mHead, mTail);
 		initGraphic(mGraphic);
 		mD.emotionText = null; // fix for disappearing ! after db save while panicked
 	}
