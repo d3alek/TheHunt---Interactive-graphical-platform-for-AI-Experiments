@@ -84,8 +84,8 @@ public class HeadGraphic extends BodyPartGraphic {
 	private FloatBuffer eyeVertexBuffer;
 //	private float mSize;	
 
-	public HeadGraphic(D3Prey graphic, float size) {
-		super(graphic, size); // initialize mGraphic, mSize, mVertexBuffer using calcVerticesData
+	public HeadGraphic(D3Prey graphic, BodyPart bodyPart, float size) {
+		super(graphic, bodyPart, size); // initialize mGraphic, mSize, mVertexBuffer using calcVerticesData
 //		mSize = size;
 //		mDetailsStep = graphic.getDetailsStep();
 		
@@ -186,6 +186,12 @@ public class HeadGraphic extends BodyPartGraphic {
 	
 	public void initEatingMotion() {
 		eatingStep = 0;
+	}
+
+	@Override
+	public void update(float interpolation) {
+		// TODO Auto-generated method stub
+		
 	}
 	
 }

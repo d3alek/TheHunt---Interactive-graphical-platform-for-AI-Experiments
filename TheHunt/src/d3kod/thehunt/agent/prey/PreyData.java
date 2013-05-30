@@ -15,7 +15,7 @@ public class PreyData {
 	public static int ACTIONS_PER_SECOND = 30;
 	public static int ACTION_DELAY = TheHuntRenderer.TICKS_PER_SECOND/ACTIONS_PER_SECOND;
 	
-	protected final float MAX_BODY_BEND_ANGLE = 110;
+//	protected final float MAX_BODY_BEND_ANGLE = 110;
 	
 	private static int SMALL_TURNS_PER_SECOND = 3;
 	private static int MEDIUM_TURNS_PER_SECOND = 4;
@@ -55,46 +55,46 @@ public class PreyData {
 
 	protected float vx;
 	protected float vy;
-	protected float mPosY;
-	protected float mPosX;
+//	protected float mPosY;
+//	protected float mPosX;
 
 	protected float mPosHeadX;
 	protected float mPosHeadY;
 	
-	public float bodyStartAngle;
-	public float bodyBAngle;
-	public float bodyCAngle;
-	public float bodyEndAngle;
+//	public float bodyStartAngle;
+//	public float bodyBAngle;
+//	public float bodyCAngle;
+//	public float bodyEndAngle;
 	
-	public int bodyEndAngleTarget;
-	public int bodyCAngleTarget;
-	public int bodyBAngleTarget;
-	public int bodyStartAngleTarget;
-	public float rotateSpeedHead;
-	public float bodyBSpeed;
-	public float bodyCSpeed;
-	public float bodyEndSpeed;
+//	public int bodyEndAngleTarget;
+//	public int bodyCAngleTarget;
+//	public int bodyBAngleTarget;
+//	public int bodyStartAngleTarget;
+//	public float rotateSpeedHead;
+//	public float bodyBSpeed;
+//	public float bodyCSpeed;
+//	public float bodyEndSpeed;
 	
 	protected boolean mIsCaught;
 	
-	protected float bodyStartAngleRot;
-	protected float bodyBAngleRot;
-	protected float bodyCAngleRot;
-	protected float bodyEndAngleRot;
+//	protected float bodyStartAngleRot;
+//	protected float bodyBAngleRot;
+//	protected float bodyCAngleRot;
+//	protected float bodyEndAngleRot;
 	
 	protected float[] mHeadPosMatrix = new float[16];
 	protected float[] mTailPosMatrix = new float[16];
-	protected int bodyBendCounter;
-	protected int backFinAngle;
+//	protected int bodyBendCounter;
+//	protected int backFinAngle;
 	
-	protected boolean flopBack;
-	protected int flopBackTargetFirst;
-	protected int flopBackTargetSecond;
-	protected boolean floppedFirst;
-	protected boolean floppedSecond;
-	protected boolean turningBackFinMotion;
-	protected float flopBackAngle;
-	protected TurnAngle turningBackFinAngle;
+//	protected boolean flopBack;
+//	protected int flopBackTargetFirst;
+//	protected int flopBackTargetSecond;
+//	protected boolean floppedFirst;
+//	protected boolean floppedSecond;
+//	protected boolean turningBackFinMotion;
+//	protected float flopBackAngle;
+//	protected TurnAngle turningBackFinAngle;
 	
 	transient protected PanicText emotionText;
 //	public PointF mPosTail;

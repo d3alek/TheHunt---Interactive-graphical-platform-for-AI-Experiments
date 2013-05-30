@@ -17,7 +17,7 @@ public class Head extends BodyPart {
 	
 	@Override
 	public HeadGraphic getGraphic(D3Prey graphic, float size) {
-		return new HeadGraphic(graphic, size);
+		return new HeadGraphic(graphic, this, size);
 	}
 
 	

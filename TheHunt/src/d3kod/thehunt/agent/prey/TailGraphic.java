@@ -21,8 +21,8 @@ public class TailGraphic extends BodyPartGraphic {
 	private float[] rightFinVerticesData;
 	private FloatBuffer rightFinVertexBuffer;
 
-	public TailGraphic(D3Prey graphic, float size) {
-		super(graphic, size);
+	public TailGraphic(D3Prey graphic, BodyPart bodyPart, float size) {
+		super(graphic, bodyPart, size);
 		rightFinVerticesData = calcRightFinVerticesData();
 		rightFinVertexBuffer = Utilities.newFloatBuffer(rightFinVerticesData);
 
@@ -49,5 +49,11 @@ public class TailGraphic extends BodyPartGraphic {
 		super.draw(modelMatrix);
         
         mGraphic.drawBuffer(rightFinVertexBuffer, modelMatrix);
+	}
+
+	@Override
+	public void update(float interpolation) {
+		// TODO Auto-generated method stub
+		
 	}
 }

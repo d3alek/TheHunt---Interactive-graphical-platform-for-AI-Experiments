@@ -9,7 +9,7 @@ public class Tail extends BodyPart {
 
 	@Override
 	public BodyPartGraphic getGraphic(D3Prey graphic, float size) {
-		return new TailGraphic(graphic, size);
+		return new TailGraphic(graphic, this, size);
 	}
 
 	public void updatePos(float mPosX, float mPosY) {
