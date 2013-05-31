@@ -20,6 +20,7 @@ import d3kod.thehunt.world.environment.EnvironmentData;
 import d3kod.thehunt.world.environment.NAlgae;
 import d3kod.thehunt.world.floating_text.CrunchText;
 import d3kod.thehunt.world.floating_text.FlopText;
+import d3kod.thehunt.world.floating_text.MutateText;
 import d3kod.thehunt.world.floating_text.PanicText;
 import d3kod.thehunt.world.floating_text.PlokText;
 import d3kod.thehunt.world.logic.TheHuntRenderer;
@@ -34,15 +35,12 @@ public class Prey extends Agent {
 	private Sensor mSensor;
 	private PreyData mD;
 
-//	public static final float bodyToHeadLength = 0.07f;
 
 	private static final float FORCE_TO_DISTANCE = 0.00002f;
+	private static final double MUTATE_CHANCE_ON_CAUGHT = 1;
 
 	public static int flopBacksPerSecond = 2;
 	public static int flopBackTicks = TheHuntRenderer.TICKS_PER_SECOND/flopBacksPerSecond;
-//	private float flopBackSpeed;
-//	private boolean floppedThird;
-//	transient private TextureManager tm;
 
 	transient private D3Prey mGraphic;
 
@@ -83,9 +81,7 @@ public class Prey extends Agent {
 	}
 
 	private void updateWorldModel() {
-//		mWorldModel.update(mSensor.sense(mHead.getX(), mHead.getY(), mD.mPosX, mD.mPosY, mD.bodyStartAngle));
 		mWorldModel.update(mSensor.sense(mHead.getX(), mHead.getY(), mBody.getX(), mBody.getY(), mBody.getTopAngle()));
-//		mWorldModel.update(null);
 		expressEmotion();
 		if (mD.emotionText != null) {
 			if (mD.emotionText.faded()) {
@@ -117,117 +113,11 @@ public class Prey extends Agent {
 		if (mD.mIsCaught) return;
 		mBody.update();
 		moveForward(mBody.getForce());
-//		if (mD.bodyBendCounter == 0) {
-//			mD.bodyEndAngleTarget = mD.bodyCAngleTarget;
-//			mD.bodyEndSpeed = mD.bodyCSpeed;
-//			mD.bodyCAngleTarget = mD.bodyBAngleTarget;
-//			mD.bodyCSpeed = mD.bodyBSpeed;
-//			mD.bodyBAngleTarget = mD.bodyStartAngleTarget;
-//			mD.bodyBSpeed = mD.rotateSpeedHead;
-//			mD.bodyBendCounter = PreyData.BODY_BEND_DELAY-1;
-//		}
-//		else {
-//			--mD.bodyBendCounter;
-//		}
-//
-//		if (mD.bodyStartAngleTarget > mD.bodyStartAngle + mD.rotateSpeedHead) mD.bodyStartAngleRot = mD.rotateSpeedHead;
-//		else if (mD.bodyStartAngleTarget < mD.bodyStartAngle - mD.rotateSpeedHead) mD.bodyStartAngleRot = -mD.rotateSpeedHead;
-//		else {
-//			mD.bodyStartAngleRot = 0;
-//			mD.bodyStartAngle = mD.bodyStartAngleTarget;
-//		}
-//
-//		if (mD.bodyBAngleTarget > mD.bodyBAngle + mD.bodyBSpeed) mD.bodyBAngleRot = +mD.bodyBSpeed;
-//		else if (mD.bodyBAngleTarget < mD.bodyBAngle - mD.bodyBSpeed) mD.bodyBAngleRot = -mD.bodyBSpeed;
-//		else {
-//			mD.bodyBAngleRot = 0;
-//			mD.bodyBAngle = mD.bodyBAngleTarget;
-//		}
-//
-//		if (mD.bodyCAngleTarget > mD.bodyCAngle + mD.bodyCSpeed) mD.bodyCAngleRot = +mD.bodyCSpeed;
-//		else if (mD.bodyCAngleTarget < mD.bodyCAngle - mD.bodyCSpeed) mD.bodyCAngleRot = -mD.bodyCSpeed;
-//		else {
-//			mD.bodyCAngleRot = 0;
-//			mD.bodyCAngle = mD.bodyCAngleTarget;
-//		}
-
-//		if (!mD.flopBack) {
-//			if (mD.bodyEndAngleTarget > mD.bodyEndAngle + mD.bodyEndSpeed) mD.bodyEndAngleRot = mD.bodyEndSpeed;
-//			else if (mD.bodyEndAngleTarget < mD.bodyEndAngle - mD.bodyEndSpeed) mD.bodyEndAngleRot = -mD.bodyEndSpeed;
-//			else {
-//				mD.bodyEndAngleRot = 0;
-//				mD.bodyEndAngle = mD.bodyEndAngleTarget;
-//			}
-//		}
-
-//		if (mD.flopBack) doFlopBack();
-//
-//		mD.bodyStartAngle += mD.bodyStartAngleRot;
-//		mD.bodyBAngle += mD.bodyBAngleRot;
-//		mD.bodyCAngle += mD.bodyCAngleRot;
-//		if (!mD.flopBack) {
-//			mD.bodyEndAngle += mD.bodyEndAngleRot;
-//		}
 
 		applyFriction();
-//		mD.mPosX += mD.vx ; mD.mPosY += mD.vy;
 		PointF curPos = mBody.getPos();
 		mBody.setPos(new PointF(curPos.x+mD.vx, curPos.y+mD.vy));
 	}
-//	private boolean stoppedTurning() {
-//		return (mD.bodyStartAngleTarget == mD.bodyBAngleTarget 
-//				&& mD.bodyBAngleTarget == mD.bodyCAngleTarget);
-//	}
-//
-//	private void doFlopBack() {
-//		if (!mD.floppedFirst) {
-//			if (mD.flopBackTargetFirst > mD.flopBackAngle + flopBackSpeed) mD.flopBackAngle += flopBackSpeed;
-//			else if (mD.flopBackTargetFirst < mD.flopBackAngle - flopBackSpeed) mD.flopBackAngle -= flopBackSpeed;
-//			else {
-//				mD.flopBackAngle = mD.flopBackTargetFirst;
-//				mD.floppedFirst = true;
-//				moveForward(Math.abs(mD.backFinAngle*flopBackSpeed)); // F = ma
-////				Log.v(TAG, "Flop back!");
-//				putFlopText(mD.flopBackAngle + mD.bodyCAngle);
-//			}
-//			mD.bodyEndAngleRot = mD.bodyCAngle + mD.flopBackAngle-mD.bodyEndAngle;
-//			mD.bodyEndAngle = mD.bodyCAngle + mD.flopBackAngle;
-//		}
-//		else if (!mD.floppedSecond) {
-//			if (mD.flopBackTargetSecond > mD.flopBackAngle + flopBackSpeed) mD.flopBackAngle += flopBackSpeed;
-//			else if (mD.flopBackTargetSecond < mD.flopBackAngle - flopBackSpeed) mD.flopBackAngle -= flopBackSpeed;
-//			else {
-//				mD.flopBackAngle = mD.flopBackTargetSecond;
-//				mD.floppedSecond = true;
-//				moveForward(Math.abs(2*mD.backFinAngle*flopBackSpeed)); // F = ma
-////				Log.v(TAG, "Flop back!");
-//				putFlopText(mD.flopBackAngle + mD.bodyCAngle);
-//			}
-//			mD.bodyEndAngleRot = mD.bodyCAngle + mD.flopBackAngle-mD.bodyEndAngle;
-//			mD.bodyEndAngle = mD.bodyCAngle + mD.flopBackAngle;
-//		}
-//		else {
-//			//flopping third
-//			if (0 > mD.flopBackAngle + flopBackSpeed) mD.flopBackAngle += flopBackSpeed;
-//			else if (0 < mD.flopBackAngle - flopBackSpeed) mD.flopBackAngle -= flopBackSpeed;
-//			else {
-//				mD.flopBackAngle = 0;
-//				floppedThird = true;
-//				moveForward(Math.abs(mD.backFinAngle*flopBackSpeed)); // F = ma
-//			}
-//			mD.bodyEndAngleRot = mD.bodyCAngle + mD.flopBackAngle-mD.bodyEndAngle;
-//			mD.bodyEndAngle = mD.bodyCAngle + mD.flopBackAngle;
-//		}
-//		if (mD.floppedFirst && mD.floppedSecond && floppedThird) {
-//			if (mD.turningBackFinMotion) {
-//				mD.turningBackFinMotion = false;
-//				mD.flopBack = false;
-//			}
-//			else {
-//				mD.flopBack = false;
-//			}
-//		}
-//	}
 	private void putFlopText(float angle) {
 		float radAngle = (float)Math.toRadians(angle);
 //		Log.v(TAG, "Put flop at " + D.mPosX + FloatMath.sin(radAngle)*D3Prey.finSize*2 + " " + (mD.mPosY - FloatMath.cos(radAngle)*D3Prey.finSize*2, angle));
@@ -236,40 +126,12 @@ public class Prey extends Agent {
 	}
 
 	public void turn(TurnAngle angle) {
-//		int value = angle.getValue();
 
-//		if (mD.bodyStartAngleTarget + value - mD.bodyCAngle > mD.MAX_BODY_BEND_ANGLE 
-//				|| mD.bodyStartAngleTarget + value - mD.bodyCAngle < -mD.MAX_BODY_BEND_ANGLE) {
-//			Log.v(TAG, "Can't bend that much!");
-//			return;
-//		}
 		if (!mBody.bend(angle)) {
 			Log.v(TAG, "Can't bend that much!");
 			return;
 		}
-//
-//		mD.rotateSpeedHead = angle.getRotateSpeed();
-//		mD.bodyStartAngleTarget += value;
-//
-//		if (!mD.turningBackFinMotion) {
-//			mD.turningBackFinMotion = true;
-//			mD.turningBackFinAngle = angle.getBackAngle();
-//			backFinMotion(mD.turningBackFinAngle);
-//		}
 	}
-
-//	public void backFinMotion(TurnAngle angle) {
-//		mD.flopBack = true;
-//		mD.backFinAngle = angle.getValue();
-//		mD.bodyEndAngle = mD.bodyCAngle;
-//		mD.flopBackTargetFirst = +mD.backFinAngle;
-//		mD.flopBackAngle = 0;
-//		mD.flopBackTargetSecond = -mD.backFinAngle;
-//		mD.floppedFirst = false;
-//		mD.floppedSecond = false;
-//		floppedThird = false;
-//		flopBackSpeed = angle.getRotateSpeed();
-//	}
 
 	public void updateSpeed(float dx, float dy) {
 		mD.vx += dx; mD.vy += dy;
@@ -280,7 +142,6 @@ public class Prey extends Agent {
 		putFlopText(mBody.getBottomAngle());
 		float distance = force * FORCE_TO_DISTANCE;
 		//		Log.v(TAG, "Moving the prey forward to a distance of " + distance + " thrust is " + mD.thrust);
-//		float radAngle = (float)Math.toRadians(mD.bodyCAngle);
 		float radAngle = (float)Math.toRadians(mBody.getFacingAngle());
 		mD.vx += -FloatMath.sin(radAngle)*distance;
 		mD.vy += FloatMath.cos(radAngle)*distance;  
@@ -296,20 +157,15 @@ public class Prey extends Agent {
 		mD3GLES20 = d3gles20;
 		mD = new PreyData();
 
-//		tm = texMan; 
 		setTextureManager(texMan);
 		mWorldModel = new WorldModel();
 		mEnv = env;
 		mPlanner = new Planner();
 		mSensor = new Sensor(mEnv);
-//		mD.mPosX = mD.mPosY = 0;
 
-//		mD.rotateSpeedHead = mD.rotateSpeedSmall;//Math.abs(TurnAngle.LEFT_SMALL.getValue())/SMALL_TICKS_PER_TURN;
-		//		mGraphicSet = false;
 		mD.mIsCaught = false;
 		mD.emotionText = null;
 		PointF newPos = mEnv.randomPosInEnv();
-//		mD.mPosX = newPos.x; mD.mPosY = newPos.y;
 		mHead = new Head();
 		mTail = new Tail();
 		mBody = new Body();
@@ -317,7 +173,6 @@ public class Prey extends Agent {
 	}
 
 	public PointF getPosition() {
-//		return new PointF(mD.mPosX, mD.mPosY);
 		return mBody.getPos();
 	}
 	public PointF getHeadPositon() {
@@ -369,9 +224,6 @@ public class Prey extends Agent {
 	public void setCaught(boolean caught) {
 		mD.mIsCaught = caught;
 		if (caught) {
-//			mD.vx = mD.vy = mD.bodyEndAngleRot = 
-//					mD.bodyStartAngleRot = mD.bodyBAngleRot 
-//					= mD.bodyCAngleRot = 0;
 			mD.vx = mD.vy = 0;
 			mBody.noRot();
 		}
@@ -384,7 +236,6 @@ public class Prey extends Agent {
 	public void release() {
 		mD.mIsCaught = false;
 		PointF newPos = mEnv.randomPosInEnv();
-//		mD.mPosX = newPos.x; mD.mPosY = newPos.y;
 		mBody.setPos(newPos);
 		mPlanner.clear();
 		calcPosHeadandTail();
@@ -393,6 +244,26 @@ public class Prey extends Agent {
 		mWorldModel.recalcNearestFood();
 		mD3GLES20.putText(new PlokText(mBody.getX(), mBody.getY()));
 		mGraphic.resetColor();
+		
+		if (Math.random() < MUTATE_CHANCE_ON_CAUGHT) {
+			Log.v(TAG, "Mutating!");
+			int rand = (int)(Math.random()*1000);
+			if (rand % 3 == 0) {
+				//mutateHead
+				mHead.mutate();
+				mD3GLES20.putText(new MutateText("Mutate head!", mHead.getX(), mHead.getY()));
+			}
+			if (rand % 3 == 1) {
+				//mutateBody
+				mBody.mutate();
+				mD3GLES20.putText(new MutateText("Mutate body!", mBody.getX(), mBody.getY()));
+			}
+			if (rand % 3 == 2) {
+				//mutateTail
+				mTail.mutate();
+				mD3GLES20.putText(new MutateText("Mutate tail!", mTail.getX(), mTail.getY()));
+			}
+		}
 	}
 
 	public void initGraphic() {

@@ -38,4 +38,7 @@ public abstract class BodyPart {
 
 	public abstract BodyPartGraphic getGraphic(D3Prey graphic, float size);
 
+	public void mutate() {
+		
+	}
 }
