@@ -3,6 +3,7 @@ package d3kod.thehunt.agent.prey.sensor;
 import java.util.ArrayList;
 
 import android.util.Log;
+import d3kod.thehunt.agent.prey.Head;
 import d3kod.thehunt.agent.prey.memory.WorldModel;
 import d3kod.thehunt.world.environment.Eatable;
 import d3kod.thehunt.world.environment.Environment;
@@ -15,7 +16,7 @@ import d3kod.thehunt.world.events.EventFood;
 
 public class Sensor {
 	
-	enum Sensors {
+	public static enum Sensors {
 		CURRENT_SENSOR, SIGHT_SENSOR, HEARING_SENSOR;
 	}
 	private static final String TAG = "Sensor";
@@ -24,19 +25,22 @@ public class Sensor {
 	private float mSightRad = 0.5f;
 	private float mHearRad = 1f;
 	private ArrayList<Event> sensedEvents;
+	private Head mHead;
 	
-	public Sensor(Environment env) {
+	public Sensor(Environment env, Head head) {
 		mEnv = env;
-		mSensors = new ArrayList<Sensor.Sensors>();
-		mSensors.add(Sensors.CURRENT_SENSOR);
-		mSensors.add(Sensors.SIGHT_SENSOR);
-		mSensors.add(Sensors.HEARING_SENSOR);
+//		mSensors = new ArrayList<Sensor.Sensors>();
+//		mSensors.add(Sensors.CURRENT_SENSOR);
+//		mSensors.add(Sensors.SIGHT_SENSOR);
+//		mSensors.add(Sensors.HEARING_SENSOR);
+		mHead = head;
 		sensedEvents = new ArrayList<Event>();
 	}
 	public ArrayList<Event> sense(float hX, float hY, float bX, float bY, float headAngle) {
 		sensedEvents.clear();
 		sensedEvents.add(new EventAt(hX, hY, bX, bY, headAngle));
-		for (Sensors sensor: mSensors) {
+//		for (Sensors sensor: mSensors) {
+		for (Sensors sensor: mHead.getSensors())
 			switch(sensor) {
 			case CURRENT_SENSOR: sensedEvents.add(mEnv.senseCurrent(bX, bY)); break;
 			case SIGHT_SENSOR: 
@@ -62,7 +66,6 @@ public class Sensor {
 				sensedEvents.addAll(mEnv.hearEvents(hX, hY, mHearRad));
 				break;
 			}
-		}
 		return sensedEvents;
 	}
 

@@ -24,7 +24,9 @@ public abstract class BodyPartGraphic {
 
 	protected abstract float[] calcVerticesData();
 
-	public void draw(float[] modelMatrix) {
+	public void draw(float[] modelMatrix, float[] mVMatrix, float[] mProjMatrix) {
+		mGraphic.setDrawVMatrix(mVMatrix);
+		mGraphic.setDrawProjMatrix(mProjMatrix);
         mGraphic.drawBuffer(mVertexBuffer, modelMatrix);
 	}
 
@@ -38,5 +40,4 @@ public abstract class BodyPartGraphic {
 		// TODO Auto-generated method stub
 		return 0;
 	}
-
 }

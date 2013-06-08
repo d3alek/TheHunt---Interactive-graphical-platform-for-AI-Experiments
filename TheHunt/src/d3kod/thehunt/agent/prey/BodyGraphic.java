@@ -125,9 +125,9 @@ public class BodyGraphic extends BodyPartGraphic {
 	}
 	
 	@Override
-	public void draw(float[] modelMatrix) {
+	public void draw(float[] modelMatrix, float[] mVMatrix, float[] mProjMatrix) {
         
-		super.draw(modelMatrix);
+		super.draw(modelMatrix, mVMatrix, mProjMatrix);
 		rib1Pos[0] = mVerticesData[rib1PosIndex];
         rib1Pos[1] = mVerticesData[rib1PosIndex + 1];
         

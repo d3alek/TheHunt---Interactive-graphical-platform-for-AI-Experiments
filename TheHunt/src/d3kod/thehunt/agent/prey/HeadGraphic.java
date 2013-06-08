@@ -36,6 +36,9 @@ public class HeadGraphic extends BodyPartGraphic {
 		protected final static float[] headPart4Start = { 0.7f, 0.7f, 0.0f };
 		protected final static float[] headPart4B = { 0.5f, 0.5f, 0.0f };
 		protected final static float[] headPart4C = { 0.0f, 0.0f, 0.0f };
+		private static final float SIZE_WITH_EARS_ADJ = 0.25f;
+		
+		
 		
 
 		protected final float eatingMotionLengthSeconds = 0.5f;
@@ -82,6 +85,7 @@ public class HeadGraphic extends BodyPartGraphic {
 //	private D3Prey mGraphic;
 
 	private FloatBuffer eyeVertexBuffer;
+private boolean mHaveEyes;
 //	private float mSize;	
 
 	public HeadGraphic(D3Prey graphic, BodyPart bodyPart, float size) {
@@ -90,6 +94,7 @@ public class HeadGraphic extends BodyPartGraphic {
 //		mDetailsStep = graphic.getDetailsStep();
 		
 		mMouthOpen = true;
+		mHaveEyes = false;
 //		mVerticesData = calcVerticesData();
 		eyeVertexData = D3Maths.circleVerticesData(eyeSize*mSize, eyeDetailsLevel);
 //		mGraphic = graphic;
@@ -162,7 +167,8 @@ public class HeadGraphic extends BodyPartGraphic {
 		}
 	}
 
-	public void draw(float[] modelMatrix) {
+	@Override
+	public void draw(float[] modelMatrix, float[] mVMatrix, float[] mProjMatrix) {
 		if (eatingStep != -1) {
         	mVertexBuffer = Utilities.newFloatBuffer(calcMoveHeadVerticesData(eatingStep));
         	if (eatingMotionStepCounter >= eatingMotionStepTicks) {
@@ -176,12 +182,14 @@ public class HeadGraphic extends BodyPartGraphic {
         	}
         }
         
-		super.draw(modelMatrix);
+		super.draw(modelMatrix, mVMatrix, mProjMatrix);
         
         
-        Matrix.translateM(mEyeModelMatrix, 0, modelMatrix , 0, eyePosition[0]*mSize, eyePosition[1]*mSize, 0);
-        mGraphic.setDrawType(GLES20.GL_LINE_LOOP);
-        mGraphic.drawBuffer(eyeVertexBuffer, mEyeModelMatrix);
+		if (mHaveEyes) {
+			Matrix.translateM(mEyeModelMatrix, 0, modelMatrix , 0, eyePosition[0]*mSize, eyePosition[1]*mSize, 0);
+			mGraphic.setDrawType(GLES20.GL_LINE_LOOP);
+			mGraphic.drawBuffer(eyeVertexBuffer, mEyeModelMatrix);
+		}
 	}
 	
 	public void initEatingMotion() {
@@ -190,7 +198,16 @@ public class HeadGraphic extends BodyPartGraphic {
 
 	@Override
 	public void update(float interpolation) {
-		// TODO Auto-generated method stub
+		
+	}
+
+	public void putEars() {
+		mSize *= SIZE_WITH_EARS_ADJ;
+		
+	}
+
+	public void putEyes() {
+		mHaveEyes = true;
 		
 	}
 	

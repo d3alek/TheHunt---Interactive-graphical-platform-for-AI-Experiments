@@ -45,8 +45,8 @@ public class TailGraphic extends BodyPartGraphic {
 	}
 	
 	@Override
-	public void draw(float[] modelMatrix) {
-		super.draw(modelMatrix);
+	public void draw(float[] modelMatrix, float[] mVMatrix, float[] mProjMatrix) {
+		super.draw(modelMatrix, mVMatrix, mProjMatrix);
         
         mGraphic.drawBuffer(rightFinVertexBuffer, modelMatrix);
 	}

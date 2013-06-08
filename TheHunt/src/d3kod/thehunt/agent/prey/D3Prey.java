@@ -155,17 +155,18 @@ public class D3Prey extends D3Shape {
         Matrix.translateM(mModelMatrix , 0, mPredictedPosX, mPredictedPosY, 0);
         
 		// Body
-        mBodyGraphic.draw(mModelMatrix);
+        mBodyGraphic.draw(mModelMatrix, mVMatrix, mProjMatrix);
        
         Matrix.rotateM(mFeetModelMatrix, 0, mModelMatrix, 0, mBodyGraphic.getEndAnglePredicted(), 0, 0, 1);
         Matrix.translateM(mFeetModelMatrix, 0, 
         		tailPosition[0], tailPosition[1], 0);
-        mTailGraphic.draw(mFeetModelMatrix);
+        
+        mTailGraphic.draw(mFeetModelMatrix, mVMatrix, mProjMatrix);
         
         Matrix.rotateM(mHeadModelMatrix, 0, mModelMatrix, 0, mBodyGraphic.getStartAnglePredicted(), 0, 0, 1);
         Matrix.translateM(mHeadModelMatrix , 0, 
         		headPosition[0], headPosition[1], 0);
-        mHeadGraphic.draw(mHeadModelMatrix);
+        mHeadGraphic.draw(mHeadModelMatrix, mVMatrix, mProjMatrix);
 	}
 	
 	private void calcPredicted(float interpolation) {

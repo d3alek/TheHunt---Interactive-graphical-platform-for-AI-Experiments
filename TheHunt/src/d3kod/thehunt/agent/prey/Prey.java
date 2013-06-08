@@ -156,19 +156,21 @@ public class Prey extends Agent {
 		super(env, d3gles20);
 		mD3GLES20 = d3gles20;
 		mD = new PreyData();
-
+		
+		mHead = new Head();
+		mTail = new Tail();
+		mBody = new Body();
+		
 		setTextureManager(texMan);
 		mWorldModel = new WorldModel();
 		mEnv = env;
 		mPlanner = new Planner();
-		mSensor = new Sensor(mEnv);
+		mSensor = new Sensor(mEnv, mHead);
 
 		mD.mIsCaught = false;
 		mD.emotionText = null;
 		PointF newPos = mEnv.randomPosInEnv();
-		mHead = new Head();
-		mTail = new Tail();
-		mBody = new Body();
+
 		mBody.setPos(newPos);
 	}
 

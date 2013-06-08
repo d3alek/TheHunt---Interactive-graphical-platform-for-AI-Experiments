@@ -1,5 +1,9 @@
 package d3kod.thehunt.agent.prey;
 
+import java.util.ArrayList;
+
+import d3kod.thehunt.agent.prey.sensor.Sensor.Sensors;
+
 import android.graphics.PointF;
 import android.opengl.Matrix;
 
@@ -10,14 +14,19 @@ public class Head extends BodyPart {
 	private float[] mHeadPosMatrix = new float[16];
 	
 	public static final float bodyToHeadLength = 0.07f;
+	ArrayList<Sensors> mSensors;
+	private int independentMutationsNum = 2;
+	private HeadGraphic mGraphic;
 
 	public Head() {
-		
+		mSensors = new ArrayList<Sensors>();
+		mSensors.add(Sensors.CURRENT_SENSOR);
 	}
 	
 	@Override
 	public HeadGraphic getGraphic(D3Prey graphic, float size) {
-		return new HeadGraphic(graphic, this, size);
+		if (mGraphic == null) mGraphic = new HeadGraphic(graphic, this, size);
+		return mGraphic;
 	}
 
 	
@@ -33,4 +42,23 @@ public class Head extends BodyPart {
 		setPos(new PointF(posTemp[0], posTemp[1]));
 	}
 	
+	@Override
+	public void mutate() {
+		int rand = (int)(Math.random()*1000);
+		if (rand % independentMutationsNum == 0) {
+			mSensors.add(Sensors.HEARING_SENSOR);
+			mGraphic.putEars();
+			
+		}
+		else if (rand % independentMutationsNum == 1) {
+			mSensors.add(Sensors.SIGHT_SENSOR);
+			mGraphic.putEyes();
+		}
+	}
+
+	public ArrayList<Sensors> getSensors() {
+		return mSensors;
+	}
+	
 }
+
