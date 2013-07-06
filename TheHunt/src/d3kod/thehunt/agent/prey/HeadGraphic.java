@@ -36,7 +36,7 @@ public class HeadGraphic extends BodyPartGraphic {
 		protected final static float[] headPart4Start = { 0.7f, 0.7f, 0.0f };
 		protected final static float[] headPart4B = { 0.5f, 0.5f, 0.0f };
 		protected final static float[] headPart4C = { 0.0f, 0.0f, 0.0f };
-		private static final float SIZE_WITH_EARS_ADJ = 0.25f;
+		private static final float SIZE_WITH_EARS_ADJ = 1.25f;
 		
 		
 		
@@ -203,12 +203,20 @@ private boolean mHaveEyes;
 
 	public void putEars() {
 		mSize *= SIZE_WITH_EARS_ADJ;
+		eyeVertexData = D3Maths.circleVerticesData(eyeSize*mSize, eyeDetailsLevel);
+		eyeVertexBuffer = Utilities.newFloatBuffer(eyeVertexData);
+		mVerticesData = calcVerticesData();
+		mVertexBuffer = Utilities.newFloatBuffer(mVerticesData);
 		
 	}
 
 	public void putEyes() {
 		mHaveEyes = true;
 		
+	}
+
+	public float getSize() {
+		return mSize;
 	}
 	
 }

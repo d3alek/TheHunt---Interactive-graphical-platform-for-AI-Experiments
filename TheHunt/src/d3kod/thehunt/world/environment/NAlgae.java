@@ -12,7 +12,7 @@ public class NAlgae extends FloatingObject implements Eatable {
 	private static final float FRICTION = 0.001f;
 	private static final float MAX_FRICTION = 0.1f;
 	private static final int MAX_N = 50;
-	public static final int FOOD_ALGAE_BITE_NUTRITION = 20;
+	public static final int FOOD_ALGAE_BITE_NUTRITION = 10;
 	private static final String TAG = "Nalgae";
 	private int mSize;
 	transient private D3NAlgae mGraphic;

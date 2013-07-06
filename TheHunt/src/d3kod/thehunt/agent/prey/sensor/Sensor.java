@@ -17,7 +17,7 @@ import d3kod.thehunt.world.events.EventFood;
 public class Sensor {
 	
 	public static enum Sensors {
-		CURRENT_SENSOR, SIGHT_SENSOR, HEARING_SENSOR;
+		TOUCH_SENSOR, SIGHT_SENSOR, HEARING_SENSOR;
 	}
 	private static final String TAG = "Sensor";
 	private ArrayList<Sensors> mSensors;
@@ -29,43 +29,46 @@ public class Sensor {
 	
 	public Sensor(Environment env, Head head) {
 		mEnv = env;
-//		mSensors = new ArrayList<Sensor.Sensors>();
-//		mSensors.add(Sensors.CURRENT_SENSOR);
-//		mSensors.add(Sensors.SIGHT_SENSOR);
-//		mSensors.add(Sensors.HEARING_SENSOR);
 		mHead = head;
 		sensedEvents = new ArrayList<Event>();
 	}
-	public ArrayList<Event> sense(float hX, float hY, float bX, float bY, float headAngle) {
+	public ArrayList<Event> sense(float hX, float hY, float headSize, float bX, float bY, float headAngle) {
 		sensedEvents.clear();
 		sensedEvents.add(new EventAt(hX, hY, bX, bY, headAngle));
-//		for (Sensors sensor: mSensors) {
+		ArrayList<FloatingObject> sensedObjects = new ArrayList<FloatingObject>();
 		for (Sensors sensor: mHead.getSensors())
 			switch(sensor) {
-			case CURRENT_SENSOR: sensedEvents.add(mEnv.senseCurrent(bX, bY)); break;
+			case TOUCH_SENSOR: {
+				sensedEvents.add(mEnv.senseCurrent(bX, bY));
+				//sensedEvents.add(mEnv.senseTouch)
+				sensedObjects.addAll(mEnv.senseTouch(hX, hY, headSize/2f));
+				
+			}
 			case SIGHT_SENSOR: 
 				sensedEvents.add(mEnv.senseLight(hX, hY));
-				ArrayList<FloatingObject> sensedObjects = mEnv.seeObjects(hX, hY, mSightRad);
-				for (FloatingObject fo: sensedObjects) {
-					switch(fo.getType()) {
-					case ALGAE:
-						sensedEvents.add(new EventAlgae(fo.getX(), fo.getY(), ((NAlgae)fo).getRadius()));
-						if (((NAlgae)fo).getRadius() >= WorldModel.MINIMUM_HIDING_ALGAE_RADIUS) {
-							break;
-						}
-						else {
-							break;
-							// no break - register it as food as well
-						}
-					case FOOD_GM: 
-						sensedEvents.add(new EventFood(fo.getX(), fo.getY(), ((Eatable)fo).getNutrition())); break;
-					}
-				}
+				sensedObjects.addAll(mEnv.seeObjects(hX, hY, mSightRad));
+				
 				break;
 			case HEARING_SENSOR:
 				sensedEvents.addAll(mEnv.hearEvents(hX, hY, mHearRad));
 				break;
 			}
+		
+		for (FloatingObject fo: sensedObjects) {
+			switch(fo.getType()) {
+			case ALGAE:
+				sensedEvents.add(new EventAlgae(fo.getX(), fo.getY(), ((NAlgae)fo).getRadius()));
+				if (((NAlgae)fo).getRadius() >= WorldModel.MINIMUM_HIDING_ALGAE_RADIUS) {
+					break;
+				}
+				else {
+					break;
+					// no break - register it as food as well
+				}
+			case FOOD_GM: 
+				sensedEvents.add(new EventFood(fo.getX(), fo.getY(), ((Eatable)fo).getNutrition())); break;
+			}
+		}
 		return sensedEvents;
 	}
 

@@ -160,6 +160,7 @@ public class HUD {
 	
 	public void hidePalette() {
 		mPalette.hide();
+		prevTouch = null;
 	}
 	public boolean handleTouch(PointF touch, int action) {
 //		Log.v(TAG, "Action is " + action);

@@ -5,7 +5,7 @@ import d3kod.graphics.sprite.shapes.D3Shape;
 
 public class FoodGM extends FloatingObject implements Eatable {
 
-	private static final int FOOD_GM_NUTRITION = 50;
+	private static final int FOOD_GM_NUTRITION = 100;
 	private D3FoodGM mGraphic;
 	
 	public FoodGM(float x, float y, SpriteManager d3gles20) {

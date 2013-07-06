@@ -89,6 +89,7 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 	private int mScore;
 	private TheHuntContextMenu mContextMenu;
 	private float mScale;
+	private TheHuntMenu mMenu;
 //	private GLText mGLText;
 	/**
 	 * The possible Prey type values (for example, returned from a {@link PreyChangeDialog}.
@@ -233,12 +234,14 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 			mEnv.initGraphics(mD3GLES20);
 			mCamera.initGraphic();
 			mHUD = new HUD(mCamera);
+			
 			mHUD.initGraphics(mD3GLES20);
 //			mHUD.setCaught(mCaughtCounter);
 			mHUD.setScore(mCaughtCounter);
-			
-			mContextMenu = new TheHuntContextMenu(mD3GLES20);
-			mContextMenu.initGraphic();
+			mMenu = new TheHuntMenu(mD3GLES20, mCamera);
+			mMenu.initGraphic();
+//			mContextMenu = new TheHuntContextMenu(mD3GLES20);
+//			mContextMenu.initGraphic();
 			
 			if (mPrey != null) {
 				mPrey.setSpriteManager(mD3GLES20);
@@ -263,6 +266,13 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 		
 		synchronized (mContext.stateLock) {
 			if (mState == State.PAUSE) {
+				return;
+			}
+			if (mState == State.MENU) {
+				if (mMenu == null) {
+					Log.e(TAG, "Menu is null on draw");
+				}
+				else mMenu.draw(mVMatrix, mProjMatrix, 0);
 				return;
 			}
 			if (mContext.getRunningRenderer() != TAG) {
@@ -302,7 +312,7 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 	public void updateWorld() {
 //		Log.v(TAG, "Update world called!");
 		mEnv.update();
-		if (!mContextMenu.isHidden()) mContextMenu.update();
+//		if (!mContextMenu.isHidden()) mContextMenu.update();
 //		mHUD.setEnvState(mEnv.getStateString(), mEnv.getStateColor());
 		if (mPrey != null) {
 			PointF preyPos = mPrey.getPosition();
@@ -390,6 +400,18 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 
 		PointF location = fromScreenToWorld(event.getX(), event.getY());
 		
+		if (mState == State.MENU) {
+			if (mMenu == null) {
+				Log.e(TAG, "Menu is null on handle Touch");
+				return;
+			}
+			if (!mMenu.handleTouch(location, event.getAction())) {
+				mState = State.PLAY;
+				mMenu.hide();
+			}
+			
+		}
+		
 		if (doubleTouch && !mScrolling) {
 			mScrolling = true;
 			Log.v(TAG, "Scrolling is true");
@@ -418,27 +440,25 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 				}
 			}				
 			
-//			else if (mLongPress) {
-//				Log.v(TAG, "In long press!");
-//				if (event.getAction() == MotionEvent.ACTION_UP) {
-//					Log.v(TAG, "Stopping long press");
-//					mLongPress = false;
-//					
-//					switch(mContextMenu.getChange()) {
-//					case 0:
-//						mTool = new CatchNet(mEnv, mD3GLES20); break;
-//					case 1:
-//						mTool = new Knife(mEnv, mD3GLES20); break;
-//					}
-//					
-//					mContextMenu.hide();
-//				}
-////				mTool.cancel();
-//				else {
-//					Log.v(TAG, "Handling long press");
+			else if (mLongPress) {
+				Log.v(TAG, "In long press!");
+				if (event.getAction() == MotionEvent.ACTION_UP) {
+					Log.v(TAG, "Stopping long press");
+					mLongPress = false;
+//					mState = State.MENU;
+				}
+				else {
+					Log.v(TAG, "Handling long press");
+//					mState = State.PAUSE;
+					mState = State.MENU;
+					if (mMenu != null) mMenu.show();
+					else {
+						Log.e(TAG, "Menu is null");
+						mState = State.PLAY;
+					}
 //					mContextMenu.handleTouch(location);
-//				}
-//			}
+				}
+			}
 				
 //			if (D3Maths.distance(location, locationMean) >)
 //			setFaded
@@ -613,12 +633,12 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 		mPreyChangeTo = PreyType.values()[which];
 	}
 
-//	public void reportLongPress(MotionEvent event) {
-//		Log.v(TAG, "Long press reported");
-//		mLongPress = true;
-//		PointF location = fromScreenToWorld(event.getX(), event.getY());
-//		mTool.stop(location);
-//		mContextMenu.show(location);
-//		Log.v(TAG, "Long press registered");
-//	}
+	public void reportLongPress(MotionEvent event) {
+		Log.v(TAG, "Long press reported");
+		mLongPress = true;
+		PointF location = fromScreenToWorld(event.getX(), event.getY());
+		mTool.stop(location);
+		mHUD.hidePalette();
+		Log.v(TAG, "Long press registered");
+	}
 }

@@ -17,10 +17,13 @@ public class Head extends BodyPart {
 	ArrayList<Sensors> mSensors;
 	private int independentMutationsNum = 2;
 	private HeadGraphic mGraphic;
+	private boolean haveEars;
+	private boolean haveEyes;
 
 	public Head() {
 		mSensors = new ArrayList<Sensors>();
-		mSensors.add(Sensors.CURRENT_SENSOR);
+		mSensors.add(Sensors.TOUCH_SENSOR);
+		haveEars = haveEyes = false;
 	}
 	
 	@Override
@@ -45,12 +48,12 @@ public class Head extends BodyPart {
 	@Override
 	public void mutate() {
 		int rand = (int)(Math.random()*1000);
-		if (rand % independentMutationsNum == 0) {
+		if (!haveEars && rand % independentMutationsNum == 0) {
 			mSensors.add(Sensors.HEARING_SENSOR);
 			mGraphic.putEars();
 			
 		}
-		else if (rand % independentMutationsNum == 1) {
+		else if (!haveEyes && rand % independentMutationsNum == 1) {
 			mSensors.add(Sensors.SIGHT_SENSOR);
 			mGraphic.putEyes();
 		}
@@ -58,6 +61,10 @@ public class Head extends BodyPart {
 
 	public ArrayList<Sensors> getSensors() {
 		return mSensors;
+	}
+
+	public float getSize() {
+		return mGraphic.getSize();
 	}
 	
 }

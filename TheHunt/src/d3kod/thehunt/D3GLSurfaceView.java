@@ -13,7 +13,7 @@ public class D3GLSurfaceView extends GLSurfaceView {
     private static final String TAG = null;
 	public TheHuntRenderer mRenderer;
 	private boolean doubleTouch;
-//	private GestureDetector mGestureDetector;
+	private GestureDetector mGestureDetector;
 	
 	public D3GLSurfaceView(Context context, AttributeSet attrs){
 		super(context, attrs);
@@ -26,22 +26,21 @@ public class D3GLSurfaceView extends GLSurfaceView {
         setRenderer(mRenderer = new TheHuntRenderer(context));
         setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
         doubleTouch = false;
-//        mGestureDetector = new GestureDetector(context, new GestureDetector.SimpleOnGestureListener() {
-//        	@Override
-//        	public void onLongPress(final MotionEvent e) {
-//        		queueEvent(new Runnable() {
-//    			public void run() {
-//    				
-//    				Log.v(TAG, "Long press detected!");
-////    				mRenderer.reportLongPress(e);
-//    			}
-//    		});
-//        	}
-//        }); 
+        mGestureDetector = new GestureDetector(context, new GestureDetector.SimpleOnGestureListener() {
+        	@Override
+        	public void onLongPress(final MotionEvent e) {
+        		queueEvent(new Runnable() {
+    			public void run() {
+    				Log.v(TAG, "Long press detected!");
+    				mRenderer.reportLongPress(e);
+    			}
+    		});
+        	}
+        }); 
     }
     @Override
     public boolean onTouchEvent(final MotionEvent event) {
-//    	mGestureDetector.onTouchEvent(event);
+    	mGestureDetector.onTouchEvent(event);
        	doubleTouch = doubleTouch ^ TheHuntRenderer.motionEventDoubleTouchChanged(event);
     	if (mRenderer != null) {
     		queueEvent(new Runnable() {

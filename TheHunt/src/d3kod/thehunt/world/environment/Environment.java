@@ -1,6 +1,7 @@
 package d3kod.thehunt.world.environment;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Random;
 
 import android.graphics.PointF;
@@ -257,6 +258,18 @@ public class Environment {
 
 	public int getPlayerPenalty() {
 		return mPlayerPenalty;
+	}
+
+	public ArrayList<FloatingObject> senseTouch(float x, float y,
+			float radius) {
+		ArrayList<FloatingObject> sensedObjects = new ArrayList<FloatingObject>();
+		
+		for (FloatingObject fo: data.getFloatingObjects()) {
+			if (D3Maths.circleContains(x, y, radius, fo.getX(), fo.getY())) {
+				sensedObjects.add(fo);
+			}
+		}
+		return sensedObjects;
 	}
 
 }

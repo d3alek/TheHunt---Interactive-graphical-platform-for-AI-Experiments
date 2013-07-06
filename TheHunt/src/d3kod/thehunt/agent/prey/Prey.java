@@ -38,6 +38,7 @@ public class Prey extends Agent {
 
 	private static final float FORCE_TO_DISTANCE = 0.00002f;
 	private static final double MUTATE_CHANCE_ON_CAUGHT = 1;
+	private static final double MUTATE_CHANCE_ON_EAT_PER_NUTRITION = 0.001;
 
 	public static int flopBacksPerSecond = 2;
 	public static int flopBackTicks = TheHuntRenderer.TICKS_PER_SECOND/flopBacksPerSecond;
@@ -81,7 +82,7 @@ public class Prey extends Agent {
 	}
 
 	private void updateWorldModel() {
-		mWorldModel.update(mSensor.sense(mHead.getX(), mHead.getY(), mBody.getX(), mBody.getY(), mBody.getTopAngle()));
+		mWorldModel.update(mSensor.sense(mHead.getX(), mHead.getY(), mHead.getSize(), mBody.getX(), mBody.getY(), mBody.getTopAngle()));
 		expressEmotion();
 		if (mD.emotionText != null) {
 			if (mD.emotionText.faded()) {
@@ -220,6 +221,11 @@ public class Prey extends Agent {
 			mWorldModel.eatFood(nutrition);
 			mGraphic.initEatingMotion();
 			mD3GLES20.putText(new CrunchText(mHead.getX(), mHead.getY()));
+			
+			if (Math.random() < MUTATE_CHANCE_ON_EAT_PER_NUTRITION*nutrition) {
+				mutate();
+			}
+			
 		}
 	}
 
@@ -246,8 +252,13 @@ public class Prey extends Agent {
 		mWorldModel.recalcNearestFood();
 		mD3GLES20.putText(new PlokText(mBody.getX(), mBody.getY()));
 		mGraphic.resetColor();
-		
 		if (Math.random() < MUTATE_CHANCE_ON_CAUGHT) {
+			mutate();
+		}
+	}
+	
+	private void mutate() {
+		
 			Log.v(TAG, "Mutating!");
 			int rand = (int)(Math.random()*1000);
 			if (rand % 3 == 0) {
@@ -265,7 +276,6 @@ public class Prey extends Agent {
 				mTail.mutate();
 				mD3GLES20.putText(new MutateText("Mutate tail!", mTail.getX(), mTail.getY()));
 			}
-		}
 	}
 
 	public void initGraphic() {
