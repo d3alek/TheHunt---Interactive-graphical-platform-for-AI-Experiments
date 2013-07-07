@@ -129,7 +129,7 @@ public class Prey extends Agent {
 	public void turn(TurnAngle angle) {
 
 		if (!mBody.bend(angle)) {
-			Log.v(TAG, "Can't bend that much!");
+//			Log.v(TAG, "Can't bend that much!");
 			return;
 		}
 	}
@@ -153,7 +153,7 @@ public class Prey extends Agent {
 		mD.vy -= EnvironmentData.frictionCoeff*mD.vy;
 	}
 
-	public Prey(Environment env, TextureManager texMan, SpriteManager d3gles20) {
+	public Prey(Environment env, SpriteManager d3gles20) {
 		super(env, d3gles20);
 		mD3GLES20 = d3gles20;
 		mD = new PreyData();
@@ -162,7 +162,7 @@ public class Prey extends Agent {
 		mTail = new Tail();
 		mBody = new Body();
 		
-		setTextureManager(texMan);
+		setTextureManager(d3gles20.getTextureManager());
 		mWorldModel = new WorldModel();
 		mEnv = env;
 		mPlanner = new Planner();

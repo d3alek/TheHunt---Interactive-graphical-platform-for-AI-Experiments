@@ -218,7 +218,7 @@ public class GLText {
 		canvas.drawText( s, 0, 1, x, y, paint );        // Draw Character
 
 		// save the bitmap in a texture
-		textureId = TextureHelper.loadTexture(bitmap);
+		textureId = TextureHelper.loadTexture(bitmap).handle;
 
 		// setup the array of character texture regions
 		x = 0;                                          // Initialize X

@@ -7,16 +7,17 @@ import android.opengl.GLES20;
 import android.opengl.GLUtils;
 
 public class TextureHelper {
-	public static int loadTexture(final Context context, final int resourceId) {
+	public static TextureInfo loadTexture(final Context context, final int resourceId) {
 		final BitmapFactory.Options options = new BitmapFactory.Options();
 		options.inScaled = false; // No pre-scaling
 		final Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(), resourceId, options);
 		
 		return loadTexture(bitmap);
 	}
-	public static int loadTexture(Bitmap bitmap)
+	public static TextureInfo loadTexture(Bitmap bitmap)
 	{
 	    final int[] textureHandle = new int[1];
+	    int width = bitmap.getWidth(), height = bitmap.getHeight();
 	 
 	    GLES20.glGenTextures(1, textureHandle, 0);
 	 
@@ -49,6 +50,6 @@ public class TextureHelper {
 	        throw new RuntimeException("Error loading texture.");
 	    }
 	 
-	    return textureHandle[0];
+	    return new TextureInfo(textureHandle[0], width, height);
 	}
 }

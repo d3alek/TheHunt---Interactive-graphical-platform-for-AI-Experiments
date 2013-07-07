@@ -2,19 +2,22 @@ package d3kod.graphics.shader;
 
 import d3kod.graphics.shader.programs.BatchTextProgram;
 import d3kod.graphics.shader.programs.DefaultProgram;
+import d3kod.graphics.shader.programs.GrayscaleInvertedTextureProgram;
 import d3kod.graphics.shader.programs.Program;
-import d3kod.graphics.shader.programs.TextProgram;
+import d3kod.graphics.shader.programs.TextureProgram;
 
 public class ShaderProgramManager {
 	
 	private DefaultProgram defaultProgram;
-	private TextProgram textProgram;
+	private TextureProgram textureProgram;
 	private BatchTextProgram batchTextProgram;
+	private GrayscaleInvertedTextureProgram invTextureProgram;
 	
 	public ShaderProgramManager() {
 		defaultProgram = new DefaultProgram();
-		textProgram = new TextProgram();
+		textureProgram = new TextureProgram();
 		batchTextProgram = new BatchTextProgram();
+		invTextureProgram = new GrayscaleInvertedTextureProgram();
 	}
 
 	public Program getDefaultProgram() {
@@ -25,14 +28,14 @@ public class ShaderProgramManager {
 	}
 
 	public void clear() {
-		defaultProgram.delete(); textProgram.delete(); batchTextProgram.delete();
+		defaultProgram.delete(); textureProgram.delete(); batchTextProgram.delete(); invTextureProgram.delete();
 	}
 
-	public Program getTextProgram() {
-		if (!textProgram.initialized()) {
-			textProgram.init();
+	public Program getTextureProgram() {
+		if (!textureProgram.initialized()) {
+			textureProgram.init();
 		}
-		return textProgram;
+		return textureProgram;
 	}
 
 	public Program getBatchTextProgram() {
@@ -40,5 +43,12 @@ public class ShaderProgramManager {
 			batchTextProgram.init();
 		}
 		return batchTextProgram;
+	}
+	
+	public Program getInvertedTextureProgram() {
+		if (!invTextureProgram.initialized()) {
+			invTextureProgram.init();
+		}
+		return invTextureProgram;
 	}
 }

@@ -4,7 +4,9 @@ import android.graphics.PointF;
 import d3kod.graphics.sprite.D3Sprite;
 import d3kod.graphics.sprite.SpriteManager;
 import d3kod.graphics.sprite.shapes.D3Circle;
+import d3kod.thehunt.world.tools.CatchNet;
 import d3kod.thehunt.world.tools.D3CatchNet;
+import d3kod.thehunt.world.tools.Tool;
 
 public class Palette extends D3Sprite {
 
@@ -14,6 +16,7 @@ public class Palette extends D3Sprite {
 	private PaletteElement net, knife;
 	private PaletteElement mActiveElement;
 	private Camera mCamera;
+	private boolean mHidden;
 
 	public Palette(PointF position, SpriteManager d3gles20, float[] hudProjMatrix, float[] hudViewMatrix, Camera camera) {
 		super(position, d3gles20);
@@ -40,22 +43,35 @@ public class Palette extends D3Sprite {
 //		net.setActive();
 	}
 
-	public void show() {
-		mGraphic.noFade();
+	public void show(Class<? extends Tool> activeToolClass) {
+		mHidden = false;
+		
 		net.show();
 		knife.show();
+		
+		if (activeToolClass == CatchNet.class) {
+			net.setPermanentlyActive();
+		}
+		else {
+			knife.setPermanentlyActive();
+		}
 		mActiveElement = null;
 	}
 
 	public void hide() {
 		mGraphic.setFaded();
+		mHidden = true;
 		net.hide();
 		knife.hide();
 	}
 
 	public boolean handleTouch(PointF touch) {
-		if (mGraphic.fadeDone()) return false;
-		if (contains(touch)) return true;
+		if (mHidden) return false;
+		if (contains(touch)) {
+			net.setActive(false);
+			knife.setActive(false);
+			return true;
+		}
 		if (net.contains(touch)) {
 			net.setActive(true);
 			knife.setActive(false);

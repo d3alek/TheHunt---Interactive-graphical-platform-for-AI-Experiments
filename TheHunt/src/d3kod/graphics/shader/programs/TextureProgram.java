@@ -1,7 +1,7 @@
 package d3kod.graphics.shader.programs;
 
 
-public class TextProgram extends Program {
+public class TextureProgram extends Program {
 
 	private static final AttribVariable[] programVariables = {
 		AttribVariable.A_Position, AttribVariable.A_TexCoordinate
@@ -36,7 +36,7 @@ public class TextProgram extends Program {
 			+ "   gl_FragColor.a *= u_Color.a;\n"
 			+ "}                             \n";
 	
-	public TextProgram() {
+	public TextureProgram() {
 //		super(vertexShaderCode, fragmentShaderCode, programVariables);
 		// TODO Auto-generated constructor stub
 	}

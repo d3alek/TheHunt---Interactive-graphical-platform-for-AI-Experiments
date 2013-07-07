@@ -143,6 +143,7 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 		mCaughtCounter = 0;
 		mGraphicsInitialized = false;
 		mScale = 1;
+		next_game_tick = System.currentTimeMillis();
 	}
 
 	private SpriteManager loadSavedState(ShaderProgramManager shaderManager) {
@@ -152,9 +153,9 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 
 		if (state == null) {
 			Log.v(TAG, "SaveState is empty, creating new SaveState");
-			mD3GLES20 = new SpriteManager(shaderManager, mContext);
+			mD3GLES20 = new SpriteManager(shaderManager, tm, mContext);
 			mEnv = new Environment(worldWidthPx, worldHeightPx, mD3GLES20);
-			mPrey = new Prey(mEnv, tm, mD3GLES20);
+			mPrey = new Prey(mEnv, mD3GLES20);
 //			mPrey = new DummyPrey(mEnv, mD3GLES20);
 //			saveState();
 	
@@ -169,7 +170,7 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 //			mPrey = state.getAgent();
 //			ArrayList<D3Sprite> sprites = state.getSprites();
 //			Enum4
-			mD3GLES20 = new SpriteManager(shaderManager, mContext);
+			mD3GLES20 = new SpriteManager(shaderManager, tm, mContext);
 			mEnv = state.getEnv(); 
 //			mPrey = new DummyPrey(mEnv, mD3GLES20);
 			mPrey = mEnv.getPrey();
@@ -213,7 +214,7 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 
 		mScreenToWorldRatioWidth = mScreenWidthPx/(float)worldWidthPx;
 		mScreenToWorldRatioHeight = mScreenHeightPx/(float)worldHeightPx;
-		mCamera = new Camera(mScreenToWorldRatioWidth, 
+		mCamera = new Camera(mScreenWidthPx, mScreenHeightPx, mScreenToWorldRatioWidth, 
 				mScreenToWorldRatioHeight, worldWidthPx/(float)worldHeightPx, mD3GLES20);
 
 //		mGraphicsInitialized
@@ -272,7 +273,10 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 				if (mMenu == null) {
 					Log.e(TAG, "Menu is null on draw");
 				}
-				else mMenu.draw(mVMatrix, mProjMatrix, 0);
+				else {
+					drawWorld(0);
+					mMenu.draw();
+				}
 				return;
 			}
 			if (mContext.getRunningRenderer() != TAG) {
@@ -350,7 +354,7 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 	}
 
 	public void drawWorld(float interpolation) {
-		if (mState != State.PLAY) return;
+		if (mState == State.PAUSE) return;
 		
 //		tm.clear();
 		
@@ -359,7 +363,7 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 			if (mPrey != null) mPrey.clearGraphic();
 			switch (mPreyChangeTo) {
 			case NONE: mPrey = new DummyPrey(mEnv, mD3GLES20); break;
-			case DEFAULT: mPrey = new Prey(mEnv, tm, mD3GLES20); break;
+			case DEFAULT: mPrey = new Prey(mEnv, mD3GLES20); break;
 			}
 			mPrey.initGraphic();
 		}
@@ -398,16 +402,17 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 		if (prev != null && prev.getX() == event.getX() 
 			&& prev.getY() == event.getY() && prev.getAction() == event.getAction()) return;
 
-		PointF location = fromScreenToWorld(event.getX(), event.getY());
+		PointF location = mCamera.fromScreenToWorld(event.getX(), event.getY());
 		
 		if (mState == State.MENU) {
 			if (mMenu == null) {
 				Log.e(TAG, "Menu is null on handle Touch");
 				return;
 			}
-			if (!mMenu.handleTouch(location, event.getAction())) {
+			if (!mMenu.handleTouch(event.getX(), event.getY(), event.getAction())) {
 				mState = State.PLAY;
 				mMenu.hide();
+				next_game_tick = System.currentTimeMillis();
 			}
 			
 		}
@@ -435,7 +440,7 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 						prevSpacing = 0;
 						thisSpacing = 0;
 					}
-					PointF prevWorld = fromScreenToWorld(prev.getX(), prev.getY());
+					PointF prevWorld = mCamera.fromScreenToWorld(prev.getX(), prev.getY());
 					mCamera.move(prevWorld.x - location.x, prevWorld.y - location.y, prevSpacing, thisSpacing);				
 				}
 			}				
@@ -450,20 +455,21 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 				else {
 					Log.v(TAG, "Handling long press");
 //					mState = State.PAUSE;
-					mState = State.MENU;
-					if (mMenu != null) mMenu.show();
-					else {
-						Log.e(TAG, "Menu is null");
-						mState = State.PLAY;
-					}
+//					mState = State.MENU;
+//					if (mMenu != null && mMenu.notShown()) mMenu.show();
+//					else {
+//						Log.e(TAG, "Menu is null or already shown");
+//						mState = State.PLAY;
+//					}
 //					mContextMenu.handleTouch(location);
 				}
 			}
-				
+			if (mState == State.MENU) {
+			}
 //			if (D3Maths.distance(location, locationMean) >)
 //			setFaded
 			else {
-				if (mHUD.handleTouch(location, event.getAction())) {
+				if (mHUD.handleTouch(location, event.getAction(), mTool.getClass())) {
 					if (event.getAction() != mIgnoreNextTouch && event.getAction() == MotionEvent.ACTION_UP) {
 						// there is an HUD action request
 						String active = mHUD.getActivePaletteElement();
@@ -609,24 +615,12 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 		// TODO stuff to release	
 	}
 
-	float[] normalizedInPoint = new float[4];
-	float[] outPoint = new float[4];
-	float[] mPVMatrix = new float[16];
+//	float[] outPoint = new float[4];
+//	float[] mPVMatrix = new float[16];
 	private boolean mPreyChange;
 	private PreyType mPreyChangeTo;
 	private boolean mLongPress;
 	
-	public PointF fromScreenToWorld(float touchX, float touchY) {
-		normalizedInPoint[0] = 2f*touchX/mScreenWidthPx - 1;
-		normalizedInPoint[1] = 2f*(mScreenHeightPx - touchY)/mScreenHeightPx - 1;
-		normalizedInPoint[2] = -1f;
-		normalizedInPoint[3] = 1f;
-		
-		Matrix.multiplyMM(mPVMatrix, 0, mProjMatrix, 0, mVMatrix, 0);
-		Matrix.invertM(mPVMatrix, 0, mPVMatrix, 0);
-		Matrix.multiplyMV(outPoint, 0, mPVMatrix, 0, normalizedInPoint, 0);
-		return new PointF(outPoint[0], outPoint[1]);
-	}
 
 	public void changePrey(int which) {
 		mPreyChange = true;
@@ -636,9 +630,11 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 	public void reportLongPress(MotionEvent event) {
 		Log.v(TAG, "Long press reported");
 		mLongPress = true;
-		PointF location = fromScreenToWorld(event.getX(), event.getY());
+		PointF location = mCamera.fromScreenToWorld(event.getX(), event.getY());
 		mTool.stop(location);
 		mHUD.hidePalette();
+		mState = State.MENU;
+		mMenu.show();
 		Log.v(TAG, "Long press registered");
 	}
 }

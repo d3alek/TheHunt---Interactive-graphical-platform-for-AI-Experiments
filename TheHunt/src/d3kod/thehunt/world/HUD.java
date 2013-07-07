@@ -6,6 +6,7 @@ import android.view.MotionEvent;
 import d3kod.graphics.sprite.SpriteManager;
 import d3kod.graphics.sprite.shapes.D3FadingText;
 import d3kod.graphics.text.GLText;
+import d3kod.thehunt.world.tools.Tool;
 
 public class HUD {
 	class HUDText extends D3FadingText {
@@ -149,24 +150,24 @@ public class HUD {
 		mScore.setText("" + mCaughtCounter);
 	}
 	
-	public void showPalette(PointF pos) {
+	public void showPalette(PointF pos, Class<? extends Tool> activeToolClass) {
 		if (mPalette == null) {
 			Log.e(TAG, "Palette is null!");
 //			initPalette();
 		}
 		mPalette.setPosition(pos);
-		mPalette.show();
+		mPalette.show(activeToolClass);
 	}
 	
 	public void hidePalette() {
 		mPalette.hide();
 		prevTouch = null;
 	}
-	public boolean handleTouch(PointF touch, int action) {
+	public boolean handleTouch(PointF touch, int action, Class<? extends Tool> activeToolClass) {
 //		Log.v(TAG, "Action is " + action);
 		if (prevTouch == null && (action == MotionEvent.ACTION_DOWN || action == MotionEvent.ACTION_MOVE)) {
 			Log.v(TAG, "Showing palette");
-			showPalette(touch);
+			showPalette(touch, activeToolClass);
 			prevTouch = touch;
 			activePaletteElement = null;
 			return true;

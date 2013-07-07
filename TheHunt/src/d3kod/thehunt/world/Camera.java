@@ -79,9 +79,13 @@ public class Camera extends D3Sprite {
 	private float[] mUnscaledProjMatrix;
 	private float mRatio;
 	private ArrayList<D3Sprite> mScaleDependentSprites;
+	private float mScreenWidthPx;
+	private float mScreenHeightPx;
 
-	public Camera(float screenToWorldWidth, float screenToWorldHeight, float widthToHeightRatio, SpriteManager d3gles20) {
+	public Camera(float screenWidthPx, float screenHeightPx, float screenToWorldWidth, float screenToWorldHeight, float widthToHeightRatio, SpriteManager d3gles20) {
 		super(new PointF(0, 0), d3gles20);
+		mScreenWidthPx = screenWidthPx;
+		mScreenHeightPx = screenHeightPx;
 		mCenterX = mCenterY = 0;
 		mVMatrix = new float[16];
 		mProjMatrix = new float[16];
@@ -318,5 +322,25 @@ public class Camera extends D3Sprite {
 		mScale = saveScale;
 		calcProjMatrix();
 		return mat;
+	}
+	
+	float[] normalizedInPoint = new float[4];
+	float[] outPoint = new float[4];
+	float[] mPVMatrix = new float[16];
+	
+	public PointF fromScreenToWorld(float touchX, float touchY) {
+		return fromScreenToWorld(touchX, touchY, mVMatrix, mProjMatrix);
+	}	
+	
+	public PointF fromScreenToWorld(float touchX, float touchY, float[] viewMatrix, float[] projMatrix) {
+		normalizedInPoint[0] = 2f*touchX/mScreenWidthPx - 1;
+		normalizedInPoint[1] = 2f*(mScreenHeightPx - touchY)/mScreenHeightPx - 1;
+		normalizedInPoint[2] = -1f;
+		normalizedInPoint[3] = 1f;
+		
+		Matrix.multiplyMM(mPVMatrix, 0, projMatrix, 0, viewMatrix, 0);
+		Matrix.invertM(mPVMatrix, 0, mPVMatrix, 0);
+		Matrix.multiplyMV(outPoint, 0, mPVMatrix, 0, normalizedInPoint, 0);
+		return new PointF(outPoint[0], outPoint[1]);
 	}
 }

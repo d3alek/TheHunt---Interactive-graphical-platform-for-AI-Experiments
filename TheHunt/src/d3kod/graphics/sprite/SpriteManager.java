@@ -15,6 +15,7 @@ import d3kod.graphics.sprite.shapes.D3FadingShape;
 import d3kod.graphics.sprite.shapes.D3FadingText;
 import d3kod.graphics.sprite.shapes.D3Shape;
 import d3kod.graphics.text.GLText;
+import d3kod.graphics.texture.TextureManager;
 import d3kod.thehunt.world.tools.D3CatchNetPath;
 
 public class SpriteManager {
@@ -35,18 +36,21 @@ public class SpriteManager {
 	private boolean removeSpriteLater;
 
 	private GLText mGLText;
+
+	private TextureManager tm;
 	
-	public SpriteManager(ShaderProgramManager shaderManager, Context context) {
+	public SpriteManager(ShaderProgramManager shaderManager, TextureManager tm, Context context) {
 		sprites = new HashMap<Integer, D3Sprite>();
 		expiringShapes = new HashMap<Integer, D3FadingShape>();
 		mTexts = new ArrayList<D3FadingText>();
 		spritesNum = 0;
 		sm = shaderManager;
 		removeSpriteLater = false;
+		this.tm = tm;
 	}
 	
-	public SpriteManager(HashMap<Integer, D3Sprite> loadSprites, ShaderProgramManager shaderManager, Context context) {
-		this(shaderManager, context);
+	public SpriteManager(HashMap<Integer, D3Sprite> loadSprites, ShaderProgramManager shaderManager, TextureManager tm, Context context) {
+		this(shaderManager, tm, context);
 		sprites = loadSprites;
 	}
 	
@@ -249,5 +253,9 @@ public class SpriteManager {
 			Log.v(TAG, "Shape not found!");
 		}
 		
+	}
+	
+	public TextureManager getTextureManager() {
+		return tm;
 	}
 }
