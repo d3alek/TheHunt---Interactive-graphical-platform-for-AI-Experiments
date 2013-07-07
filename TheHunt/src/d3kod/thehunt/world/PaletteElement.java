@@ -99,11 +99,14 @@ public class PaletteElement extends D3Sprite {
 	}
 
 	public void update(PointF palettePosition) {
-		mRelativePos = new PointF((float)Math.cos(Math.toRadians(mAngle-90))*mDistFromPaletteCenter, (float)Math.sin(Math.toRadians(mAngle-90))*mDistFromPaletteCenter);
+		mRelativePos = new PointF((float)Math.cos(Math.toRadians(mAngle-90))
+				*mDistFromPaletteCenter*mGraphic.getScale(), 
+				(float)Math.sin(Math.toRadians(mAngle-90))
+				*mDistFromPaletteCenter*mGraphic.getScale());
 		setPosition(new PointF(palettePosition.x + mRelativePos.x, palettePosition.y + mRelativePos.y));
 //		mTextGraphic.setPosition(getPosition().x, getPosition().y, 0);
 //		mGraphic.setPosition(getX(), getY(), 0);
-//		mTextGraphic.setScale(mGraphic.getScale());
+//		mTextGraphic.setScale(mGraphic.getScale());;
 		super.update();
 	}
 
