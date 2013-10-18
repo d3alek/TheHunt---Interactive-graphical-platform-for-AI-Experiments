@@ -413,6 +413,8 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 				mState = State.PLAY;
 				mMenu.hide();
 				next_game_tick = System.currentTimeMillis();
+				mIgnoreNextTouch = MotionEvent.ACTION_UP;
+//				return;
 			}
 			
 		}
@@ -436,7 +438,9 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 						prevSpacing = D3Maths.distance(prev.getX(0), prev.getY(0), prev.getX(1), prev.getY(1));
 						thisSpacing = D3Maths.distance(event.getX(0), event.getY(0), event.getX(1), event.getY(1));
 					} catch (IllegalArgumentException e) {
-						Log.e(TAG, "Illegal argument while scrolling/zooming " + e.getStackTrace());
+						Log.e(TAG, "Illegal argument while scrolling/zooming ");
+						e.printStackTrace();
+						mScrolling = false;
 						prevSpacing = 0;
 						thisSpacing = 0;
 					}
@@ -469,8 +473,14 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 //			if (D3Maths.distance(location, locationMean) >)
 //			setFaded
 			else {
-				if (mHUD.handleTouch(location, event.getAction(), mTool.getClass())) {
-					if (event.getAction() != mIgnoreNextTouch && event.getAction() == MotionEvent.ACTION_UP) {
+				if (mHUD.handleTouch(location, event.getX(), event.getY(), event.getAction(), mTool.getClass())) {
+					if (mHUD.isPaused()) {
+						mState = State.MENU;
+						mMenu.show();
+						mHUD.hidePalette();
+						mTool.stop(location);
+					}
+					else if (event.getAction() != mIgnoreNextTouch && event.getAction() == MotionEvent.ACTION_UP) {
 						// there is an HUD action request
 						String active = mHUD.getActivePaletteElement();
 						if (mTool.isActive()) {

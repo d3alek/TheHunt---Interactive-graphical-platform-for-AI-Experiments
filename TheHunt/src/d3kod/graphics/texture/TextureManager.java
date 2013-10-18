@@ -17,7 +17,8 @@ public class TextureManager {
 		PANIC_TEXT(R.drawable.panic_text),
 		CRUNCH_TEXT(R.drawable.crunch_text), 
 		ICON_NET(R.drawable.ic_net), 
-		ICON_KNIFE(R.drawable.ic_knife);
+		ICON_KNIFE(R.drawable.ic_knife),
+		BTN_PAUSE(R.drawable.pause);
 		
 		private int mId;
 

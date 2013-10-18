@@ -77,7 +77,7 @@ public class TheHuntMenu extends D3Sprite {
 			firstUp = true;
 			return true;
 		}
-		if (firstUp && (action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_DOWN) && 
+		if (firstUp && action == MotionEvent.ACTION_UP && 
 				D3Maths.rectContains(mButtonResume.getX(), 
 				mButtonResume.getY(), mButtonResume.getLength(mGLText), 
 				mButtonResume.getHeight(mGLText), location.x, location.y)) {
