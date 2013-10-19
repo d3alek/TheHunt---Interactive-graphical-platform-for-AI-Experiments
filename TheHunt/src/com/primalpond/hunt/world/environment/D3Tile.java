@@ -4,6 +4,8 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 
+import com.primalpond.hunt.world.logic.TheHuntRenderer;
+
 import android.opengl.GLES20;
 import android.opengl.Matrix;
 import d3kod.graphics.extra.Utilities;
@@ -45,10 +47,12 @@ public class D3Tile extends D3Quad {
 	}
 	
 	public void draw(int r, int c, float[] mVMatrix, float[] mProjMatrix, boolean showTiles, boolean showCurrents, Dir dir) {
+		float mScreenHeight = TheHuntRenderer.SCREEN_HEIGHT;
+		float mScreenWidth = TheHuntRenderer.SCREEN_WIDTH;
 		Matrix.setIdentityM(mMMatrix , 0);
         Matrix.translateM(mMMatrix, 0, 
-        		-EnvironmentData.mScreenWidth/2+c*EnvironmentData.tWidth+EnvironmentData.tWidth/2, 
-        		EnvironmentData.mScreenHeight/2-r*EnvironmentData.tHeight-EnvironmentData.tHeight/2, 0);
+        		-mScreenWidth/2+c*EnvironmentData.tWidth+EnvironmentData.tWidth/2, 
+        		mScreenHeight/2-r*EnvironmentData.tHeight-EnvironmentData.tHeight/2, 0);
 		
         super.setModelMatrix(mMMatrix);
         if (showTiles) super.draw(mVMatrix, mProjMatrix);

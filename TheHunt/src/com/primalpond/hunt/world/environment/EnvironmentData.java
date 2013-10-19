@@ -3,6 +3,7 @@ package com.primalpond.hunt.world.environment;
 import java.util.ArrayList;
 
 import com.primalpond.hunt.world.environment.FloatingObject.Type;
+import com.primalpond.hunt.world.logic.TheHuntRenderer;
 
 import android.graphics.PointF;
 import android.util.Log;
@@ -37,8 +38,8 @@ public class EnvironmentData {
 	
 	public static float tHeight;
 	public static float tWidth;
-	public static float mScreenWidth;
-	public static float mScreenHeight;
+//	public static float mScreenWidth;
+//	public static float mScreenHeight;
 	
 	
 	private ArrayList<FloatingObject> mFloatingObjects;
@@ -51,34 +52,22 @@ public class EnvironmentData {
 
 	private boolean mGraphicsAreSet;
 
-	public static Tile[][] mTiles;
+	public Tile[][] mTiles;
 
-	public static int realWidth;
-
-	public static int realHeight;
-
-	private static float mFoodX;
-
-	private static float mFoodY;
-
-	public EnvironmentData(int width, int height) {
-		setSize(width, height);
+	public EnvironmentData() {
+		setSize();
 		createTiles();
-		mFoodX = -1; mFoodY = -1;
 		mFloatingObjects = new ArrayList<FloatingObject>();
 		mFloatingObjectsToAdd = new ArrayList<FloatingObject>();
 		mFloatingObjectsToSetGraphics = new ArrayList<FloatingObject>();
 		mGraphicsAreSet = false;
 	}
 	
-	public void setSize(int width, int height) {
+	public void setSize() {
 		//TODO: Change tHeight instead if width < height
-		realWidth = width;
-		realHeight = height;
-		mScreenHeight = 2f;
-		mScreenWidth = (2f*width)/height;
+		float mScreenHeight = TheHuntRenderer.SCREEN_HEIGHT;
+		float mScreenWidth = TheHuntRenderer.SCREEN_WIDTH;
 		tHeight = mScreenHeight/tileRows; tWidth = mScreenWidth/tileCols;
-		Log.v(TAG, "Setting size to " + width + " " + height + " Screen size: " + mScreenWidth + " " + mScreenHeight);
 	}
 	
 	public void createTiles() {
@@ -119,7 +108,7 @@ public class EnvironmentData {
 		return mFloatingObjects;
 	}
 
-	public static Tile getTileFromPos(PointF pos) {
+	public Tile getTileFromPos(PointF pos) {
 		int col = (int) Math.floor(tileCols/2+pos.x/tWidth),
 				row = (int) Math.floor(tileRows/2-pos.y/tHeight);
 		if (col < 0) col = 0;
@@ -237,6 +226,8 @@ public class EnvironmentData {
 	}
 
 	private boolean environmentContains(FloatingObject fo) {
+		float mScreenHeight = TheHuntRenderer.SCREEN_HEIGHT;
+		float mScreenWidth = TheHuntRenderer.SCREEN_WIDTH;
 		return D3Maths.rectContains(
 				0, 0, mScreenWidth, mScreenHeight, fo.getX(), fo.getY());
 	}

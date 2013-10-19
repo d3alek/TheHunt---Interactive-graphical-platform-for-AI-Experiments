@@ -2,13 +2,11 @@ package com.primalpond.hunt;
 
 import java.io.File;
 
-import org.acra.ACRA;
-import org.acra.annotation.ReportsCrashes;
-
 import android.app.Application;
 import android.content.Context;
 import android.util.Log;
 
+import com.crashlytics.android.Crashlytics;
 import com.db4o.Db4oEmbedded;
 import com.db4o.ObjectContainer;
 import com.db4o.ObjectSet;
@@ -16,7 +14,6 @@ import com.db4o.config.EmbeddedConfiguration;
 import com.db4o.ta.TransparentActivationSupport;
 import com.primalpond.hunt.world.logic.SaveState;
 
-@ReportsCrashes(formKey = "dGZSenlWRjFVTk9nVFZpRjc3SHVBSnc6MQ") 
 public class MyApplication extends Application {
 	
     private static final String DB_FILENAME = "state.db4o";
@@ -27,12 +24,10 @@ public class MyApplication extends Application {
     
 	@Override
     public void onCreate() {
-		deleteDB();
-		createDB();
-		
-        // The following line triggers the initialization of ACRA
-        ACRA.init(this);
         super.onCreate();
+//		deleteDB();
+		createDB();
+		Crashlytics.start(this);
     }
 	synchronized private void createDB() {
 		if (db == null || db.ext().isClosed()) {
@@ -63,6 +58,12 @@ public class MyApplication extends Application {
 			}
 			Log.v(TAG, db.ext().toString());
 			Log.v(TAG, "Storing " + toStore + " " + toStore.getEnv());
+			ObjectSet<SaveState> result = db.queryByExample(SaveState.class);
+			while (result.hasNext()) {
+				SaveState state = result.next();
+				db.delete(state);
+				Log.v(TAG, "Deleted record!");	
+			}
 			db.store(toStore);
 			Log.v(TAG, "DB Store success");
 			db.commit();

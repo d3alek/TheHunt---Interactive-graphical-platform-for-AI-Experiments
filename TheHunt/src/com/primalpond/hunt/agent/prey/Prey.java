@@ -223,9 +223,9 @@ public class Prey extends Agent {
 			mGraphic.initEatingMotion();
 			mD3GLES20.putText(new CrunchText(mHead.getX(), mHead.getY()));
 			
-			if (Math.random() < MUTATE_CHANCE_ON_EAT_PER_NUTRITION*nutrition) {
-				mutate();
-			}
+//			if (Math.random() < MUTATE_CHANCE_ON_EAT_PER_NUTRITION*nutrition) {
+//				mutate();
+//			}
 			
 		}
 	}
@@ -253,31 +253,31 @@ public class Prey extends Agent {
 		mWorldModel.recalcNearestFood();
 		mD3GLES20.putText(new PlokText(mBody.getX(), mBody.getY()));
 		mGraphic.resetColor();
-		if (Math.random() < MUTATE_CHANCE_ON_CAUGHT) {
-			mutate();
-		}
+//		if (Math.random() < MUTATE_CHANCE_ON_CAUGHT) {
+//			mutate();
+//		}
 	}
-	
-	private void mutate() {
-		
-			Log.v(TAG, "Mutating!");
-			int rand = (int)(Math.random()*1000);
-			if (rand % 3 == 0) {
-				//mutateHead
-				mHead.mutate();
-				mD3GLES20.putText(new MutateText("Mutate head!", mHead.getX(), mHead.getY()));
-			}
-			if (rand % 3 == 1) {
-				//mutateBody
-				mBody.mutate();
-				mD3GLES20.putText(new MutateText("Mutate body!", mBody.getX(), mBody.getY()));
-			}
-			if (rand % 3 == 2) {
-				//mutateTail
-				mTail.mutate();
-				mD3GLES20.putText(new MutateText("Mutate tail!", mTail.getX(), mTail.getY()));
-			}
-	}
+//	
+//	private void mutate() {
+//		
+//			Log.v(TAG, "Mutating!");
+//			int rand = (int)(Math.random()*1000);
+//			if (rand % 3 == 0) {
+//				//mutateHead
+//				mHead.mutate();
+//				mD3GLES20.putText(new MutateText("Mutate head!", mHead.getX(), mHead.getY()));
+//			}
+//			if (rand % 3 == 1) {
+//				//mutateBody
+//				mBody.mutate();
+//				mD3GLES20.putText(new MutateText("Mutate body!", mBody.getX(), mBody.getY()));
+//			}
+//			if (rand % 3 == 2) {
+//				//mutateTail
+//				mTail.mutate();
+//				mD3GLES20.putText(new MutateText("Mutate tail!", mTail.getX(), mTail.getY()));
+//			}
+//	}
 
 	public void initGraphic() {
 		mGraphic = new D3Prey(mD, mHead, mBody, mTail);

@@ -136,6 +136,7 @@ public class D3FadingText {
 	
 	public void noFade() {
 		mAlpha = 1.0f;
+		mFadeSpeed = 0;
 	}
 
 	public String getText() {
@@ -159,6 +160,9 @@ public class D3FadingText {
 		mScale = scale;
 	}
 
+	public void setFaded() {
+		mFadeSpeed = 1;
+	}
 //	private FloatBuffer makeVertexBuffer(float size) {
 //		for (int i = 0; i < squarePositionData.length; ++i) {
 //			squarePositionData[i] = squarePositionDataDefault[i]*size;

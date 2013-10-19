@@ -11,6 +11,7 @@ import com.primalpond.hunt.world.events.Event;
 import com.primalpond.hunt.world.events.EventCurrent;
 import com.primalpond.hunt.world.events.EventLight;
 import com.primalpond.hunt.world.events.EventNoise;
+import com.primalpond.hunt.world.logic.TheHuntRenderer;
 
 import android.graphics.PointF;
 import android.util.FloatMath;
@@ -25,6 +26,7 @@ public class Environment {
 	public EnvironmentData data;
 //	public int mTextureDataHandle;
 	transient private SpriteManager mD3GLES20;
+	transient public static Environment GLOBAL;
 	private ArrayList<EventNoise> mNoiseEvents;
 	private Random mRandom;
 	private Agent mPrey;
@@ -42,10 +44,11 @@ public class Environment {
 	private static final int ALGAE_NEGATIVE_SCORE = 2;
 	private static final int FOOD_NEGATIVE_SCORE = 1;
 	
-	public Environment(int width, int height, SpriteManager d3gles20) {
+	public Environment(SpriteManager d3gles20) {
+		GLOBAL = this;
 		mPlayerPenalty = 0;
 		mD3GLES20 = d3gles20;
-		data = new EnvironmentData(width, height);
+		data = new EnvironmentData();
 		data.setGraphics(mD3GLES20);
 		mNoiseEvents = new ArrayList<EventNoise>();
 		mRandom = new Random();
@@ -77,9 +80,11 @@ public class Environment {
 	}
 
 	public PointF randomPosInEnv() {
+		float mScreenHeight = TheHuntRenderer.SCREEN_HEIGHT;
+		float mScreenWidth = TheHuntRenderer.SCREEN_WIDTH;
 		return new PointF(
-				-data.mScreenWidth/2 + mRandom.nextFloat()*data.mScreenWidth, 
-				-data.mScreenHeight/2 + mRandom.nextFloat()*data.mScreenHeight);
+				-mScreenWidth/2 + mRandom.nextFloat()*mScreenWidth, 
+				-mScreenHeight/2 + mRandom.nextFloat()*mScreenHeight);
 	}
 	
 	public void update() {
@@ -208,6 +213,7 @@ public class Environment {
 	}
 
 	public void initGraphics(SpriteManager mD3GLES202) {
+		GLOBAL = this;
 		mD3GLES20 = mD3GLES202;
 		data.setGraphics(mD3GLES20);
 		Log.v(TAG, "Environment graphics initialized! " + mD3GLES20);
@@ -228,9 +234,9 @@ public class Environment {
 			}
 		}
 		double m = 0; // specific growth rate
-		if (GROWTH_THRESH - biomass > 0)
+		if (GROWTH_THRESH - biomass > 0) {
 			m = GROWTH_CONST*Math.log(GROWTH_THRESH - biomass);
-		
+		}
 		algaeGrowthRate = m * biomass / algaeNum;
 		algaeGrowthChance = algaeGrowthRate / algaeNum;
 	}
@@ -260,6 +266,13 @@ public class Environment {
 	public int getPlayerPenalty() {
 		return mPlayerPenalty;
 	}
+	
+	public void clearPlayerPenalty() {
+		mPlayerPenalty = 0;
+	}
+	public void reducePlayerPenalty() {
+		if (mPlayerPenalty > 0) mPlayerPenalty--;
+	}
 
 	public ArrayList<FloatingObject> senseTouch(float x, float y,
 			float radius) {
@@ -271,6 +284,13 @@ public class Environment {
 			}
 		}
 		return sensedObjects;
+	}
+
+	public void regenerate() {
+		for (FloatingObject fo: data.getFloatingObjects()) {
+			fo.setToRemove();
+		}
+		seedAlgae();
 	}
 
 }

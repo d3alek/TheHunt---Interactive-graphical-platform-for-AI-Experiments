@@ -16,7 +16,6 @@ public class NAlgae extends FloatingObject implements Eatable {
 	private static final String TAG = "Nalgae";
 	private int mSize;
 	transient private D3NAlgae mGraphic;
-	private Environment mEnvironment;
 
 	public NAlgae(int n, PointF pos, float dirAngle, Environment environment, SpriteManager d3gles20) {
 		this(n, pos, environment, d3gles20);
@@ -31,12 +30,11 @@ public class NAlgae extends FloatingObject implements Eatable {
 	public NAlgae(int n, PointF pos, Environment environment, SpriteManager d3gles20) {
 		super(pos.x, pos.y, Type.ALGAE, d3gles20);
 		mSize = n;
-		mEnvironment = environment;
 	}
 	
 	@Override
 	public void update() {
-		if (Math.random() < mEnvironment.getAlgaeGrowthChance()) {
+		if (Math.random() < Environment.GLOBAL.getAlgaeGrowthChance()) {
 			grow(1);
 //			Log.v(TAG, "Growing algae due to growth chance! ");
 		}
@@ -101,7 +99,7 @@ public class NAlgae extends FloatingObject implements Eatable {
 				getY() + (getRadius()+0.01f)*FloatMath.sin(randAngle));
 		
 		Log.v(TAG, "Releasing seed!");
-		mEnvironment.addNewAlgae(1, seedPos, randAngle);
+		Environment.GLOBAL.addNewAlgae(1, seedPos, randAngle);
 	}
 
 	public void grow(int increment) {
@@ -180,14 +178,14 @@ public class NAlgae extends FloatingObject implements Eatable {
 				putAlgaePos.offset(-SPAWN_ADJ*dir.y, SPAWN_ADJ*dir.x);
 //				mEnvironment.addNewAlgae(1, putAlgaePos, D3Maths.getRandAngle(), newAlgaeSpeed);
 //				mEnvironment.addNewAlgae(1, putAlgaePos, 0, newAlgaeSpeed);
-				mEnvironment.addNewAlgae(n1, putAlgaePos, new PointF(-dir.y, dir.x), newAlgaeSpeed);
+				Environment.GLOBAL.addNewAlgae(n1, putAlgaePos, new PointF(-dir.y, dir.x), newAlgaeSpeed);
 				
 //				mEnvironment.add
 				putAlgaeNeg.set(putAlgaePoint);
 				putAlgaeNeg.offset(SPAWN_ADJ*dir.y, -SPAWN_ADJ*dir.x);
 //				mEnvironment.addNewAlgae(1, putAlgaeNeg, D3Maths.getRandAngle(), newAlgaeSpeed);
 //				mEnvironment.addNewAlgae(1, putAlgaeNeg, 0, newAlgaeSpeed);
-				mEnvironment.addNewAlgae(n2, putAlgaeNeg, new PointF(dir.y, -dir.x), newAlgaeSpeed);
+				Environment.GLOBAL.addNewAlgae(n2, putAlgaeNeg, new PointF(dir.y, -dir.x), newAlgaeSpeed);
 
 				putAlgaePoint.offset(distanceBetweenSpawns*dir.x, distanceBetweenSpawns*dir.y);
 //			}

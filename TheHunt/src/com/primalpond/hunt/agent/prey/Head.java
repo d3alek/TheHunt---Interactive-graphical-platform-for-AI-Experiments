@@ -16,19 +16,27 @@ public class Head extends BodyPart {
 	public static final float bodyToHeadLength = 0.07f;
 	ArrayList<Sensors> mSensors;
 	private int independentMutationsNum = 2;
-	private HeadGraphic mGraphic;
+	private transient HeadGraphic mGraphic;
 	private boolean haveEars;
 	private boolean haveEyes;
 
 	public Head() {
 		mSensors = new ArrayList<Sensors>();
 		mSensors.add(Sensors.TOUCH_SENSOR);
-		haveEars = haveEyes = false;
+//		haveEars = haveEyes = false;
+		
+		mSensors.add(Sensors.SIGHT_SENSOR);
+		
+		mSensors.add(Sensors.HEARING_SENSOR);
 	}
 	
 	@Override
 	public HeadGraphic getGraphic(D3Prey graphic, float size) {
-		if (mGraphic == null) mGraphic = new HeadGraphic(graphic, this, size);
+		if (mGraphic == null) {
+			mGraphic = new HeadGraphic(graphic, this, size);
+			mGraphic.putEyes();
+			mGraphic.putEars();
+		}
 		return mGraphic;
 	}
 

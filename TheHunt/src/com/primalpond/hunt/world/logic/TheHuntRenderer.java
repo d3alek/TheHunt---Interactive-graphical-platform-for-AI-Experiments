@@ -3,9 +3,19 @@ package com.primalpond.hunt.world.logic;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
+import android.content.Context;
+import android.graphics.PointF;
+import android.hardware.SensorEvent;
+import android.opengl.GLES20;
+import android.opengl.GLSurfaceView;
+import android.util.Log;
+import android.view.MotionEvent;
+
+import com.crashlytics.android.Crashlytics;
 import com.primalpond.hunt.MultisampleConfigChooser;
 import com.primalpond.hunt.MyApplication;
 import com.primalpond.hunt.PreyChangeDialog;
+import com.primalpond.hunt.TheHunt;
 import com.primalpond.hunt.agent.Agent;
 import com.primalpond.hunt.agent.DummyPrey;
 import com.primalpond.hunt.agent.prey.Prey;
@@ -18,25 +28,27 @@ import com.primalpond.hunt.world.tools.CatchNet;
 import com.primalpond.hunt.world.tools.Knife;
 import com.primalpond.hunt.world.tools.Tool;
 
-import android.content.Context;
-import android.graphics.PointF;
-import android.hardware.SensorEvent;
-import android.opengl.GLES20;
-import android.opengl.GLSurfaceView;
-import android.opengl.Matrix;
-import android.util.Log;
-import android.view.MotionEvent;
 import d3kod.graphics.extra.D3Maths;
 import d3kod.graphics.shader.ShaderProgramManager;
 import d3kod.graphics.sprite.SpriteManager;
-import d3kod.graphics.sprite.shapes.D3FadingShape;
-import d3kod.graphics.sprite.shapes.D3FadingText;
-import d3kod.graphics.text.GLText;
 import d3kod.graphics.texture.TextureManager;
 
 public class TheHuntRenderer implements GLSurfaceView.Renderer {
 	private static final String DEFAULT_TAG = "TheHuntRenderer";
 	private String TAG;// = "TheHuntRenderer";
+
+	public interface ShowNavigationListener {
+		public void onToShowNavigation();
+		public void onToHideNavigation();
+	}
+
+	ShowNavigationListener mOnPauseListener = new ShowNavigationListener() {
+		public void onToShowNavigation() {
+		}
+		public void onToHideNavigation() {
+		}
+	};
+
 	private static final int SMOOTHING_SIZE = 30;
 	public static boolean LOGGING_TIME = false;
 	public static boolean SHOW_TILES = false;
@@ -48,14 +60,14 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 	private float[] mVMatrix = new float[16];
 	private Environment mEnv;
 	public Agent mPrey;
-	
-    public static final int TICKS_PER_SECOND = 30;
-    private static final int RELEASE_DELAY = 1; // in seconds
+
+	public static final int TICKS_PER_SECOND = 30;
+	private static final int RELEASE_DELAY = 1; // in seconds
 	private static final int RELEASE_TICKS = RELEASE_DELAY*TICKS_PER_SECOND;
-    private final int MILLISEC_PER_TICK = 1000 / TICKS_PER_SECOND;
-    private final int MAX_FRAMESKIP = 5;
+	private final int MILLISEC_PER_TICK = 1000 / TICKS_PER_SECOND;
+	private final int MAX_FRAMESKIP = 5;
 	private long next_game_tick;
-//	private Context mContext;
+	//	private Context mContext;
 	private long mslf;
 	private long smoothMspf;
 	private int smoothingCount;
@@ -67,20 +79,23 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 	private float mScreenToWorldRatioHeight;
 	private MotionEvent prev;
 	private Camera mCamera;
-	
+
 	private State mState;
 	private SpriteManager mD3GLES20;
 	private ShaderProgramManager sm;
 	private Tool mTool;
-	
+
 	private static int mScreenWidthPx;
 	private static int mScreenHeightPx;
 	public static float[] bgColor = {
-			0.8f, 0.8f, 0.8f, 1.0f};
+		0.8f, 0.8f, 0.8f, 1.0f};
 
 	private final static int worldWidthPx = 1500;
 	private final static int worldHeightPx = 900;
-	
+
+	public final static float SCREEN_HEIGHT = 2f;
+	public final static float SCREEN_WIDTH = (SCREEN_HEIGHT * worldWidthPx)/worldHeightPx;
+
 	protected static final int YELLOW_TEXT_ENERGY = 60;
 	protected static final int RED_TEXT_ENERGY = 30;
 	private boolean mScrolling = false;
@@ -91,7 +106,8 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 	private TheHuntContextMenu mContextMenu;
 	private float mScale;
 	private TheHuntMenu mMenu;
-//	private GLText mGLText;
+	private int mReducePenaltyCounter;
+	//	private GLText mGLText;
 	/**
 	 * The possible Prey type values (for example, returned from a {@link PreyChangeDialog}.
 	 * 
@@ -100,37 +116,37 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 	 *
 	 */
 	public static enum PreyType {NONE, DEFAULT};
-	
+
 	public void onSensorChanged(SensorEvent event) {
-		
+
 	}
-	
+
 	public TheHuntRenderer(Context context) {
 		this(context, DEFAULT_TAG);
 	}
-	
+
 	public TheHuntRenderer(Context context, String tag) {
 		TAG = tag;
 		Log.v(TAG, "onCreate called!");
 		mContext = ((MyApplication) context.getApplicationContext());
 		mContext.setRunningRenderer(TAG);
-		
-		tm = new TextureManager(context);
-//		prepareState();
-//		mEnv = null;
-//		mTool = null;
-//		mD3GLES20 = new SpriteManager(sm);
-//		while (mPrey == null) {
 
-//		}
-//		if (mPrey == null) {
-//			if (context instanceof TheHunt) {
-//				((TheHunt) context).showPreyChangeDialog(null);
-//			}
-//			else {
-//				mPrey = new DummyPrey(mEnv, mD3GLES20);
-//			}
-//		}
+		tm = new TextureManager(context);
+		//		prepareState();
+		//		mEnv = null;
+		//		mTool = null;
+		//		mD3GLES20 = new SpriteManager(sm);
+		//		while (mPrey == null) {
+
+		//		}
+		//		if (mPrey == null) {
+		//			if (context instanceof TheHunt) {
+		//				((TheHunt) context).showPreyChangeDialog(null);
+		//			}
+		//			else {
+		//				mPrey = new DummyPrey(mEnv, mD3GLES20);
+		//			}
+		//		}
 
 	}
 
@@ -139,7 +155,7 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 		synchronized (mContext.stateLock) {
 			loadSavedState(sm);
 		}		mTool = new CatchNet(mEnv, mD3GLES20);
-//		mTool = new Knife(mEnv, mD3GLES20);
+		//		mTool = new Knife(mEnv, mD3GLES20);
 		mIgnoreNextTouch = -1;
 		mCaughtCounter = 0;
 		mGraphicsInitialized = false;
@@ -150,47 +166,47 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 	private SpriteManager loadSavedState(ShaderProgramManager shaderManager) {
 		Log.v(TAG, "Loading saved state");
 		SaveState state = mContext.getStateFromDB(TAG);
-//		SaveState state = null;
+		//		SaveState state = null;
 
 		if (state == null) {
 			Log.v(TAG, "SaveState is empty, creating new SaveState");
 			mD3GLES20 = new SpriteManager(shaderManager, tm, mContext);
-			mEnv = new Environment(worldWidthPx, worldHeightPx, mD3GLES20);
+			mEnv = new Environment(mD3GLES20);
 			mPrey = new Prey(mEnv, mD3GLES20);
-//			mPrey = new DummyPrey(mEnv, mD3GLES20);
-//			saveState();
-	
+			//			mPrey = new DummyPrey(mEnv, mD3GLES20);
+			//			saveState();
+
 		}
 		else {
-//			if (state.getSameAsLast()) {
-//				Log.i(TAG, "SavedState is same as last, ignoring loadSavedState call");
-//				return mD3GLES20;
-//			}
-//			mD3GLES20 = state.getSpriteManager();
-//			mEnv = state.getEnv();
-//			mPrey = state.getAgent();
-//			ArrayList<D3Sprite> sprites = state.getSprites();
-//			Enum4
+			//			if (state.getSameAsLast()) {
+			//				Log.i(TAG, "SavedState is same as last, ignoring loadSavedState call");
+			//				return mD3GLES20;
+			//			}
+			//			mD3GLES20 = state.getSpriteManager();
+			//			mEnv = state.getEnv();
+			//			mPrey = state.getAgent();
+			//			ArrayList<D3Sprite> sprites = state.getSprites();
+			//			Enum4
 			mD3GLES20 = new SpriteManager(shaderManager, tm, mContext);
 			mEnv = state.getEnv(); 
-//			mPrey = new DummyPrey(mEnv, mD3GLES20);
+			//			mPrey = new DummyPrey(mEnv, mD3GLES20);
 			mPrey = mEnv.getPrey();
-//			mPrey.setTextureManager(tm);
-//			mEnv.initSprites(sprites);
-//			mPrey = mEnv.getPrey();
+			//			mPrey.setTextureManager(tm);
+			//			mEnv.initSprites(sprites);
+			//			mPrey = mEnv.getPrey();
 			Log.v(TAG, "SaveState loaded!");
 		}
-		
+
 		Log.v(TAG, "Finished loading saved state!");
 
 
-		
+
 		return mD3GLES20;
 	}
 
 	private void saveState() {
 		Log.v(TAG, "Saving state!");
-//		SaveState state = new SeventaveState(mEnv.getSprites());
+		//		SaveState state = new SeventaveState(mEnv.getSprites());
 		SaveState state = new SaveState(mEnv);
 		mContext.storeToDB(state);
 	}
@@ -202,14 +218,14 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 		GLES20.glClearColor(bgColor[0], bgColor[1], bgColor[2], bgColor[3]);
 		GLES20.glEnable(GLES20.GL_BLEND);
 		GLES20.glBlendFunc(GLES20.GL_ONE, GL10.GL_ONE_MINUS_SRC_ALPHA);
-		
+
 	}
 	/**
 	 * If the surface changes, reset the view
 	 */
 	public void onSurfaceChanged(GL10 unused, int width, int height) {
 		GLES20.glViewport(0, 0, width, height);
-		
+
 		Log.i(TAG, "onSurfaceChanged " + width + " " + height);
 
 		mScreenWidthPx = width;
@@ -217,57 +233,57 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 
 		mScreenToWorldRatioWidth = mScreenWidthPx/(float)worldWidthPx;
 		mScreenToWorldRatioHeight = mScreenHeightPx/(float)worldHeightPx;
-		mCamera = new Camera(mScreenWidthPx, mScreenHeightPx, mScreenToWorldRatioWidth, 
-				mScreenToWorldRatioHeight, worldWidthPx/(float)worldHeightPx, mD3GLES20);
 
-//		mGraphicsInitialized
+		//		mGraphicsInitialized
 		Log.v(TAG, "mScreenWidth " + mScreenWidthPx + " mScreenHeight " + mScreenHeightPx);
 
-//		if (mEnv == null) mEnv = new Environment(worldWidthPx, worldHeightPx, mD3GLES20);
-//		if (mTool == null) mTool = new CatchNet(mEnv, tm, mD3GLES20);
+		//		if (mEnv == null) mEnv = new Environment(worldWidthPx, worldHeightPx, mD3GLES20);
+		//		if (mTool == null) mTool = new CatchNet(mEnv, tm, mD3GLES20);
 		synchronized (mContext.stateLock) {
-			
-		
-		if (!mGraphicsInitialized ) {
-//			Log.v(TAG, "Initializing graphics");
-			//TODO why not initialize tool graphics as well?
-			mD3GLES20.init(mContext);
-//			mD3GLES20.putText1(new D3FadingText("Fafa", 1000.0f, 0)); 
-				
-			tm = new TextureManager(mContext);
-			mEnv.initGraphics(mD3GLES20);
-			mCamera.initGraphic();
-			mHUD = new HUD(mCamera);
-			
-			mHUD.initGraphics(mD3GLES20);
-//			mHUD.setCaught(mCaughtCounter);
-			mHUD.setScore(mCaughtCounter);
-			mMenu = new TheHuntMenu(mD3GLES20, mCamera);
-			mMenu.initGraphic();
-//			mContextMenu = new TheHuntContextMenu(mD3GLES20);
-//			mContextMenu.initGraphic();
-			
-			if (mPrey != null) {
-				mPrey.setSpriteManager(mD3GLES20);
-				mPrey.setTextureManager(tm);	
-				mPrey.initGraphic();
+			mCamera = new Camera(mScreenWidthPx, mScreenHeightPx, mScreenToWorldRatioWidth, 
+					mScreenToWorldRatioHeight, worldWidthPx/(float)worldHeightPx, mD3GLES20);
+
+			if (!mGraphicsInitialized ) {
+				//			Log.v(TAG, "Initializing graphics");
+				//TODO why not initialize tool graphics as well?
+				mD3GLES20.init(mContext);
+				//			mD3GLES20.putText1(new D3FadingText("Fafa", 1000.0f, 0)); 
+
+				tm = new TextureManager(mContext);
+				mEnv.initGraphics(mD3GLES20);
+				mCamera.initGraphic();
+				mHUD = new HUD(mCamera);
+
+				mHUD.initGraphics(mD3GLES20);
+				//			mHUD.setCaught(mCaughtCounter);
+				mHUD.setScore(mCaughtCounter);
+				mEnv.clearPlayerPenalty();
+				mMenu = new TheHuntMenu(mD3GLES20, mCamera);
+				mMenu.initGraphic();
+				//			mContextMenu = new TheHuntContextMenu(mD3GLES20);
+				//			mContextMenu.initGraphic();
+
+				if (mPrey != null) {
+					mPrey.setSpriteManager(mD3GLES20);
+					mPrey.setTextureManager(tm);	
+					mPrey.initGraphic();
+				}
+
+				mGraphicsInitialized = true;
 			}
 
-			mGraphicsInitialized = true;
-		}
-		
 		}
 
 		float ratio = (float) worldWidthPx / worldHeightPx;
-//
-//		if (width > height) Matrix.frustumM(mProjMatrix, 0, -ratio/mScale, ratio/mScale, mScale, mScale, 1, 10);
-//		else Matrix.frustumM(mProjMatrix, 0, -mScale, mScale, -mScale/ratio, mScale/ratio, 1, 10);
+		//
+		//		if (width > height) Matrix.frustumM(mProjMatrix, 0, -ratio/mScale, ratio/mScale, mScale, mScale, 1, 10);
+		//		else Matrix.frustumM(mProjMatrix, 0, -mScale, mScale, -mScale/ratio, mScale/ratio, 1, 10);
 	}
 	/**
 	 * Here we do our drawing
 	 */
 	public void onDrawFrame(GL10 unused) {
-		
+
 		synchronized (mContext.stateLock) {
 			if (mState == State.PAUSE) {
 				return;
@@ -291,7 +307,7 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 				return;
 			}
 
-//			Log.v(TAG, "Obtained stateLock!");
+			//			Log.v(TAG, "Obtained stateLock!");
 			int loops = 0;
 			mslf = System.currentTimeMillis();
 
@@ -317,10 +333,10 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 	}		
 
 	public void updateWorld() {
-//		Log.v(TAG, "Update world called!");
+		//		Log.v(TAG, "Update world called!");
 		mEnv.update();
-//		if (!mContextMenu.isHidden()) mContextMenu.update();
-//		mHUD.setEnvState(mEnv.getStateString(), mEnv.getStateColor());
+		//		if (!mContextMenu.isHidden()) mContextMenu.update();
+		//		mHUD.setEnvState(mEnv.getStateString(), mEnv.getStateColor());
 		if (mPrey != null) {
 			PointF preyPos = mPrey.getPosition();
 			if (preyPos != null) {
@@ -342,25 +358,31 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 				}
 			}
 			mCamera.setPreyPosition(preyPos);
-//			mHUD.setPreyEnergy(mPrey.getEnergy(), mPrey.getMoodColor());
-//			mHUD.setPreyState(mPrey.getStateString());
+			//			mHUD.setPreyEnergy(mPrey.getEnergy(), mPrey.getMoodColor());
+			//			mHUD.setPreyState(mPrey.getStateString());
 		}
 
 		if (mTool != null) mTool.update();
 
 		mCamera.update();
-		
+
 		mD3GLES20.updateAll();
-		
-		mHUD.setScore(mCaughtCounter*10-mEnv.getPlayerPenalty());
+		mScore = mCaughtCounter*10;
+		mHUD.setScore(mScore);
+		mHUD.setPenalty(mEnv.getPlayerPenalty());
+		mReducePenaltyCounter++;
+		if (mReducePenaltyCounter > MILLISEC_PER_TICK) {
+			mEnv.reducePlayerPenalty();
+			mReducePenaltyCounter = 0;
+		}
 		mHUD.update();
 	}
 
 	public void drawWorld(float interpolation) {
 		if (mState == State.PAUSE) return;
-		
-//		tm.clear();
-		
+
+		//		tm.clear();
+
 		if (mPreyChange) {
 			mPreyChange = false;
 			if (mPrey != null) mPrey.clearGraphic();
@@ -370,43 +392,43 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 			}
 			mPrey.initGraphic();
 		}
-		
+
 		int clearMask = GLES20.GL_COLOR_BUFFER_BIT;
-		
+
 		if (MultisampleConfigChooser.usesCoverageAa()) {
 			final int GL_COVERAGE_BUFFER_BIT_NV = 0x8000;
-            clearMask |= GL_COVERAGE_BUFFER_BIT_NV;
+			clearMask |= GL_COVERAGE_BUFFER_BIT_NV;
 		}
-		
+
 		GLES20.glClear(clearMask);
-		
-//		float[] vpMatrix = new float[16];
-//		Matrix.multiplyMM(vpMatrix, 0, mProjMatrix, 0, mVMatrix, 0);
-		
-//		mGLText.drawTexture( 100, 100, vpMatrix);            // Draw the Entire Texture
-		
-//		mGLText.begin(0.0f, 0.0f, 0.0f, 1.0f, vpMatrix);
-//		mGLText.setScale(0.003f);
-//		mGLText.setSpace(1f);
-//		mGLText.drawC( "Test String :)", 0, 0, 10);	
-//		mGLText.end();
-		
+
+		//		float[] vpMatrix = new float[16];
+		//		Matrix.multiplyMM(vpMatrix, 0, mProjMatrix, 0, mVMatrix, 0);
+
+		//		mGLText.drawTexture( 100, 100, vpMatrix);            // Draw the Entire Texture
+
+		//		mGLText.begin(0.0f, 0.0f, 0.0f, 1.0f, vpMatrix);
+		//		mGLText.setScale(0.003f);
+		//		mGLText.setSpace(1f);
+		//		mGLText.drawC( "Test String :)", 0, 0, 10);	
+		//		mGLText.end();
+
 		mVMatrix = mCamera.toViewMatrix();
 		mProjMatrix = mCamera.toProjMatrix();
-		
+
 		if (mPrey != null && mPrey.getGraphic() != null) mCamera.setPreyPointerPosition(mPrey.getPredictedPosition());
-		
+
 		mD3GLES20.drawAll(mVMatrix, mProjMatrix, interpolation);
 	}
 
 	public void handleTouch(final MotionEvent event, boolean doubleTouch) {
-		
+
 		//TODO: receive int, PointF instead of MotionEvent
-		if (prev != null && prev.getX() == event.getX() 
-			&& prev.getY() == event.getY() && prev.getAction() == event.getAction()) return;
+		//		if (prev != null && prev.getX() == event.getX() 
+		//			&& prev.getY() == event.getY() && prev.getAction() == event.getAction()) return;
 
 		PointF location = mCamera.fromScreenToWorld(event.getX(), event.getY());
-		
+
 		if (mState == State.MENU) {
 			if (mMenu == null) {
 				Log.e(TAG, "Menu is null on handle Touch");
@@ -415,13 +437,14 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 			if (!mMenu.handleTouch(event.getX(), event.getY(), event.getAction())) {
 				mState = State.PLAY;
 				mMenu.hide();
+				mOnPauseListener.onToHideNavigation();
 				next_game_tick = System.currentTimeMillis();
 				mIgnoreNextTouch = MotionEvent.ACTION_UP;
-//				return;
+				//				return;
 			}
-			
+
 		}
-		
+
 		if (doubleTouch && !mScrolling) {
 			mScrolling = true;
 			Log.v(TAG, "Scrolling is true");
@@ -451,34 +474,35 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 					mCamera.move(prevWorld.x - location.x, prevWorld.y - location.y, prevSpacing, thisSpacing);				
 				}
 			}				
-			
-			else if (mLongPress) {
-				Log.v(TAG, "In long press!");
-				if (event.getAction() == MotionEvent.ACTION_UP) {
-					Log.v(TAG, "Stopping long press");
-					mLongPress = false;
-//					mState = State.MENU;
-				}
-				else {
-					Log.v(TAG, "Handling long press");
-//					mState = State.PAUSE;
-//					mState = State.MENU;
-//					if (mMenu != null && mMenu.notShown()) mMenu.show();
-//					else {
-//						Log.e(TAG, "Menu is null or already shown");
-//						mState = State.PLAY;
-//					}
-//					mContextMenu.handleTouch(location);
-				}
-			}
+
+			//			else if (mLongPress) {
+			//				Log.v(TAG, "In long press!");
+			//				if (event.getAction() == MotionEvent.ACTION_UP) {
+			//					Log.v(TAG, "Stopping long press");
+			//					mLongPress = false;
+			////					mState = State.MENU;
+			//				}
+			//				else {
+			//					Log.v(TAG, "Handling long press");
+			////					mState = State.PAUSE;
+			////					mState = State.MENU;
+			////					if (mMenu != null && mMenu.notShown()) mMenu.show();
+			////					else {
+			////						Log.e(TAG, "Menu is null or already shown");
+			////						mState = State.PLAY;
+			////					}
+			////					mContextMenu.handleTouch(location);
+			//				}
+			//			}
 			if (mState == State.MENU) {
 			}
-//			if (D3Maths.distance(location, locationMean) >)
-//			setFaded
+			//			if (D3Maths.distance(location, locationMean) >)
+			//			setFaded
 			else {
 				if (mHUD.handleTouch(location, event.getX(), event.getY(), event.getAction(), mTool.getClass())) {
 					if (mHUD.isPaused()) {
 						mState = State.MENU;
+						mOnPauseListener.onToShowNavigation();
 						mMenu.show();
 						mHUD.hidePalette();
 						mTool.stop(location);
@@ -499,7 +523,7 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 								mTool.stop(location);
 								mD3GLES20.putText(new ToolText("Net!", location.x, location.y));
 								mTool = new CatchNet(mEnv, mD3GLES20);
-								
+
 							}
 							else if (active == "Knife" && mTool.getClass() != Knife.class) {
 								mTool.stop(location);
@@ -516,7 +540,9 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 						mHUD.hidePalette();
 					}
 				}
-				else if (mIgnoreNextTouch != event.getAction() && 
+				else if (prev != null && prev.getX() == event.getX() && prev.getY() == event.getY() && prev.getAction() == event.getAction()) return;
+				else
+					if (mIgnoreNextTouch != event.getAction() && 
 						//							(event.getAction() == MotionEvent.ACTION_DOWN || // to place food while net is snatching
 						event.getAction() == MotionEvent.ACTION_UP) { // to place food otherwise
 					mD3GLES20.putText(new PlokText(location.x, location.y));
@@ -528,33 +554,32 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 		}
 		prev = MotionEvent.obtain(event);
 	}
-	
+
 	public static boolean motionEventDoubleTouchChanged(MotionEvent event) {
 		String TAG = "motionEventDoubleTouchChanged";
 		int action = event.getAction();
-    	int count;
-    	switch (action & MotionEvent.ACTION_MASK) {
-    	case MotionEvent.ACTION_POINTER_DOWN:
-    		count = event.getPointerCount(); // Number of 'fingers' at this time
-    		Log.v(TAG, "Down Count is " + count);
-    		if (count == 2) {
-    			return true;
-    		}
-    		break;
-    	case MotionEvent.ACTION_POINTER_UP:
-    		count = event.getPointerCount(); // Number of 'fingers' in this time
-    		Log.v(TAG, "UP Count is " + count);
-    		if (count == 2) {
-    			return true;
-    		}
-    		break;
-    	}
-    	return false;
+		int count;
+		switch (action & MotionEvent.ACTION_MASK) {
+		case MotionEvent.ACTION_POINTER_DOWN:
+			count = event.getPointerCount(); // Number of 'fingers' at this time
+			Log.v(TAG, "Down Count is " + count);
+			if (count == 2) {
+				return true;
+			}
+			break;
+		case MotionEvent.ACTION_POINTER_UP:
+			count = event.getPointerCount(); // Number of 'fingers' in this time
+			Log.v(TAG, "UP Count is " + count);
+			if (count == 2) {
+				return true;
+			}
+			break;
+		}
+		return false;
 	}
-	
+
 	public void pause() {
 
-//		Log.v(TAG, "pause called!");
 		if (mContext.getRunningRenderer() == TAG) {
 			Log.v(TAG, "Telling the context I'm not running any more...");
 			mContext.setRunningRenderer("");
@@ -562,92 +587,107 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 		else {
 			Log.v(TAG, "Running renderer not changed as it is " + mContext.getRunningRenderer());
 		}
-//    	tm.clear();
+		//    	tm.clear();
 		if (mState == State.PLAY) {
 			mState = State.PAUSE;
 			saveState();
 		}
 		mState = State.PAUSE;
-    	Log.v(TAG, "State is " + mState);
-    	//TODO: use sparseArray
-//    	sm.clear();
-//    	mContext.modeLock.unlock();
-//    	Log.v(TAG, Thread.currentThread().getName() + " released modeLock!");
+		Log.v(TAG, "State is " + mState);
+		//TODO: use sparseArray
+		//    	sm.clear();
+		//    	mContext.modeLock.unlock();
+		//    	Log.v(TAG, Thread.currentThread().getName() + " released modeLock!");
 	}
-	
+
 	public void resume() {
 		synchronized (mContext.stateLock) {
-//			if (mContext.getRunningRenderer() != TAG) {
-//				if (mContext.getRunningRenderer() == "") {
-//					Log.v(TAG, "No renderer is running, let me run!");
-//					mContext.setRunningRenderer(TAG);
-//				}
-//				else Log.v(TAG, "I'm not supposed to be running! Sorry...");
-//				return;
-//			}			
-//		mContext.modeLock.lock();
-//		Log.v(TAG, Thread.currentThread().getName() + " aqcuired modeLock!");
-		mContext.setRunningRenderer(TAG);
-		Log.v(TAG, "resume called!");
-		mState = State.RESUME;
-		Log.v(TAG, "State is " + mState);
-		next_game_tick = System.currentTimeMillis();
-		mslf = next_game_tick;
-		smoothMspf = 0;
-		smoothingCount = 0;
-		// TODO: restore caught counter
-//		mEnv = null;
-//		mTool = null;	
-//		if (sm == null) {
-//			Log.v(TAG, "ShaderProgramManager is null!");
-//			sm = new ShaderProgramManager();
-//		}
-//		tm = new TextureManager(mContext);
-		// db4o does magic and synchronizes the environment with the one it loaded onCreate, so this is not neccessary
-		// loadSavedState(sm);
-//		if (mD3GLES20 == null) {
-//			mD3GLES20 = new SpriteManager(sm);
-//		}
-//		if (mDGLES20 == null) loadSavedState(sm);
-//		sm = new ShaderProgramManager();
-//		sm = new ShaderProgramManager();
-//		mD3GLES20.setShaderManager(sm);
-//		sm = new ShaderProgramManager();
-//		mD3GLES20 = new SpriteManager(sm);
-//		mGraphicsInitialized = false;
-		tm.printLoadedTextures();
-		prepareState();
-		tm.printLoadedTextures();
-//		Log.v(TAG, "ShaderProgramManager " + mD3GLES20.getShaderManager() + " " + sm);
-		mState = State.PLAY;
-		Log.v(TAG, "State is " + mState);
+			//			if (mContext.getRunningRenderer() != TAG) {
+			//				if (mContext.getRunningRenderer() == "") {
+			//					Log.v(TAG, "No renderer is running, let me run!");
+			//					mContext.setRunningRenderer(TAG);
+			//				}
+			//				else Log.v(TAG, "I'm not supposed to be running! Sorry...");
+			//				return;
+			//			}			
+			//		mContext.modeLock.lock();
+			//		Log.v(TAG, Thread.currentThread().getName() + " aqcuired modeLock!");
+			mContext.setRunningRenderer(TAG);
+			Log.v(TAG, "resume called!");
+			mState = State.RESUME;
+			Log.v(TAG, "State is " + mState);
+			next_game_tick = System.currentTimeMillis();
+			mslf = next_game_tick;
+			smoothMspf = 0;
+			smoothingCount = 0;
+			// TODO: restore caught counter
+			//		mEnv = null;
+			//		mTool = null;	
+			//		if (sm == null) {
+			//			Log.v(TAG, "ShaderProgramManager is null!");
+			//			sm = new ShaderProgramManager();
+			//		}
+			//		tm = new TextureManager(mContext);
+			// db4o does magic and synchronizes the environment with the one it loaded onCreate, so this is not neccessary
+			// loadSavedState(sm);
+			//		if (mD3GLES20 == null) {
+			//			mD3GLES20 = new SpriteManager(sm);
+			//		}
+			//		if (mDGLES20 == null) loadSavedState(sm);
+			//		sm = new ShaderProgramManager();
+			//		sm = new ShaderProgramManager();
+			//		mD3GLES20.setShaderManager(sm);
+			//		sm = new ShaderProgramManager();
+			//		mD3GLES20 = new SpriteManager(sm);
+			//		mGraphicsInitialized = false;
+			tm.printLoadedTextures();
+			prepareState();
+			tm.printLoadedTextures();
+			//		Log.v(TAG, "ShaderProgramManager " + mD3GLES20.getShaderManager() + " " + sm);
+			mState = State.PLAY;
+			Log.v(TAG, "State is " + mState);
 		}
 	}
-	
+
 	public void release() {
 		// TODO stuff to release	
 	}
 
-//	float[] outPoint = new float[4];
-//	float[] mPVMatrix = new float[16];
+	//	float[] outPoint = new float[4];
+	//	float[] mPVMatrix = new float[16];
 	private boolean mPreyChange;
 	private PreyType mPreyChangeTo;
-	private boolean mLongPress;
-	
+	//	private boolean mLongPress;
+
 
 	public void changePrey(int which) {
 		mPreyChange = true;
 		mPreyChangeTo = PreyType.values()[which];
 	}
 
-	public void reportLongPress(MotionEvent event) {
-		Log.v(TAG, "Long press reported");
-		mLongPress = true;
-		PointF location = mCamera.fromScreenToWorld(event.getX(), event.getY());
-		mTool.stop(location);
-		mHUD.hidePalette();
-		mState = State.MENU;
-		mMenu.show();
-		Log.v(TAG, "Long press registered");
+	public void setActivity(TheHunt theHunt) {
+		try {
+			mOnPauseListener = theHunt;
+		} catch (ClassCastException e) {
+			Crashlytics.log("Activity does not implement PauseListener");
+		}
+	}
+
+	public void regenerateWorld() {
+		synchronized (mContext.stateLock) {
+//			mD3GLES20.clearAll();
+			mEnv.regenerate();
+			mPrey.release();
+			mState = State.PLAY;
+			mMenu.hide();
+			mOnPauseListener.onToHideNavigation();
+			next_game_tick = System.currentTimeMillis();
+//			mEnv = new Environment(mD3GLES20);
+//			mEnv.initGraphics(mD3GLES20);
+//			if (mPrey != null) {
+//				mPrey = new Prey(mEnv, mD3GLES20);
+//				mPrey.initGraphic();
+//			}
+		}
 	}
 }

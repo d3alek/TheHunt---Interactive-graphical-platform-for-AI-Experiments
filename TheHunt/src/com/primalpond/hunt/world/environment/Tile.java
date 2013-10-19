@@ -5,7 +5,7 @@ public class Tile {
 	private Dir dir;
 	private int r, c;
 
-	private static D3Tile mTileQuad; //TODO: init mTileQuad
+	transient private static D3Tile mTileQuad; //TODO: init mTileQuad
 
 	public Tile(int row, int col) {
 		this(row, col, Dir.UNDEFINED);

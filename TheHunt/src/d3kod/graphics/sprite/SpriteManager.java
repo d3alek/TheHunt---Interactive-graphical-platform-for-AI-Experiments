@@ -2,8 +2,10 @@ package d3kod.graphics.sprite;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map.Entry;
 
+import com.primalpond.hunt.world.environment.FloatingObject;
 import com.primalpond.hunt.world.tools.D3CatchNetPath;
 
 import android.content.Context;
@@ -68,22 +70,17 @@ public class SpriteManager {
 	}
 	
 	public void updateAll() {
-		ArrayList<Integer> toRemove = new ArrayList<Integer>();
-		int index = 0;
-		for (D3FadingText text: mTexts) {
+		Iterator<D3FadingText> it = mTexts.iterator();
+		while (it.hasNext()) {
+			D3FadingText text = it.next();
 			if (!text.fades()) {
-				index++;
 				continue;
 			}
 			text.fade();
 			if (text.faded()) {
-				toRemove.add(index);
+				it.remove();
 			}
-			index++;
 		}	
-		for (int key: toRemove) {
-			mTexts.remove(key);
-		}
 	}
 	
 	public void drawAll(float[] mVMatrix, float[] mProjMatrix, float interpolation) {
@@ -259,4 +256,29 @@ public class SpriteManager {
 	public TextureManager getTextureManager() {
 		return tm;
 	}
+	
+//	public void clearAll() {
+////		if (removeSpriteLater) {
+////			for (Entry<Integer, D3Sprite> entry: sprites.entrySet()) {
+////				if (entry.getValue() instanceof FloatingObject) {
+////					if (removeSpriteLater) {
+////						toRemove.add(entry.getKey());
+////					}
+////				}
+////			}
+////		}
+////		else {
+////			sprites.clear();
+////		}
+////			if (!removeSpriteLater) {
+////				Log.i(TAG, "Removing now!");
+////				for (int i: toRemove) {
+////					sprites.remove(i);
+////				}
+////			}
+////		for (D3FadingText text: mTexts) {
+////			Log.i(TAG, "Set faded " + mTexts.indexOf(text) );
+////			text.setFaded();
+////		}
+//	}
 }

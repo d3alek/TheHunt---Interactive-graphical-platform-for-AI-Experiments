@@ -39,6 +39,7 @@ public abstract class Agent extends D3Sprite {
 
 	public void setEnvironment(Environment environment) {
 		mEnv = environment;
+		environment.addPrey(this);
 	}
 
 	public int getEnergy() {

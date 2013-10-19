@@ -5,6 +5,8 @@ import com.primalpond.hunt.world.tools.Tool;
 import android.graphics.PointF;
 import android.util.Log;
 import android.view.MotionEvent;
+import d3kod.graphics.extra.D3Maths;
+import d3kod.graphics.extra.Utilities;
 import d3kod.graphics.shader.ShaderProgramManager;
 import d3kod.graphics.sprite.SpriteManager;
 import d3kod.graphics.sprite.shapes.D3FadingText;
@@ -66,10 +68,11 @@ public class HUD {
 
 	private HUDText mScoreText;
 	private HUDText mScore;
+	private HUDText mPenalty;
 	private Palette mPalette;
 	private Camera mCamera;
 	private float[] mProjMatrix;
-	private Object prevTouch;
+//	private Object prevTouch;
 	private String activePaletteElement;
 	private DummySprite mPause;
 	private D3Image mPauseGraphic;
@@ -82,7 +85,12 @@ public class HUD {
 	private static final String TAG = "HUD";
 	private static final float PAUSE_SIZE = 0.1f;
 	private static final float PAUSE_HORIZ_ADJ = 0.2f;
+	private static final long SHOW_PALETTE_DELAY = 100; //in ms
+	private static final float POINTS_EQUAL_DISTANCE_THRESH = 0.02f;
 	
+	long mTimeFirstTouch;
+	boolean mPaletteShown;
+	private PointF mFirstTouch;
 //	private HUDText mCaughtText;
 //	private HUDText mPreyEnergyText;
 //	private HUDText mCaught;
@@ -93,6 +101,7 @@ public class HUD {
 //	private HUDText mPreyState;
 //	
 //	private PointF mPreyEnergyPos;
+	private boolean mMovedAway;
 	
 	
 	public HUD(Camera camera) {
@@ -102,10 +111,14 @@ public class HUD {
 		pausePosX = -camera.getWidth()/2 + PAUSE_HORIZ_ADJ;
 		pausePosY = scoreTextPosY;
 		
+		mTimeFirstTouch = 0;
+		mPaletteShown = false;
+		
 		PointF mScoreTextPos = new PointF(scoreTextPosX, scoreTextPosY);
 		
 		mScoreText = new HUDText("Score: ", NORMAL_TEXT_SIZE, mScoreTextPos, true);
 		mScore = new HUDText("undef", NORMAL_TEXT_SIZE, false);
+		mPenalty = new HUDText("undef", NORMAL_TEXT_SIZE, false);
 		mCamera = camera;
 		
 //		float caughtTextPosX = -camera.getWidth()/2 + posXAdj;
@@ -133,6 +146,11 @@ public class HUD {
 		mScore.setPosition(mScoreText.getX() + mScoreText.getLength(spriteManager.getTextManager())/2, 
 				mScoreText.getY() - mScoreText.getHeight(spriteManager.getTextManager())/2, 0);
 		spriteManager.putText(mScore);
+		
+		mPenalty.setPosition(mScore.getX()+0.05f, mScore.getY(), 0);
+		mPenalty.setColor(1, 0, 0);
+		spriteManager.putText(mPenalty);
+		
 		mPauseGraphic = new HUDImage(spriteManager.getTextureManager().getTextureInfo(Texture.BTN_PAUSE),
 				PAUSE_SIZE, spriteManager.getShaderManager());
 //		mPauseGraphic.noFade();
@@ -188,7 +206,9 @@ public class HUD {
 //		mPreyState.setText(stateString);
 //	}
 	public void setScore(int mCaughtCounter) {
-		mScore.setText("" + mCaughtCounter);
+		String s = "" + mCaughtCounter;
+		mScore.setText(s);
+		mPenalty.setPosition(mScore.getX() + mScore.getLength(mSpriteManager.getTextManager()) + 0.02f, mPenalty.getY(), 0);
 	}
 	
 	public void showPalette(PointF pos, Class<? extends Tool> activeToolClass) {
@@ -203,27 +223,45 @@ public class HUD {
 	public void hidePalette() {
 		mPaused = false;
 		mPalette.hide();
-		prevTouch = null;
+		mTimeFirstTouch = 0;
+		mPaletteShown = false;
 	}
 	public boolean handleTouch(PointF worldTouch, float screenX, float screenY, int action, Class<? extends Tool> activeToolClass) {
 //		Log.v(TAG, "Action is " + action);
 		PointF screenTouch = mCamera.fromScreenToWorld(screenX, screenY, mViewMatrix, mProjMatrix);
-		if (prevTouch == null && (action == MotionEvent.ACTION_DOWN || action == MotionEvent.ACTION_MOVE)) {
-			if (mPause.contains(screenTouch)) {
-				Log.v(TAG, "Pausing");
-				mPaused = true;
+		if (action == MotionEvent.ACTION_DOWN || action == MotionEvent.ACTION_MOVE) {
+			if (mTimeFirstTouch == 0) {
+				if (mPause.contains(screenTouch)) {
+					Log.v(TAG, "Pausing");
+					mPaused = true;
+					return true;
+				}
+	//			Log.v(TAG, "Showing palette");
+	//			showPalette(worldTouch, activeToolClass);
+	//			prevTouch = worldTouch;
+	//			activePaletteElement = null;
+	//			return true;
+				mFirstTouch = worldTouch;
+				mMovedAway = false;
+				mTimeFirstTouch = System.currentTimeMillis();
+			}
+			
+			else if (!mMovedAway && !mPaletteShown && mTimeFirstTouch != 0 && pointsEqual(worldTouch, mFirstTouch) && System.currentTimeMillis() - mTimeFirstTouch >= SHOW_PALETTE_DELAY) {
+				Log.v(TAG, "Showing palette");
+				showPalette(mFirstTouch, activeToolClass);
+	//			prevTouch = worldTouch;
+				mPaletteShown = true;
+				activePaletteElement = null;
 				return true;
 			}
-			Log.v(TAG, "Showing palette");
-			showPalette(worldTouch, activeToolClass);
-			prevTouch = worldTouch;
-			activePaletteElement = null;
-			return true;
+			else if (!mMovedAway && !pointsEqual(worldTouch, mFirstTouch)) {
+				mMovedAway = true;
+			}
 		}
 		
 		if (action == MotionEvent.ACTION_UP && mPalette.handleTouch(worldTouch)) {
 			activePaletteElement = mPalette.getActiveElement();
-			prevTouch = null;
+//			prevTouch = null;
 			hidePalette();
 			if (activePaletteElement == null) {
 				Log.v(TAG, "Active element is null, returning false!");
@@ -233,11 +271,14 @@ public class HUD {
 			return true;
 		}
 		if (action == MotionEvent.ACTION_UP) {
-			prevTouch = null;
+//			prevTouch = null;
 			hidePalette();
 			return false;
 		}
 		return mPalette.handleTouch(worldTouch);
+	}
+	private boolean pointsEqual(PointF point1, PointF point2) {
+		return D3Maths.distance(point1.x, point1.y, point2.x, point2.y) < POINTS_EQUAL_DISTANCE_THRESH;
 	}
 	public void update() {
 		if (mPalette != null) mPalette.update();
@@ -248,6 +289,15 @@ public class HUD {
 	
 	public boolean isPaused() {
 		return mPaused;
+	}
+	public void setPenalty(int playerPenalty) {
+		if (playerPenalty == 0) {
+//			mPenalty.setFaded();
+			mPenalty.setText("");
+		}
+		else {
+			mPenalty.setText("-" + playerPenalty);
+		}
 	}
 
 }

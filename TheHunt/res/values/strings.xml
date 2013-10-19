@@ -12,4 +12,5 @@
 	<string name="posInterpolation">Position Interpolation</string>
 	<string name="angleInterpolation">Angle Interpolation</string>
 	<string name="msPF">msPerFrame</string>
+	<string name="terraform">Regenerate world</string>
 </resources>

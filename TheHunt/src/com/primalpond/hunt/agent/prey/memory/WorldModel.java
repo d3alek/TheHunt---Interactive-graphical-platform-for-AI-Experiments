@@ -27,6 +27,8 @@ public class WorldModel {
 	private int hiddenForSafe = 0;
 	private static final int HIDDEN_FOR_SAFE_ADJ = 20;
 	private static final int HIDDEN_FOR_SAFE_MAX = 100;
+	private static final int safeForCalm = 20;
+	private static int safeFor = 0;
 	
 	private static final int ENERGY_DEPLETE_SPEED = 3;
 	
@@ -97,6 +99,9 @@ public class WorldModel {
 			mMoodLevel = MoodLevel.DESPAIR;
 		}
 		else if (mEnergy <= RISK_ENERGY) {
+			if (mStressLevel == StressLevel.CALM) {
+				mStressLevel = StressLevel.CAUTIOS;
+			}
 			mMoodLevel = MoodLevel.RISK;
 			incrRiskCounter++;
 			if (incrRiskCounter >= INCR_RISK_TICKS) {
@@ -106,6 +111,14 @@ public class WorldModel {
 		}
 		else {
 			mMoodLevel = MoodLevel.NEUTRAL;
+		}
+		if (mMoodLevel == MoodLevel.NEUTRAL) {
+			if (mStressLevel == StressLevel.CAUTIOS) {
+				safeFor++;
+				if (safeForCalm < safeFor) {
+					mStressLevel = StressLevel.CALM;
+				}
+			}
 		}
 	}
 	private void processEvent(Event e) {

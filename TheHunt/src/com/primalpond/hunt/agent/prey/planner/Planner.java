@@ -60,9 +60,9 @@ public class Planner {
 		}
 		switch (mWorldModel.getStressLevel()) {
 		case CALM: 
-			if (mWorldModel.knowFoodLocation()) {
-				return PlanState.FORAGE;
-			}
+//			if (mWorldModel.knowFoodLocation()) {
+//				return PlanState.FORAGE;
+//			}
 			return PlanState.EXPLORE;
 		case CAUTIOS:
 			//TODO try to hide under algae while exploring

@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import com.primalpond.hunt.world.environment.Dir;
-import com.primalpond.hunt.world.environment.EnvironmentData;
+import com.primalpond.hunt.world.logic.TheHuntRenderer;
 
 import android.graphics.PointF;
 import android.opengl.GLES20;
@@ -145,16 +145,17 @@ public class Camera extends D3Sprite {
 	
 	public void move(float dx, float dy, float prevSpacing, float thisSpacing) {
 		recalcViewMatrix = false;
-		
+		float mScreenHeight = TheHuntRenderer.SCREEN_HEIGHT;
+		float mScreenWidth = TheHuntRenderer.SCREEN_WIDTH;
 		if (Math.abs(prevSpacing - thisSpacing) > ZOOM_SPACING_THRESH) {
 			//ZOOM
 			Log.v(TAG, "Init zoom!");
-			if (prevSpacing > thisSpacing && mWidthScaled*mWidthToHeightRatio*mScale >= EnvironmentData.mScreenWidth) {
-				Log.v(TAG, "Changing center from " + mCenterX + " " + mCenterY + " to " + EnvironmentData.mScreenWidth/2
-						+ " " + EnvironmentData.mScreenHeight/2);
+			if (prevSpacing > thisSpacing && mWidthScaled*mWidthToHeightRatio*mScale >= mScreenWidth) {
+				Log.v(TAG, "Changing center from " + mCenterX + " " + mCenterY + " to " + mScreenWidth/2
+						+ " " + mScreenHeight/2);
 				mCenterX = 0;
 				mCenterY = 0;
-				mScale = EnvironmentData.mScreenHeight/mHeight;
+				mScale = mScreenHeight/mHeight;
 					
 				calcViewMatrix();
 				calcProjMatrix();
@@ -170,36 +171,36 @@ public class Camera extends D3Sprite {
 			
 			Log.v(TAG, "Coords " + mLeftX + " " + mRightX + " " + mBottomY + " " + mTopY);
 			
-			if (mLeftX < -EnvironmentData.mScreenWidth/2) {
+			if (mLeftX < -mScreenWidth/2) {
 				Log.v(TAG, "Adjusting centerX because of left");
-				mCenterX = -EnvironmentData.mScreenWidth/2 + mWidthScaled * mWidthToHeightRatio * mScale/2;
+				mCenterX = -mScreenWidth/2 + mWidthScaled * mWidthToHeightRatio * mScale/2;
 			}
 			
-			else if (mRightX > EnvironmentData.mScreenWidth/2) {
+			else if (mRightX > mScreenWidth/2) {
 				Log.v(TAG, "Adjusting centerX because of right");
-				mCenterX = EnvironmentData.mScreenWidth/2 - mWidthScaled * mWidthToHeightRatio * mScale/2;
+				mCenterX = mScreenWidth/2 - mWidthScaled * mWidthToHeightRatio * mScale/2;
 			}
 			
-			if (mBottomY < -EnvironmentData.mScreenHeight/2) {
+			if (mBottomY < -mScreenHeight/2) {
 				Log.v(TAG, "Adjusting centerY because of bottom");
-				mCenterY = -EnvironmentData.mScreenHeight/2 + mHeightScaled * mScale/2;
+				mCenterY = -mScreenHeight/2 + mHeightScaled * mScale/2;
 			}
 			
-			else if (mTopY > EnvironmentData.mScreenHeight/2) {
+			else if (mTopY > mScreenHeight/2) {
 				Log.v(TAG, "Adjusting centerY because of top");
-				mCenterY = EnvironmentData.mScreenHeight/2 - mHeightScaled * mScale / 2;
+				mCenterY = mScreenHeight/2 - mHeightScaled * mScale / 2;
 			}
 			
 			if (!D3Maths.rectContains(0, 0, 
-					EnvironmentData.mScreenWidth - mWidthScaled * mWidthToHeightRatio*mScale, 
-					EnvironmentData.mScreenHeight - mHeightScaled*mScale, 
+					mScreenWidth - mWidthScaled * mWidthToHeightRatio*mScale, 
+					mScreenHeight - mHeightScaled*mScale, 
 					mCenterX, mCenterY)) {
 				mCenterX += dx;
 				recalcViewMatrix = true;
 			}
 			if (D3Maths.rectContains(0, 0, 
-					EnvironmentData.mScreenWidth - mWidthScaled * mWidthToHeightRatio*mScale, 
-					EnvironmentData.mScreenHeight - mHeightScaled*mScale, 
+					mScreenWidth - mWidthScaled * mWidthToHeightRatio*mScale, 
+					mScreenHeight - mHeightScaled*mScale, 
 					mCenterX, mCenterY+dy)) {
 				mCenterY += dy;
 				recalcViewMatrix = true;
@@ -209,15 +210,15 @@ public class Camera extends D3Sprite {
 		}
 		else {
 			if (D3Maths.rectContains(0, 0, 
-					EnvironmentData.mScreenWidth - mWidthScaled * mWidthToHeightRatio*mScale, 
-					EnvironmentData.mScreenHeight - mHeightScaled*mScale, 
+					mScreenWidth - mWidthScaled * mWidthToHeightRatio*mScale, 
+					mScreenHeight - mHeightScaled*mScale, 
 					mCenterX + dx, mCenterY)) {
 				mCenterX += dx;
 				recalcViewMatrix = true;
 			}
 			if (D3Maths.rectContains(0, 0, 
-					EnvironmentData.mScreenWidth - mWidthScaled * mWidthToHeightRatio*mScale, 
-					EnvironmentData.mScreenHeight - mHeightScaled*mScale, 
+					mScreenWidth - mWidthScaled * mWidthToHeightRatio*mScale, 
+					mScreenHeight - mHeightScaled*mScale, 
 					mCenterX, mCenterY+dy)) {
 				mCenterY += dy;
 				recalcViewMatrix = true;

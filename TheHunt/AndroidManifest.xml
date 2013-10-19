@@ -17,7 +17,8 @@
         android:allowBackup="true">
         <activity 
             android:name="com.primalpond.hunt.TheHunt"
-            android:screenOrientation="sensorLandscape">
+            android:screenOrientation="sensorLandscape"
+            android:theme="@style/ActionBarOverlay">
             <intent-filter>
             	<action android:name="android.intent.action.MAIN" />
             	<category android:name="android.intent.category.LAUNCHER" />
