@@ -4,7 +4,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical" >
     
-    <d3kod.thehunt.D3GLSurfaceView
+    <com.primalpond.hunt.D3GLSurfaceView
         android:id="@+id/glSurfaceView"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent" />

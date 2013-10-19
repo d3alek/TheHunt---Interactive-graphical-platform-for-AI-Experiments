@@ -5,7 +5,7 @@ import java.util.HashMap;
 import android.content.Context;
 import android.util.Log;
 import d3kod.graphics.texture.TextureManager.Texture;
-import d3kod.thehunt.R;
+import com.primalpond.hunt.R;
 
 public class TextureManager {
 	

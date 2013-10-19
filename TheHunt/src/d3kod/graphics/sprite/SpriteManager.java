@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
+import com.primalpond.hunt.world.tools.D3CatchNetPath;
+
 import android.content.Context;
 import android.graphics.PointF;
 import android.opengl.Matrix;
@@ -16,7 +18,6 @@ import d3kod.graphics.sprite.shapes.D3FadingText;
 import d3kod.graphics.sprite.shapes.D3Shape;
 import d3kod.graphics.text.GLText;
 import d3kod.graphics.texture.TextureManager;
-import d3kod.thehunt.world.tools.D3CatchNetPath;
 
 public class SpriteManager {
 	public static final int COORDS_PER_VERTEX = 3;

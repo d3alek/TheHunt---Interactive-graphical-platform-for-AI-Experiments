@@ -143,7 +143,7 @@
 	        android:onClick="onButtonClicked"/>
     </LinearLayout>
     
-    <d3kod.thehunt.MyGLSurfaceView
+    <com.primalpond.hunt.MyGLSurfaceView
         android:id="@+id/glSurfaceView"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent" />
