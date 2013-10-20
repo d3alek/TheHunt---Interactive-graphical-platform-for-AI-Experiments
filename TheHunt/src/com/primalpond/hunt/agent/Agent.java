@@ -53,4 +53,6 @@ public abstract class Agent extends D3Sprite {
 	public String getStateString() {
 		return "None";
 	} 
+	
+	public abstract boolean isHidden();
 }

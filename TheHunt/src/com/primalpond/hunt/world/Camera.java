@@ -147,6 +147,7 @@ public class Camera extends D3Sprite {
 		recalcViewMatrix = false;
 		float mScreenHeight = TheHuntRenderer.SCREEN_HEIGHT;
 		float mScreenWidth = TheHuntRenderer.SCREEN_WIDTH;
+		Log.i(TAG, "Prev spacing " + prevSpacing + " thisSpacing " + thisSpacing);
 		if (Math.abs(prevSpacing - thisSpacing) > ZOOM_SPACING_THRESH) {
 			//ZOOM
 			Log.v(TAG, "Init zoom!");

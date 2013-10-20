@@ -50,6 +50,7 @@ public class Prey extends Agent {
 	private Head mHead;
 	private Tail mTail;
 	private Body mBody;
+	private boolean mHidden;
 
 	public void update() {
 		if (mEnv == null) {
@@ -68,9 +69,11 @@ public class Prey extends Agent {
 		move();
 		if (mGraphic == null) return;
 		if (mWorldModel.getLightLevel() == 0) {
+			mHidden = true;
 			mGraphic.setHiddenColor();
 		}
 		else {
+			mHidden = false;
 			mGraphic.resetColor();
 		}
 
@@ -80,6 +83,10 @@ public class Prey extends Agent {
 		else {
 			mGraphic.closeMouth();
 		}
+	}
+	
+	public boolean isHidden() {
+		return mHidden;
 	}
 
 	private void updateWorldModel() {

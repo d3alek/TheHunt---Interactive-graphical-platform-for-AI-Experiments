@@ -154,11 +154,11 @@ public class Environment {
 		return new EventLight(1);
 	}
 	public boolean netObstacle(float x, float y) {
-		PointF at = new PointF(x, y);
-		for (FloatingObject fo: data.getFloatingObjects()) {
-			if (fo.getType().compareTo(Type.ALGAE) == 0 && fo.contains(at)) 
-				return true;
-		}
+//		PointF at = new PointF(x, y);
+//		for (FloatingObject fo: data.getFloatingObjects()) {
+//			if (fo.getType().compareTo(Type.ALGAE) == 0 && fo.contains(at)) 
+//				return true;
+//		}
 		return false;
 	}
 

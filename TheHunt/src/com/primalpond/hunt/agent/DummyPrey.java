@@ -39,4 +39,9 @@ public class DummyPrey extends Agent {
 	public void setCaught(boolean b) {
 		
 	}
+
+	@Override
+	public boolean isHidden() {
+		return false;
+	}
 }

@@ -86,17 +86,22 @@ public class CatchNet extends D3Sprite implements Tool {
 				// may be a redundant check
 //				Log.v(TAG, "Tryign to catch!");
 				Agent prey = mEnv.getPrey();
-				if (prey != null && !prey.getCaught() && contains(prey.getPosition())) {
+				if (prey != null && !prey.getCaught() && !prey.isHidden() && contains(prey.getPosition())) {
 					Log.v(TAG, "I caught the prey!");
 					prey.setCaught(true);
 				}
 				for (FloatingObject fo:mEnv.seeObjects(getX(), getY(), getRadius())) {
-					if (mCaughtObjects.contains(fo)) continue;
-					Log.v(TAG, "catching floating object " + fo.getType());
-					mCaughtObjects.add(fo);
-					mEnv.playerRemoves(fo);
+					if (fo.getRadius() < getRadius()) {
+						if (mCaughtObjects.contains(fo)) continue;
+						Log.v(TAG, "catching floating object " + fo.getType());
+						mCaughtObjects.add(fo);
+						mEnv.playerRemoves(fo);
+					}
+					else {
+						//TODO: shake animation
+					}
 				}
-				
+				mGraphic.setFaded();
 			}
 		}
 	}

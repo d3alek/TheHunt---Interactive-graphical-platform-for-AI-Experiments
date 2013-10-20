@@ -470,8 +470,10 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 						prevSpacing = 0;
 						thisSpacing = 0;
 					}
-					PointF prevWorld = mCamera.fromScreenToWorld(prev.getX(), prev.getY());
-					mCamera.move(prevWorld.x - location.x, prevWorld.y - location.y, prevSpacing, thisSpacing);				
+					if (prevSpacing != 0) {
+						PointF prevWorld = mCamera.fromScreenToWorld(prev.getX(), prev.getY());
+						mCamera.move(prevWorld.x - location.x, prevWorld.y - location.y, prevSpacing, thisSpacing);				
+					}
 				}
 			}				
 
@@ -540,7 +542,9 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 						mHUD.hidePalette();
 					}
 				}
-				else if (prev != null && prev.getX() == event.getX() && prev.getY() == event.getY() && prev.getAction() == event.getAction()) return;
+				else if (prev != null && prev.getX() == event.getX() && prev.getY() == event.getY() && prev.getAction() == event.getAction()) {
+					
+				}
 				else
 					if (mIgnoreNextTouch != event.getAction() && 
 						//							(event.getAction() == MotionEvent.ACTION_DOWN || // to place food while net is snatching
