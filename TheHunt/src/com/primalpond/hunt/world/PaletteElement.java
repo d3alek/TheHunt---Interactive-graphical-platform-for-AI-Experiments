@@ -35,8 +35,8 @@ public class PaletteElement extends D3Sprite {
 //	private static float mHeight = 0.06f;
 	private static float mWidth = 0.15f;
 	private static float mHeight = 0.15f;
-	private static double mAngleStart = Math.toRadians(45);
-	private static double numberAngleTurn = Math.toRadians(90);
+	private static double mAngleStart = Math.toRadians(0);
+	private static double numberAngleTurn = Math.toRadians(45);
 	private String mText;
 	private PointF mRelativePos;
 //	private D3Image mTextGraphic;
@@ -59,11 +59,12 @@ public class PaletteElement extends D3Sprite {
 		mPalettePosition = palettePosition;
 		mDistFromPaletteCenter = paletteRadius*2f;
 		switch(numberInPalette) {
-		case 0: mAngle = 90; break;
-		case 1: mAngle = -90; break;
+		case 0: mAngle = 135; break;
+		case 1: mAngle = -135; break;
 		}
 	}
 
+	// not used!!!
 	private static PointF calcPosition(PointF palettePosition, float paletteRadius,
 			int numberInPalette) {
 		PointF pos = new PointF();

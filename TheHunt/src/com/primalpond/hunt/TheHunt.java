@@ -4,6 +4,7 @@ import com.google.example.games.basegameutils.BaseGameActivity;
 import com.primalpond.hunt.world.logic.TheHuntRenderer.ShowNavigationListener;
 
 import android.annotation.SuppressLint;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.ActionBar;
@@ -38,6 +39,7 @@ public class TheHunt extends BaseGameActivity implements PreyChangeDialog.PreyCh
 
 	private static final String TAG = "TheHunt";
 	private D3GLSurfaceView mGLView;
+	private MenuItem mPlayIcon;
 
 	@SuppressLint("NewApi")
 	@Override
@@ -62,6 +64,7 @@ public class TheHunt extends BaseGameActivity implements PreyChangeDialog.PreyCh
 	public boolean onCreateOptionsMenu(Menu menu) {
 		MenuInflater inflater = getMenuInflater();
 		inflater.inflate(R.menu.menu, menu);
+		mPlayIcon = menu.findItem(R.id.action_play_services);
 		return super.onCreateOptionsMenu(menu);
 	}
 	
@@ -76,7 +79,13 @@ public class TheHunt extends BaseGameActivity implements PreyChangeDialog.PreyCh
 			});
 			break;
 		case R.id.action_play_services:
-			beginUserInitiatedSignIn();
+			if (isSignedIn()) {
+				signOut();
+				item.setIcon(getResources().getDrawable(R.drawable.games_controller_white));
+			}
+			else {
+				beginUserInitiatedSignIn();
+			}
 			break;
 		default:
 			break;
@@ -155,12 +164,16 @@ public class TheHunt extends BaseGameActivity implements PreyChangeDialog.PreyCh
 	}
 
 	public void onSignInFailed() {
-		Toast.makeText(this, "Sign in failed", Toast.LENGTH_SHORT).show();
-		
+//		Toast.makeText(this, "Sign in failed", Toast.LENGTH_SHORT).show();
+		if (mPlayIcon != null) {
+			mPlayIcon.setIcon(getResources().getDrawable(R.drawable.games_controller_white));
+		}
 	}
 
 	public void onSignInSucceeded() {
-		Toast.makeText(this, "Sign in succeeded", Toast.LENGTH_SHORT).show();
-		
+//		Toast.makeText(this, "Sign in succeeded", Toast.LENGTH_SHORT).show();
+		if (mPlayIcon != null) {
+			mPlayIcon.setIcon(getResources().getDrawable(R.drawable.games_controller_white_active));
+		}
 	}
 }

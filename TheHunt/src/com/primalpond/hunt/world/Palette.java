@@ -13,18 +13,20 @@ public class Palette extends D3Sprite {
 
 	private float[] mHudProjMatrix;
 	private float[] mHudViewMatrix;
-	private float mTouchRadius = 0.06f;
+	private float mTouchRadius = 0.15f;
 	private PaletteElement net, knife;
 	private PaletteElement mActiveElement;
 	private Camera mCamera;
 	private boolean mHidden;
+	public float mPosOffsetY = mTouchRadius/2;
+	public float mPosOffsetX = 0;
 
 	public Palette(PointF position, SpriteManager d3gles20, float[] hudProjMatrix, float[] hudViewMatrix, Camera camera) {
 		super(position, d3gles20);
 		mHudProjMatrix = hudProjMatrix;
 		mHudViewMatrix = hudViewMatrix;
-		net = new PaletteElement(position, mTouchRadius, 0, "Net", d3gles20);
-		knife = new PaletteElement(position, mTouchRadius, 1, "Knife", d3gles20);
+		net = new PaletteElement(position, mTouchRadius*2/3f, 0, "Net", d3gles20);
+		knife = new PaletteElement(position, mTouchRadius*2/3f, 1, "Knife", d3gles20);
 		mActiveElement = null;
 		mCamera = camera;
 	}
@@ -46,6 +48,7 @@ public class Palette extends D3Sprite {
 
 	public void show(Class<? extends Tool> activeToolClass) {
 		mHidden = false;
+//		mGraphic.noFade();
 		
 		net.show();
 		knife.show();
@@ -94,8 +97,11 @@ public class Palette extends D3Sprite {
 	@Override
 	public void update() {
 		super.update();
-		net.update(getPosition());
-		knife.update(getPosition());
+		PointF positionToTellElements = new PointF();
+		positionToTellElements.set(getPosition());
+		positionToTellElements.offset(-mPosOffsetX, -mPosOffsetY);
+		net.update(positionToTellElements);
+		knife.update(positionToTellElements);
 	}
 
 	public String getActiveElement() {
@@ -103,6 +109,12 @@ public class Palette extends D3Sprite {
 			return mActiveElement.getText();
 		}
 		return null;
+	}
+	
+	@Override
+	public void setPosition(PointF position) {
+		position.offset(mPosOffsetX, mPosOffsetY);
+		super.setPosition(position);
 	}
 	
 

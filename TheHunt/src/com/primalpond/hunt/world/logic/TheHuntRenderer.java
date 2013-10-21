@@ -4,6 +4,7 @@ import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
 import android.content.Context;
+import android.content.SyncResult;
 import android.graphics.PointF;
 import android.hardware.SensorEvent;
 import android.opengl.GLES20;
@@ -111,6 +112,7 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 	private boolean mMovedAway;
 	private long mTimeFirstTouch;
 	private PointF mFirstTouch;
+	private State mStateBeforePause;
 	//	private GLText mGLText;
 	/**
 	 * The possible Prey type values (for example, returned from a {@link PreyChangeDialog}.
@@ -161,7 +163,6 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 		}		mTool = new CatchNet(mEnv, mD3GLES20);
 		//		mTool = new Knife(mEnv, mD3GLES20);
 		mIgnoreNextTouch = -1;
-		mCaughtCounter = 0;
 		mGraphicsInitialized = false;
 		mScale = 1;
 		next_game_tick = System.currentTimeMillis();
@@ -192,9 +193,16 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 			//			ArrayList<D3Sprite> sprites = state.getSprites();
 			//			Enum4
 			mD3GLES20 = new SpriteManager(shaderManager, tm, mContext);
+			Log.i(TAG, "mScore from state is " + mScore);
+			mScore = state.getScore();
+			mCaughtCounter = mScore/10;
 			mEnv = state.getEnv(); 
 			//			mPrey = new DummyPrey(mEnv, mD3GLES20);
 			mPrey = mEnv.getPrey();
+			if (mPrey == null) {
+				Crashlytics.log("mPrey is null but state loaded. Create new Prey...");
+				mPrey = new Prey(mEnv, mD3GLES20);
+			}
 			//			mPrey.setTextureManager(tm);
 			//			mEnv.initSprites(sprites);
 			//			mPrey = mEnv.getPrey();
@@ -211,7 +219,7 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 	private void saveState() {
 		Log.v(TAG, "Saving state!");
 		//		SaveState state = new SeventaveState(mEnv.getSprites());
-		SaveState state = new SaveState(mEnv);
+		SaveState state = new SaveState(mEnv, mScore);
 		mContext.storeToDB(state);
 	}
 
@@ -485,36 +493,15 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 				}
 			}				
 
-			//			else if (mLongPress) {
-			//				Log.v(TAG, "In long press!");
-			//				if (event.getAction() == MotionEvent.ACTION_UP) {
-			//					Log.v(TAG, "Stopping long press");
-			//					mLongPress = false;
-			////					mState = State.MENU;
-			//				}
-			//				else {
-			//					Log.v(TAG, "Handling long press");
-			////					mState = State.PAUSE;
-			////					mState = State.MENU;
-			////					if (mMenu != null && mMenu.notShown()) mMenu.show();
-			////					else {
-			////						Log.e(TAG, "Menu is null or already shown");
-			////						mState = State.PLAY;
-			////					}
-			////					mContextMenu.handleTouch(location);
-			//				}
-			//			}
 			if (mState == State.MENU) {
 			}
-			//			if (D3Maths.distance(location, locationMean) >)
-			//			setFaded
 			else {
-				if (event.getAction() == MotionEvent.ACTION_DOWN) {
+				if (event.getAction() == MotionEvent.ACTION_DOWN || (mFirstTouch == null && event.getAction() == MotionEvent.ACTION_MOVE)) {
 					mPaletteShown = false;
 					mMovedAway = false;
 					mTimeFirstTouch = System.currentTimeMillis();
 					mFirstTouch = location;
-					
+
 				}
 				if (mFirstTouch != null && !mMovedAway && !mHUD.pointsEqual(location, mFirstTouch)) {
 					mMovedAway = true;
@@ -561,15 +548,17 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 					}
 				}
 				else if (prev != null && prev.getX() == event.getX() && prev.getY() == event.getY() && prev.getAction() == event.getAction()) {
-					
 				}
 				else
 					if (mIgnoreNextTouch != event.getAction() && 
-						//							(event.getAction() == MotionEvent.ACTION_DOWN || // to place food while net is snatching
-						event.getAction() == MotionEvent.ACTION_UP) { // to place food otherwise
-					mD3GLES20.putText(new PlokText(location.x, location.y));
-					mEnv.putNoise(location.x, location.y, Environment.LOUDNESS_PLOK);
-					mEnv.putFoodGM(location.x, location.y);
+					//							(event.getAction() == MotionEvent.ACTION_DOWN || // to place food while net is snatching
+					event.getAction() == MotionEvent.ACTION_UP) { // to place food otherwise
+						mD3GLES20.putText(new PlokText(location.x, location.y));
+						mEnv.putNoise(location.x, location.y, Environment.LOUDNESS_PLOK);
+						mEnv.putFoodGM(location.x, location.y);
+					}
+				if (event.getAction() == MotionEvent.ACTION_UP) {
+					mHUD.hidePalette();
 					mFirstTouch = null;
 				}
 				if (mIgnoreNextTouch == event.getAction()) mIgnoreNextTouch = -1;
@@ -602,21 +591,24 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 	}
 
 	public void pause() {
+		synchronized (mContext.stateLock) {
 
-		if (mContext.getRunningRenderer() == TAG) {
-			Log.v(TAG, "Telling the context I'm not running any more...");
-			mContext.setRunningRenderer("");
-		}
-		else {
-			Log.v(TAG, "Running renderer not changed as it is " + mContext.getRunningRenderer());
-		}
-		//    	tm.clear();
-		if (mState == State.PLAY) {
+			if (mContext.getRunningRenderer() == TAG) {
+				Log.v(TAG, "Telling the context I'm not running any more...");
+				mContext.setRunningRenderer("");
+			}
+			else {
+				Log.v(TAG, "Running renderer not changed as it is " + mContext.getRunningRenderer());
+			}
+			//    	tm.clear();
+			mStateBeforePause = mState;
+			//		if (mState == State.PLAY) {
 			mState = State.PAUSE;
 			saveState();
+			//		}
+			mState = State.PAUSE;
+			Log.v(TAG, "State is " + mState);
 		}
-		mState = State.PAUSE;
-		Log.v(TAG, "State is " + mState);
 		//TODO: use sparseArray
 		//    	sm.clear();
 		//    	mContext.modeLock.unlock();
@@ -667,7 +659,11 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 			prepareState();
 			tm.printLoadedTextures();
 			//		Log.v(TAG, "ShaderProgramManager " + mD3GLES20.getShaderManager() + " " + sm);
-			mState = State.PLAY;
+			mState = mStateBeforePause;
+			if (mState == null) {
+				mState = State.PLAY;
+			}
+			//TODO: if MENU draw once!
 			Log.v(TAG, "State is " + mState);
 		}
 	}
@@ -698,19 +694,19 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 
 	public void regenerateWorld() {
 		synchronized (mContext.stateLock) {
-//			mD3GLES20.clearAll();
+			//			mD3GLES20.clearAll();
 			mEnv.regenerate();
 			mPrey.release();
 			mState = State.PLAY;
 			mMenu.hide();
 			mOnPauseListener.onToHideNavigation();
 			next_game_tick = System.currentTimeMillis();
-//			mEnv = new Environment(mD3GLES20);
-//			mEnv.initGraphics(mD3GLES20);
-//			if (mPrey != null) {
-//				mPrey = new Prey(mEnv, mD3GLES20);
-//				mPrey.initGraphic();
-//			}
+			//			mEnv = new Environment(mD3GLES20);
+			//			mEnv.initGraphics(mD3GLES20);
+			//			if (mPrey != null) {
+			//				mPrey = new Prey(mEnv, mD3GLES20);
+			//				mPrey.initGraphic();
+			//			}
 		}
 	}
 }

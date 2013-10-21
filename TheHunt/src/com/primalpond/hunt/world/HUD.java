@@ -227,7 +227,6 @@ public class HUD {
 		mPaletteShown = false;
 	}
 	public boolean handleTouch(PointF worldTouch, float screenX, float screenY, int action, Class<? extends Tool> activeToolClass) {
-		Log.v(TAG, "Action is " + action);
 		PointF screenTouch = mCamera.fromScreenToWorld(screenX, screenY, mViewMatrix, mProjMatrix);
 		if (action == MotionEvent.ACTION_DOWN || action == MotionEvent.ACTION_MOVE) {
 			if (mTimeFirstTouch == 0) {
@@ -278,7 +277,6 @@ public class HUD {
 		return mPalette.handleTouch(worldTouch);
 	}
 	public boolean pointsEqual(PointF point1, PointF point2) {
-		Log.i(TAG, "pointsEqual " + D3Maths.distance(point1.x, point1.y, point2.x, point2.y));
 		return D3Maths.distance(point1.x, point1.y, point2.x, point2.y) < POINTS_EQUAL_DISTANCE_THRESH;
 	}
 	public void update() {

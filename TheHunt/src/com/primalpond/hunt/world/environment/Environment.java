@@ -205,6 +205,9 @@ public class Environment {
 		mPrey = prey;
 	}
 	public Agent getPrey() {
+		if (mPrey == null) {
+			return null;
+		}
 		if (mPrey.getEnvironment() != this) {
 			Log.v(TAG, "Adjusting prey environment");
 			mPrey.setEnvironment(this);

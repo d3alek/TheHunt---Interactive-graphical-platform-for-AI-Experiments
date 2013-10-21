@@ -7,12 +7,14 @@ public class SaveState {
 //	Agent mAgent;
 	Environment mEnv;
 //	private boolean sameAsLast;
+	private int mScore;
 
 //	public SaveState(SpriteManager spriteManager, Environment env, Agent agent) {
-	public SaveState(Environment env) {
+	public SaveState(Environment env, int score) {
 //		mSpriteManager = spriteManager;
 //		mAgent = agent;
 		mEnv = env;
+		mScore = score;
 //		sameAsLast = false;
 	}
 //	ArrayList<D3Sprite> mSprites;
@@ -48,4 +50,8 @@ public class SaveState {
 //	public boolean getSameAsLast() {
 //		return sameAsLast;
 //	}
+
+	public int getScore() {
+		return mScore;
+	}
 }
