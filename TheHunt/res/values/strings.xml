@@ -13,4 +13,6 @@
 	<string name="angleInterpolation">Angle Interpolation</string>
 	<string name="msPF">msPerFrame</string>
 	<string name="terraform">Regenerate world</string>
+	<string name="play_services">Play Services</string>
+	<string name="app_id">282895577292</string>
 </resources>

@@ -1,5 +1,6 @@
 package com.primalpond.hunt;
 
+import com.google.example.games.basegameutils.BaseGameActivity;
 import com.primalpond.hunt.world.logic.TheHuntRenderer.ShowNavigationListener;
 
 import android.annotation.SuppressLint;
@@ -13,6 +14,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.Toast;
 
 
 /**
@@ -32,14 +34,11 @@ import android.view.WindowManager;
  * @author Aleksandar Kodzhabashev (d3kod) 
  *
  */
-public class TheHunt extends ActionBarActivity implements PreyChangeDialog.PreyChangeDialogListener, ShowNavigationListener {
+public class TheHunt extends BaseGameActivity implements PreyChangeDialog.PreyChangeDialogListener, ShowNavigationListener {
 
 	private static final String TAG = "TheHunt";
 	private D3GLSurfaceView mGLView;
 
-	/** Instantiate the GLView 
-	 * @see android.support.v4.app.FragmentActivity#onCreate(android.os.Bundle)
-	 */
 	@SuppressLint("NewApi")
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -76,7 +75,9 @@ public class TheHunt extends ActionBarActivity implements PreyChangeDialog.PreyC
 				}
 			});
 			break;
-
+		case R.id.action_play_services:
+			beginUserInitiatedSignIn();
+			break;
 		default:
 			break;
 		}
@@ -151,5 +152,15 @@ public class TheHunt extends ActionBarActivity implements PreyChangeDialog.PreyC
 				actionBar.hide();
 			}
 		});
+	}
+
+	public void onSignInFailed() {
+		Toast.makeText(this, "Sign in failed", Toast.LENGTH_SHORT).show();
+		
+	}
+
+	public void onSignInSucceeded() {
+		Toast.makeText(this, "Sign in succeeded", Toast.LENGTH_SHORT).show();
+		
 	}
 }

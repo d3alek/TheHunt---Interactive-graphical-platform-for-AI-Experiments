@@ -107,6 +107,10 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 	private float mScale;
 	private TheHuntMenu mMenu;
 	private int mReducePenaltyCounter;
+	private boolean mPaletteShown;
+	private boolean mMovedAway;
+	private long mTimeFirstTouch;
+	private PointF mFirstTouch;
 	//	private GLText mGLText;
 	/**
 	 * The possible Prey type values (for example, returned from a {@link PreyChangeDialog}.
@@ -333,6 +337,10 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 	}		
 
 	public void updateWorld() {
+		if (mFirstTouch != null && !mMovedAway && !mPaletteShown && mTimeFirstTouch != 0 && System.currentTimeMillis() - mTimeFirstTouch >= mHUD.SHOW_PALETTE_DELAY) {
+			mHUD.showPalette(mFirstTouch, mTool.getClass());
+			mPaletteShown = true;
+		}
 		//		Log.v(TAG, "Update world called!");
 		mEnv.update();
 		//		if (!mContextMenu.isHidden()) mContextMenu.update();
@@ -501,6 +509,16 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 			//			if (D3Maths.distance(location, locationMean) >)
 			//			setFaded
 			else {
+				if (event.getAction() == MotionEvent.ACTION_DOWN) {
+					mPaletteShown = false;
+					mMovedAway = false;
+					mTimeFirstTouch = System.currentTimeMillis();
+					mFirstTouch = location;
+					
+				}
+				if (mFirstTouch != null && !mMovedAway && !mHUD.pointsEqual(location, mFirstTouch)) {
+					mMovedAway = true;
+				}
 				if (mHUD.handleTouch(location, event.getX(), event.getY(), event.getAction(), mTool.getClass())) {
 					if (mHUD.isPaused()) {
 						mState = State.MENU;
@@ -552,6 +570,7 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 					mD3GLES20.putText(new PlokText(location.x, location.y));
 					mEnv.putNoise(location.x, location.y, Environment.LOUDNESS_PLOK);
 					mEnv.putFoodGM(location.x, location.y);
+					mFirstTouch = null;
 				}
 				if (mIgnoreNextTouch == event.getAction()) mIgnoreNextTouch = -1;
 			}

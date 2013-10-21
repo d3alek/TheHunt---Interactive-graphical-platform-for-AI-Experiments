@@ -12,6 +12,7 @@ import com.db4o.ObjectContainer;
 import com.db4o.ObjectSet;
 import com.db4o.config.EmbeddedConfiguration;
 import com.db4o.ta.TransparentActivationSupport;
+import com.primalpond.hunt.world.environment.NAlgae;
 import com.primalpond.hunt.world.logic.SaveState;
 
 public class MyApplication extends Application {
@@ -35,6 +36,8 @@ public class MyApplication extends Application {
 			config.common().exceptionsOnNotStorable(true);
 			config.common().add(new TransparentActivationSupport());
 			config.common().objectClass(SaveState.class).cascadeOnUpdate(true);
+			config.common().exceptionsOnNotStorable(false);
+			config.common().objectClass(NAlgae.class).callConstructor(false);
 	    	db = Db4oEmbedded.openFile(config, db4oDBFullPath(this));
 	    	
 	    	if (db == null || db.ext().isClosed()) {

@@ -1,6 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:hunt="http://schemas.android.com/apk/res-auto" >
+    
+    <item 
+        android:id="@+id/action_play_services"
+        android:title="@string/play_services"
+        hunt:showAsAction="ifRoom"
+        android:icon="@drawable/games_controller_white"/>
 
     <item
         hunt:showAsAction="ifRoom|withText"

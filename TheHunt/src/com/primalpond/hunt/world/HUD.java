@@ -85,8 +85,8 @@ public class HUD {
 	private static final String TAG = "HUD";
 	private static final float PAUSE_SIZE = 0.1f;
 	private static final float PAUSE_HORIZ_ADJ = 0.2f;
-	private static final long SHOW_PALETTE_DELAY = 100; //in ms
-	private static final float POINTS_EQUAL_DISTANCE_THRESH = 0.02f;
+	public static final long SHOW_PALETTE_DELAY = 100; //in ms
+	private static final float POINTS_EQUAL_DISTANCE_THRESH = 0.04f;
 	
 	long mTimeFirstTouch;
 	boolean mPaletteShown;
@@ -227,7 +227,7 @@ public class HUD {
 		mPaletteShown = false;
 	}
 	public boolean handleTouch(PointF worldTouch, float screenX, float screenY, int action, Class<? extends Tool> activeToolClass) {
-//		Log.v(TAG, "Action is " + action);
+		Log.v(TAG, "Action is " + action);
 		PointF screenTouch = mCamera.fromScreenToWorld(screenX, screenY, mViewMatrix, mProjMatrix);
 		if (action == MotionEvent.ACTION_DOWN || action == MotionEvent.ACTION_MOVE) {
 			if (mTimeFirstTouch == 0) {
@@ -241,22 +241,22 @@ public class HUD {
 	//			prevTouch = worldTouch;
 	//			activePaletteElement = null;
 	//			return true;
-				mFirstTouch = worldTouch;
-				mMovedAway = false;
+//				mFirstTouch = worldTouch;
+//				mMovedAway = false;
 				mTimeFirstTouch = System.currentTimeMillis();
 			}
 			
-			else if (!mMovedAway && !mPaletteShown && mTimeFirstTouch != 0 && pointsEqual(worldTouch, mFirstTouch) && System.currentTimeMillis() - mTimeFirstTouch >= SHOW_PALETTE_DELAY) {
-				Log.v(TAG, "Showing palette");
-				showPalette(mFirstTouch, activeToolClass);
-	//			prevTouch = worldTouch;
-				mPaletteShown = true;
-				activePaletteElement = null;
-				return true;
-			}
-			else if (!mMovedAway && !pointsEqual(worldTouch, mFirstTouch)) {
-				mMovedAway = true;
-			}
+//			else if (!mMovedAway && !mPaletteShown && mTimeFirstTouch != 0 && pointsEqual(worldTouch, mFirstTouch) && System.currentTimeMillis() - mTimeFirstTouch >= SHOW_PALETTE_DELAY) {
+//				Log.v(TAG, "Showing palette");
+//				showPalette(mFirstTouch, activeToolClass);
+//	//			prevTouch = worldTouch;
+//				mPaletteShown = true;
+//				activePaletteElement = null;
+//				return true;
+//			}
+//			else if (!mMovedAway && !pointsEqual(worldTouch, mFirstTouch)) {
+//				mMovedAway = true;
+//			}
 		}
 		
 		if (action == MotionEvent.ACTION_UP && mPalette.handleTouch(worldTouch)) {
@@ -277,7 +277,8 @@ public class HUD {
 		}
 		return mPalette.handleTouch(worldTouch);
 	}
-	private boolean pointsEqual(PointF point1, PointF point2) {
+	public boolean pointsEqual(PointF point1, PointF point2) {
+		Log.i(TAG, "pointsEqual " + D3Maths.distance(point1.x, point1.y, point2.x, point2.y));
 		return D3Maths.distance(point1.x, point1.y, point2.x, point2.y) < POINTS_EQUAL_DISTANCE_THRESH;
 	}
 	public void update() {
