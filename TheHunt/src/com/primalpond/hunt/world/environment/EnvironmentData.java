@@ -100,7 +100,6 @@ public class EnvironmentData {
 	}
 
 	public void addFloatingObject(FloatingObject floatingObject) {
-//		Log.v(TAG, "Adding floatng object " + floatingObject.getType());
 		mFloatingObjectsToAdd.add(floatingObject);
 	}
 	
@@ -134,6 +133,19 @@ public class EnvironmentData {
 	public void logFloatingObjects() {
 		String log = "Floating objects log: ";
 		for (FloatingObject fo: mFloatingObjects) {
+			log += fo.getType() + " " + fo.getX() + " " + fo.getY() + " ";
+		}
+		Log.v(TAG, log);
+		log = "Floating objects to add log: ";
+		for (FloatingObject fo: mFloatingObjectsToAdd) {
+			log += fo.getType() + " " + fo.getX() + " " + fo.getY() + " ";
+			if (fo.getType().equals(Type.ALGAE)) {
+				log += ((NAlgae)fo).getN() + " ";
+			}
+		}
+		Log.v(TAG, log);
+		log = "Floating objects to set graphics log: ";
+		for (FloatingObject fo: mFloatingObjectsToSetGraphics) {
 			log += fo.getType() + " " + fo.getX() + " " + fo.getY() + " ";
 		}
 		Log.v(TAG, log);

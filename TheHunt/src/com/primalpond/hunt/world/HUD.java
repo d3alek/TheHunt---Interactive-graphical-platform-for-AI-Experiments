@@ -116,8 +116,8 @@ public class HUD {
 		
 		PointF mScoreTextPos = new PointF(scoreTextPosX, scoreTextPosY);
 		
-		mScoreText = new HUDText("Score: ", NORMAL_TEXT_SIZE, mScoreTextPos, true);
-		mScore = new HUDText("undef", NORMAL_TEXT_SIZE, false);
+//		mScoreText = new HUDText("Score: ", NORMAL_TEXT_SIZE, mScoreTextPos, true);
+		mScore = new HUDText("undef", NORMAL_TEXT_SIZE, mScoreTextPos, true);
 		mPenalty = new HUDText("undef", NORMAL_TEXT_SIZE, false);
 		mCamera = camera;
 		
@@ -142,14 +142,14 @@ public class HUD {
 		mProjMatrix = mCamera.getUnscaledProjMatrix();
 		mSpriteManager = spriteManager;
 		
-		spriteManager.putText(mScoreText);
-		mScore.setPosition(mScoreText.getX() + mScoreText.getLength(spriteManager.getTextManager())/2, 
-				mScoreText.getY() - mScoreText.getHeight(spriteManager.getTextManager())/2, 0);
+//		spriteManager.putText(mScoreText);
+//		mScore.setPosition(mScoreText.getX() + mScoreText.getLength(spriteManager.getTextManager())/2, 
+//				mScoreText.getY() - mScoreText.getHeight(spriteManager.getTextManager())/2, 0);
 		spriteManager.putText(mScore);
 		
-		mPenalty.setPosition(mScore.getX()+0.05f, mScore.getY(), 0);
-		mPenalty.setColor(1, 0, 0);
-		spriteManager.putText(mPenalty);
+//		mPenalty.setPosition(mScore.getX()+0.05f, mScore.getY(), 0);
+//		mPenalty.setColor(1, 0, 0);
+//		spriteManager.putText(mPenalty);
 		
 		mPauseGraphic = new HUDImage(spriteManager.getTextureManager().getTextureInfo(Texture.BTN_PAUSE),
 				PAUSE_SIZE, spriteManager.getShaderManager());
@@ -208,7 +208,7 @@ public class HUD {
 	public void setScore(int mCaughtCounter) {
 		String s = "" + mCaughtCounter;
 		mScore.setText(s);
-		mPenalty.setPosition(mScore.getX() + mScore.getLength(mSpriteManager.getTextManager()) + 0.02f, mPenalty.getY(), 0);
+//		mPenalty.setPosition(mScore.getX() + mScore.getLength(mSpriteManager.getTextManager()) + 0.02f, mPenalty.getY(), 0);
 	}
 	
 	public void showPalette(PointF pos, Class<? extends Tool> activeToolClass) {

@@ -14,5 +14,7 @@
 	<string name="msPF">msPerFrame</string>
 	<string name="terraform">Regenerate world</string>
 	<string name="play_services">Play Services</string>
+	<string name="show_scoreboard">Show Scoreboard</string>
 	<string name="app_id">282895577292</string>
+	<string name="leaderboard_prey_caught">CgkIzOGP750IEAIQCA</string>
 </resources>

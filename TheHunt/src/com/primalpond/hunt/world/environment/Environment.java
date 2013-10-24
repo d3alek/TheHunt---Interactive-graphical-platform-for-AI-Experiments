@@ -231,7 +231,7 @@ public class Environment {
 		int biomass = 0;
 		double algaeGrowthRate = 0;
 		for (FloatingObject fo: data.getFloatingObjects()) {
-			if (fo.getType() == Type.ALGAE) {
+			if (fo.getType().name().equals(Type.ALGAE.name())) {
 				algaeNum++;
 				biomass += ((NAlgae) fo).getN();
 			}
@@ -242,6 +242,7 @@ public class Environment {
 		}
 		algaeGrowthRate = m * biomass / algaeNum;
 		algaeGrowthChance = algaeGrowthRate / algaeNum;
+		Log.i(TAG, "AlgaeGrowthChance is " + algaeGrowthChance); 
 	}
 	
 	public String getStateString() {

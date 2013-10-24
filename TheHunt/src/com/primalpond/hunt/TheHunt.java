@@ -1,5 +1,6 @@
 package com.primalpond.hunt;
 
+import com.google.android.gms.games.GamesClient;
 import com.google.example.games.basegameutils.BaseGameActivity;
 import com.primalpond.hunt.world.logic.TheHuntRenderer.ShowNavigationListener;
 
@@ -38,8 +39,12 @@ import android.widget.Toast;
 public class TheHunt extends BaseGameActivity implements PreyChangeDialog.PreyChangeDialogListener, ShowNavigationListener {
 
 	private static final String TAG = "TheHunt";
+	private static final int REQUEST_LEADERBOARD = 3;
 	private D3GLSurfaceView mGLView;
 	private MenuItem mPlayIcon;
+	private GamesClient mGamesClient;
+	private String LEADERBOARD_ID;
+	private boolean mToShowScoreOnSuccess;
 
 	@SuppressLint("NewApi")
 	@Override
@@ -58,6 +63,7 @@ public class TheHunt extends BaseGameActivity implements PreyChangeDialog.PreyCh
 		setContentView(R.layout.clean);
 		mGLView = (D3GLSurfaceView)findViewById(R.id.glSurfaceView);
 		mGLView.mRenderer.setActivity(this);
+		LEADERBOARD_ID = getResources().getString(R.string.leaderboard_prey_caught);
 	}
 
 	@Override
@@ -85,6 +91,18 @@ public class TheHunt extends BaseGameActivity implements PreyChangeDialog.PreyCh
 			}
 			else {
 				beginUserInitiatedSignIn();
+			}
+			break;
+		case R.id.action_show_scoreboard:
+			if (isSignedIn()) {
+				if (mGLView != null && mGLView.mRenderer != null) {
+					mGamesClient.submitScore(LEADERBOARD_ID, mGLView.mRenderer.mCaughtCounter);
+				}
+				startActivityForResult(mGamesClient.getLeaderboardIntent(LEADERBOARD_ID), REQUEST_LEADERBOARD);
+			}
+			else {
+				beginUserInitiatedSignIn();
+				mToShowScoreOnSuccess = true;
 			}
 			break;
 		default:
@@ -165,6 +183,7 @@ public class TheHunt extends BaseGameActivity implements PreyChangeDialog.PreyCh
 
 	public void onSignInFailed() {
 //		Toast.makeText(this, "Sign in failed", Toast.LENGTH_SHORT).show();
+		mToShowScoreOnSuccess = false;
 		if (mPlayIcon != null) {
 			mPlayIcon.setIcon(getResources().getDrawable(R.drawable.games_controller_white));
 		}
@@ -175,5 +194,11 @@ public class TheHunt extends BaseGameActivity implements PreyChangeDialog.PreyCh
 		if (mPlayIcon != null) {
 			mPlayIcon.setIcon(getResources().getDrawable(R.drawable.games_controller_white_active));
 		}
+		mGamesClient = getGamesClient();
+		if (mToShowScoreOnSuccess) {
+			startActivityForResult(mGamesClient.getLeaderboardIntent(LEADERBOARD_ID), REQUEST_LEADERBOARD);
+			mToShowScoreOnSuccess = false;
+		}
+		
 	}
 }

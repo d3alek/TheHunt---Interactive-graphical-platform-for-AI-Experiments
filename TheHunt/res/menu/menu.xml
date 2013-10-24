@@ -7,6 +7,12 @@
         android:title="@string/play_services"
         hunt:showAsAction="ifRoom"
         android:icon="@drawable/games_controller_white"/>
+    
+    <item 
+        android:id="@+id/action_show_scoreboard"
+        android:title="@string/show_scoreboard"
+        hunt:showAsAction="ifRoom"
+        android:icon="@drawable/scoreboard_action"/>
 
     <item
         hunt:showAsAction="ifRoom|withText"

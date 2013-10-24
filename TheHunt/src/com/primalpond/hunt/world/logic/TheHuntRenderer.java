@@ -72,7 +72,7 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 	private long mslf;
 	private long smoothMspf;
 	private int smoothingCount;
-	private int mCaughtCounter;
+	public int mCaughtCounter;
 	private boolean mGraphicsInitialized = false;
 	private TextureManager tm;
 	private int releaseCountdown;
@@ -103,7 +103,6 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 	private int mIgnoreNextTouch;
 	private MyApplication mContext;
 	private HUD mHUD;
-	private int mScore;
 	private TheHuntContextMenu mContextMenu;
 	private float mScale;
 	private TheHuntMenu mMenu;
@@ -135,9 +134,8 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 		TAG = tag;
 		Log.v(TAG, "onCreate called!");
 		mContext = ((MyApplication) context.getApplicationContext());
-		mContext.setRunningRenderer(TAG);
+		//		mContext.setRunningRenderer(TAG);
 
-		tm = new TextureManager(context);
 		//		prepareState();
 		//		mEnv = null;
 		//		mTool = null;
@@ -157,15 +155,17 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 	}
 
 	private void prepareState() {
+		tm = new TextureManager(mContext);
 		sm = new ShaderProgramManager();
 		synchronized (mContext.stateLock) {
 			loadSavedState(sm);
-		}		mTool = new CatchNet(mEnv, mD3GLES20);
-		//		mTool = new Knife(mEnv, mD3GLES20);
-		mIgnoreNextTouch = -1;
-		mGraphicsInitialized = false;
-		mScale = 1;
-		next_game_tick = System.currentTimeMillis();
+			mTool = new CatchNet(mEnv, mD3GLES20);
+			//		mTool = new Knife(mEnv, mD3GLES20);
+			mIgnoreNextTouch = -1;
+			mGraphicsInitialized = false;
+			mScale = 1;
+			next_game_tick = System.currentTimeMillis();
+		}
 	}
 
 	private SpriteManager loadSavedState(ShaderProgramManager shaderManager) {
@@ -193,14 +193,13 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 			//			ArrayList<D3Sprite> sprites = state.getSprites();
 			//			Enum4
 			mD3GLES20 = new SpriteManager(shaderManager, tm, mContext);
-			Log.i(TAG, "mScore from state is " + mScore);
-			mScore = state.getScore();
-			mCaughtCounter = mScore/10;
+			mCaughtCounter = state.getCaught();
 			mEnv = state.getEnv(); 
 			//			mPrey = new DummyPrey(mEnv, mD3GLES20);
 			mPrey = mEnv.getPrey();
 			if (mPrey == null) {
 				Crashlytics.log("mPrey is null but state loaded. Create new Prey...");
+				Log.i(TAG, "mPrey is null but state loaded. Create new Prey...");
 				mPrey = new Prey(mEnv, mD3GLES20);
 			}
 			//			mPrey.setTextureManager(tm);
@@ -219,7 +218,7 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 	private void saveState() {
 		Log.v(TAG, "Saving state!");
 		//		SaveState state = new SeventaveState(mEnv.getSprites());
-		SaveState state = new SaveState(mEnv, mScore);
+		SaveState state = new SaveState(mEnv, mCaughtCounter);
 		mContext.storeToDB(state);
 	}
 
@@ -383,9 +382,9 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 		mCamera.update();
 
 		mD3GLES20.updateAll();
-		mScore = mCaughtCounter*10;
-		mHUD.setScore(mScore);
-		mHUD.setPenalty(mEnv.getPlayerPenalty());
+		mHUD.setScore(mCaughtCounter);
+		//TODO not using penalty any more
+//		mHUD.setPenalty(mEnv.getPlayerPenalty());
 		mReducePenaltyCounter++;
 		if (mReducePenaltyCounter > MILLISEC_PER_TICK) {
 			mEnv.reducePlayerPenalty();
@@ -655,9 +654,9 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 			//		sm = new ShaderProgramManager();
 			//		mD3GLES20 = new SpriteManager(sm);
 			//		mGraphicsInitialized = false;
-			tm.printLoadedTextures();
+			//			tm.printLoadedTextures();
 			prepareState();
-			tm.printLoadedTextures();
+			//			tm.printLoadedTextures();
 			//		Log.v(TAG, "ShaderProgramManager " + mD3GLES20.getShaderManager() + " " + sm);
 			mState = mStateBeforePause;
 			if (mState == null) {
