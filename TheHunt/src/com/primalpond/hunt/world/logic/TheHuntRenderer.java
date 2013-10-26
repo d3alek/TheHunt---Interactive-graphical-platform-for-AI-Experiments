@@ -41,12 +41,15 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 	public interface ShowNavigationListener {
 		public void onToShowNavigation();
 		public void onToHideNavigation();
+		public void issueLeaderboardRefresh();
 	}
 
 	ShowNavigationListener mOnPauseListener = new ShowNavigationListener() {
 		public void onToShowNavigation() {
 		}
 		public void onToHideNavigation() {
+		}
+		public void issueLeaderboardRefresh() {
 		}
 	};
 
@@ -76,8 +79,8 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 	private boolean mGraphicsInitialized = false;
 	private TextureManager tm;
 	private int releaseCountdown;
-	private float mScreenToWorldRatioWidth;
-	private float mScreenToWorldRatioHeight;
+	public static float mScreenToWorldRatioWidth;
+	public static float mScreenToWorldRatioHeight;
 	private MotionEvent prev;
 	private Camera mCamera;
 
@@ -86,8 +89,8 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 	private ShaderProgramManager sm;
 	private Tool mTool;
 
-	private static int mScreenWidthPx;
-	private static int mScreenHeightPx;
+	public static int mScreenWidthPx;
+	public static int mScreenHeightPx;
 	public static float[] bgColor = {
 		0.8f, 0.8f, 0.8f, 1.0f};
 
@@ -99,12 +102,11 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 
 	protected static final int YELLOW_TEXT_ENERGY = 60;
 	protected static final int RED_TEXT_ENERGY = 30;
+	private static final long LEADERBOARD_REFRESH_MS = 60*1000; // one minute
 	private boolean mScrolling = false;
 	private int mIgnoreNextTouch;
 	private MyApplication mContext;
-	private HUD mHUD;
-	private TheHuntContextMenu mContextMenu;
-	private float mScale;
+	public HUD mHUD;
 	private TheHuntMenu mMenu;
 	private int mReducePenaltyCounter;
 	private boolean mPaletteShown;
@@ -112,6 +114,7 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 	private long mTimeFirstTouch;
 	private PointF mFirstTouch;
 	private State mStateBeforePause;
+	private long next_score_refresh;
 	//	private GLText mGLText;
 	/**
 	 * The possible Prey type values (for example, returned from a {@link PreyChangeDialog}.
@@ -163,8 +166,8 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 			//		mTool = new Knife(mEnv, mD3GLES20);
 			mIgnoreNextTouch = -1;
 			mGraphicsInitialized = false;
-			mScale = 1;
 			next_game_tick = System.currentTimeMillis();
+			next_score_refresh = next_game_tick + LEADERBOARD_REFRESH_MS;
 		}
 	}
 
@@ -228,7 +231,8 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 	public void onSurfaceCreated(GL10 unused, EGLConfig config) {
 		GLES20.glClearColor(bgColor[0], bgColor[1], bgColor[2], bgColor[3]);
 		GLES20.glEnable(GLES20.GL_BLEND);
-		GLES20.glBlendFunc(GLES20.GL_ONE, GL10.GL_ONE_MINUS_SRC_ALPHA);
+		GLES20.glBlendFunc(GLES20.GL_ONE, GLES20.GL_ONE_MINUS_SRC_ALPHA);
+//		GLES20.glBlendFunc(GLES20.GL_ONE, GLES20.GL_ZERO);
 
 	}
 	/**
@@ -321,6 +325,10 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 			//			Log.v(TAG, "Obtained stateLock!");
 			int loops = 0;
 			mslf = System.currentTimeMillis();
+			if (mslf > next_score_refresh) {
+				mOnPauseListener.issueLeaderboardRefresh();
+				next_score_refresh = mslf + LEADERBOARD_REFRESH_MS;
+			}
 
 			while (next_game_tick < System.currentTimeMillis() && loops < MAX_FRAMESKIP) {
 				updateWorld();
@@ -382,7 +390,13 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 		mCamera.update();
 
 		mD3GLES20.updateAll();
+		if (mCaughtCounter < mServerScore) {
+			mCaughtCounter = mServerScore;
+		}
 		mHUD.setScore(mCaughtCounter);
+		mHUD.setMyRank(mRank);
+		mHUD.setNextPlayer(mNextRank, mNextScore);
+		mHUD.setPrevPlayer(mPrevRank, mPrevScore);
 		//TODO not using penalty any more
 //		mHUD.setPenalty(mEnv.getPlayerPenalty());
 		mReducePenaltyCounter++;
@@ -442,6 +456,10 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 		//		if (prev != null && prev.getX() == event.getX() 
 		//			&& prev.getY() == event.getY() && prev.getAction() == event.getAction()) return;
 
+		if (mCamera == null) {
+			Log.i(TAG, "Touch received before camera init");
+			return;
+		}
 		PointF location = mCamera.fromScreenToWorld(event.getX(), event.getY());
 
 		if (mState == State.MENU) {
@@ -449,14 +467,20 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 				Log.e(TAG, "Menu is null on handle Touch");
 				return;
 			}
-			if (!mMenu.handleTouch(event.getX(), event.getY(), event.getAction())) {
-				mState = State.PLAY;
-				mMenu.hide();
-				mOnPauseListener.onToHideNavigation();
-				next_game_tick = System.currentTimeMillis();
-				mIgnoreNextTouch = MotionEvent.ACTION_UP;
-				//				return;
-			}
+			mState = State.PLAY;
+			mMenu.hide();
+			mOnPauseListener.onToHideNavigation();
+			next_game_tick = System.currentTimeMillis();
+			mIgnoreNextTouch = MotionEvent.ACTION_UP;
+//				next_game_tick = System.currentTimeMillis();
+//			if (!mMenu.handleTouch(event.getX(), event.getY(), event.getAction())) {
+//				mState = State.PLAY;
+//				mMenu.hide();
+//				mOnPauseListener.onToHideNavigation();
+//				next_game_tick = System.currentTimeMillis();
+//				mIgnoreNextTouch = MotionEvent.ACTION_UP;
+//				//				return;
+//			}
 
 		}
 
@@ -527,13 +551,13 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 							if (active == "Net" && mTool.getClass() != CatchNet.class) {
 								Log.v(TAG, "Changing tool to Net");
 								mTool.stop(location);
-								mD3GLES20.putText(new ToolText("Net!", location.x, location.y));
+								mD3GLES20.putText(new ToolText("Net!", location.x, location.y, mCamera.getUnscaledProjMatrix()));
 								mTool = new CatchNet(mEnv, mD3GLES20);
 
 							}
 							else if (active == "Knife" && mTool.getClass() != Knife.class) {
 								mTool.stop(location);
-								mD3GLES20.putText(new ToolText("Knife!", location.x, location.y));
+								mD3GLES20.putText(new ToolText("Knife!", location.x, location.y, mCamera.getUnscaledProjMatrix()));
 								Log.v(TAG, "Changing tool to Knife");
 								mTool = new Knife(mEnv, mD3GLES20);
 							}
@@ -676,6 +700,13 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 	private boolean mPreyChange;
 	private PreyType mPreyChangeTo;
 	//	private boolean mLongPress;
+	private String mRank;
+	private String mDisplayScore;
+	private int mServerScore;
+	private String mPrevRank;
+	private String mPrevScore;
+	private String mNextRank;
+	private String mNextScore;
 
 
 	public void changePrey(int which) {
@@ -708,4 +739,35 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 			//			}
 		}
 	}
+
+	public void setMyStats(String displayRank, String displayScore, int score) {
+		mRank = displayRank;
+		mDisplayScore = displayScore;
+		mServerScore = score;
+	}
+
+	public void setPrevPlayer(String displayRank, String displayScore) {
+		mPrevRank = displayRank;
+		mPrevScore = displayScore;
+	}
+
+	public void setNextPlayer(String displayRank, String displayScore) {
+		mNextRank = displayRank;
+		mNextScore = displayScore;
+	}
+
+	public void pauseWorld() {
+		mState = State.MENU;
+//		mOnPauseListener.onToShowNavigation();
+		if (mMenu != null) {
+			mMenu.show();
+		}
+		if (mHUD != null) {
+			mHUD.hidePalette();
+		}
+		if (mTool != null) {
+			mTool.stop(mFirstTouch);
+		}
+	}
+	
 }

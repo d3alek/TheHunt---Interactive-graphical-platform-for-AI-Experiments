@@ -1,12 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical" >
+    android:layout_height="match_parent">
     
     <com.primalpond.hunt.D3GLSurfaceView
         android:id="@+id/glSurfaceView"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent" />
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+    
+    <LinearLayout
+	    android:id="@+id/actionBarPart"
+	    android:layout_width="wrap_content"
+	    android:layout_height="@dimen/abc_action_bar_default_height"
+	    android:background="@color/actionbarPartBg"
+	    android:gravity="center_vertical"
+	    android:layout_alignParentTop="true"
+	    android:layout_alignParentLeft="true"
+	    android:orientation="horizontal"
+	   	android:paddingLeft="14dp">
+	    <ImageView 
+	        android:layout_width="wrap_content"
+	        android:layout_height="match_parent"
+	        android:adjustViewBounds="true"
+	        android:src="@drawable/ic_launcher_thehunt"
+	        android:contentDescription="Pause"
+	        android:layout_marginTop="2dp"
+	        android:layout_marginBottom="2dp"
+	        android:layout_marginRight="2dp"/>
+	    <TextView 
+	        android:text="@string/app_name"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:padding="2dp"
+	        android:layout_marginRight="14dp"
+	        android:textSize="@dimen/abc_action_bar_title_text_size"
+	        android:textColor="@android:color/white"/>
+	</LinearLayout>
 
-</LinearLayout>
+</RelativeLayout>

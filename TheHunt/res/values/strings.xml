@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
-    <string name="hello">Hello World!</string>
-    <string name="app_name">TheHunt</string>
+    <string name="app_name">Hunt</string>
     <string name="showTiles">Tiles</string>
 	<string name="showCurrents">Currents</string>
 	<string name="bodyBendDelay">BendsPerSecond</string>

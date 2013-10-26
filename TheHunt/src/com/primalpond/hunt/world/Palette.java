@@ -1,19 +1,23 @@
 package com.primalpond.hunt.world;
 
+import com.primalpond.hunt.MyApplication;
+import com.primalpond.hunt.world.logic.TheHuntRenderer;
 import com.primalpond.hunt.world.tools.CatchNet;
 import com.primalpond.hunt.world.tools.D3CatchNet;
 import com.primalpond.hunt.world.tools.Tool;
 
 import android.graphics.PointF;
+import d3kod.graphics.extra.D3Maths;
 import d3kod.graphics.sprite.D3Sprite;
 import d3kod.graphics.sprite.SpriteManager;
 import d3kod.graphics.sprite.shapes.D3Circle;
 
 public class Palette extends D3Sprite {
 
+	private static final float TOUCH_RADIUS_PX = MyApplication.TOUCH_RADIUS_PX;
 	private float[] mHudProjMatrix;
 	private float[] mHudViewMatrix;
-	private float mTouchRadius = 0.15f;
+	private float mTouchRadius;
 	private PaletteElement net, knife;
 	private PaletteElement mActiveElement;
 	private Camera mCamera;
@@ -23,6 +27,7 @@ public class Palette extends D3Sprite {
 
 	public Palette(PointF position, SpriteManager d3gles20, float[] hudProjMatrix, float[] hudViewMatrix, Camera camera) {
 		super(position, d3gles20);
+		mTouchRadius = TOUCH_RADIUS_PX*2/TheHuntRenderer.mScreenHeightPx;
 		mHudProjMatrix = hudProjMatrix;
 		mHudViewMatrix = hudViewMatrix;
 		net = new PaletteElement(position, mTouchRadius*2/3f, 0, "Net", d3gles20);
@@ -71,11 +76,6 @@ public class Palette extends D3Sprite {
 
 	public boolean handleTouch(PointF touch) {
 		if (mHidden) return false;
-		if (contains(touch)) {
-			net.setActive(false);
-			knife.setActive(false);
-			return true;
-		}
 		if (net.contains(touch)) {
 			net.setActive(true);
 			knife.setActive(false);
@@ -86,6 +86,11 @@ public class Palette extends D3Sprite {
 			knife.setActive(true);
 			net.setActive(false);
 			mActiveElement = knife;
+			return true;
+		}
+		if (contains(touch)) {
+			net.setActive(false);
+			knife.setActive(false);
 			return true;
 		}
 //		if (net.handleTouch(touch)) return true;

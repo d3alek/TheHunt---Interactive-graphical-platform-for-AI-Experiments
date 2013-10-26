@@ -44,4 +44,8 @@ public class GoToAndStayPlan extends MoveTowardsPlan {
 	protected boolean arrived(float headFromTarget) {
 		return headFromTarget <= DISTANCE_ENOUGH;
 	}
+
+	public boolean nearby(float headFromTarget) {
+		return headFromTarget <= DISTANCE_SMALL;
+	}
 }

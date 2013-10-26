@@ -1,22 +1,26 @@
 package com.primalpond.hunt;
 
-import com.google.android.gms.games.GamesClient;
-import com.google.example.games.basegameutils.BaseGameActivity;
-import com.primalpond.hunt.world.logic.TheHuntRenderer.ShowNavigationListener;
-
 import android.annotation.SuppressLint;
-import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.WindowManager;
 import android.widget.Toast;
+
+import com.google.android.gms.games.GamesClient;
+import com.google.android.gms.games.leaderboard.LeaderboardBuffer;
+import com.google.android.gms.games.leaderboard.LeaderboardScore;
+import com.google.android.gms.games.leaderboard.LeaderboardScoreBuffer;
+import com.google.android.gms.games.leaderboard.LeaderboardVariant;
+import com.google.android.gms.games.leaderboard.OnLeaderboardScoresLoadedListener;
+import com.google.example.games.basegameutils.BaseGameActivity;
+import com.primalpond.hunt.world.logic.TheHuntRenderer.ShowNavigationListener;
 
 
 /**
@@ -36,7 +40,7 @@ import android.widget.Toast;
  * @author Aleksandar Kodzhabashev (d3kod) 
  *
  */
-public class TheHunt extends BaseGameActivity implements PreyChangeDialog.PreyChangeDialogListener, ShowNavigationListener {
+public class TheHunt extends BaseGameActivity implements PreyChangeDialog.PreyChangeDialogListener, ShowNavigationListener, OnLeaderboardScoresLoadedListener {
 
 	private static final String TAG = "TheHunt";
 	private static final int REQUEST_LEADERBOARD = 3;
@@ -64,6 +68,14 @@ public class TheHunt extends BaseGameActivity implements PreyChangeDialog.PreyCh
 		mGLView = (D3GLSurfaceView)findViewById(R.id.glSurfaceView);
 		mGLView.mRenderer.setActivity(this);
 		LEADERBOARD_ID = getResources().getString(R.string.leaderboard_prey_caught);
+		
+		findViewById(R.id.actionBarPart).setOnClickListener(new OnClickListener() {
+			
+			public void onClick(View v) {
+				mGLView.mRenderer.pauseWorld();
+				onToShowNavigation();
+			}
+		});
 	}
 
 	@Override
@@ -162,6 +174,9 @@ public class TheHunt extends BaseGameActivity implements PreyChangeDialog.PreyCh
 	}
 
 	public void onToShowNavigation() {
+//		if (mGamesClient != null) {
+//			mGamesClient.loadPlayerCenteredScores(this, LEADERBOARD_ID, 2, LeaderboardVariant.COLLECTION_PUBLIC, 10);
+//		}
 		runOnUiThread(new Runnable() {
 
 			public void run() {
@@ -200,5 +215,62 @@ public class TheHunt extends BaseGameActivity implements PreyChangeDialog.PreyCh
 			mToShowScoreOnSuccess = false;
 		}
 		
+		issueLeaderboardRefresh();
+		
+//		mGamesClient.loadPlayerCenteredScores(this, LEADERBOARD_ID, 2, LeaderboardVariant.COLLECTION_PUBLIC, 10);
+		
+	}
+
+	public void onLeaderboardScoresLoaded(int statusCode,
+			LeaderboardBuffer leaderboard, LeaderboardScoreBuffer scores) {
+		boolean found = false;
+		if (statusCode == GamesClient.STATUS_OK && mGLView != null && mGLView.mRenderer != null) {
+			String mId = mGamesClient.getCurrentPlayerId();
+			Log.i(TAG, "onLeaderboardScoresLoaded: ");
+			for (int i = 0; i < scores.getCount(); ++i) {
+				LeaderboardScore score = scores.get(i);
+				LeaderboardScore fScore = score.freeze();
+				if (fScore.getScoreHolder().getPlayerId().equals(mId)) {
+					found = true;
+					Log.i(TAG, "Found me at position " + i);
+					mGLView.mRenderer.setMyStats(fScore.getDisplayRank(), fScore.getDisplayScore(), (int)fScore.getRawScore());
+					if (i > 0) {
+						Log.i(TAG, "Found prev ");
+						LeaderboardScore prevScore = scores.get(i-1).freeze();
+						mGLView.mRenderer.setPrevPlayer(prevScore.getDisplayRank(), prevScore.getDisplayScore());
+					}
+					else {
+						mGLView.mRenderer.setPrevPlayer("", "");
+					}
+					if (i < scores.getCount()-1) {
+						Log.i(TAG, "Found next ");
+						LeaderboardScore nextScore = scores.get(i+1).freeze();
+						mGLView.mRenderer.setNextPlayer(nextScore.getDisplayRank(), nextScore.getDisplayScore());
+					}
+					else {
+						mGLView.mRenderer.setNextPlayer("", "");
+					}
+					break;
+				}
+			}
+			if (!found) {
+				mGLView.mRenderer.setMyStats("", "", -1);
+			}
+		}
+		else {
+			Toast.makeText(this, "Error retrieving scores " + statusCode, Toast.LENGTH_SHORT).show();
+		}
+		leaderboard.close();
+		scores.close();
+
+	}
+
+	public void issueLeaderboardRefresh() {
+		if (isSignedIn() && mGamesClient != null) {
+			if (mGLView != null && mGLView.mRenderer != null) {
+				mGamesClient.submitScore(LEADERBOARD_ID, mGLView.mRenderer.mCaughtCounter);
+			}
+			mGamesClient.loadPlayerCenteredScores(this, LEADERBOARD_ID, 2, LeaderboardVariant.COLLECTION_PUBLIC, 10, true);
+		}
 	}
 }

@@ -68,7 +68,7 @@ public class Prey extends Agent {
 		}
 		move();
 		if (mGraphic == null) return;
-		if (mWorldModel.getLightLevel() == 0) {
+		if (mEnv.algaeCovers(this)) {
 			mHidden = true;
 			mGraphic.setHiddenColor();
 		}

@@ -1,5 +1,7 @@
 package com.primalpond.hunt.world;
 
+import com.primalpond.hunt.MyApplication;
+import com.primalpond.hunt.world.logic.TheHuntRenderer;
 import com.primalpond.hunt.world.tools.Tool;
 
 import android.graphics.PointF;
@@ -74,7 +76,7 @@ public class HUD {
 	private float[] mProjMatrix;
 //	private Object prevTouch;
 	private String activePaletteElement;
-	private DummySprite mPause;
+//	private DummySprite mPause;
 	private D3Image mPauseGraphic;
 	private float pausePosX;
 	private float pausePosY;
@@ -83,10 +85,12 @@ public class HUD {
 	private static final float NORMAL_TEXT_SIZE = 2.0f;
 	private static final float SCORE_VERTICAL_ADJ = 0.15f;
 	private static final String TAG = "HUD";
-	private static final float PAUSE_SIZE = 0.1f;
+	private static final float PAUSE_SIZE_DP = 48;
 	private static final float PAUSE_HORIZ_ADJ = 0.2f;
 	public static final long SHOW_PALETTE_DELAY = 100; //in ms
-	private static final float POINTS_EQUAL_DISTANCE_THRESH = 0.04f;
+	private static final float POINTS_EQUAL_DISTANCE_THRESH = 0.05f;
+	private static final float OTHER_SCORES_ADJ = 0.05f;
+	private static final float SCORES_OFFSET_X = 0.1f;
 	
 	long mTimeFirstTouch;
 	boolean mPaletteShown;
@@ -102,6 +106,10 @@ public class HUD {
 //	
 //	private PointF mPreyEnergyPos;
 	private boolean mMovedAway;
+private HUDText mBetterScore;
+private HUDText mWorseScore;
+private HUDText mBetterScoreText;
+private HUDText mWorseScoreText;
 	
 	
 	public HUD(Camera camera) {
@@ -115,10 +123,20 @@ public class HUD {
 		mPaletteShown = false;
 		
 		PointF mScoreTextPos = new PointF(scoreTextPosX, scoreTextPosY);
+		PointF mBetterScoreTextPos = new PointF(scoreTextPosX, scoreTextPosY+OTHER_SCORES_ADJ);
+		PointF mWorseScoreTextPos = new PointF(scoreTextPosX, scoreTextPosY-OTHER_SCORES_ADJ);
 		
-//		mScoreText = new HUDText("Score: ", NORMAL_TEXT_SIZE, mScoreTextPos, true);
-		mScore = new HUDText("undef", NORMAL_TEXT_SIZE, mScoreTextPos, true);
-		mPenalty = new HUDText("undef", NORMAL_TEXT_SIZE, false);
+		mScoreText = new HUDText("", NORMAL_TEXT_SIZE, mScoreTextPos, true);
+		mBetterScoreText = new HUDText("", NORMAL_TEXT_SIZE, mBetterScoreTextPos, true);
+		mBetterScore = new HUDText("", NORMAL_TEXT_SIZE, false);
+		mBetterScoreText.setAlpha(0.3f);
+		mBetterScore.setAlpha(0.3f);
+		mWorseScoreText = new HUDText("", NORMAL_TEXT_SIZE, mWorseScoreTextPos, true);
+		mWorseScoreText.setAlpha(0.3f);
+		mWorseScore = new HUDText("", NORMAL_TEXT_SIZE, false);
+		mWorseScore.setAlpha(0.3f);
+		mScore = new HUDText("", NORMAL_TEXT_SIZE, mScoreTextPos, false);
+		mPenalty = new HUDText("", NORMAL_TEXT_SIZE, false);
 		mCamera = camera;
 		
 //		float caughtTextPosX = -camera.getWidth()/2 + posXAdj;
@@ -142,24 +160,32 @@ public class HUD {
 		mProjMatrix = mCamera.getUnscaledProjMatrix();
 		mSpriteManager = spriteManager;
 		
-//		spriteManager.putText(mScoreText);
+		spriteManager.putText(mScoreText);
+		mScore.setPosition(mScoreText.getX() + SCORES_OFFSET_X, 
+				mScoreText.getY() - mScoreText.getHeight(spriteManager.getTextManager())/2, 0);
+		spriteManager.putText(mScore);
+		spriteManager.putText(mBetterScoreText);
+		mBetterScore.setPosition(mScore.getX(), mScore.getY()+OTHER_SCORES_ADJ, 0);
+		spriteManager.putText(mBetterScore);
+		spriteManager.putText(mWorseScoreText);
+		mWorseScore.setPosition(mScore.getX(), mScore.getY()-OTHER_SCORES_ADJ, 0);
+		spriteManager.putText(mWorseScore);
 //		mScore.setPosition(mScoreText.getX() + mScoreText.getLength(spriteManager.getTextManager())/2, 
 //				mScoreText.getY() - mScoreText.getHeight(spriteManager.getTextManager())/2, 0);
-		spriteManager.putText(mScore);
 		
 //		mPenalty.setPosition(mScore.getX()+0.05f, mScore.getY(), 0);
 //		mPenalty.setColor(1, 0, 0);
 //		spriteManager.putText(mPenalty);
-		
-		mPauseGraphic = new HUDImage(spriteManager.getTextureManager().getTextureInfo(Texture.BTN_PAUSE),
-				PAUSE_SIZE, spriteManager.getShaderManager());
+		float pauseSize = D3Maths.convertDpToPixel(PAUSE_SIZE_DP, MyApplication.APPLICATION)*2/TheHuntRenderer.mScreenHeightPx;
+//		mPauseGraphic = new HUDImage(spriteManager.getTextureManager().getTextureInfo(Texture.BTN_PAUSE),
+//				pauseSize, spriteManager.getShaderManager());
 //		mPauseGraphic.noFade();
 //		mPauseGraphic.setColor(new float[]{0.0f, 0.0f, 0.0f, 1.0f});
 //		mPauseGraphic.setInverted(false);
 //		mPauseGraphic = new D3Quad(PAUSE_SIZE, PAUSE_SIZE);
-		mPause = new DummySprite(spriteManager, mPauseGraphic);
-		mPause.setPosition(new PointF(pausePosX, pausePosY));
-		mPause.initGraphic();
+//		mPause = new DummySprite(spriteManager, mPauseGraphic);
+//		mPause.setPosition(new PointF(pausePosX, pausePosY));
+//		mPause.initGraphic();
 //		mPause.setPosition(new PointF(0, 0));
 //		mPause.getGraphic().setPosition(0, 0);
 //		mPause.getGraphic().noFade();
@@ -230,11 +256,11 @@ public class HUD {
 		PointF screenTouch = mCamera.fromScreenToWorld(screenX, screenY, mViewMatrix, mProjMatrix);
 		if (action == MotionEvent.ACTION_DOWN || action == MotionEvent.ACTION_MOVE) {
 			if (mTimeFirstTouch == 0) {
-				if (mPause.contains(screenTouch)) {
-					Log.v(TAG, "Pausing");
-					mPaused = true;
-					return true;
-				}
+//				if (mPause.contains(screenTouch)) {
+//					Log.v(TAG, "Pausing");
+//					mPaused = true;
+//					return true;
+//				}
 	//			Log.v(TAG, "Showing palette");
 	//			showPalette(worldTouch, activeToolClass);
 	//			prevTouch = worldTouch;
@@ -296,6 +322,46 @@ public class HUD {
 		}
 		else {
 			mPenalty.setText("-" + playerPenalty);
+		}
+	}
+	
+	public void setMyRank(String displayRank) {
+		if (displayRank == null) {
+			displayRank = "";
+		}
+		if (!mScoreText.getText().equals(displayRank)) {
+			mScoreText.setText(displayRank);
+		}
+	}
+
+	public void setPrevPlayer(String displayRank, String displayScore) {
+		if (displayRank == null) {
+			displayRank = "";
+		}
+		if (displayScore == null) {
+			displayScore = "";
+		}
+		if (!mBetterScoreText.getText().equals(displayRank)) {
+			mBetterScoreText.setText(displayRank);
+		}
+		if (!mBetterScore.getText().equals(displayScore)) {
+			mBetterScore.setText(displayScore);
+		}
+
+	}
+
+	public void setNextPlayer(String displayRank, String displayScore) {
+		if (displayRank == null) {
+			displayRank = "";
+		}
+		if (displayScore == null) {
+			displayScore = "";
+		}
+		if (!mWorseScoreText.getText().equals(displayRank)) {
+			mWorseScoreText.setText(displayRank);
+		}
+		if (!mWorseScore.getText().equals(displayScore)) {
+			mWorseScore.setText(displayScore);
 		}
 	}
 

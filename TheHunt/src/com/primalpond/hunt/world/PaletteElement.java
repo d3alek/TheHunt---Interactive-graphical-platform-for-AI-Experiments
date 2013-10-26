@@ -29,14 +29,20 @@ public class PaletteElement extends D3Sprite {
 
 	private static final float[] bgInactiveColor = TheHuntRenderer.bgColor;
 
+	private static final float ANGLE_1 = 145;
+
+	private static final float ANGLE_2 = -145;
+
+	private static final float CoNTAINS_RAD_ADJ = 1.5f;
+
 //	private static final float[] textActiveColor = {1.0f, 1.0f, 1.0f, 1.0f};
 
 //	private static float mWidth = 0.1f;
 //	private static float mHeight = 0.06f;
-	private static float mWidth = 0.15f;
-	private static float mHeight = 0.15f;
 	private static double mAngleStart = Math.toRadians(0);
 	private static double numberAngleTurn = Math.toRadians(45);
+
+	private static float mPaletteRadius;
 	private String mText;
 	private PointF mRelativePos;
 //	private D3Image mTextGraphic;
@@ -51,6 +57,8 @@ public class PaletteElement extends D3Sprite {
 
 	private boolean mPermanentlyActive;
 
+	private float mContainsRadius;
+
 
 	public PaletteElement(PointF palettePosition, float paletteRadius, int numberInPalette, String text, SpriteManager d3gles20) {
 		super(calcPosition(palettePosition, paletteRadius, numberInPalette), d3gles20);
@@ -59,8 +67,8 @@ public class PaletteElement extends D3Sprite {
 		mPalettePosition = palettePosition;
 		mDistFromPaletteCenter = paletteRadius*2f;
 		switch(numberInPalette) {
-		case 0: mAngle = 135; break;
-		case 1: mAngle = -135; break;
+		case 0: mAngle = ANGLE_1; break;
+		case 1: mAngle = ANGLE_2; break;
 		}
 	}
 
@@ -68,9 +76,10 @@ public class PaletteElement extends D3Sprite {
 	private static PointF calcPosition(PointF palettePosition, float paletteRadius,
 			int numberInPalette) {
 		PointF pos = new PointF();
+		mPaletteRadius = paletteRadius;
 		//TODO: fix once you have labels
-		pos.x = palettePosition.x + paletteRadius * (float)Math.cos(-mAngleStart + numberAngleTurn*numberInPalette) + mWidth/4;
-		pos.y = palettePosition.y - paletteRadius * (float)Math.sin(-mAngleStart + numberAngleTurn*numberInPalette) + mHeight/4;
+		pos.x = palettePosition.x + paletteRadius * (float)Math.cos(-mAngleStart + numberAngleTurn*numberInPalette) + mPaletteRadius/4;
+		pos.y = palettePosition.y - paletteRadius * (float)Math.sin(-mAngleStart + numberAngleTurn*numberInPalette) + mPaletteRadius/4;
 		return pos;
 	}
 
@@ -89,7 +98,8 @@ public class PaletteElement extends D3Sprite {
 			textureInfo = null; //TODO: load ??? graphic instead
 			Log.e(TAG, "Unknown icon for name " + mText);
 		}
-		mGraphic = new D3Image(textureInfo, mWidth, getSpriteManager().getShaderManager());
+		mGraphic = new D3Image(textureInfo, mPaletteRadius, getSpriteManager().getShaderManager());
+		mContainsRadius = mPaletteRadius*CoNTAINS_RAD_ADJ;
 		initGraphic(mGraphic);
 		mGraphic.setColor(defaultOpacity);
 //		mTextGraphic = new PaletteText(mText);
@@ -149,7 +159,7 @@ public class PaletteElement extends D3Sprite {
 	
 	@Override
 	public boolean contains(PointF point) {
-		return D3Maths.rectContains(getX(), getY(), mWidth*mGraphic.getScale(), mHeight*mGraphic.getScale(), point.x, point.y);
+		return D3Maths.rectContains(getX(), getY(), mContainsRadius*mGraphic.getScale(), mContainsRadius*mGraphic.getScale(), point.x, point.y);
 	}
 
 	public String getText() {

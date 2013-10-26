@@ -20,15 +20,19 @@ public class MyApplication extends Application {
 	
     private static final String DB_FILENAME = "state.db4o";
 	private static final String TAG = "MyApplication";
+	public static float TOUCH_RADIUS_PX = 0;
     ObjectContainer db;
 	private String mRunningRenderer;
 	public Object stateLock = new Object();
+	public static Application APPLICATION;
     
 	@Override
     public void onCreate() {
         super.onCreate();
+        APPLICATION = this;
 //		deleteDB();
 		createDB();
+		TOUCH_RADIUS_PX = getResources().getDimensionPixelSize(R.dimen.touch_radius);
 		Crashlytics.start(this);
     }
 	synchronized private void createDB() {

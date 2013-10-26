@@ -36,6 +36,7 @@ public class NAlgae extends FloatingObject implements Eatable {
 	public void update() {
 		if (Math.random() < Environment.GLOBAL.getAlgaeGrowthChance()) {
 			grow(1);
+			Environment.GLOBAL.calculateAlgaeGrowthChance();
 //			Log.v(TAG, "Growing algae due to growth chance! ");
 		}
 		super.update();

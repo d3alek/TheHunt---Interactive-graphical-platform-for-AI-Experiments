@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.Random;
 
 import com.primalpond.hunt.agent.Agent;
+import com.primalpond.hunt.agent.prey.Prey;
 import com.primalpond.hunt.world.environment.FloatingObject.Type;
 import com.primalpond.hunt.world.events.EatableEvent;
 import com.primalpond.hunt.world.events.Event;
@@ -226,7 +227,7 @@ public class Environment {
 		return mD3GLES20;
 	}
 	
-	private void calculateAlgaeGrowthChance() {
+	public void calculateAlgaeGrowthChance() {
 		int algaeNum = 0;
 		int biomass = 0;
 		double algaeGrowthRate = 0;
@@ -242,7 +243,7 @@ public class Environment {
 		}
 		algaeGrowthRate = m * biomass / algaeNum;
 		algaeGrowthChance = algaeGrowthRate / algaeNum;
-		Log.i(TAG, "AlgaeGrowthChance is " + algaeGrowthChance); 
+//		Log.i(TAG, "AlgaeGrowthChance is " + algaeGrowthChance); 
 	}
 	
 	public String getStateString() {
@@ -295,6 +296,15 @@ public class Environment {
 			fo.setToRemove();
 		}
 		seedAlgae();
+	}
+
+	public boolean algaeCovers(Prey prey) {
+		for (FloatingObject fo: data.getFloatingObjects()) {
+			if (fo.contains(prey.getPosition()) && fo.getRadius() > prey.getRadius()) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 }
