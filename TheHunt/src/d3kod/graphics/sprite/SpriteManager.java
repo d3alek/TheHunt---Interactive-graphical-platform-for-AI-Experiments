@@ -9,6 +9,7 @@ import com.primalpond.hunt.world.environment.FloatingObject;
 import com.primalpond.hunt.world.tools.D3CatchNetPath;
 
 import android.content.Context;
+import android.content.SyncResult;
 import android.graphics.PointF;
 import android.opengl.Matrix;
 import android.util.Log;
@@ -36,7 +37,7 @@ public class SpriteManager {
 	
 	ArrayList<Integer> toRemove = new ArrayList<Integer>();
 
-	private boolean removeSpriteLater;
+//	private boolean removeSpriteLater;
 
 	private GLText mGLText;
 
@@ -48,7 +49,7 @@ public class SpriteManager {
 		mTexts = new ArrayList<D3FadingText>();
 		spritesNum = 0;
 		sm = shaderManager;
-		removeSpriteLater = false;
+//		removeSpriteLater = false;
 		this.tm = tm;
 	}
 	
@@ -89,13 +90,15 @@ public class SpriteManager {
 			return;
 		}
 		toRemove.clear();
-		removeSpriteLater = true;
+//		removeSpriteLater = true;
+		synchronized (sprites) {
 		for (D3Sprite sprite: sprites.values()) {
 			sprite.draw(mVMatrix, mProjMatrix, interpolation);
 		}
-		removeSpriteLater = false;
+//		removeSpriteLater = false;
 		for (Integer key: toRemove) {
 			sprites.remove(key);
+		}
 		}
 		
 		D3FadingShape shape;
@@ -152,10 +155,9 @@ public class SpriteManager {
 			Log.w(TAG, "Shapes are null in removeShape!");
 			return;
 		}
-		if (removeSpriteLater) {
-			toRemove.add(key);
+		synchronized (sprites) {
+			sprites.remove(key);
 		}
-		else sprites.remove(key);
 	}
 	
 	public boolean contains(int key, PointF point) {
@@ -227,7 +229,8 @@ public class SpriteManager {
 	public GLText getTextManager() {
 		return mGLText;
 	}
-
+	
+	// TODO used only once in catchnet, remove sprite instead
 	public void removeShape(D3Shape searchShape) {
 		D3Sprite sprite;
 		boolean found = false;

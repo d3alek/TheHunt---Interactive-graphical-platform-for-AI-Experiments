@@ -1,5 +1,7 @@
 package com.primalpond.hunt.world.environment;
 
+import java.util.ArrayList;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -26,6 +28,7 @@ public abstract class FloatingObject extends D3Sprite implements JSONable {
 	Type mType;
 
 	private boolean mRemove;
+	private ArrayList<Tile> mTiles;
 
 	public FloatingObject(float x, float y, Type type, SpriteManager d3gles20) {
 		super(new PointF(x, y), d3gles20);
@@ -61,6 +64,10 @@ public abstract class FloatingObject extends D3Sprite implements JSONable {
 		jsonObject.put(KEY_VY, getVY());
 		jsonObject.put(KEY_TYPE, mType);
 		return jsonObject;
+	}
+
+	public void setTiles(ArrayList<Tile> tiles) {
+		mTiles = tiles;
 	}
 
 //	public float getRadius() {

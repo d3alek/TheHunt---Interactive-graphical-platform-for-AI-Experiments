@@ -3,6 +3,7 @@ package com.primalpond.hunt.world;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import com.crashlytics.android.Crashlytics;
 import com.primalpond.hunt.world.environment.Dir;
 import com.primalpond.hunt.world.logic.TheHuntRenderer;
 
@@ -233,6 +234,10 @@ public class Camera extends D3Sprite {
 	private void calcViewMatrix() {
 		mViewLeft = -mWidthScaled/2 + mCenterX;
 		mViewBottom = -mHeightScaled/2 + mCenterY;
+		if (mViewLeft == mViewBottom) {
+			Log.e(TAG, "calcViewMatrix left and right are equal " + mViewLeft + " width: " + mWidthScaled);
+			Crashlytics.log("calcViewMatrix left and right are equal " + mViewLeft + " width: " + mWidthScaled);
+		}
 		Matrix.orthoM(mVMatrix, 0, 
 				mViewLeft,
 				mViewLeft+mWidthScaled, 
@@ -244,6 +249,10 @@ public class Camera extends D3Sprite {
 		float[] viewMatrix = new float[16];
 		mViewLeft = -mWidthScaled/2;
 		mViewBottom = -mHeightScaled/2;
+		if (mViewLeft == mViewBottom) {
+			Log.e(TAG, "toCenteredViewMatrix  left and right are equal " + mViewLeft + " width: " + mWidthScaled);
+			Crashlytics.log("toCenteredViewMatrix  left and right are equal " + mViewLeft + " width: " + mWidthScaled);
+		}
 		Matrix.orthoM(viewMatrix, 0, 
 				mViewLeft,
 				mViewLeft+mWidthScaled, 
