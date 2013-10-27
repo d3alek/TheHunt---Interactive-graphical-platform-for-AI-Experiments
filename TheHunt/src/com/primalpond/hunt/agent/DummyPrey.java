@@ -1,5 +1,8 @@
 package com.primalpond.hunt.agent;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import com.primalpond.hunt.world.environment.Environment;
 
 import android.graphics.PointF;
@@ -43,5 +46,9 @@ public class DummyPrey extends Agent {
 	@Override
 	public boolean isHidden() {
 		return false;
+	}
+
+	public JSONObject toJSON() throws JSONException {
+		return null;
 	}
 }

@@ -101,6 +101,8 @@ public class EnvironmentData {
 
 	public void addFloatingObject(FloatingObject floatingObject) {
 		mFloatingObjectsToAdd.add(floatingObject);
+		Tile at = getTileFromPos(floatingObject.getPosition());
+		Log.i(TAG, "Added floating object at tile " + at.getC() + " " + at.getR());
 	}
 	
 	public ArrayList<FloatingObject> getFloatingObjects() {

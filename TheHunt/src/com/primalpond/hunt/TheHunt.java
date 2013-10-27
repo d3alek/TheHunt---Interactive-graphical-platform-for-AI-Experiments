@@ -273,4 +273,10 @@ public class TheHunt extends BaseGameActivity implements PreyChangeDialog.PreyCh
 			mGamesClient.loadPlayerCenteredScores(this, LEADERBOARD_ID, 2, LeaderboardVariant.COLLECTION_PUBLIC, 10, true);
 		}
 	}
+	
+	@Override
+	protected void onSaveInstanceState(Bundle outState) {
+		Log.e(TAG, "OnSaveInstanceState called!");
+		super.onSaveInstanceState(outState);
+	}
 }

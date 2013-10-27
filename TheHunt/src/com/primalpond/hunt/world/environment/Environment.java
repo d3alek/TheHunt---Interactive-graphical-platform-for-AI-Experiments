@@ -1,8 +1,15 @@
 package com.primalpond.hunt.world.environment;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Random;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import android.graphics.PointF;
+import android.util.FloatMath;
+import android.util.Log;
 
 import com.primalpond.hunt.agent.Agent;
 import com.primalpond.hunt.agent.prey.Prey;
@@ -14,9 +21,6 @@ import com.primalpond.hunt.world.events.EventLight;
 import com.primalpond.hunt.world.events.EventNoise;
 import com.primalpond.hunt.world.logic.TheHuntRenderer;
 
-import android.graphics.PointF;
-import android.util.FloatMath;
-import android.util.Log;
 import d3kod.graphics.extra.D3Color;
 import d3kod.graphics.extra.D3Maths;
 import d3kod.graphics.sprite.SpriteManager;
@@ -45,7 +49,7 @@ public class Environment {
 	private static final int ALGAE_NEGATIVE_SCORE = 2;
 	private static final int FOOD_NEGATIVE_SCORE = 1;
 	
-	public Environment(SpriteManager d3gles20) {
+	public Environment(JSONArray savedEnvSprites, SpriteManager d3gles20) {
 		GLOBAL = this;
 		mPlayerPenalty = 0;
 		mD3GLES20 = d3gles20;
@@ -53,7 +57,34 @@ public class Environment {
 		data.setGraphics(mD3GLES20);
 		mNoiseEvents = new ArrayList<EventNoise>();
 		mRandom = new Random();
-		seedAlgae();
+		if (savedEnvSprites == null) {
+			seedAlgae();
+		}
+		else {
+			Log.i(TAG, "savedEnvSprites len is " + savedEnvSprites.length());
+			for (int i = 0; i < savedEnvSprites.length(); ++i) {
+				try {
+					JSONObject jsonObject = savedEnvSprites.getJSONObject(i);
+					Type type = Type.valueOf((String)jsonObject.get(FloatingObject.KEY_TYPE));
+					FloatingObject fo;
+					switch (type) {
+					case ALGAE:
+						fo = new NAlgae(jsonObject, this, d3gles20);
+						data.addFloatingObject(fo);
+						break;
+					case FOOD_GM:
+						fo = new FoodGM(jsonObject, d3gles20);
+						data.addFloatingObject(fo);
+						break;
+					default:
+						Log.i(TAG, "Unrecognized type " + type);
+					}
+				} catch (JSONException e) {
+					e.printStackTrace();
+				}
+				
+			}
+		}
 	}
 	
 	public void addNewAlgae(int n, PointF pos, float dirAngle) {
@@ -305,6 +336,18 @@ public class Environment {
 			}
 		}
 		return false;
+	}
+
+	public JSONArray getJSONSprites() throws JSONException {
+//		ArrayList<JSONObject> jsonSprites = new ArrayList<JSONObject>();
+		JSONArray jsonSprites = new JSONArray();
+		for (FloatingObject fo: data.getFloatingObjects()) {
+			jsonSprites.put(fo.toJSON());
+		}
+		for (FloatingObject fo: data.getFloatingObjectsToAdd()) {
+			jsonSprites.put(fo.toJSON());
+		}
+		return jsonSprites;
 	}
 
 }

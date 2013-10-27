@@ -1,5 +1,8 @@
 package com.primalpond.hunt.agent;
 
+import org.json.JSONObject;
+
+import com.primalpond.hunt.JSONable;
 import com.primalpond.hunt.world.environment.Environment;
 
 import android.graphics.PointF;
@@ -8,7 +11,7 @@ import d3kod.graphics.sprite.D3Sprite;
 import d3kod.graphics.sprite.SpriteManager;
 import d3kod.graphics.texture.TextureManager;
 
-public abstract class Agent extends D3Sprite {
+public abstract class Agent extends D3Sprite implements JSONable {
 
 	transient protected TextureManager tm;
 	
@@ -55,4 +58,5 @@ public abstract class Agent extends D3Sprite {
 	} 
 	
 	public abstract boolean isHidden();
+
 }

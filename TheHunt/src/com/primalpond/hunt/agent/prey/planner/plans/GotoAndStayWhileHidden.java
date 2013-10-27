@@ -10,15 +10,22 @@ import d3kod.graphics.extra.D3Maths;
 public class GotoAndStayWhileHidden extends GoToAndStayPlan {
 
 	private static final String TAG = "GotoAndStayWhileHidden";
+	private Event mInitialTarget;
 
 	public GotoAndStayWhileHidden(float hX, float hY, float bX, float bY,
 			Event target) {
 		super(hX, hY, bX, bY, target);
+		mInitialTarget = target;
 	}
 	
 	@Override
 	public void update(WorldModel mWorldModel) {
-		setTarget(mWorldModel.getNearestAlgaeX(), mWorldModel.getNearestAlgaeY());
+		if (mWorldModel.getNearestAlgae() != null) {
+			setTarget(mWorldModel.getNearestAlgaeX(), mWorldModel.getNearestAlgaeY());
+		}
+		else {
+			setTarget(mInitialTarget.getX(), mInitialTarget.getY());
+		}
 		super.update(mWorldModel);
 		float hX = mWorldModel.getHeadX(), hY = mWorldModel.getHeadY();
 		float headFromTarget = D3Maths.distance(hX, hY, getTX(), getTY());

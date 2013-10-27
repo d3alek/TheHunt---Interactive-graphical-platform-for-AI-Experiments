@@ -35,9 +35,8 @@ public class HeadGraphic extends BodyPartGraphic {
 
 	protected final float eatingMotionLengthSeconds = 0.5f;
 	protected final int eatingMotionSteps = 8;
-	protected int eatingStep;
 	protected final int eatingMotionStepTicks = (int)(eatingMotionLengthSeconds*TheHuntRenderer.TICKS_PER_SECOND/eatingMotionSteps);
-	protected int eatingMotionStepCounter;
+
 
 	protected final float[][] headPart4StartEatingMotion = 
 		{ 	
@@ -61,8 +60,11 @@ public class HeadGraphic extends BodyPartGraphic {
 			{	0.05f, 	0.5f, 	0.0f },
 			{	0f, 	0.5f, 	0.0f }
 		};
-
-	private boolean mMouthOpen;
+	
+	
+	public int eatingStep;
+	public int eatingMotionStepCounter;
+	public boolean mMouthOpen;
 	//	private float[] mVerticesData;
 	private float[] eyeVertexData;
 
@@ -199,7 +201,6 @@ public class HeadGraphic extends BodyPartGraphic {
 		eyeVertexBuffer = Utilities.newFloatBuffer(eyeVertexData);
 		mVerticesData = calcVerticesData();
 		mVertexBuffer = Utilities.newFloatBuffer(mVerticesData);
-
 	}
 
 	public void putEyes() {
@@ -209,6 +210,19 @@ public class HeadGraphic extends BodyPartGraphic {
 
 	public float getSize() {
 		return mSize;
+	}
+
+	public void init(int savedEatingStep, int savedEatingMotionStep, boolean savedMouthOpen) {
+		eatingStep = savedEatingStep;
+		eatingMotionStepCounter = savedEatingMotionStep;
+		mMouthOpen = savedMouthOpen;
+		if (mMouthOpen) {
+			openMouth();
+		}
+		else {
+			closeMouth();
+		}
+
 	}
 
 }

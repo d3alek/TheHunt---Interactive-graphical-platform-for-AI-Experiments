@@ -1,10 +1,15 @@
 package com.primalpond.hunt.world.logic;
 
+import java.util.ArrayList;
+
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import android.content.Context;
-import android.content.SyncResult;
 import android.graphics.PointF;
 import android.hardware.SensorEvent;
 import android.opengl.GLES20;
@@ -158,9 +163,9 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 	}
 
 	private void prepareState() {
-		tm = new TextureManager(mContext);
-		sm = new ShaderProgramManager();
 		synchronized (mContext.stateLock) {
+			tm = new TextureManager(mContext);
+			sm = new ShaderProgramManager();
 			loadSavedState(sm);
 			mTool = new CatchNet(mEnv, mD3GLES20);
 			//		mTool = new Knife(mEnv, mD3GLES20);
@@ -173,47 +178,16 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 
 	private SpriteManager loadSavedState(ShaderProgramManager shaderManager) {
 		Log.v(TAG, "Loading saved state");
-		SaveState state = mContext.getStateFromDB(TAG);
-		//		SaveState state = null;
+//		SaveState state = mContext.getStateFromDB(TAG);
+		
+		JSONArray savedEnvSprites = MyApplication.APPLICATION.getSavedEnvSprites();
+		JSONObject savedPrey = MyApplication.APPLICATION.getSavedPrey();
+		mCaughtCounter = MyApplication.APPLICATION.getSavedCaught();
 
-		if (state == null) {
-			Log.v(TAG, "SaveState is empty, creating new SaveState");
-			mD3GLES20 = new SpriteManager(shaderManager, tm, mContext);
-			mEnv = new Environment(mD3GLES20);
-			mPrey = new Prey(mEnv, mD3GLES20);
-			//			mPrey = new DummyPrey(mEnv, mD3GLES20);
-			//			saveState();
-
-		}
-		else {
-			//			if (state.getSameAsLast()) {
-			//				Log.i(TAG, "SavedState is same as last, ignoring loadSavedState call");
-			//				return mD3GLES20;
-			//			}
-			//			mD3GLES20 = state.getSpriteManager();
-			//			mEnv = state.getEnv();
-			//			mPrey = state.getAgent();
-			//			ArrayList<D3Sprite> sprites = state.getSprites();
-			//			Enum4
-			mD3GLES20 = new SpriteManager(shaderManager, tm, mContext);
-			mCaughtCounter = state.getCaught();
-			mEnv = state.getEnv(); 
-			//			mPrey = new DummyPrey(mEnv, mD3GLES20);
-			mPrey = mEnv.getPrey();
-			if (mPrey == null) {
-				Crashlytics.log("mPrey is null but state loaded. Create new Prey...");
-				Log.i(TAG, "mPrey is null but state loaded. Create new Prey...");
-				mPrey = new Prey(mEnv, mD3GLES20);
-			}
-			//			mPrey.setTextureManager(tm);
-			//			mEnv.initSprites(sprites);
-			//			mPrey = mEnv.getPrey();
-			Log.v(TAG, "SaveState loaded!");
-		}
-
-		Log.v(TAG, "Finished loading saved state!");
-
-
+		Log.v(TAG, "SaveState is empty, creating new SaveState");
+		mD3GLES20 = new SpriteManager(shaderManager, tm, mContext);
+		mEnv = new Environment(savedEnvSprites, mD3GLES20);
+		mPrey = new Prey(mEnv, savedPrey, mD3GLES20);
 
 		return mD3GLES20;
 	}
@@ -221,8 +195,11 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 	private void saveState() {
 		Log.v(TAG, "Saving state!");
 		//		SaveState state = new SeventaveState(mEnv.getSprites());
-		SaveState state = new SaveState(mEnv, mCaughtCounter);
-		mContext.storeToDB(state);
+		try {
+			mContext.save(mEnv.getJSONSprites(), mPrey.toJSON(), mCaughtCounter);
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
 	}
 
 	/**
@@ -417,7 +394,7 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 			if (mPrey != null) mPrey.clearGraphic();
 			switch (mPreyChangeTo) {
 			case NONE: mPrey = new DummyPrey(mEnv, mD3GLES20); break;
-			case DEFAULT: mPrey = new Prey(mEnv, mD3GLES20); break;
+			case DEFAULT: mPrey = new Prey(mEnv, null, mD3GLES20); break;
 			}
 			mPrey.initGraphic();
 		}
@@ -626,7 +603,6 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 			//    	tm.clear();
 			mStateBeforePause = mState;
 			//		if (mState == State.PLAY) {
-			mState = State.PAUSE;
 			saveState();
 			//		}
 			mState = State.PAUSE;

@@ -1,5 +1,10 @@
 package com.primalpond.hunt.agent.prey;
 
+import java.util.ArrayList;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import com.primalpond.hunt.agent.Agent;
 import com.primalpond.hunt.agent.prey.memory.StressLevel;
 import com.primalpond.hunt.agent.prey.memory.WorldModel;
@@ -40,6 +45,9 @@ public class Prey extends Agent {
 	private static final float FORCE_TO_DISTANCE = 0.00002f;
 	private static final double MUTATE_CHANCE_ON_CAUGHT = 1;
 	private static final double MUTATE_CHANCE_ON_EAT_PER_NUTRITION = 0.001;
+	private static final String KEY_HEAD = "head";
+	private static final String KEY_TAIL = "tail";
+	private static final String KEY_BODY = "body";
 
 	public static int flopBacksPerSecond = 2;
 	public static int flopBackTicks = TheHuntRenderer.TICKS_PER_SECOND/flopBacksPerSecond;
@@ -161,14 +169,25 @@ public class Prey extends Agent {
 		mD.vy -= EnvironmentData.frictionCoeff*mD.vy;
 	}
 
-	public Prey(Environment env, SpriteManager d3gles20) {
+	public Prey(Environment env, JSONObject savedPrey, SpriteManager d3gles20) {
 		super(env, d3gles20);
 		mD3GLES20 = d3gles20;
 		mD = new PreyData();
 		
-		mHead = new Head();
-		mTail = new Tail();
-		mBody = new Body();
+		JSONObject savedHead = null, savedTail = null, savedBody = null;
+		Log.i(TAG, "SavedPrey is " + savedPrey);
+		if (savedPrey != null) {
+			try {
+				savedHead = savedPrey.getJSONObject(KEY_HEAD);
+				savedTail = savedPrey.getJSONObject(KEY_TAIL);
+				savedBody = savedPrey.getJSONObject(KEY_BODY);
+			} catch (JSONException e) {
+				e.printStackTrace();
+			}
+		}
+		mHead = new Head(savedHead);
+		mTail = new Tail(savedTail);
+		mBody = new Body(savedBody);
 		
 		setTextureManager(d3gles20.getTextureManager());
 		mWorldModel = new WorldModel();
@@ -178,9 +197,10 @@ public class Prey extends Agent {
 
 		mD.mIsCaught = false;
 		mD.emotionText = null;
-		PointF newPos = mEnv.randomPosInEnv();
-
-		mBody.setPos(newPos);
+		if (savedBody == null) {
+			PointF newPos = mEnv.randomPosInEnv();
+			mBody.setPos(newPos);
+		}
 	}
 
 	public PointF getPosition() {
@@ -323,6 +343,14 @@ public class Prey extends Agent {
 			default:
 				return D3Color.BLACK;
 		}
+	}
+
+	public JSONObject toJSON() throws JSONException {
+		JSONObject jsonObject = new JSONObject();
+		jsonObject.put(KEY_BODY, mBody.toJSON());
+		jsonObject.put(KEY_HEAD, mHead.toJSON());
+		jsonObject.put(KEY_TAIL, mTail.toJSON());
+		return jsonObject;
 	}
 	
 }

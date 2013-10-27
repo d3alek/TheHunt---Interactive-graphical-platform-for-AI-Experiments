@@ -1,5 +1,8 @@
 package com.primalpond.hunt.world.environment;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import android.graphics.PointF;
 import android.util.FloatMath;
 import android.util.Log;
@@ -14,6 +17,8 @@ public class NAlgae extends FloatingObject implements Eatable {
 	private static final int MAX_N = 50;
 	public static final int FOOD_ALGAE_BITE_NUTRITION = 10;
 	private static final String TAG = "Nalgae";
+	private static final String KEY_SIZE = "size";
+	
 	private int mSize;
 	transient private D3NAlgae mGraphic;
 
@@ -29,9 +34,18 @@ public class NAlgae extends FloatingObject implements Eatable {
 	
 	public NAlgae(int n, PointF pos, Environment environment, SpriteManager d3gles20) {
 		super(pos.x, pos.y, Type.ALGAE, d3gles20);
+		Log.i(TAG, "Created NAlgae at " + pos.x + " " + pos.y);
 		mSize = n;
 	}
 	
+	public NAlgae(JSONObject jsonObject, Environment environment,
+			SpriteManager d3gles20) throws JSONException {
+		this(jsonObject.getInt(KEY_SIZE), new PointF(
+				(float)jsonObject.getDouble(KEY_POS_X),
+				(float)jsonObject.getDouble(KEY_POS_Y)), environment, d3gles20); 
+		setVelocity((float)jsonObject.getDouble(KEY_VX), (float)jsonObject.getDouble(KEY_VY));
+	}
+
 	@Override
 	public void update() {
 		if (Math.random() < Environment.GLOBAL.getAlgaeGrowthChance()) {
@@ -196,5 +210,12 @@ public class NAlgae extends FloatingObject implements Eatable {
 //			putAlgaePoint.offset(distanceBetweenSpawns*dir.x, distanceBetweenSpawns*dir.y);
 //		}
 		setToRemove();
+	}
+
+	public JSONObject toJSON() throws JSONException {
+		JSONObject jsonObject = super.toJSON();
+		jsonObject.put(KEY_SIZE, mSize);
+		
+		return jsonObject;
 	}
 }

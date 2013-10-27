@@ -1,11 +1,17 @@
 package com.primalpond.hunt.agent.prey;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import android.graphics.PointF;
 import android.opengl.Matrix;
 
 public class Tail extends BodyPart {
 
 	private float[] mTailPosMatrix = new float[16];
+
+	public Tail(JSONObject savedTail) {
+	}
 
 	@Override
 	public BodyPartGraphic getGraphic(D3Prey graphic, float size) {
@@ -21,6 +27,10 @@ public class Tail extends BodyPart {
 		
 		setPos(new PointF(posTail[0], posTail[1]));
 		 
+	}
+
+	public JSONObject toJSON() throws JSONException {
+		return new JSONObject();
 	}
 
 }

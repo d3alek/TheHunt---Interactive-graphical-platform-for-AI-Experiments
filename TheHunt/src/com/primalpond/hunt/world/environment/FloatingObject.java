@@ -1,16 +1,27 @@
 package com.primalpond.hunt.world.environment;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import com.primalpond.hunt.JSONable;
+
 import android.graphics.PointF;
 import d3kod.graphics.sprite.D3Sprite;
 import d3kod.graphics.sprite.SpriteManager;
 
-public abstract class FloatingObject extends D3Sprite {
+public abstract class FloatingObject extends D3Sprite implements JSONable {
 
 	public enum Type {
-		FOOD_ALGAE, FOOD_GM, ALGAE;
+		FOOD_GM, ALGAE;
 	}
+	
+	protected static final String KEY_POS_X = "pos_x";
+	protected static final String KEY_POS_Y = "pos_y";
+	protected static final String KEY_VX = "vx";
+	protected static final String KEY_VY = "vy";
 
 	private static final String TAG = "FloatingObject";
+	public static final String KEY_TYPE = "type";
 
 	Type mType;
 
@@ -40,7 +51,18 @@ public abstract class FloatingObject extends D3Sprite {
 	public void setToRemove() {
 		mRemove = true;
 	}
-	
+
+	public JSONObject toJSON() throws JSONException {
+		JSONObject jsonObject = new JSONObject();
+		PointF pos = getPosition();
+		jsonObject.put(KEY_POS_X, pos.x);
+		jsonObject.put(KEY_POS_Y, pos.y);
+		jsonObject.put(KEY_VX, getVX());
+		jsonObject.put(KEY_VY, getVY());
+		jsonObject.put(KEY_TYPE, mType);
+		return jsonObject;
+	}
+
 //	public float getRadius() {
 //		return mGraphic.getRadius();
 //	}

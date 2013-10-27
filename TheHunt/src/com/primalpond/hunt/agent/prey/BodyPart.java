@@ -1,9 +1,11 @@
 package com.primalpond.hunt.agent.prey;
 
+import com.primalpond.hunt.JSONable;
+
 import android.graphics.PointF;
 import android.util.Log;
 
-public abstract class BodyPart {
+public abstract class BodyPart implements JSONable {
 	
 	private static final String TAG = "BodyPart";
 	private PointF mPos;// = new PointF(0, y);
