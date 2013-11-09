@@ -43,4 +43,5 @@ public abstract class Program {
 	public boolean initialized() {
 		return mInitialized;
 	}
+	
 }

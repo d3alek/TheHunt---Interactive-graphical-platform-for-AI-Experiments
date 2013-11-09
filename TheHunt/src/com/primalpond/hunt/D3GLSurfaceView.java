@@ -2,6 +2,7 @@ package com.primalpond.hunt;
 
 import com.primalpond.hunt.world.logic.TheHuntRenderer;
 
+import android.app.Application;
 import android.content.Context;
 import android.opengl.GLSurfaceView;
 import android.util.AttributeSet;
@@ -16,7 +17,10 @@ public class D3GLSurfaceView extends GLSurfaceView {
 	private boolean doubleTouch;
 //	private GestureDetector mGestureDetector;
 	
-	public D3GLSurfaceView(Context context, AttributeSet attrs){
+	public D3GLSurfaceView(Context context, AttributeSet attrs) {
+		this(context, attrs, null);
+	}
+	public D3GLSurfaceView(Context context, AttributeSet attrs, TheHuntRenderer renderer){
 		super(context, attrs);
 
         // Set the Renderer for drawing on the GLSurfaceView
@@ -24,7 +28,13 @@ public class D3GLSurfaceView extends GLSurfaceView {
         setEGLContextClientVersion(2);
         setEGLConfigChooser(new MultisampleConfigChooser());
         setDebugFlags(DEBUG_CHECK_GL_ERROR | DEBUG_LOG_GL_CALLS);
-        setRenderer(mRenderer = new TheHuntRenderer(context));
+        if (renderer == null) {
+        	mRenderer = new TheHuntRenderer(context);
+        }
+        else {
+        	mRenderer = renderer;
+        }
+        setRenderer(mRenderer);
         setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
         doubleTouch = false;
 //        mGestureDetector = new GestureDetector(context, new GestureDetector.SimpleOnGestureListener() {
@@ -39,7 +49,10 @@ public class D3GLSurfaceView extends GLSurfaceView {
 //        	}
 //        }); 
     }
-    @Override
+    public D3GLSurfaceView(Application application) {
+    	this(application, null);
+	}
+	@Override
     public boolean onTouchEvent(final MotionEvent event) {
 //    	mGestureDetector.onTouchEvent(event);
        	doubleTouch = doubleTouch ^ TheHuntRenderer.motionEventDoubleTouchChanged(event);

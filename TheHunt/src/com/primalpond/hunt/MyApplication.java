@@ -20,12 +20,14 @@ public class MyApplication extends Application {
 	private static final String ENV_SHARED_PREFS = "env_shared_prefs";
 	private static final String KEY_CAUGHT_COUNTER = "caught_counter";
 	private static final String KEY_PREY = "prey";
+	private static final String KEY_FIRST_RUN = "first_run";
 	public static float TOUCH_RADIUS_PX = 0;
 	private String mRunningRenderer;
 	public Object stateLock = new Object();
 	public static MyApplication APPLICATION;
     
 	SharedPreferences envSharedPrefs;
+	private SharedPreferences mPrefs;
 	
 	@Override
     public void onCreate() {
@@ -34,6 +36,7 @@ public class MyApplication extends Application {
 //		deleteDB();
 //		createDB();
 		TOUCH_RADIUS_PX = getResources().getDimensionPixelSize(R.dimen.touch_radius);
+		mPrefs = getSharedPreferences("hunt_shared_prefs_v1", MODE_PRIVATE);
 		Crashlytics.start(this);
     }
 //	synchronized private void createDB() {
@@ -159,6 +162,16 @@ public class MyApplication extends Application {
 		e.putString(KEY_PREY, jsonPrey.toString());
 		e.putInt(KEY_CAUGHT_COUNTER, caughtCounter);
 		e.apply();
+	}
+
+	public static void setFirstRun(boolean b) {
+		Editor e = APPLICATION.mPrefs.edit();
+		e.putBoolean(KEY_FIRST_RUN, false);
+		e.apply();
+	}
+
+	public static boolean firstRun() {
+		return APPLICATION.mPrefs.getBoolean(KEY_FIRST_RUN, true);
 	}
 	
 }

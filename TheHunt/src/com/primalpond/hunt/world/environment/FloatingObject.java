@@ -8,6 +8,7 @@ import org.json.JSONObject;
 import com.primalpond.hunt.JSONable;
 
 import android.graphics.PointF;
+import d3kod.graphics.extra.D3Maths;
 import d3kod.graphics.sprite.D3Sprite;
 import d3kod.graphics.sprite.SpriteManager;
 
@@ -29,6 +30,7 @@ public abstract class FloatingObject extends D3Sprite implements JSONable {
 
 	private boolean mRemove;
 	private ArrayList<Tile> mTiles;
+	private boolean mChanged;
 
 	public FloatingObject(float x, float y, Type type, SpriteManager d3gles20) {
 		super(new PointF(x, y), d3gles20);
@@ -37,6 +39,10 @@ public abstract class FloatingObject extends D3Sprite implements JSONable {
 	}
 	
 	public void update() {
+		if (D3Maths.compareFloats(0, getVX()) != 0
+				&& D3Maths.compareFloats(0, getVY()) != 0) {
+			mChanged = true;
+		}
 		applyFriction();
 		super.update();
 	}
@@ -68,6 +74,22 @@ public abstract class FloatingObject extends D3Sprite implements JSONable {
 
 	public void setTiles(ArrayList<Tile> tiles) {
 		mTiles = tiles;
+	}
+
+	public boolean hasMoved() {
+		if (mChanged) {
+			mChanged = false;
+			return true;
+		}
+		return false;
+	}
+	
+	public void setChanged() {
+		mChanged = true;
+	}
+
+	public ArrayList<Tile> getTiles() {
+		return mTiles;
 	}
 
 //	public float getRadius() {

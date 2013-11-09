@@ -11,15 +11,22 @@ abstract public class D3FadingShape extends D3Shape {
 
 	protected D3FadingShape(float[] colorData, int drType,
 			Program program, float fadeSpeed, float maxFade) {
-		super();
+		this(fadeSpeed, maxFade);
 		setColor(colorData);
 		setDrawType(drType);
 		setProgram(program);
+	}
+
+	public D3FadingShape(float fadeSpeed, float maxFade) {
 		mExpired = false;
 		mFadeSpeed = fadeSpeed;
 		mMaxFade = maxFade;
 	}
 
+	public void setFadeSpeed(float fadeSpeed) {
+		mFadeSpeed = fadeSpeed;
+	}
+	
 	@Override
 	public void draw(float[] mVMatrix, float[] mProjMatrix) {
 		if (mExpired) {

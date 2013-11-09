@@ -158,8 +158,10 @@ public class WorldModel {
 					((EatableEvent)mNearestFood).getNutri() == ((EatableEvent)food).getNutri() &&
 					(D3Maths.distanceToCircle(mHeadX, mHeadY, mNearestFood.getX(), 
 							mNearestFood.getY(), mNearestFood.getRadius()) >
-					D3Maths.distanceToCircle(mHeadX, mHeadY, foodX, foodY, foodRadius)))
+					D3Maths.distanceToCircle(mHeadX, mHeadY, foodX, foodY, foodRadius))) {
+				Log.i(TAG, "Setting nearest food to " + food + " " + ((EatableEvent)food).getNutri());
 				mNearestFood = food; //TODO: make sure this updates the fish target as well
+			}
 				//TODO cache current food distance
 			break;
 		case LIGHT:
@@ -171,7 +173,7 @@ public class WorldModel {
 				mHiddenFor = 0;
 			}
 			if (mStressLevel == StressLevel.PLOK_CLOSE && mHiddenFor > hiddenForSafe) {
-				Log.v(TAG, "Feeling safe, be cautios now");
+				//Log.v(TAG, "Feeling safe, be cautios now");
 				mStressLevel = StressLevel.CAUTIOS;
 			}
 			break;
@@ -315,5 +317,14 @@ public class WorldModel {
 			mOverweight = false;
 			if (mEnergy < 0) mEnergy = 0;
 		}
+	}
+	public void setStressLevel(StressLevel stressLevel) {
+		mStressLevel = stressLevel;
+	}
+	public void setTargetFood(EatableEvent eatableEvent) {
+		mNearestFood = eatableEvent;
+	}
+	public void setEnergy(int i) {
+		mEnergy = i;
 	}
 }

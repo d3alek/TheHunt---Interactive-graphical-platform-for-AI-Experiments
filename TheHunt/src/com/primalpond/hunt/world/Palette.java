@@ -18,7 +18,7 @@ public class Palette extends D3Sprite {
 	private float[] mHudProjMatrix;
 	private float[] mHudViewMatrix;
 	private float mTouchRadius;
-	private PaletteElement net, knife;
+	public PaletteElement net, knife;
 	private PaletteElement mActiveElement;
 	private Camera mCamera;
 	private boolean mHidden;
@@ -122,5 +122,8 @@ public class Palette extends D3Sprite {
 		super.setPosition(position);
 	}
 	
+	public boolean isShown() {
+		return !mHidden;
+	}
 
 }

@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <dimen name="touch_radius">64dp</dimen>
+    <dimen name="tutorialTextSize">22sp</dimen>
+    <dimen name="tutorialNetRadius">120dp</dimen>
+    <dimen name="tutorialDrawableRadius">48dp</dimen>
 </resources>

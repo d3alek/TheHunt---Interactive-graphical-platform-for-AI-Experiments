@@ -15,4 +15,23 @@
 	<string name="show_scoreboard">Show Scoreboard</string>
 	<string name="app_id">282895577292</string>
 	<string name="leaderboard_prey_caught">CgkIzOGP750IEAIQCA</string>
+	<string name="help">Help</string>
+	
+	<string name="welcome">Welcome to Hunt!\n\n\nThis short tutorial will teach you the basics of playing the game.\n\nPress anywhere to continue</string>
+	
+	<string name="net_training">To release a net, draw a circle with your finger. If you time it correctly, you will catch a Prey!</string>
+	<string name="food_training">Many times, a Prey will hide under algae. To catch it cleanly, you can lure it out with food</string>
+	<string name="cut_training">Another way to catch a hiding Prey is to cut the algae using the Knife tool</string>
+	<string name="tut_completed">Tutorial completed</string>
+	
+	<string name="net_training_descr">Throwing a net around the prey.</string>
+	<string name="tut_try_yourself_net">Catch the prey.\nUse your finger to draw a circle around it.\nDon\'t worry, I\'m hold it still.</string>
+	<string name="tut_try_yourself_food">Lure the prey out of the algae and catch it with a net.</string>
+	<string name="tut_try_yourself_cut">Hunt down the prey using the skills you learned.\nRemember to switch back to Net tool by holding your finger down anywhere and selecting the net icon.</string>
+	<string name="food_training_descr">Placing food and waiting for the prey to come out. Then snatch!</string>
+	<string name="cut_training_descr">Switching the active tool to Knife.\nThen cutting the big algae in half</string>
+	<string name="tutorial_replay">Replay demo</string>
+	<string name="promote_join_ranklist">Be the best Hunter!\n*\tSee your score in Global Ranklist\n*\tCompete with friends</string>
+	<string name="another_time">Not now</string>
+	<string name="demonstrating">Demonstrating</string>
 </resources>

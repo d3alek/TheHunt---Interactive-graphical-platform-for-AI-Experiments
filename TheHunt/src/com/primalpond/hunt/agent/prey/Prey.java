@@ -1,9 +1,11 @@
 package com.primalpond.hunt.agent.prey;
 
-import java.util.ArrayList;
-
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import android.graphics.PointF;
+import android.util.FloatMath;
+import android.util.Log;
 
 import com.primalpond.hunt.agent.Agent;
 import com.primalpond.hunt.agent.prey.memory.StressLevel;
@@ -13,23 +15,22 @@ import com.primalpond.hunt.agent.prey.planner.Planner;
 import com.primalpond.hunt.agent.prey.sensor.Sensor;
 import com.primalpond.hunt.world.environment.Environment;
 import com.primalpond.hunt.world.environment.EnvironmentData;
+import com.primalpond.hunt.world.environment.FloatingObject;
+import com.primalpond.hunt.world.environment.FoodGM;
 import com.primalpond.hunt.world.environment.NAlgae;
+import com.primalpond.hunt.world.events.EatableEvent;
+import com.primalpond.hunt.world.events.MovingEvent;
+import com.primalpond.hunt.world.events.Event.EventType;
 import com.primalpond.hunt.world.floating_text.CrunchText;
 import com.primalpond.hunt.world.floating_text.FlopText;
-import com.primalpond.hunt.world.floating_text.MutateText;
 import com.primalpond.hunt.world.floating_text.PanicText;
 import com.primalpond.hunt.world.floating_text.PlokText;
 import com.primalpond.hunt.world.logic.TheHuntRenderer;
 
-import android.graphics.PointF;
-import android.opengl.Matrix;
-import android.util.FloatMath;
-import android.util.Log;
 import d3kod.graphics.extra.D3Color;
 import d3kod.graphics.extra.D3Maths;
 import d3kod.graphics.sprite.SpriteManager;
 import d3kod.graphics.sprite.shapes.D3Shape;
-import d3kod.graphics.texture.TextureManager;
 
 public class Prey extends Agent {
 
@@ -206,6 +207,11 @@ public class Prey extends Agent {
 	public PointF getPosition() {
 		return mBody.getPos();
 	}
+	
+	public void setPosition(PointF pointF) {
+		mBody.setPos(pointF);
+	}
+	
 	public PointF getHeadPositon() {
 		return new PointF(mD.mPosHeadX, mD.mPosHeadY);
 	}
@@ -344,13 +350,36 @@ public class Prey extends Agent {
 				return D3Color.BLACK;
 		}
 	}
-
+	
 	public JSONObject toJSON() throws JSONException {
 		JSONObject jsonObject = new JSONObject();
 		jsonObject.put(KEY_BODY, mBody.toJSON());
 		jsonObject.put(KEY_HEAD, mHead.toJSON());
 		jsonObject.put(KEY_TAIL, mTail.toJSON());
 		return jsonObject;
+	}
+
+	@Override
+	public void setStressLevel(StressLevel stressLevel) {
+		mWorldModel.setStressLevel(stressLevel);
+	}
+
+	@Override
+	public void setTargetFood(FloatingObject fo) {
+		mWorldModel.setTargetFood(
+				new EatableEvent(fo.getX(), fo.getY(),
+						EventType.FOOD, ((FoodGM)fo).getNutrition(), fo.getRadius()));
+	}
+
+	@Override
+	public void reduceEnergy(int i) {
+		mWorldModel.reduceEnergy(i);
+	}
+
+	@Override
+	public void increaseEnergy(int i) {
+		int energy = mWorldModel.getEnergy();
+		mWorldModel.setEnergy(energy+i);
 	}
 	
 }

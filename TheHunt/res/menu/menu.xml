@@ -18,5 +18,11 @@
         hunt:showAsAction="ifRoom|withText"
         android:id="@+id/action_terraform"
         android:title="@string/terraform"/>
+    
+    <item
+        hunt:showAsAction="ifRoom"
+        android:id="@+id/action_help"
+        android:icon="@drawable/ic_action_help"
+        android:title="@string/help"/>
 
 </menu>

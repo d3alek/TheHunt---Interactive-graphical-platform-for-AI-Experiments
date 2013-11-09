@@ -59,6 +59,7 @@ public class CatchNet extends D3Sprite implements Tool {
 		}
 		else if (mPathGraphic.isFinished() && !mPathGraphic.isInvalid() && mNetGraphic == null) {
 			initNetGraphic();
+			Log.i(TAG, "Putting noise");
 			mD3GLES20.putText(new PlokText(mPathGraphic.getCenterX(), mPathGraphic.getCenterY()));
 			mEnv.putNoise(mPathGraphic.getCenterX(), mPathGraphic.getCenterY(), Environment.LOUDNESS_PLOK);
 			mDidAction = true;

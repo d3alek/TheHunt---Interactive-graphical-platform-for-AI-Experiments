@@ -34,7 +34,6 @@ public class NAlgae extends FloatingObject implements Eatable {
 	
 	public NAlgae(int n, PointF pos, Environment environment, SpriteManager d3gles20) {
 		super(pos.x, pos.y, Type.ALGAE, d3gles20);
-		Log.i(TAG, "Created NAlgae at " + pos.x + " " + pos.y);
 		mSize = n;
 	}
 	
@@ -61,9 +60,9 @@ public class NAlgae extends FloatingObject implements Eatable {
 	}
 
 	public void initGraphic() {
-		mGraphic = new D3NAlgae();
-		super.initGraphic(mGraphic);
+		mGraphic = new D3NAlgae(getSpriteManager().getShaderManager());
 		updateGraphicSize();
+		super.initGraphic(mGraphic);
 	}
 
 	private void updateGraphicSize() {
@@ -95,6 +94,7 @@ public class NAlgae extends FloatingObject implements Eatable {
 	}
 	
 	public void setN(int n) {
+		setChanged();
 		mSize = Math.min(n, MAX_N);
 		updateGraphicSize();
 	}
@@ -131,6 +131,7 @@ public class NAlgae extends FloatingObject implements Eatable {
 	@Override
 	public void applyFriction() {
 		float curVX = getVX(), curVY = getVY();
+		
 		float friction = calcFriction();
 		setVelocity(curVX - friction*curVX, curVY - friction*curVY);
 	}
@@ -218,4 +219,5 @@ public class NAlgae extends FloatingObject implements Eatable {
 		
 		return jsonObject;
 	}
+
 }

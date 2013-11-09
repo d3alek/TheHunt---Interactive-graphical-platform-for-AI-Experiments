@@ -71,7 +71,7 @@ public class HUD {
 	private HUDText mScoreText;
 	private HUDText mScore;
 	private HUDText mPenalty;
-	private Palette mPalette;
+	public Palette mPalette;
 	private Camera mCamera;
 	private float[] mProjMatrix;
 //	private Object prevTouch;

@@ -1,23 +1,26 @@
 package d3kod.graphics.shader;
 
+import d3kod.graphics.shader.programs.AlgaeProgram;
 import d3kod.graphics.shader.programs.BatchTextProgram;
-import d3kod.graphics.shader.programs.DefaultProgram;
+import d3kod.graphics.shader.programs.DefaultProgramFromAssets;
 import d3kod.graphics.shader.programs.GrayscaleInvertedTextureProgram;
 import d3kod.graphics.shader.programs.Program;
 import d3kod.graphics.shader.programs.TextureProgram;
 
 public class ShaderProgramManager {
 	
-	private DefaultProgram defaultProgram;
+	private DefaultProgramFromAssets defaultProgram;
 	private TextureProgram textureProgram;
 	private BatchTextProgram batchTextProgram;
 	private GrayscaleInvertedTextureProgram invTextureProgram;
+	private AlgaeProgram algaeProgram;
 	
 	public ShaderProgramManager() {
-		defaultProgram = new DefaultProgram();
+		defaultProgram = new DefaultProgramFromAssets();
 		textureProgram = new TextureProgram();
 		batchTextProgram = new BatchTextProgram();
 		invTextureProgram = new GrayscaleInvertedTextureProgram();
+		algaeProgram = new AlgaeProgram();
 	}
 
 	public Program getDefaultProgram() {
@@ -50,5 +53,12 @@ public class ShaderProgramManager {
 			invTextureProgram.init();
 		}
 		return invTextureProgram;
+	}
+
+	public Program getAlgaeProgram() {
+		if (!algaeProgram.initialized()) {
+			algaeProgram.init();
+		}
+		return algaeProgram;
 	}
 }

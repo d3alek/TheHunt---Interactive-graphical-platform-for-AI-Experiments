@@ -3,7 +3,9 @@ package com.primalpond.hunt.agent;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.primalpond.hunt.agent.prey.memory.StressLevel;
 import com.primalpond.hunt.world.environment.Environment;
+import com.primalpond.hunt.world.environment.FloatingObject;
 
 import android.graphics.PointF;
 import d3kod.graphics.sprite.SpriteManager;
@@ -50,5 +52,28 @@ public class DummyPrey extends Agent {
 
 	public JSONObject toJSON() throws JSONException {
 		return null;
+	}
+
+	@Override
+	public void setStressLevel(StressLevel stressLevel) {
+		
+	}
+
+	@Override
+	public void setTargetFood(FloatingObject fo) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void reduceEnergy(int i) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void increaseEnergy(int i) {
+		// TODO Auto-generated method stub
+		
 	}
 }

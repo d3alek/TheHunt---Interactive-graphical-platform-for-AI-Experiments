@@ -3,7 +3,9 @@ package com.primalpond.hunt.agent;
 import org.json.JSONObject;
 
 import com.primalpond.hunt.JSONable;
+import com.primalpond.hunt.agent.prey.memory.StressLevel;
 import com.primalpond.hunt.world.environment.Environment;
+import com.primalpond.hunt.world.environment.FloatingObject;
 
 import android.graphics.PointF;
 import d3kod.graphics.extra.D3Color;
@@ -58,5 +60,13 @@ public abstract class Agent extends D3Sprite implements JSONable {
 	} 
 	
 	public abstract boolean isHidden();
+
+	public abstract void setStressLevel(StressLevel stressLevel);
+
+	public abstract void setTargetFood(FloatingObject fo);
+
+
+	public abstract void reduceEnergy(int i);
+	public abstract void increaseEnergy(int i);
 
 }

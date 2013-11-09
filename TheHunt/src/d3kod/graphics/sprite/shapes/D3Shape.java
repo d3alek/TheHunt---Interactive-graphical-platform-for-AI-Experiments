@@ -205,8 +205,6 @@ abstract public class D3Shape {
 	
 	public void setScale(float scale) {
 		mScale = scale;
-//		Log.v(TAG, "Scale is " + scale);
-		Matrix.scaleM(mMMatrix, 0, mScale, mScale, 0);
 	}
 	
 	public float getScale() {

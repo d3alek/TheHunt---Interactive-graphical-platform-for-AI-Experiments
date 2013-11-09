@@ -54,6 +54,7 @@ public class EnvironmentData {
 	private boolean mGraphicsAreSet;
 
 	public Tile[][] mTiles;
+	ArrayList<FloatingObject>[][] tileObjects = new ArrayList[tileRows][tileCols];
 
 	public EnvironmentData() {
 		setSize();
@@ -194,22 +195,32 @@ public class EnvironmentData {
 	public void updateFloatingObjects() {
 		ArrayList<FloatingObject> toRemove = new ArrayList<FloatingObject>();
 		
-		HashMap<Tile, ArrayList<FloatingObject>> tileToObject = new HashMap<Tile, ArrayList<FloatingObject>>();
-		ArrayList<FloatingObject>[][] tileObjects = new ArrayList[tileRows][tileCols];
+//		HashMap<Tile, ArrayList<FloatingObject>> tileToObject = new HashMap<Tile, ArrayList<FloatingObject>>();
+		for (int i = 0; i < tileRows; ++i) {
+			for (int j = 0; j < tileCols; ++j) {
+				if (tileObjects[i][j] != null) {
+					tileObjects[i][j].clear();
+				}
+			}
+		}
+
 		
 		for (FloatingObject fo: mFloatingObjects) {
 			fo.update();
-			// TODO check fo has moved, don't recalculate tilesForObject if not
-//			if (fo.hasMoved()) {
-				ArrayList<Tile> tiles = getTilesForObject(fo.getPosition(), fo.getRadius());
+			ArrayList<Tile> tiles;
+			if (fo.hasMoved() || fo.getTiles() == null) {
+				tiles = getTilesForObject(fo.getPosition(), fo.getRadius());
 				fo.setTiles(tiles);
-				for (Tile tile: tiles) {
-//					ArrayList<FloatingObject> fosForTile = tileToObject.get(tile);
-					if (tileObjects[tile.getR()][tile.getC()] == null) {
-						tileObjects[tile.getR()][tile.getC()] = new ArrayList<FloatingObject>();
-					}
-					tileObjects[tile.getR()][tile.getC()].add(fo);
+			}
+			else {
+				tiles = fo.getTiles();
+			}
+			for (Tile tile: tiles) {
+				if (tileObjects[tile.getR()][tile.getC()] == null) {
+					tileObjects[tile.getR()][tile.getC()] = new ArrayList<FloatingObject>();
 				}
+				tileObjects[tile.getR()][tile.getC()].add(fo);
+			}
 //			}
 //			else {
 //				

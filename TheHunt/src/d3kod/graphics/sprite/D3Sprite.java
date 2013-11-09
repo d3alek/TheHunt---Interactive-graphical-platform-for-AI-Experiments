@@ -33,7 +33,9 @@ public abstract class D3Sprite {
 		if (mGraphic == null) {
 			Log.v(TAG, "Not updating graphic as it is null!");
 		}
-		else mGraphic.setPosition(mPos.x, mPos.y);
+		else {
+			mGraphic.setPosition(mPos.x, mPos.y);
+		}
 	}
 	
 	protected void initGraphic(D3Shape graphic) {
@@ -62,9 +64,13 @@ public abstract class D3Sprite {
 	}
 	
 	public void clearGraphic() {
-		if (mGraphic == null) Log.v(TAG, "Graphic not set, can't clear!");
-		mGraphic = null;
-		mD3GLES20 = null;
+		if (mGraphic == null) {
+			Log.v(TAG, "Graphic not set, can't clear!");
+		}
+		else {
+			mD3GLES20.removeShape(mGraphic);
+			mGraphic = null;
+		}
 	}
 	
 	public void setVelocity(float vx, float vy) {

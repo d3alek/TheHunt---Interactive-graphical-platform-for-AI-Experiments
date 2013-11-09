@@ -40,6 +40,7 @@ public class Environment {
 	private double algaeGrowthChance;
 //	private int mAlgaeNum;
 	private int mPlayerPenalty;
+	private int mInitialAlgae;
 	
 	
 	public static final int ALGAE_NUM = 300;
@@ -50,6 +51,10 @@ public class Environment {
 	private static final int FOOD_NEGATIVE_SCORE = 1;
 	
 	public Environment(JSONArray savedEnvSprites, SpriteManager d3gles20) {
+		this(savedEnvSprites, d3gles20, ALGAE_NUM);
+	}
+	
+	public Environment(JSONArray savedEnvSprites, SpriteManager d3gles20, int initialAlgae) {
 		GLOBAL = this;
 		mPlayerPenalty = 0;
 		mD3GLES20 = d3gles20;
@@ -58,9 +63,11 @@ public class Environment {
 		mNoiseEvents = new ArrayList<EventNoise>();
 		mRandom = new Random();
 		if (savedEnvSprites == null) {
+			mInitialAlgae = initialAlgae;
 			seedAlgae();
 		}
 		else {
+			mInitialAlgae = ALGAE_NUM;
 			Log.i(TAG, "savedEnvSprites len is " + savedEnvSprites.length());
 			for (int i = 0; i < savedEnvSprites.length(); ++i) {
 				try {
@@ -87,8 +94,10 @@ public class Environment {
 		}
 	}
 	
-	public void addNewAlgae(int n, PointF pos, float dirAngle) {
-		data.addFloatingObject(new NAlgae(n, pos, dirAngle, this, mD3GLES20));
+	public NAlgae addNewAlgae(int n, PointF pos, float dirAngle) {
+		NAlgae algae = new NAlgae(n, pos, dirAngle, this, mD3GLES20);
+		data.addFloatingObject(algae);
+		return algae;
 	}
 	
 	public void addNewAlgae(int n, PointF pos, PointF dirVector,
@@ -106,7 +115,7 @@ public class Environment {
 	}
 	
 	private void seedAlgae() {
-		for (int i = 0; i < ALGAE_NUM; ++i) {
+		for (int i = 0; i < mInitialAlgae; ++i) {
 			addNewAlgae(1, randomPosInEnv(), D3Maths.getRandAngle());
 		}
 	}
@@ -270,7 +279,7 @@ public class Environment {
 		}
 		double m = 0; // specific growth rate
 		if (GROWTH_THRESH - biomass > 0) {
-			m = GROWTH_CONST*Math.log(GROWTH_THRESH - biomass);
+			m = GROWTH_CONST*Math.log(5*mInitialAlgae/6 - biomass);
 		}
 		algaeGrowthRate = m * biomass / algaeNum;
 		algaeGrowthChance = algaeGrowthRate / algaeNum;

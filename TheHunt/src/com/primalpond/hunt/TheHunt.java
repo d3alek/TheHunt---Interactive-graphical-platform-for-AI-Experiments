@@ -2,7 +2,10 @@ package com.primalpond.hunt;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.DialogFragment;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar;
 import android.util.Log;
 import android.view.Menu;
@@ -11,6 +14,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.WindowManager;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.google.android.gms.games.GamesClient;
@@ -20,6 +24,9 @@ import com.google.android.gms.games.leaderboard.LeaderboardScoreBuffer;
 import com.google.android.gms.games.leaderboard.LeaderboardVariant;
 import com.google.android.gms.games.leaderboard.OnLeaderboardScoresLoadedListener;
 import com.google.example.games.basegameutils.BaseGameActivity;
+import com.primalpond.hunt.AfterTutorialScreen.OnGPlusSignInListener;
+import com.primalpond.hunt.TutorialFragment.TutorialListener;
+import com.primalpond.hunt.world.logic.TheHuntRenderer;
 import com.primalpond.hunt.world.logic.TheHuntRenderer.ShowNavigationListener;
 
 
@@ -40,7 +47,7 @@ import com.primalpond.hunt.world.logic.TheHuntRenderer.ShowNavigationListener;
  * @author Aleksandar Kodzhabashev (d3kod) 
  *
  */
-public class TheHunt extends BaseGameActivity implements PreyChangeDialog.PreyChangeDialogListener, ShowNavigationListener, OnLeaderboardScoresLoadedListener {
+public class TheHunt extends BaseGameActivity implements PreyChangeDialog.PreyChangeDialogListener, ShowNavigationListener, OnLeaderboardScoresLoadedListener, TutorialListener, OnGPlusSignInListener {
 
 	private static final String TAG = "TheHunt";
 	private static final int REQUEST_LEADERBOARD = 3;
@@ -49,6 +56,11 @@ public class TheHunt extends BaseGameActivity implements PreyChangeDialog.PreyCh
 	private GamesClient mGamesClient;
 	private String LEADERBOARD_ID;
 	private boolean mToShowScoreOnSuccess;
+	private int REQ_TUTORIAL = 10;
+	private boolean mInTutorial;
+	private TutorialFragment mTutorialFragment;
+	private Fragment mAfterTutorialScreen;
+	private boolean mAfterTutorialSignIn;
 
 	@SuppressLint("NewApi")
 	@Override
@@ -65,12 +77,15 @@ public class TheHunt extends BaseGameActivity implements PreyChangeDialog.PreyCh
 		//		}
 
 		setContentView(R.layout.clean);
+		if (MyApplication.firstRun()) {
+			beginTutorial();
+		}
 		mGLView = (D3GLSurfaceView)findViewById(R.id.glSurfaceView);
 		mGLView.mRenderer.setActivity(this);
 		LEADERBOARD_ID = getResources().getString(R.string.leaderboard_prey_caught);
-		
+
 		findViewById(R.id.actionBarPart).setOnClickListener(new OnClickListener() {
-			
+
 			public void onClick(View v) {
 				mGLView.mRenderer.pauseWorld();
 				onToShowNavigation();
@@ -85,7 +100,7 @@ public class TheHunt extends BaseGameActivity implements PreyChangeDialog.PreyCh
 		mPlayIcon = menu.findItem(R.id.action_play_services);
 		return super.onCreateOptionsMenu(menu);
 	}
-	
+
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
@@ -117,12 +132,58 @@ public class TheHunt extends BaseGameActivity implements PreyChangeDialog.PreyCh
 				mToShowScoreOnSuccess = true;
 			}
 			break;
+		case R.id.action_help:
+			//			Intent i = new Intent(this, Tutorial.class);
+			//			startActivityForResult(i, REQ_TUTORIAL);
+			beginTutorial();
+			break;
 		default:
 			break;
 		}
 		return super.onOptionsItemSelected(item);
 	}
-	
+
+	private void beginTutorial() {
+		mInTutorial = true;
+
+		if (mGLView != null) {
+			mGLView.onPause();
+		}
+		final RelativeLayout rootLayout = (RelativeLayout)findViewById(R.id.root_layout);
+		Handler handler = new Handler();
+		class RefreshRunnable implements Runnable{
+
+			public RefreshRunnable(){
+
+			}
+
+			public void run(){
+				rootLayout.removeView(findViewById(R.id.glSurfaceView));
+
+				D3GLSurfaceView surfaceview = new D3GLSurfaceView(getApplication(),
+						null,
+						new TutorialRenderer(TheHunt.this));
+				surfaceview.setId(R.id.glSurfaceView);
+				rootLayout.addView(surfaceview);
+				
+				View actionBarPart = findViewById(R.id.actionBarPart);
+				actionBarPart.bringToFront();
+
+				mGLView = (D3GLSurfaceView) findViewById(R.id.glSurfaceView);
+
+				FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+				mTutorialFragment = new TutorialFragment();
+				ft.add(R.id.root_layout, mTutorialFragment);
+				ft.commit();
+				mGLView.mRenderer.setActivity(TheHunt.this);
+				onToHideNavigation();
+			}
+		};
+
+		RefreshRunnable r = new RefreshRunnable();
+		handler.postDelayed(r, 500);
+	}
+
 	/** Pause the GLView
 	 * @see android.support.v4.app.FragmentActivity#onPause()
 	 */
@@ -142,14 +203,6 @@ public class TheHunt extends BaseGameActivity implements PreyChangeDialog.PreyCh
 		//    	if (findViewById(R.id.aiToggle) != null) ((ToggleButton)findViewById(R.id.aiToggle)).setChecked(PreyData.AI);
 		mGLView.onResume();
 		super.onResume();
-	}
-
-	/**
-	 * @see android.support.v4.app.FragmentActivity#onStop()
-	 */
-	@Override
-	protected void onStop() {
-		super.onStop();
 	}
 
 	/** Pop up a dialog to choose a prey from a predefined list of preys
@@ -174,9 +227,9 @@ public class TheHunt extends BaseGameActivity implements PreyChangeDialog.PreyCh
 	}
 
 	public void onToShowNavigation() {
-//		if (mGamesClient != null) {
-//			mGamesClient.loadPlayerCenteredScores(this, LEADERBOARD_ID, 2, LeaderboardVariant.COLLECTION_PUBLIC, 10);
-//		}
+		//		if (mGamesClient != null) {
+		//			mGamesClient.loadPlayerCenteredScores(this, LEADERBOARD_ID, 2, LeaderboardVariant.COLLECTION_PUBLIC, 10);
+		//		}
 		runOnUiThread(new Runnable() {
 
 			public void run() {
@@ -197,7 +250,7 @@ public class TheHunt extends BaseGameActivity implements PreyChangeDialog.PreyCh
 	}
 
 	public void onSignInFailed() {
-//		Toast.makeText(this, "Sign in failed", Toast.LENGTH_SHORT).show();
+		//		Toast.makeText(this, "Sign in failed", Toast.LENGTH_SHORT).show();
 		mToShowScoreOnSuccess = false;
 		if (mPlayIcon != null) {
 			mPlayIcon.setIcon(getResources().getDrawable(R.drawable.games_controller_white));
@@ -205,7 +258,12 @@ public class TheHunt extends BaseGameActivity implements PreyChangeDialog.PreyCh
 	}
 
 	public void onSignInSucceeded() {
-//		Toast.makeText(this, "Sign in succeeded", Toast.LENGTH_SHORT).show();
+		//		Toast.makeText(this, "Sign in succeeded", Toast.LENGTH_SHORT).show();
+		
+		if (mAfterTutorialSignIn) {
+			returnFromTutorial();
+		}
+		
 		if (mPlayIcon != null) {
 			mPlayIcon.setIcon(getResources().getDrawable(R.drawable.games_controller_white_active));
 		}
@@ -216,9 +274,9 @@ public class TheHunt extends BaseGameActivity implements PreyChangeDialog.PreyCh
 		}
 		
 		issueLeaderboardRefresh();
-		
-//		mGamesClient.loadPlayerCenteredScores(this, LEADERBOARD_ID, 2, LeaderboardVariant.COLLECTION_PUBLIC, 10);
-		
+
+		//		mGamesClient.loadPlayerCenteredScores(this, LEADERBOARD_ID, 2, LeaderboardVariant.COLLECTION_PUBLIC, 10);
+
 	}
 
 	public void onLeaderboardScoresLoaded(int statusCode,
@@ -273,10 +331,111 @@ public class TheHunt extends BaseGameActivity implements PreyChangeDialog.PreyCh
 			mGamesClient.loadPlayerCenteredScores(this, LEADERBOARD_ID, 2, LeaderboardVariant.COLLECTION_PUBLIC, 10, true);
 		}
 	}
-	
+
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {
 		Log.e(TAG, "OnSaveInstanceState called!");
 		super.onSaveInstanceState(outState);
+	}
+
+	public void onToShowTutorialText(final int nextTutorialStepNum) {
+		runOnUiThread(new Runnable() {
+
+			public void run() {
+				mTutorialFragment.setTutorialStep(nextTutorialStepNum);
+				getSupportFragmentManager().beginTransaction().show(mTutorialFragment).commit();
+
+			}
+		});
+
+
+	}
+
+	public void onToHideTutorialText() {
+		getSupportFragmentManager().beginTransaction().hide(mTutorialFragment).commit();
+	}
+
+	public void onToShowTutorialDescriptiveText() {
+		runOnUiThread(new Runnable() {
+
+			public void run() {
+				mTutorialFragment.showStepDescription();
+
+			}
+		});
+
+	}
+
+	public void onToShowTutTryText() {
+		runOnUiThread(new Runnable() {
+
+			public void run() {
+
+				mTutorialFragment.showTryItYourself();
+			}
+		});
+	}
+
+	public void notifyReplayStep() {
+		mGLView.post(new Runnable() {
+			public void run() {
+				((TutorialRenderer)mGLView.mRenderer).showDemonstrator();
+			}
+		});
+	}
+	
+	private void returnFromTutorial() {
+		mInTutorial = false;
+
+		mGLView.onPause();
+		final RelativeLayout rootLayout = (RelativeLayout)findViewById(R.id.root_layout);
+		Handler handler = new Handler();
+		class RefreshRunnable implements Runnable{
+
+			public RefreshRunnable(){
+
+			}
+
+			public void run(){
+				rootLayout.removeView(findViewById(R.id.glSurfaceView));
+
+				D3GLSurfaceView surfaceview = new D3GLSurfaceView(getApplication(),
+						null,
+						new TheHuntRenderer(TheHunt.this));
+				surfaceview.setId(R.id.glSurfaceView);
+				rootLayout.addView(surfaceview);
+
+				mGLView = (D3GLSurfaceView) findViewById(R.id.glSurfaceView);
+				
+				View actionBarPart = findViewById(R.id.actionBarPart);
+				actionBarPart.bringToFront();
+				
+				mGLView.mRenderer.setActivity(TheHunt.this);
+				MyApplication.setFirstRun(false);
+			}
+		};
+
+		RefreshRunnable r = new RefreshRunnable();
+		handler.postDelayed(r, 500);
+	}
+
+	public void notifyTutorialFinished() {
+		FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+		ft.remove(mTutorialFragment);
+		mAfterTutorialScreen = new AfterTutorialScreen();
+		ft.add(R.id.root_layout, mAfterTutorialScreen);
+		ft.commit();
+	}
+
+	public void onSignIn() {
+		mAfterTutorialSignIn = true;
+		beginUserInitiatedSignIn();
+	}
+
+	public void onUserDecline() {
+		FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+		ft.remove(mAfterTutorialScreen);
+		ft.commit();
+		returnFromTutorial();
 	}
 }
