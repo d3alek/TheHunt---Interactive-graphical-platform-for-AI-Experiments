@@ -49,7 +49,6 @@ public class CutDemonstrator extends Demonstrator {
 //				}
 //			}
 			mTarget = mRenderer.mEnv.addNewAlgae(30, new PointF(0, 0), D3Maths.getRandAngle());
-
 		}
 		else {
 			if (mSwitchingTool) {
