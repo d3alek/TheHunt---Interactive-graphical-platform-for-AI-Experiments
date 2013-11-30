@@ -4,6 +4,7 @@ import java.util.Random;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.graphics.PointF;
 import android.util.DisplayMetrics;
 import android.util.FloatMath;
 
@@ -20,7 +21,8 @@ public class D3Maths {
 	private static Random random = new Random();
 
 	public static float angleBetweenVectors(float x1, float y1, float x2, float y2, float len1, float len2) {
-		return (float) Math.toDegrees(Math.acos((x1*x2 + y1*y2)/(len1*len2)));
+//		return (float) Math.toDegrees(Math.acos((x1*x2 + y1*y2)/(len1*len2)));
+		return (float) Math.toDegrees(Math.atan2((x1*y2 + y1*x2), (x1*x2 + y1*y2)));
 	}
 
 	/**
@@ -176,5 +178,19 @@ public class D3Maths {
 		return radiusPx/TheHuntRenderer.mScreenHeightPx;
 	}
 
+
+	/**
+	 * x = a + t n
+	 * @param p point
+	 * @param a point on the line
+	 * @param n unit vector
+	 * @return
+	 */
+	public static float distBetweenPointAndLine(PointF p, PointF a, PointF n) {
+		float aToPx = a.x - p.x;
+		float aToPy = a.y - p.y;
+		float temp = (aToPx * n.x + aToPy * n.y);
+		return new PointF(aToPx - temp * n.x, aToPy - temp * n.y).length();
+	}
 
 }

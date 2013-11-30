@@ -10,19 +10,19 @@
         android:layout_height="match_parent" />
     
     <LinearLayout
-	    android:id="@+id/actionBarPart"
-	    android:layout_width="wrap_content"
-	    android:layout_height="@dimen/abc_action_bar_default_height"
-	    android:background="@color/actionbarPartBg"
-	    android:gravity="center_vertical"
-	    android:layout_alignParentTop="true"
-	    android:layout_alignParentLeft="true"
-	    android:orientation="horizontal"
-	   	android:paddingLeft="14dp">
+        android:id="@+id/actionBarPart"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/abc_action_bar_default_height"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:background="@color/actionbarPartBg"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingLeft="14dp" >
+
 	    <ImageView 
 	        android:layout_width="wrap_content"
 	        android:layout_height="match_parent"
-	        android:adjustViewBounds="true"
 	        android:src="@drawable/ic_handdrawn"
 	        android:contentDescription="Pause"
 	        android:layout_marginTop="2dp"
@@ -33,6 +33,8 @@
 	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
 	        android:padding="2dp"
+	        android:lines="1"
+	        android:ellipsize="none"
 	        android:layout_marginRight="14dp"
 	        android:textSize="@dimen/abc_action_bar_title_text_size"
 	        android:textColor="@android:color/white"/>

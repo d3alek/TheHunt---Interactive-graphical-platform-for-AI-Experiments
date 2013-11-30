@@ -71,11 +71,11 @@ public class HUD {
 	private HUDText mScoreText;
 	private HUDText mScore;
 	private HUDText mPenalty;
-	public Palette mPalette;
+//	public Palette mPalette;
 	private Camera mCamera;
 	private float[] mProjMatrix;
 //	private Object prevTouch;
-	private String activePaletteElement;
+//	private String activePaletteElement;
 //	private DummySprite mPause;
 	private D3Image mPauseGraphic;
 	private float pausePosX;
@@ -189,7 +189,7 @@ private HUDText mWorseScoreText;
 //		mPause.setPosition(new PointF(0, 0));
 //		mPause.getGraphic().setPosition(0, 0);
 //		mPause.getGraphic().noFade();
-		initPalette();
+//		initPalette();
 		
 //		mSpriteManager.putText(mCaughtText);
 //		mSpriteManager.putText(mPreyEnergyText);
@@ -212,11 +212,11 @@ private HUDText mWorseScoreText;
 //				mPreyStateText.getY(), 0);
 //		mSpriteManager.putText(mPreyState);
 	}
-	private void initPalette() {
-		mPalette = new Palette(new PointF(0, 0), mSpriteManager, mProjMatrix, mViewMatrix, mCamera);
-		mPalette.initGraphic();
-		hidePalette();
-	}
+//	private void initPalette() {
+////		mPalette = new Palette(new PointF(0, 0), mSpriteManager, mProjMatrix, mViewMatrix, mCamera);
+////		mPalette.initGraphic();
+//		hidePalette();
+//	}
 //	public void setCaught(int caught) {
 //		mCaught.setText(""+caught);
 //	}
@@ -237,80 +237,80 @@ private HUDText mWorseScoreText;
 //		mPenalty.setPosition(mScore.getX() + mScore.getLength(mSpriteManager.getTextManager()) + 0.02f, mPenalty.getY(), 0);
 	}
 	
-	public void showPalette(PointF pos, Class<? extends Tool> activeToolClass) {
-		if (mPalette == null) {
-			Log.e(TAG, "Palette is null!");
-//			initPalette();
-		}
-		mPalette.setPosition(pos);
-		mPalette.show(activeToolClass);
-	}
+//	public void showPalette(PointF pos, Class<? extends Tool> activeToolClass) {
+//		if (mPalette == null) {
+//			Log.e(TAG, "Palette is null!");
+////			initPalette();
+//		}
+//		mPalette.setPosition(pos);
+//		mPalette.show(activeToolClass);
+//	}
 	
-	public void hidePalette() {
-		mPaused = false;
-		mPalette.hide();
-		mTimeFirstTouch = 0;
-		mPaletteShown = false;
-	}
-	public boolean handleTouch(PointF worldTouch, float screenX, float screenY, int action, Class<? extends Tool> activeToolClass) {
-		PointF screenTouch = mCamera.fromScreenToWorld(screenX, screenY, mViewMatrix, mProjMatrix);
-		if (action == MotionEvent.ACTION_DOWN || action == MotionEvent.ACTION_MOVE) {
-			if (mTimeFirstTouch == 0) {
-//				if (mPause.contains(screenTouch)) {
-//					Log.v(TAG, "Pausing");
-//					mPaused = true;
-//					return true;
-//				}
-	//			Log.v(TAG, "Showing palette");
-	//			showPalette(worldTouch, activeToolClass);
-	//			prevTouch = worldTouch;
-	//			activePaletteElement = null;
-	//			return true;
-//				mFirstTouch = worldTouch;
-//				mMovedAway = false;
-				mTimeFirstTouch = System.currentTimeMillis();
-			}
-			
-//			else if (!mMovedAway && !mPaletteShown && mTimeFirstTouch != 0 && pointsEqual(worldTouch, mFirstTouch) && System.currentTimeMillis() - mTimeFirstTouch >= SHOW_PALETTE_DELAY) {
-//				Log.v(TAG, "Showing palette");
-//				showPalette(mFirstTouch, activeToolClass);
-//	//			prevTouch = worldTouch;
-//				mPaletteShown = true;
-//				activePaletteElement = null;
-//				return true;
-//			}
-//			else if (!mMovedAway && !pointsEqual(worldTouch, mFirstTouch)) {
-//				mMovedAway = true;
-//			}
-		}
-		
-		if (action == MotionEvent.ACTION_UP && mPalette.handleTouch(worldTouch)) {
-			activePaletteElement = mPalette.getActiveElement();
-//			prevTouch = null;
-			hidePalette();
-			if (activePaletteElement == null) {
-				Log.v(TAG, "Active element is null, returning false!");
-				return false;
-			}
-			Log.v(TAG, "Active element is not null, return true!");
-			return true;
-		}
-		if (action == MotionEvent.ACTION_UP) {
-//			prevTouch = null;
-			hidePalette();
-			return false;
-		}
-		return mPalette.handleTouch(worldTouch);
-	}
+//	public void hidePalette() {
+//		mPaused = false;
+//		mPalette.hide();
+//		mTimeFirstTouch = 0;
+//		mPaletteShown = false;
+//	}
+//	public boolean handleTouch(PointF worldTouch, float screenX, float screenY, int action, Class<? extends Tool> activeToolClass) {
+////		PointF screenTouch = mCamera.fromScreenToWorld(screenX, screenY, mViewMatrix, mProjMatrix);
+////		if (action == MotionEvent.ACTION_DOWN || action == MotionEvent.ACTION_MOVE) {
+////			if (mTimeFirstTouch == 0) {
+//////				if (mPause.contains(screenTouch)) {
+//////					Log.v(TAG, "Pausing");
+//////					mPaused = true;
+//////					return true;
+//////				}
+////	//			Log.v(TAG, "Showing palette");
+////	//			showPalette(worldTouch, activeToolClass);
+////	//			prevTouch = worldTouch;
+////	//			activePaletteElement = null;
+////	//			return true;
+//////				mFirstTouch = worldTouch;
+//////				mMovedAway = false;
+////				mTimeFirstTouch = System.currentTimeMillis();
+////			}
+//			
+////			else if (!mMovedAway && !mPaletteShown && mTimeFirstTouch != 0 && pointsEqual(worldTouch, mFirstTouch) && System.currentTimeMillis() - mTimeFirstTouch >= SHOW_PALETTE_DELAY) {
+////				Log.v(TAG, "Showing palette");
+////				showPalette(mFirstTouch, activeToolClass);
+////	//			prevTouch = worldTouch;
+////				mPaletteShown = true;
+////				activePaletteElement = null;
+////				return true;
+////			}
+////			else if (!mMovedAway && !pointsEqual(worldTouch, mFirstTouch)) {
+////				mMovedAway = true;
+////			}
+////		}
+//		
+////		if (action == MotionEvent.ACTION_UP && mPalette.handleTouch(worldTouch)) {
+////			activePaletteElement = mPalette.getActiveElement();
+//////			prevTouch = null;
+////			hidePalette();
+////			if (activePaletteElement == null) {
+////				Log.v(TAG, "Active element is null, returning false!");
+////				return false;
+////			}
+////			Log.v(TAG, "Active element is not null, return true!");
+////			return true;
+////		}
+//		if (action == MotionEvent.ACTION_UP) {
+////			prevTouch = null;
+//			hidePalette();
+//			return false;
+//		}
+//		return mPalette.handleTouch(worldTouch);
+//	}
 	public boolean pointsEqual(PointF point1, PointF point2) {
 		return D3Maths.distance(point1.x, point1.y, point2.x, point2.y) < POINTS_EQUAL_DISTANCE_THRESH;
 	}
-	public void update() {
-		if (mPalette != null) mPalette.update();
-	}
-	public String getActivePaletteElement() {
-		return activePaletteElement;
-	}
+//	public void update() {
+//		if (mPalette != null) mPalette.update();
+//	}
+//	public String getActivePaletteElement() {
+//		return activePaletteElement;
+//	}
 	
 	public boolean isPaused() {
 		return mPaused;

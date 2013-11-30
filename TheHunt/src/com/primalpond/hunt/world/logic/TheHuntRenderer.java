@@ -18,6 +18,7 @@ import android.view.MotionEvent;
 import com.crashlytics.android.Crashlytics;
 import com.primalpond.hunt.MultisampleConfigChooser;
 import com.primalpond.hunt.MyApplication;
+import com.primalpond.hunt.PreyChangeDialog;
 import com.primalpond.hunt.agent.Agent;
 import com.primalpond.hunt.agent.DummyPrey;
 import com.primalpond.hunt.agent.prey.Prey;
@@ -27,6 +28,7 @@ import com.primalpond.hunt.world.environment.Environment;
 import com.primalpond.hunt.world.floating_text.PlokText;
 import com.primalpond.hunt.world.floating_text.ToolText;
 import com.primalpond.hunt.world.tools.CatchNet;
+import com.primalpond.hunt.world.tools.Gestures;
 import com.primalpond.hunt.world.tools.Knife;
 import com.primalpond.hunt.world.tools.Tool;
 
@@ -178,7 +180,7 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 			tm = new TextureManager(mContext);
 			sm = new ShaderProgramManager();
 			loadSavedState(sm, tm);
-			mTool = new CatchNet(mEnv, mD3GLES20);
+			mTool = new Gestures(mEnv, mD3GLES20);
 			//		mTool = new Knife(mEnv, mD3GLES20);
 			mIgnoreNextTouch = -1;
 			next_game_tick = System.currentTimeMillis();
@@ -340,7 +342,7 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 
 	public void updateWorld() {
 		if (mFirstTouch != null && !mMovedAway && !mPaletteShown && mTimeFirstTouch != 0 && System.currentTimeMillis() - mTimeFirstTouch >= mHUD.SHOW_PALETTE_DELAY) {
-			mHUD.showPalette(mFirstTouch, mTool.getClass());
+//			mHUD.showPalette(mFirstTouch, mTool.getClass());
 			mPaletteShown = true;
 		}
 		//		Log.v(TAG, "Update world called!");
@@ -391,7 +393,7 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 			mEnv.reducePlayerPenalty();
 			mReducePenaltyCounter = 0;
 		}
-		mHUD.update();
+//		mHUD.update();
 	}
 
 	public void drawWorld(float interpolation) {
@@ -485,7 +487,7 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 			mScrolling = true;
 			Log.v(TAG, "Scrolling is true");
 			if (mTool != null) mTool.stop(location);
-			if (mHUD != null) mHUD.hidePalette();
+//			if (mHUD != null) mHUD.hidePalette();
 		}
 		else if (!doubleTouch && mScrolling) {
 			mScrolling = false;
@@ -526,46 +528,46 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 				if (mFirstTouch != null && !mMovedAway && !mHUD.pointsEqual(location, mFirstTouch)) {
 					mMovedAway = true;
 				}
-				if (mHUD.handleTouch(location, event.getX(), event.getY(), event.getAction(), mTool.getClass())) {
-					if (mHUD.isPaused()) {
-						mState = State.MENU;
-						mOnPauseListener.onToShowNavigation();
-						mMenu.show();
-						mHUD.hidePalette();
-						mTool.stop(location);
-					}
-					else if (event.getAction() != mIgnoreNextTouch && event.getAction() == MotionEvent.ACTION_UP) {
-						// there is an HUD action request
-						String active = mHUD.getActivePaletteElement();
-						if (mTool.isActive()) {
-							Log.v(TAG, "Ignore HUD action request because tool is active");
-						}
-						else if (active == null) {
-							Log.e(TAG, "Expected active pallete element, got null instead");
-						}
-						else {
-							Log.v(TAG, "Gonna change tool, class is " + mTool.getClass());
-							if (active == "Net" && mTool.getClass() != CatchNet.class) {
-								Log.v(TAG, "Changing tool to Net");
-								mTool.stop(location);
-								mD3GLES20.putText(new ToolText("Net!", location.x, location.y, mCamera.getUnscaledProjMatrix()));
-								mTool = new CatchNet(mEnv, mD3GLES20);
-
-							}
-							else if (active == "Knife" && mTool.getClass() != Knife.class) {
-								mTool.stop(location);
-								mD3GLES20.putText(new ToolText("Knife!", location.x, location.y, mCamera.getUnscaledProjMatrix()));
-								Log.v(TAG, "Changing tool to Knife");
-								mTool = new Knife(mEnv, mD3GLES20);
-							}
-
-						}
-					}
-				}
+//				if (mHUD.handleTouch(location, event.getX(), event.getY(), event.getAction(), mTool.getClass())) {
+//					if (mHUD.isPaused()) {
+//						mState = State.MENU;
+//						mOnPauseListener.onToShowNavigation();
+//						mMenu.show();
+//						mHUD.hidePalette();
+//						mTool.stop(location);
+//					}
+////					else if (event.getAction() != mIgnoreNextTouch && event.getAction() == MotionEvent.ACTION_UP) {
+////						// there is an HUD action request
+////						String active = mHUD.getActivePaletteElement();
+////						if (mTool.isActive()) {
+////							Log.v(TAG, "Ignore HUD action request because tool is active");
+////						}
+////						else if (active == null) {
+////							Log.e(TAG, "Expected active pallete element, got null instead");
+////						}
+////						else {
+////							Log.v(TAG, "Gonna change tool, class is " + mTool.getClass());
+////							if (active == "Net" && mTool.getClass() != CatchNet.class) {
+////								Log.v(TAG, "Changing tool to Net");
+////								mTool.stop(location);
+////								mD3GLES20.putText(new ToolText("Net!", location.x, location.y, mCamera.getUnscaledProjMatrix()));
+////								mTool = new CatchNet(mEnv, mD3GLES20);
+////
+////							}
+////							else if (active == "Knife" && mTool.getClass() != Knife.class) {
+////								mTool.stop(location);
+////								mD3GLES20.putText(new ToolText("Knife!", location.x, location.y, mCamera.getUnscaledProjMatrix()));
+////								Log.v(TAG, "Changing tool to Knife");
+////								mTool = new Knife(mEnv, mD3GLES20);
+////							}
+////
+////						}
+////					}
+//				}
 				if (mTool != null && mTool.handleTouch(event.getAction(), location)) {
-					if (mTool.didAction()) {
-						mHUD.hidePalette();
-					}
+//					if (mTool.didAction()) {
+//						mHUD.hidePalette();
+//					}
 				}
 				else if (prev != null && prev.getX() == event.getX() && prev.getY() == event.getY() && prev.getAction() == event.getAction()) {
 				}
@@ -578,7 +580,7 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 						mEnv.putFoodGM(location.x, location.y);
 					}
 				if (event.getAction() == MotionEvent.ACTION_UP) {
-					mHUD.hidePalette();
+//					mHUD.hidePalette();
 					mFirstTouch = null;
 				}
 				if (mIgnoreNextTouch == event.getAction()) mIgnoreNextTouch = -1;
@@ -758,9 +760,9 @@ public class TheHuntRenderer implements GLSurfaceView.Renderer {
 		if (mMenu != null) {
 			mMenu.show();
 		}
-		if (mHUD != null) {
-			mHUD.hidePalette();
-		}
+//		if (mHUD != null) {
+//			mHUD.hidePalette();
+//		}
 		if (mTool != null) {
 			mTool.stop(mFirstTouch);
 		}

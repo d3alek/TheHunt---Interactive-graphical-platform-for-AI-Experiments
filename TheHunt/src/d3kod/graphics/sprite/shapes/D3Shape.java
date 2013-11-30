@@ -34,6 +34,7 @@ abstract public class D3Shape {
 	private float mVelocityY;
 	private float mVelocityX;
 	private float mScale;
+	private float mAngle;
 	
 	private static final float MIN_ALPHA = 0.1f;
 	
@@ -43,6 +44,7 @@ abstract public class D3Shape {
 		setDrawType(drType);
 		setVertexBuffer(vertBuffer); //TODO: make this the default constructor without the vertBuffer argument and ssetVertexBuffer abstract
 		setProgram(program);
+		mAngle = 0;
 	}
 	
 	protected D3Shape() {
@@ -89,7 +91,7 @@ abstract public class D3Shape {
 	public void draw(float[] mVMatrix, float[] mProjMatrix, float interpolation) {
 		if (mVelocityX*mVelocityY != 0) {
 			setPosition(getCenterX() + interpolation * mVelocityX, 
-				getCenterY() + interpolation * mVelocityY);
+				getCenterY() + interpolation * mVelocityY, mAngle);
 		}
 		draw(mVMatrix, mProjMatrix);
 	}
@@ -156,6 +158,7 @@ abstract public class D3Shape {
 	public void setPosition(float x, float y, float angleDeg) {
 		setPosition(x, y);
 		Matrix.rotateM(mMMatrix, 0, angleDeg, 0, 0, 1);
+		mAngle = angleDeg;
 	}
 	
 	public float[] getMMatrix() {

@@ -51,19 +51,20 @@ public class CutDemonstrator extends Demonstrator {
 			mTarget = mRenderer.mEnv.addNewAlgae(30, new PointF(0, 0), D3Maths.getRandAngle());
 		}
 		else {
+			//TODO fix after palette removal
 			if (mSwitchingTool) {
-				if (!mRenderer.mHUD.mPalette.isShown()) {
-					if (isTouching()) {
-						// wait for palette to show up
-					}
-					else {
-						Log.i(TAG, "Touching");
-						touchDown(getPosition());
-						countForSec(1);
-						mStartMovingAfterCount = true;
-					}
-				}
-				else if (mToSwitchToolAfterCount) {
+//				if (!mRenderer.mHUD.mPalette.isShown()) {
+//					if (isTouching()) {
+//						// wait for palette to show up
+//					}
+//					else {
+//						Log.i(TAG, "Touching");
+//						touchDown(getPosition());
+//						countForSec(1);
+//						mStartMovingAfterCount = true;
+//					}
+//				}
+				if (mToSwitchToolAfterCount) {
 					if (countFinished()) {
 						clearCount();
 						releaseTouch(getPosition());
@@ -77,21 +78,21 @@ public class CutDemonstrator extends Demonstrator {
 						mStartMovingAfterCount = false;
 					}
 				}
-				else {
-					PointF pos = getPosition();
-					PointF knifePos = mRenderer.mHUD.mPalette.knife.getPosition();
-					float dist = D3Maths.distance(pos.x, pos.y, knifePos.x, knifePos.y);
-					if (dist < DIST_FROM_KNIFE) {
-						mToSwitchToolAfterCount = true;
-						countForSec(1);
-					}
-					else {
-						float dx = knifePos.x - pos.x;
-						float dy = knifePos.y - pos.y;
-						pos.offset(SPEED_SELECT_TOOL*dx/dist, SPEED_SELECT_TOOL*dy/dist);
-						moveTouch(pos);
-					}
-				}
+//				else {
+//					PointF pos = getPosition();
+////					PointF knifePos = mRenderer.mHUD.mPalette.knife.getPosition();
+//					float dist = D3Maths.distance(pos.x, pos.y, knifePos.x, knifePos.y);
+//					if (dist < DIST_FROM_KNIFE) {
+//						mToSwitchToolAfterCount = true;
+//						countForSec(1);
+//					}
+//					else {
+//						float dx = knifePos.x - pos.x;
+//						float dy = knifePos.y - pos.y;
+//						pos.offset(SPEED_SELECT_TOOL*dx/dist, SPEED_SELECT_TOOL*dy/dist);
+//						moveTouch(pos);
+//					}
+//				}
 
 			}
 			else if (mRenderer.mTool.getClass() != Knife.class) {

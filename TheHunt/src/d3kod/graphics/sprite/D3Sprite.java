@@ -40,6 +40,10 @@ public abstract class D3Sprite {
 	
 	protected void initGraphic(D3Shape graphic) {
 		mGraphic = graphic;
+		if (graphic == null) {
+			Log.i(TAG, "Setting graphic to null for " + this);
+			return;
+		}
 		mGraphic.setPosition(mPos.x, mPos.y); 
 		if (mGraphic.getProgram() == null) {
 //			Log.v(TAG, "Setting program to default program " + mD3GLES20);

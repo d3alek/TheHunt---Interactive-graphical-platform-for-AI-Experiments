@@ -32,18 +32,23 @@ public class D3Image extends D3Shape {
 	        1.0f, 0.0f,
 	        1.0f, 1.0f
 	};
-	final float[] rectPositionDataDefault = {
+
+	final static float[] rectPositionDataDefault = {
 			-0.5f, 0.5f, 0f,				
 			-0.5f, -0.5f, 0f,
 			0.5f, 0.5f, 0f,
 			0.5f, -0.5f, 0f
 	};
+
 	float[] rectPositionData = new float[12];
 	private float mWidth;
 	private float mHeight;
 	private ShaderProgramManager mShaderManager;
 	
 	public D3Image(TextureInfo texture, float size, ShaderProgramManager sm) {
+		this(texture, size, sm, rectPositionDataDefault);
+	}
+	public D3Image(TextureInfo texture, float size, ShaderProgramManager sm, float[] rectPositionData) {
 //		super(colorData.clone(), drawType, sm.getTextProgram());
 		super();
 		super.setColor(colorData); //clone?
@@ -62,7 +67,7 @@ public class D3Image extends D3Shape {
 			mHeight = size;
 		}
 		Log.v(TAG, "width, height: " + mWidth + " " + mHeight);
-		super.setVertexBuffer(makeVertexBuffer(mWidth, mHeight));
+		super.setVertexBuffer(makeVertexBuffer(mWidth, mHeight, rectPositionData));
 		mTextureDataHandle = texture.handle;
 		mTextureCoordinates = Utilities.newFloatBuffer(rectTextureCoordinateData);
         mTextureCoordinateHandle = AttribVariable.A_TexCoordinate.getHandle();//GLES20.glGetAttribLocation(mProgram, "a_TexCoordinate");
@@ -70,12 +75,12 @@ public class D3Image extends D3Shape {
         mTextureUniformHandle = GLES20.glGetUniformLocation(super.getProgram().getHandle(), "u_Texture");
 	}
 
-	private FloatBuffer makeVertexBuffer(float width, float height) {
-		for (int i = 0; i < rectPositionData.length; i+=3) {
-			rectPositionData[i] = rectPositionDataDefault[i]*width;
-			rectPositionData[i+1] = rectPositionDataDefault[i+1]*height;
+	private FloatBuffer makeVertexBuffer(float width, float height, float[] rectPositionData) {
+		for (int i = 0; i < this.rectPositionData.length; i+=3) {
+			this.rectPositionData[i] = rectPositionData[i]*width;
+			this.rectPositionData[i+1] = rectPositionData[i+1]*height;
 		}
-		return Utilities.newFloatBuffer(rectPositionData);
+		return Utilities.newFloatBuffer(this.rectPositionData);
 	}
 	
 	@Override

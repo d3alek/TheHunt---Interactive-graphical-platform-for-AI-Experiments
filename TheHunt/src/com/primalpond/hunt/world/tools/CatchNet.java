@@ -111,9 +111,9 @@ public class CatchNet extends D3Sprite implements Tool {
 		if (mPathGraphic != null) {
 			return;
 		}
-		if (mEnv.netObstacle(x, y)) {
-			return;
-		}
+//		if (mEnv.netObstacle(x, y)) {
+//			return;
+//		}
 		
 		mDidAction = false;
 		mStarted = true;
