@@ -18,6 +18,7 @@ import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.google.android.gms.games.GamesClient;
+import com.google.android.gms.games.leaderboard.Leaderboard;
 import com.google.android.gms.games.leaderboard.LeaderboardBuffer;
 import com.google.android.gms.games.leaderboard.LeaderboardScore;
 import com.google.android.gms.games.leaderboard.LeaderboardScoreBuffer;
@@ -437,5 +438,10 @@ public class TheHunt extends BaseGameActivity implements PreyChangeDialog.PreyCh
 		ft.remove(mAfterTutorialScreen);
 		ft.commit();
 		returnFromTutorial();
+	}
+
+	public void onLeaderboardScoresLoaded(int statusCode,
+			Leaderboard leaderboard, LeaderboardScoreBuffer scores) {
+		Log.i(TAG, "onLeaderScoresLoaded");
 	}
 }

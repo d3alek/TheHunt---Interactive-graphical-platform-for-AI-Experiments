@@ -30,14 +30,15 @@ public class MoveTowardsPlan extends Plan {
 		super.setTarget(tX, tY);
 //		float headFromTarget = D3Maths.distance(hX, hY, tX, tY),
 		float bodyFromTarget = D3Maths.distance(bX, bY, tX, tY);
-//		float bht = D3Maths.det(bX, bY, hX, hY, tX, tY);
+		float bht = D3Maths.det(bX, bY, hX, hY, tX, tY);
 		float angleToTarget = D3Maths.angleBetweenVectors(
 				bX - hX, bY - hY, //bodyToHead
 				bX - tX, bY - tY, //bodyToTarget
 				1, bodyFromTarget); // Prey.bodyToHeadLength
-		if (angleToTarget < 0) {
+		angleToTarget = Math.abs(angleToTarget);
+		if (bht > 0) {
 			//Target is to the left
-			angleToTarget = -angleToTarget;
+//			angleToTarget = -angleToTarget;
 			if (angleToTarget < GOING_TOWARDS_TARGET_ANGLE_MAX) {
 				addNextAction(Action.FORWARD_LARGE);
 			}

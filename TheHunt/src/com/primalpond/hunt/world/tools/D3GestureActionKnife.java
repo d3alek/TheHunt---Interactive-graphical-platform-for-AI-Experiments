@@ -42,6 +42,7 @@ public class D3GestureActionKnife extends D3TriangleFill implements D3GestureAct
 	public D3GestureActionKnife(PointF pos, PointF dir, PointF to, Environment env, TextureInfo textureInfo, ShaderProgramManager sm) {
 //		super(textureInfo, SIZE, sm, rectPositionData);
 		super(SIZE/2, SIZE);
+		setColor(new float[]{0.0f, 0.0f, 0.0f, 1.0f});
 		setVelocity(VELOCITY*dir.x, VELOCITY*dir.y);
 		mDir = dir;
 		mAngle = -D3Maths.angleBetweenVectors(mDir.x, mDir.y, 0, 1, 1, 1);
